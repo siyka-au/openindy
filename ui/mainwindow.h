@@ -256,9 +256,9 @@ private slots:
     void on_actionMagnify_triggered();
 
     //active group, active coordinate system or actual nominal filter changed
-    void on_comboBox_groups_currentIndexChanged(const QString &arg1);
-    void on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1);
-    void on_comboBox_actualNominal_currentIndexChanged(const QString &arg1);
+    void on_comboBox_groups_currentTextChanged(const QString &arg1);
+    void on_comboBox_activeCoordSystem_currentTextChanged(const QString &arg1);
+    void on_comboBox_actualNominal_currentTextChanged(const QString &arg1);
 
     //show watch window
     void on_actionWatch_window_triggered();

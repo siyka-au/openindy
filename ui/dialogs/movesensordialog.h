@@ -46,7 +46,7 @@ private slots:
     void on_pushButton_move_clicked();
 
     //reading type changed
-    void on_comboBox_typeOfReading_currentIndexChanged(const QString &arg1);
+    void on_comboBox_typeOfReading_currentTextChanged(const QString &arg1);
 
 private:
 

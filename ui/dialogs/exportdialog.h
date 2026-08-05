@@ -41,7 +41,7 @@ private slots:
 
     void on_pushButton_Path_clicked();
 
-    void on_comboBox_plugin_currentIndexChanged(const QString &arg1);
+    void on_comboBox_plugin_currentTextChanged(const QString &arg1);
 
 private:
 

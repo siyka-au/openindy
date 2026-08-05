@@ -103,10 +103,10 @@ void ExportDialog::on_pushButton_Path_clicked()
 }
 
 /*!
- * \brief ExportDialog::on_comboBox_plugin_currentIndexChanged
+ * \brief ExportDialog::on_comboBox_plugin_currentTextChanged
  * \param arg1
  */
-void ExportDialog::on_comboBox_plugin_currentIndexChanged(const QString &arg1)
+void ExportDialog::on_comboBox_plugin_currentTextChanged(const QString &arg1)
 {
     //if no plugin is selected clear other gui elements
     if(arg1.compare("") == 0){

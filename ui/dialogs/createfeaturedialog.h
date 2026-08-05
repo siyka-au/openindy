@@ -65,7 +65,7 @@ private slots:
     void on_checkBox_nominal_toggled(bool checked);
     void on_checkBox_actual_toggled(bool checked);
 
-    void on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName);
+    void on_comboBox_entityType_currentTextChanged(const QString &entityTypeName);
 
     void on_comboBox_function_currentIndexChanged(const int index);
 

@@ -294,10 +294,10 @@ void SensorConfigurationDialog::sensorPluginChanged(){
 }
 
 /*!
- * \brief SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexChanged
+ * \brief SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentTextChanged
  * \param arg1
  */
-void SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1){
+void SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentTextChanged(const QString &arg1){
     ModelManager::getSensorTableProxyModel().setSensorType(getSensorTypeEnum(arg1));
 }
 

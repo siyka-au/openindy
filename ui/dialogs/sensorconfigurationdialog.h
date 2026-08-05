@@ -94,7 +94,7 @@ private slots:
     void sensorPluginChanged();
 
     //sensor type changed
-    void on_comboBox_availableSensorTypes_currentIndexChanged(const QString &arg1);
+    void on_comboBox_availableSensorTypes_currentTextChanged(const QString &arg1);
 
     //#########################
     //selection model callbacks

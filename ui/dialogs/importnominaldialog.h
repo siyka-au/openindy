@@ -46,8 +46,8 @@ private slots:
     //actions triggered by user
     //#########################
 
-    void on_comboBox_plugin_sa_currentIndexChanged(const QString &arg1);
-    void on_comboBox_exchange_sa_currentIndexChanged(const QString &arg1);
+    void on_comboBox_plugin_sa_currentTextChanged(const QString &arg1);
+    void on_comboBox_exchange_sa_currentTextChanged(const QString &arg1);
     void on_pushButton_file_sa_clicked();
     void on_pushButton_cancel_sa_clicked();
     void on_pushButton_import_sa_clicked();

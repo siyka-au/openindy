@@ -19,11 +19,11 @@ ImportNominalDialog::~ImportNominalDialog(){
 }
 
 /*!
- * \brief ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged
+ * \brief ImportNominalDialog::on_comboBox_plugin_sa_currentTextChanged
  * Triggered whenever the user selects another plugin
  * \param arg1
  */
-void ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged(const QString &arg1){
+void ImportNominalDialog::on_comboBox_plugin_sa_currentTextChanged(const QString &arg1){
 
     //if no plugin is selected clear other gui elements
     if(arg1.compare("") == 0){
@@ -41,11 +41,11 @@ void ImportNominalDialog::on_comboBox_plugin_sa_currentIndexChanged(const QStrin
 }
 
 /*!
- * \brief ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged
+ * \brief ImportNominalDialog::on_comboBox_exchange_sa_currentTextChanged
  * Triggered whenever the user selects another exchange method
  * \param arg1
  */
-void ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged(const QString &arg1){
+void ImportNominalDialog::on_comboBox_exchange_sa_currentTextChanged(const QString &arg1){
 
     //if no exchange method is selected clear other gui elements
     if(arg1.compare("") == 0){

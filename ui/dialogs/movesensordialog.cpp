@@ -110,11 +110,11 @@ void MoveSensorDialog::on_pushButton_move_clicked(){
 }
 
 /*!
- * \brief MoveSensorDialog::on_comboBox_typeOfReading_currentIndexChanged
+ * \brief MoveSensorDialog::on_comboBox_typeOfReading_currentTextChanged
  * Depending on the selected reading type set visibility of GUI elements
  * \param arg1
  */
-void MoveSensorDialog::on_comboBox_typeOfReading_currentIndexChanged(const QString &arg1){
+void MoveSensorDialog::on_comboBox_typeOfReading_currentTextChanged(const QString &arg1){
 
     //get selected reading type
     ReadingTypes readingType = getReadingTypeEnum(arg1);

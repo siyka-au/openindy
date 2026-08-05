@@ -1158,10 +1158,10 @@ void MainWindow::on_actionMagnify_triggered(){
 }
 
 /*!
- * \brief MainWindow::on_comboBox_groups_currentIndexChanged
+ * \brief MainWindow::on_comboBox_groups_currentTextChanged
  * \param arg1
  */
-void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
+void MainWindow::on_comboBox_groups_currentTextChanged(const QString &arg1){
 
     //get and check model
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
@@ -1186,10 +1186,10 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
 }
 
 /*!
- * \brief MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged
+ * \brief MainWindow::on_comboBox_activeCoordSystem_currentTextChanged
  * \param arg1
  */
-void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString &arg1){
+void MainWindow::on_comboBox_activeCoordSystem_currentTextChanged(const QString &arg1){
 
     //get and check model
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
@@ -1216,10 +1216,10 @@ void MainWindow::on_comboBox_activeCoordSystem_currentIndexChanged(const QString
 }
 
 /*!
- * \brief MainWindow::on_comboBox_actualNominal_currentIndexChanged
+ * \brief MainWindow::on_comboBox_actualNominal_currentTextChanged
  * \param arg1
  */
-void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &arg1){
+void MainWindow::on_comboBox_actualNominal_currentTextChanged(const QString &arg1){
 
     //get and check model
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());

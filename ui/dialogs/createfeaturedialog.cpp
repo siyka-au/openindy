@@ -426,10 +426,10 @@ void CreateFeatureDialog::setDialogName()
 }
 
 /*!
- * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check if the type of the scalar entity changed
+ * \brief CreateFeatureDialog::on_comboBox_entityType_currentTextChanged check if the type of the scalar entity changed
  * \param entityTypeName
  */
-void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName)
+void CreateFeatureDialog::on_comboBox_entityType_currentTextChanged(const QString &entityTypeName)
 {
     if(!entityTypeName.isEmpty()) {
         this->typeOfFeature = getFeatureTypeEnum(entityTypeName);
