@@ -538,7 +538,7 @@ void AvailableElementsTreeViewProxyModel::filterByFeatureName(QString featureNam
 }
 
 void AvailableElementsTreeViewProxyModel::resetFilter() {
-    this->filterFeatureName = QString::null;
-    this->filterGroupName = QString::null;
+    this->filterFeatureName = QString();
+    this->filterGroupName = QString();
     this->filterActualNominal = ActualNominalFilter::eFilterActualNominal;
 }
