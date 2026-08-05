@@ -591,7 +591,7 @@ void DataExchanger::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper>
 
         //load function plugin
         QPointer<Function> function(NULL);
-        if(path != 0 && fName != 0){
+        if(!path.isEmpty() && !fName.isEmpty()){
             function = PluginLoader::loadFunctionPlugin(path, fName);
         }
 
