@@ -127,7 +127,7 @@ void ScalarParameterWidget::setUpGui(){
         this->parameterLabel.append(stringLabel);
         this->stringParameterComboBox.insert(stringKey, stringComboBox);
         this->myLayout->insertRow(rowIndex, stringLabel, stringComboBox);
-        QObject::connect(stringComboBox, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, &ScalarParameterWidget::scalarParametersChanged, Qt::AutoConnection);
+        QObject::connect(stringComboBox, &QComboBox::currentTextChanged, this, &ScalarParameterWidget::scalarParametersChanged, Qt::AutoConnection);
         rowIndex++;
     }
     while(intIterator.hasNext()){
