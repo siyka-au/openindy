@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QPointer>
+#include <QHash>
+#include <QVariant>
 #include <QString>
 #include <QIODevice>
 #include <QListView>
@@ -73,6 +75,13 @@ using namespace oi;
 
 namespace Ui {
 class MainWindow;
+}
+
+// QVariant lost operator< in Qt6, so it can no longer key a QMap; hash it
+// instead (type-aware, so e.g. QVariant(-1) and QVariant("-1") stay distinct,
+// matching QVariant's own operator== semantics) to key a QHash instead.
+inline size_t qHash(const QVariant &variant, size_t seed = 0){
+    return qHash(variant.typeId(), seed) ^ qHash(variant.toString(), seed);
 }
 
 /*!
@@ -421,7 +430,7 @@ private:
     MoveSensorDialog moveSensorDialog;
     QMap<SensorAction, QPointer<SensorTaskInfoDialog>> sensorTaskInfoDialogs;
     PluginManagerDialog pluginManagerDialog;
-    QMap<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
+    QHash<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
