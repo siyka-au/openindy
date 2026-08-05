@@ -17,6 +17,8 @@
 bin/
 /build/
 
+oiLogFile.log
+
 # Qt-es
 
 *.pro.user

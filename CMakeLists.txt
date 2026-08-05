@@ -402,3 +402,17 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 target_link_libraries(openIndy PRIVATE OpenIndyApp)
+
+# runtime resources the app expects next to its own executable (qmake used
+# to copy these on `make install`; mirror that here so a plain build is
+# directly runnable without a separate install step)
+add_custom_command(TARGET openIndy POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/config" "$<TARGET_FILE_DIR:openIndy>/config"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/example" "$<TARGET_FILE_DIR:openIndy>/example"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/plugins" "$<TARGET_FILE_DIR:openIndy>/plugins"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/db/oisystemdb.sqlite" "$<TARGET_FILE_DIR:openIndy>/oisystemdb.sqlite"
+)
