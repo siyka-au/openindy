@@ -43,7 +43,7 @@ void DataExchanger::setCurrentJob(const QPointer<OiJob> &job){
  */
 const QPointer<MeasurementConfigManager> &DataExchanger::getMeasurementConfigManager()
 {
-    return this->getMeasurementConfigManager();
+    return this->mConfigManager;
 }
 
 /*!
