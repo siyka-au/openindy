@@ -1,6 +1,8 @@
 #include "actualpropertiesdialog.h"
 #include "ui_actualpropertiesdialog.h"
 
+#include <algorithm>
+
 /*!
  * \brief ActualPropertiesDialog::ActualPropertiesDialog
  * \param parent
@@ -226,7 +228,7 @@ QModelIndexList ActualPropertiesDialog::getSelection()
     //get selected indexes
     selection = selectionModel->selectedIndexes();
     if(selection.size() > 0){
-        qSort(selection);
+        std::sort(selection.begin(), selection.end());
     }
 
     return selection;

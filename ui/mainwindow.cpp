@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <algorithm>
+
 /*!
  * \brief MainWindow::MainWindow
  * \param parent
@@ -1657,7 +1659,7 @@ void MainWindow::deleteFeatures(bool checked){
         emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    qSort(selection);
+    std::sort(selection.begin(), selection.end());
 
     //get the id's of the selected features
     QSet<int> featureIds;
@@ -1802,7 +1804,7 @@ void MainWindow::pasteFromClipboard(){
         return;
     }
 
-    qSort(selection);
+    std::sort(selection.begin(), selection.end());
 
     //get values from clipboard, so you can copy them
     QStringList rows;

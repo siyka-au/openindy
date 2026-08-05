@@ -1,5 +1,7 @@
 #include "oirequesthandler.h"
 
+#include <algorithm>
+
 //QPointer<OiRequestHandler> OiRequestHandler::myRequestHandler(NULL);
 
 OiRequestHandler::OiRequestHandler(QObject *parent){
@@ -777,7 +779,7 @@ void OiRequestHandler::getFeatures(OiRequestResponse &request){
     QList<QPointer<FeatureWrapper> > features = this->currentJob->getFeaturesList();
 
     //sort the list according to the current sorting mode
-    qSort(features.begin(), features.end(), this->sorter);
+    std::sort(features.begin(), features.end(), this->sorter);
 
     //create and add features
     QDomElement response = request.response.createElement("features");

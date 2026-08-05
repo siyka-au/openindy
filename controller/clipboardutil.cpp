@@ -1,5 +1,7 @@
 #include "clipboardutil.h"
 
+#include <algorithm>
+
 void ClipBoardUtil::copySelectionAsCsvToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
     if(model.isNull()) {
         emit sendMessage("copyToClipboard: model is null", MessageTypes::eWarningMessage);
@@ -17,7 +19,7 @@ void ClipBoardUtil::copySelectionAsCsvToClipBoard(QPointer<QAbstractItemModel> m
         emit sendMessage("copyToClipboard: selection is empty", MessageTypes::eWarningMessage);
         return;
     }
-    qSort(selection);
+    std::sort(selection.begin(), selection.end());
 
     QString copy_table;
     // loop over all selected rows and columns

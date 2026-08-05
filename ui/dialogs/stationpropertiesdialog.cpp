@@ -1,6 +1,8 @@
 #include "stationpropertiesdialog.h"
 #include "ui_stationpropertiesdialog.h"
 
+#include <algorithm>
+
 /*!
  * \brief StationPropertiesDialog::StationPropertiesDialog
  * \param parent
@@ -359,7 +361,7 @@ void StationPropertiesDialog::pasteFromClipboard(){
     if(selection.size() <= 0){
         return;
     }
-    qSort(selection);
+    std::sort(selection.begin(), selection.end());
 
     //get values from clipboard, so you can copy them
     QClipboard *clipboard = QApplication::clipboard();
