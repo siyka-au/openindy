@@ -1,5 +1,7 @@
 #include "observationimporter.h"
 
+#include <QRegularExpression>
+
 /*!
  * \brief ObservationImporter::ObservationImporter
  * \param parent
@@ -122,7 +124,7 @@ bool ObservationImporter::importObservations(){
             }
 
             //split the line at whitespaces and check number of columns
-            QStringList columns = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+            QStringList columns = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
             if(columns.size() != 3){
                 continue;
             }

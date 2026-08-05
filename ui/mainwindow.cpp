@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QRegularExpression>
 #include <algorithm>
 
 /*!
@@ -2569,13 +2570,12 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
 
     //add new self defined actions
     foreach(const QString &action, selfDefinedActions){
-        QRegExp rx("([\\w ]+)(\\(([\\w]+\\+[\\w]+)\\))?"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
-        rx.setPatternSyntax(QRegExp::RegExp);
-        rx.indexIn(action);
+        QRegularExpression rx("([\\w ]+)(\\(([\\w]+\\+[\\w]+)\\))?"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
+        QRegularExpressionMatch match = rx.match(action);
 
-        QKeySequence actionShortCut = QKeySequence::fromString(rx.cap(3));
-        QString actionLabel = QString("%1%2").arg(rx.cap(1)).arg(actionShortCut.isEmpty() || rx.cap(3).isEmpty() ? "" : " " + rx.cap(2));
-        QString actionCommand = rx.cap(1);
+        QKeySequence actionShortCut = QKeySequence::fromString(match.captured(3));
+        QString actionLabel = QString("%1%2").arg(match.captured(1)).arg(actionShortCut.isEmpty() || match.captured(3).isEmpty() ? "" : " " + match.captured(2));
+        QString actionCommand = match.captured(1);
 
         QPointer<QAction> customAction = new QAction(0);
         customAction->setShortcut(actionShortCut);

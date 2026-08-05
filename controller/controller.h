@@ -8,7 +8,6 @@
 #include <QSaveFile>
 #include <QFile>
 #include <QFileInfo>
-#include <QRegExp>
 #include <QThread>
 #include <QMutex>
 #include <QMutexLocker>

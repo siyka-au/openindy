@@ -3,9 +3,8 @@
 
 #include <QDialog>
 #include <QShowEvent>
-#include <QDesktopWidget>
-#include <QRegExp>
-#include <QRegExpValidator>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 #include "types.h"
 #include "reading.h"
@@ -66,8 +65,8 @@ private:
     //#################
 
     //regular expressions to validate user input
-    QRegExp validDouble;
-    QRegExpValidator *doubleValidator;
+    QRegularExpression validDouble;
+    QRegularExpressionValidator *doubleValidator;
 
     Ui::MoveSensorDialog *ui;
 

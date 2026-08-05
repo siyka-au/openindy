@@ -1,6 +1,9 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+
 /*!
  * \brief SettingsDialog::SettingsDialog
  * \param parent
@@ -10,9 +13,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     this->ui->setupUi(this);
 
-    this->ui->lineEdit_angleDigits->setValidator(new QRegExpValidator(QRegExp("[1-8]"), this));
-    this->ui->lineEdit_distanceDigits->setValidator(new QRegExpValidator(QRegExp("[1-8]"), this));
-    this->ui->lineEdit_temperatureDigits->setValidator(new QRegExpValidator(QRegExp("[1-3]"), this));
+    this->ui->lineEdit_angleDigits->setValidator(new QRegularExpressionValidator(QRegularExpression("[1-8]"), this));
+    this->ui->lineEdit_distanceDigits->setValidator(new QRegularExpressionValidator(QRegularExpression("[1-8]"), this));
+    this->ui->lineEdit_temperatureDigits->setValidator(new QRegularExpressionValidator(QRegularExpression("[1-3]"), this));
     // 0 = disable autosave, > 0 = interval in minutes
     this->ui->lineEdit_autoSaveInterval->setValidator(new QIntValidator(0, 1000, this));
 

@@ -8,8 +8,8 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QLabel>
-#include <QRegExp>
-#include <QRegExpValidator>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 class ScalarParameterWidget : public QWidget
 {
@@ -67,10 +67,10 @@ private:
     QFormLayout *myLayout;
 
     //regular expressions to validate user input
-    QRegExp validInt;
-    QRegExp validDouble;
-    QRegExpValidator *intValidator;
-    QRegExpValidator *doubleValidator;
+    QRegularExpression validInt;
+    QRegularExpression validDouble;
+    QRegularExpressionValidator *intValidator;
+    QRegularExpressionValidator *doubleValidator;
 
     //##############
     //helper methods

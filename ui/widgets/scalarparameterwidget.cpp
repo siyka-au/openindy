@@ -4,10 +4,10 @@ ScalarParameterWidget::ScalarParameterWidget(QWidget *parent) :
     QWidget(parent)
 {
     //set up regular expressions
-    this->validInt = QRegExp("^-?(0|[1-9]{1}[0-9]{0,9})$");
-    this->validDouble = QRegExp("^-?(0|[1-9]{1}[0-9]{0,9})(\\.[0-9]+)?$");
-    this->intValidator = new QRegExpValidator(this->validInt);
-    this->doubleValidator = new QRegExpValidator(this->validDouble);
+    this->validInt = QRegularExpression("^-?(0|[1-9]{1}[0-9]{0,9})$");
+    this->validDouble = QRegularExpression("^-?(0|[1-9]{1}[0-9]{0,9})(\\.[0-9]+)?$");
+    this->intValidator = new QRegularExpressionValidator(this->validInt);
+    this->doubleValidator = new QRegularExpressionValidator(this->validDouble);
 
     this->myLayout = NULL;
 

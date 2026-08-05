@@ -11,8 +11,8 @@ MoveSensorDialog::MoveSensorDialog(QWidget *parent) : QDialog(parent),
     ui->setupUi(this);
 
     //set up regular expressions
-    this->validDouble = QRegExp("^-?(0|[1-9]{1}[0-9]{0,9})(\\.[0-9]+)?$");
-    this->doubleValidator = new QRegExpValidator(this->validDouble);
+    this->validDouble = QRegularExpression("^-?(0|[1-9]{1}[0-9]{0,9})(\\.[0-9]+)?$");
+    this->doubleValidator = new QRegularExpressionValidator(this->validDouble);
 
     this->initModels();
     this->initGUI();
