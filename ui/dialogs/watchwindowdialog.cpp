@@ -509,7 +509,7 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         h = this->streamData[eName]->height();
         double w = this->streamData[eName]->width();
         QFontMetrics fmName(fName);
-        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.width(streamData[eName]->text()) ));
+        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.horizontalAdvance(streamData[eName]->text()) ));
 
         //x
         h = this->streamData[eX]->height();

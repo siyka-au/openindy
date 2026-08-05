@@ -21,7 +21,7 @@ const int getDropDownMenuSize(QStringList list, const int menuSize)
     //calculate width of popup dependend of list
     QFont font;
     QFontMetrics fm(font);
-    int width = fm.width(largestString);
+    int width = fm.horizontalAdvance(largestString);
 
     //get largest width
     if((width + (0.1 * width)) > menuSize){

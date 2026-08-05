@@ -2608,7 +2608,7 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     double h = this->ui->label_magnifyActualNominal->height();
     double w = this->ui->label_magnifyActualNominal->width();
     QFontMetrics fmActualNominal(fontActualNominal);
-    const double tw = fmActualNominal.width(this->ui->label_magnifyActualNominal->text());
+    const double tw = fmActualNominal.horizontalAdvance(this->ui->label_magnifyActualNominal->text());
     double scaleW = w/tw;
     double scaleH = h/fmActualNominal.height();
     fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF() * std::min(scaleH, scaleW));
@@ -2621,7 +2621,7 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     h = this->ui->label_magnifyName->height();
     w = this->ui->label_magnifyName->width() + (w - tw * std::min(scaleH, scaleW)); // with delta size of label_magnifyActualNominal
     QFontMetrics fmName(fontName);
-    scaleW = w/fmName.width(this->ui->label_magnifyName->text());
+    scaleW = w/fmName.horizontalAdvance(this->ui->label_magnifyName->text());
     scaleH = h/fmName.height();
     fontName.setPointSizeF(fontName.pointSizeF() * std::min(scaleH, scaleW));
     this->ui->label_magnifyName->setFont(fontName);
@@ -2679,7 +2679,7 @@ void MainWindow::updateSystemFilterSize(){
     //calculate width of popup dependend on size of group name
     QFont font;
     QFontMetrics fm(font);
-    int width = fm.width(largestSystemName);
+    int width = fm.horizontalAdvance(largestSystemName);
     int boxWidth = this->ui->comboBox_activeCoordSystem->width();
 
     if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
