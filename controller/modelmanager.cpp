@@ -1258,7 +1258,7 @@ void ModelManager::initSensorConnectionModels(){
     softwareControl->setData(QSerialPort::SoftwareControl, Qt::UserRole);
     ModelManager::flowControlTypesModel.appendRow(softwareControl);
     QStandardItem *unknownControl = new QStandardItem("unknown flowcontrol");
-    unknownControl->setData(QSerialPort::UnknownFlowControl, Qt::UserRole);
+    unknownControl->setData(static_cast<QSerialPort::FlowControl>(-1), Qt::UserRole);
     ModelManager::flowControlTypesModel.appendRow(unknownControl);
 
     //initialize parity model
@@ -1278,7 +1278,7 @@ void ModelManager::initSensorConnectionModels(){
     markParity->setData(QSerialPort::MarkParity, Qt::UserRole);
     ModelManager::parityTypesModel.appendRow(markParity);
     QStandardItem *unknownParity = new QStandardItem("unknown parity");
-    unknownParity->setData(QSerialPort::UnknownParity, Qt::UserRole);
+    unknownParity->setData(static_cast<QSerialPort::Parity>(-1), Qt::UserRole);
     ModelManager::parityTypesModel.appendRow(unknownParity);
 
     //initialize stop bits model
@@ -1292,7 +1292,7 @@ void ModelManager::initSensorConnectionModels(){
     twoStop->setData(QSerialPort::TwoStop, Qt::UserRole);
     ModelManager::stopBitTypesModel.appendRow(twoStop);
     QStandardItem *unknownStop = new QStandardItem("unknown stopbits");
-    unknownStop->setData(QSerialPort::UnknownStopBits, Qt::UserRole);
+    unknownStop->setData(static_cast<QSerialPort::StopBits>(-1), Qt::UserRole);
     ModelManager::stopBitTypesModel.appendRow(unknownStop);
 
     //initialize serial ports model
