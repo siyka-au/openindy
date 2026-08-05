@@ -39,18 +39,18 @@ QWidget* SensorParametersDelegate::createEditor(QWidget *parent, const QStyleOpt
     int columnIndex = index.column();
 
     //create editor
-    if(rowIndex < sConfig.getStringParameter().uniqueKeys().size()){
+    if(rowIndex < sConfig.getStringParameter().keys().size()){
 
         //create editor with model
         editor = new QComboBox(parent);
-        QStringListModel *model = new QStringListModel(sConfig.getAvailableStringParameter().values(sConfig.getStringParameter().uniqueKeys().at(rowIndex)), editor);
+        QStringListModel *model = new QStringListModel(sConfig.getAvailableStringParameter().values(sConfig.getStringParameter().keys().at(rowIndex)), editor);
         static_cast<QComboBox*>(editor)->setModel(model);
 
-    }else if(rowIndex < sConfig.getDoubleParameter().size() + sConfig.getStringParameter().uniqueKeys().size()){
-        rowIndex = rowIndex - sConfig.getStringParameter().uniqueKeys().size();
+    }else if(rowIndex < sConfig.getDoubleParameter().size() + sConfig.getStringParameter().keys().size()){
+        rowIndex = rowIndex - sConfig.getStringParameter().keys().size();
         editor = new QLineEdit(parent);
     }else{
-        rowIndex = rowIndex - sConfig.getStringParameter().uniqueKeys().size()
+        rowIndex = rowIndex - sConfig.getStringParameter().keys().size()
                 - sConfig.getDoubleParameter().size();
         editor = new QLineEdit(parent);
     }
@@ -86,7 +86,7 @@ void SensorParametersDelegate::setEditorData(QWidget *editor, const QModelIndex 
     int columnIndex = index.column();
 
     //set editor default input
-    if(rowIndex < sConfig.getStringParameter().uniqueKeys().size()){
+    if(rowIndex < sConfig.getStringParameter().keys().size()){
 
         QComboBox *customEditor = NULL;
         customEditor = qobject_cast<QComboBox*>(editor);
@@ -94,9 +94,9 @@ void SensorParametersDelegate::setEditorData(QWidget *editor, const QModelIndex 
             customEditor->setCurrentText(index.data().toString());
         }
 
-    }else if(rowIndex < sConfig.getDoubleParameter().size() + sConfig.getStringParameter().uniqueKeys().size()){
+    }else if(rowIndex < sConfig.getDoubleParameter().size() + sConfig.getStringParameter().keys().size()){
 
-        rowIndex = rowIndex - sConfig.getStringParameter().uniqueKeys().size();
+        rowIndex = rowIndex - sConfig.getStringParameter().keys().size();
         QLineEdit *customEditor = NULL;
         customEditor = qobject_cast<QLineEdit*>(editor);
         if(customEditor != NULL){
@@ -105,7 +105,7 @@ void SensorParametersDelegate::setEditorData(QWidget *editor, const QModelIndex 
 
     }else{
 
-        rowIndex = rowIndex - sConfig.getStringParameter().uniqueKeys().size()
+        rowIndex = rowIndex - sConfig.getStringParameter().keys().size()
                 - sConfig.getDoubleParameter().size();
         QLineEdit *customEditor = NULL;
         customEditor = qobject_cast<QLineEdit*>(editor);
@@ -145,16 +145,16 @@ void SensorParametersDelegate::setModelData(QWidget *editor, QAbstractItemModel 
     int columnIndex = index.column();
 
     //commit changes
-    if(rowIndex < sConfig.getStringParameter().uniqueKeys().size()){
+    if(rowIndex < sConfig.getStringParameter().keys().size()){
 
         QComboBox *customEditor = qobject_cast<QComboBox*>(editor);
         if(customEditor != NULL){
             model->setData(index, customEditor->currentText());
         }
 
-    }else if(rowIndex < sConfig.getDoubleParameter().size() + sConfig.getStringParameter().uniqueKeys().size()){
+    }else if(rowIndex < sConfig.getDoubleParameter().size() + sConfig.getStringParameter().keys().size()){
 
-        rowIndex = rowIndex - sConfig.getStringParameter().uniqueKeys().size();
+        rowIndex = rowIndex - sConfig.getStringParameter().keys().size();
         QLineEdit *customEditor = qobject_cast<QLineEdit*>(editor);
         if(customEditor != NULL){
             model->setData(index, customEditor->text());
@@ -162,7 +162,7 @@ void SensorParametersDelegate::setModelData(QWidget *editor, QAbstractItemModel 
 
     }else{
 
-        rowIndex = rowIndex - sConfig.getStringParameter().uniqueKeys().size()
+        rowIndex = rowIndex - sConfig.getStringParameter().keys().size()
                 - sConfig.getDoubleParameter().size();
         QLineEdit *customEditor = qobject_cast<QLineEdit*>(editor);
         if(customEditor != NULL){

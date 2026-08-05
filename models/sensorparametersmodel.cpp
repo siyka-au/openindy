@@ -15,7 +15,7 @@ SensorParametersModel::SensorParametersModel(QObject *parent) : QAbstractTableMo
  */
 int SensorParametersModel::rowCount(const QModelIndex &parent) const{
     if(this->sConfig.getIsValid()){
-        return this->sConfig.getStringParameter().uniqueKeys().size()
+        return this->sConfig.getStringParameter().keys().size()
                 + this->sConfig.getDoubleParameter().size()
                 + this->sConfig.getIntegerParameter().size();
     }
@@ -48,13 +48,13 @@ QVariant SensorParametersModel::data(const QModelIndex &index, int role) const{
 
     if(role == Qt::DisplayRole){
 
-        if(rowIndex < this->sConfig.getStringParameter().uniqueKeys().size()){
-            return this->sConfig.getStringParameter().value(this->sConfig.getStringParameter().uniqueKeys().at(rowIndex));
-        }else if(rowIndex < this->sConfig.getDoubleParameter().size() + this->sConfig.getStringParameter().uniqueKeys().size()){
-            rowIndex = rowIndex - this->sConfig.getStringParameter().uniqueKeys().size();
+        if(rowIndex < this->sConfig.getStringParameter().keys().size()){
+            return this->sConfig.getStringParameter().value(this->sConfig.getStringParameter().keys().at(rowIndex));
+        }else if(rowIndex < this->sConfig.getDoubleParameter().size() + this->sConfig.getStringParameter().keys().size()){
+            rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size();
             return QString::number(this->sConfig.getDoubleParameter().values().at(rowIndex), 'f', 8);
         }else{
-            rowIndex = rowIndex - this->sConfig.getStringParameter().uniqueKeys().size()
+            rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size()
                     - this->sConfig.getDoubleParameter().size();
             return QString::number(this->sConfig.getIntegerParameter().values().at(rowIndex), 'g', 8);
         }
@@ -77,13 +77,13 @@ QVariant SensorParametersModel::headerData(int section, Qt::Orientation orientat
     if((Qt::DisplayRole == role) && (Qt::Vertical == orientation) &&
             (0 <= section) && (section < rowCount())){
 
-        if(section < this->sConfig.getStringParameter().uniqueKeys().size()){
-            return this->sConfig.getStringParameter().uniqueKeys().at(section);
-        }else if(section < this->sConfig.getDoubleParameter().size() + this->sConfig.getStringParameter().uniqueKeys().size()){
-            section = section - this->sConfig.getStringParameter().uniqueKeys().size();
+        if(section < this->sConfig.getStringParameter().keys().size()){
+            return this->sConfig.getStringParameter().keys().at(section);
+        }else if(section < this->sConfig.getDoubleParameter().size() + this->sConfig.getStringParameter().keys().size()){
+            section = section - this->sConfig.getStringParameter().keys().size();
             return this->sConfig.getDoubleParameter().keys().at(section);
         }else{
-            section = section - this->sConfig.getStringParameter().uniqueKeys().size()
+            section = section - this->sConfig.getStringParameter().keys().size()
                     - this->sConfig.getDoubleParameter().size();
             return this->sConfig.getIntegerParameter().keys().at(section);
         }
@@ -167,20 +167,20 @@ bool SensorParametersModel::setData(const QModelIndex & index, const QVariant & 
 
     if(rowIndex < rowCount()){
 
-        if(rowIndex < this->sConfig.getStringParameter().uniqueKeys().size()){
+        if(rowIndex < this->sConfig.getStringParameter().keys().size()){
             QMap<QString, QString> params = this->sConfig.getStringParameter();
-            params.insert(this->sConfig.getStringParameter().uniqueKeys().at(rowIndex), value.toString());
+            params.insert(this->sConfig.getStringParameter().keys().at(rowIndex), value.toString());
             this->sConfig.setStringParameter(params);
-        }else if(rowIndex < this->sConfig.getDoubleParameter().size() + this->sConfig.getStringParameter().uniqueKeys().size()){
-            rowIndex = rowIndex - this->sConfig.getStringParameter().uniqueKeys().size();
+        }else if(rowIndex < this->sConfig.getDoubleParameter().size() + this->sConfig.getStringParameter().keys().size()){
+            rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size();
             QMap<QString, double> params = this->sConfig.getDoubleParameter();
-            params.insert(this->sConfig.getDoubleParameter().uniqueKeys().at(rowIndex), value.toDouble());
+            params.insert(this->sConfig.getDoubleParameter().keys().at(rowIndex), value.toDouble());
             this->sConfig.setDoubleParameter(params);
         }else{
-            rowIndex = rowIndex - this->sConfig.getStringParameter().uniqueKeys().size()
+            rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size()
                     - this->sConfig.getDoubleParameter().size();
             QMap<QString, int> params = this->sConfig.getIntegerParameter();
-            params.insert(this->sConfig.getIntegerParameter().uniqueKeys().at(rowIndex), value.toInt());
+            params.insert(this->sConfig.getIntegerParameter().keys().at(rowIndex), value.toInt());
             this->sConfig.setIntegerParameter(params);
         }
 
