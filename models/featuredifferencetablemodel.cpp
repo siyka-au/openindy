@@ -90,7 +90,7 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
                 return "-/-";
             }
         }
-    }else if(role == Qt::TextColorRole){
+    }else if(role == Qt::ForegroundRole){
 
         QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
 
