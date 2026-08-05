@@ -110,5 +110,5 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType, const int
  */
 void Console::writeToLogFile(const QString &msg){
     QTextStream textStream(&outFile);
-    textStream << msg << endl;
+    textStream << msg << Qt::endl;
 }
