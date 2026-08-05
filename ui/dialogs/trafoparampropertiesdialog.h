@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QMap>
 #include <QShowEvent>
-#include <QDesktopWidget>
 #include <QPointer>
 #include <QMessageBox>
 

@@ -12,7 +12,6 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtNetwork/QNetworkInterface>
 #include <QShowEvent>
-#include <QDesktopWidget>
 #include <QKeyEvent>
 #include <QClipboard>
 #include <QPointer>

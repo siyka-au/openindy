@@ -2,7 +2,6 @@
 #define STATIONPROPERTIESDIALOG_H
 
 #include <QDialog>
-#include <QDesktopWidget>
 #include <QShowEvent>
 #include <QCloseEvent>
 #include <QPointer>

@@ -13,7 +13,6 @@
 #include <QLayout>
 #include <QMessageBox>
 #include <QShowEvent>
-#include <QDesktopWidget>
 #include <QGridLayout>
 #include <QMenu>
 

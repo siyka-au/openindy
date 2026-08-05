@@ -12,7 +12,6 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QPointer>
-#include <QDesktopWidget>
 #include <functional>
 
 #include "types.h"

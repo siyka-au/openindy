@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QShowEvent>
-#include <QDesktopWidget>
 
 #include "featurewrapper.h"
 #include "featureattributes.h"

@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QShowEvent>
-#include <QDesktopWidget>
 
 namespace Ui {
 class SensorTaskInfoDialog;

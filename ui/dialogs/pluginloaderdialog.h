@@ -6,7 +6,6 @@
 #include <QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QShowEvent>
-#include <QDesktopWidget>
 
 #include "pluginloader.h"
 

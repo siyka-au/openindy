@@ -7,7 +7,6 @@
 #include <QLayout>
 #include <QCheckBox>
 #include <QStringListModel>
-#include <QDesktopWidget>
 
 #include "modelmanager.h"
 #include "parameterdisplayconfig.h"

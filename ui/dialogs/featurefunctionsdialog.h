@@ -9,7 +9,6 @@
 #include <QMenu>
 #include <QCloseEvent>
 #include <QShowEvent>
-#include <QDesktopWidget>
 #include <QGridLayout>
 #include <QCompleter>
 #include <QStringList>

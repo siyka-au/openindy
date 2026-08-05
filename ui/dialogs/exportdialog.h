@@ -7,7 +7,6 @@
 #include <QStringListModel>
 #include <QFileDialog>
 #include <QShowEvent>
-#include <QDesktopWidget>
 #include <QStringListModel>
 #include <QMessageBox>
 

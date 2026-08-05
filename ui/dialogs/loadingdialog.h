@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QCloseEvent>
 #include <QShowEvent>
-#include <QDesktopWidget>
 
 namespace Ui {
 class LoadingDialog;
