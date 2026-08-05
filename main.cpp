@@ -10,6 +10,7 @@
 #include "mainwindow.h"
 #include "chooselalib.h"
 #include "simplepluginloader.h"
+#include "version.h"
 
 const QString _date = __DATE__;
 const QString _time = __TIME__;

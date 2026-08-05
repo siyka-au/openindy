@@ -1,5 +1,6 @@
 #include "projectexchanger.h"
 #include "featureutil.h"
+#include "version.h"
 
 ProjectExchanger::ProjectExchanger() {
 }

@@ -94,6 +94,12 @@ else()
     endif()
 endif()
 
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/version.h.in"
+    "${CMAKE_BINARY_DIR}/generated/version.h"
+    @ONLY
+)
+
 # --- appui library ---
 
 add_library(OpenIndyApp SHARED
@@ -344,12 +350,9 @@ add_library(OpenIndyApp SHARED
 target_compile_definitions(OpenIndyApp
     PRIVATE
         OI_MAIN_LIB
-    PUBLIC
-        OPENINDY_VERSION="${OPENINDY_VERSION}"
-        OPENINDY_COMMIT="${OI_APP_GIT_COMMIT}"
-        OPENINDY_CORE_VERSION="${OI_CORE_GIT_VERSION}"
-        OPENINDY_MATH_VERSION="${OI_MATH_GIT_VERSION}"
 )
+
+target_include_directories(OpenIndyApp PRIVATE "${CMAKE_BINARY_DIR}/generated")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(OpenIndyApp PRIVATE -Wall -Wextra -Wpedantic)
@@ -396,6 +399,7 @@ target_link_libraries(OpenIndyApp
 add_executable(openIndy main.cpp)
 
 target_compile_definitions(openIndy PRIVATE OI_MAIN_PROGRAM)
+target_include_directories(openIndy PRIVATE "${CMAKE_BINARY_DIR}/generated")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(openIndy PRIVATE -Wall -Wextra -Wpedantic)
