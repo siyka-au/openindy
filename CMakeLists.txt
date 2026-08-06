@@ -207,6 +207,7 @@ add_library(OpenIndyApp SHARED
     ui/dialogs/watchwindowutil.cpp
     ui/mainwindow.cpp
     ui/selectionmodels/multiselectionmodel.cpp
+    ui/widgets/featuretableview.cpp
     ui/widgets/plugininfowidget.cpp
     ui/widgets/scalarparameterwidget.cpp
     ui/widgets/stationstatus.cpp
@@ -317,6 +318,7 @@ add_library(OpenIndyApp SHARED
     ui/dialogs/watchwindowutil.h
     ui/mainwindow.h
     ui/selectionmodels/multiselectionmodel.h
+    ui/widgets/featuretableview.h
     ui/widgets/plugininfowidget.h
     ui/widgets/scalarparameterwidget.h
     ui/widgets/stationstatus.h

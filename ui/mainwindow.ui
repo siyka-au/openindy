@@ -340,7 +340,7 @@
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QTableView" name="tableView_features">
+           <widget class="FeatureTableView" name="tableView_features">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -349,13 +349,6 @@
             </property>
             <property name="autoFillBackground">
              <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-image: url(:/Images/icons/openIndy_bg.png);
-border-color: rgb(170, 170, 127);
-gridline-color: rgb(170, 170, 127);
-background-repeat: no-repeat;
-background-position: center center;</string>
             </property>
             <property name="showGrid">
              <bool>true</bool>
@@ -1562,6 +1555,13 @@ background-position: center center;</string>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>FeatureTableView</class>
+   <extends>QTableView</extends>
+   <header>featuretableview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../res/res.qrc"/>
  </resources>
