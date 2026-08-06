@@ -49,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->resizeTableView();
 
     tabifyDockWidget(this->ui->dockWidget_Console, this->ui->dockWidget_magnify);
+    QObject::connect(this->ui->dockWidget_magnify, &QDockWidget::visibilityChanged, this, &MainWindow::activeFeatureChanged, Qt::AutoConnection);
 
     //set default tolerance to 0.2 and commit to the model
     this->ui->lineEdit_tolerance->setText("0.2");
@@ -2601,6 +2602,13 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
         this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nom":"act");
     }else{
         this->ui->label_magnifyActualNominal->setText("-/-");
+    }
+
+    //the magnify dock is tabified with the console dock, so it may not be
+    //visible; while hidden its labels have zero size, which would scale
+    //the font to zero below
+    if(!this->ui->dockWidget_magnify->isVisible()){
+        return;
     }
 
     //resize labels to maximum
