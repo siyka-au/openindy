@@ -115,6 +115,13 @@ QVariant SensorAccuracyModel::data(const QModelIndex &index, int role) const{
             return QColor(Qt::lightGray);
         }
 
+    }else if(role == Qt::ForegroundRole){
+
+        //sigma type headers: use a readable text color against the custom background above
+        if(rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 || rowIndex == 14){
+            return QColor(Qt::black);
+        }
+
     }
 
     return QVariant();

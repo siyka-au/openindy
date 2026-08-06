@@ -97,6 +97,14 @@ QVariant SensorTableModel::data(const QModelIndex &index, int role) const{
             return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
         }
 
+    }else if(role == Qt::ForegroundRole){
+
+        //active sensor: use a readable text color against the custom background above
+        if(this->selectedSensor.first.compare(currentPlugin.name) == 0
+                && this->selectedSensor.second.compare(currentSensor.name) == 0){
+            return QColor(Qt::black);
+        }
+
     }
 
     return QVariant();

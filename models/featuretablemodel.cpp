@@ -76,6 +76,11 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         //return the color in which to display the feature at index.column()
         return this->getBackgroundValue(feature, columnIndex);
 
+    }else if(role == Qt::ForegroundRole){
+
+        //return the text color to use against the (possibly custom) background at index.column()
+        return this->getForegroundValue(feature, columnIndex);
+
     }else if(role == Qt::CheckStateRole && !feature->getGeometry().isNull()
              && !feature->getGeometry()->getIsNominal()){
 
@@ -1310,6 +1315,28 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
     }
 
     return QVariant();
+
+}
+
+/*!
+ * \brief FeatureTableModel::getForegroundValue
+ * Picks a readable text color for cells with a custom background (e.g.
+ * the default theme's light text is unreadable on the yellow "unsolved"
+ * highlight), falling back to the theme's default text color otherwise.
+ * \param feature
+ * \param column
+ * \return
+ */
+QVariant FeatureTableModel::getForegroundValue(const QPointer<FeatureWrapper> &feature, const int &column) const{
+
+    QVariant background = this->getBackgroundValue(feature, column);
+    if(!background.canConvert<QColor>()){
+        return QVariant();
+    }
+
+    QColor backgroundColor = background.value<QColor>();
+    qreal luminance = 0.299 * backgroundColor.redF() + 0.587 * backgroundColor.greenF() + 0.114 * backgroundColor.blueF();
+    return luminance > 0.5 ? QColor(Qt::black) : QColor(Qt::white);
 
 }
 
