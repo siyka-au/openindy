@@ -347,6 +347,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
             <property name="showGrid">
              <bool>true</bool>
             </property>
