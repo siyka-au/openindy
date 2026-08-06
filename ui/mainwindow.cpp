@@ -2604,19 +2604,21 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
         this->ui->label_magnifyActualNominal->setText("-/-");
     }
 
-    //the magnify dock is tabified with the console dock, so it may not be
-    //visible; while hidden its labels have zero size, which would scale
-    //the font to zero below
-    if(!this->ui->dockWidget_magnify->isVisible()){
-        return;
-    }
-
     //resize labels to maximum
     QFont fontActualNominal = this->ui->label_magnifyActualNominal->font();
     double h = this->ui->label_magnifyActualNominal->height();
     double w = this->ui->label_magnifyActualNominal->width();
     QFontMetrics fmActualNominal(fontActualNominal);
     const double tw = fmActualNominal.horizontalAdvance(this->ui->label_magnifyActualNominal->text());
+
+    //the magnify dock is tabified with the console dock (so it may not be
+    //visible) and its labels may not be laid out yet during startup; in
+    //either case the labels report zero size, which would scale the font
+    //to zero below, so skip until there is something sensible to scale to
+    if(h <= 0 || w <= 0 || tw <= 0){
+        return;
+    }
+
     double scaleW = w/tw;
     double scaleH = h/fmActualNominal.height();
     fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF() * std::min(scaleH, scaleW));
@@ -2629,7 +2631,12 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     h = this->ui->label_magnifyName->height();
     w = this->ui->label_magnifyName->width() + (w - tw * std::min(scaleH, scaleW)); // with delta size of label_magnifyActualNominal
     QFontMetrics fmName(fontName);
-    scaleW = w/fmName.horizontalAdvance(this->ui->label_magnifyName->text());
+    const double twName = fmName.horizontalAdvance(this->ui->label_magnifyName->text());
+    if(h <= 0 || w <= 0 || twName <= 0){
+        return;
+    }
+
+    scaleW = w/twName;
     scaleH = h/fmName.height();
     fontName.setPointSizeF(fontName.pointSizeF() * std::min(scaleH, scaleW));
     this->ui->label_magnifyName->setFont(fontName);
