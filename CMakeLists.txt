@@ -100,6 +100,24 @@ configure_file(
     @ONLY
 )
 
+# --- default plugin dependency ---
+# The app is of little use without it, so it's built alongside openIndy
+# (not just deployed by a separate manual step) and packaged into the app's
+# own plugins/ dir as part of openIndy's POST_BUILD step below.
+
+set(OI_DEFAULT_PLUGIN_LOCAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../openindy-default-plugin" CACHE PATH
+    "Local OpenIndy-DefaultPlugin checkout to build against instead of fetching from git")
+
+if(EXISTS "${OI_DEFAULT_PLUGIN_LOCAL_DIR}/CMakeLists.txt")
+    FetchContent_Declare(OpenIndyDefaultPlugin SOURCE_DIR "${OI_DEFAULT_PLUGIN_LOCAL_DIR}")
+else()
+    FetchContent_Declare(OpenIndyDefaultPlugin
+        GIT_REPOSITORY git@github.com:siyka-au/openindy-default-plugin.git
+        GIT_TAG        master
+    )
+endif()
+FetchContent_MakeAvailable(OpenIndyDefaultPlugin)
+
 # --- appui library ---
 
 add_library(OpenIndyApp SHARED
@@ -407,6 +425,11 @@ endif()
 
 target_link_libraries(openIndy PRIVATE OpenIndyApp)
 
+# make sure the plugin is actually built before openIndy's POST_BUILD step
+# below tries to package it (a plain add_subdirectory/FetchContent dependency
+# alone doesn't order a *targeted* `--target openIndy` build against it)
+add_dependencies(openIndy OpenIndyDefaultPlugin)
+
 # runtime resources the app expects next to its own executable (qmake used
 # to copy these on `make install`; mirror that here so a plain build is
 # directly runnable without a separate install step)
@@ -417,6 +440,17 @@ add_custom_command(TARGET openIndy POST_BUILD
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/example" "$<TARGET_FILE_DIR:openIndy>/example"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/plugins" "$<TARGET_FILE_DIR:openIndy>/plugins"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/db/oisystemdb.sqlite" "$<TARGET_FILE_DIR:openIndy>/oisystemdb.sqlite"
+    COMMAND ${CMAKE_COMMAND}
+        -DSRC_DB=${CMAKE_CURRENT_SOURCE_DIR}/db/oisystemdb.sqlite
+        -DDEST_DB=$<TARGET_FILE_DIR:openIndy>/oisystemdb.sqlite
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/SeedDbIfMissing.cmake
+    # package the default plugin itself: refresh the file if it's already
+    # registered, or run the real import pipeline (copy + DB registration)
+    # the first time, via the plugin repo's own deploy script
+    COMMAND ${CMAKE_COMMAND}
+        -DPLUGIN_SO=$<TARGET_FILE:OpenIndyDefaultPlugin>
+        -DAPP_DIR=$<TARGET_FILE_DIR:openIndy>
+        -DOPENINDY_EXE=$<TARGET_FILE:openIndy>
+        -P "${openindydefaultplugin_SOURCE_DIR}/cmake/DeployToApp.cmake"
+    VERBATIM
 )
