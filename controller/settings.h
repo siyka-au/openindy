@@ -36,6 +36,10 @@ public:
     static void setProjectValue(const QString &key, const QString &value);
     static void clearProjectValues();
 
+    //loads the System layer from an explicit defaults.json path instead of
+    //the production <appDir>/config/defaults.json - exposed for tests
+    static void loadSystemLayerFromFile(const QString &path);
+
 private:
 
     static bool isInit;

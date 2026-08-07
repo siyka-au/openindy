@@ -12,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Svg SerialPort Network Xml WebSockets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SerialPort Network Xml WebSockets)
 
 # --- version, derived from this repo's own git describe ---
 
@@ -122,7 +122,6 @@ FetchContent_MakeAvailable(OpenIndyDefaultPlugin)
 
 add_library(OpenIndyApp SHARED
     controller/clipboardutil.cpp
-    controller/config/defaultsconfiginit.cpp
     controller/config/featuretablecolumnconfig.cpp
     controller/config/featuretablesortingconfig.cpp
     controller/config/measurementconfigmanager.cpp
@@ -152,7 +151,6 @@ add_library(OpenIndyApp SHARED
     controller/pluginrepository.cpp
     controller/settings.cpp
     controller/sortlistbyname.cpp
-    controller/systemdbmanager.cpp
     controller/trafocontroller.cpp
     models/activefeaturefunctionsmodel.cpp
     models/availableelementstreeviewproxymodel.cpp
@@ -231,7 +229,6 @@ add_library(OpenIndyApp SHARED
     ui/widgets/stationstatus.cpp
 
     controller/clipboardutil.h
-    controller/config/defaultsconfiginit.h
     controller/config/featuretablecolumnconfig.h
     controller/config/featuretablesortingconfig.h
     controller/config/measurementconfigmanager.h
@@ -264,7 +261,6 @@ add_library(OpenIndyApp SHARED
     controller/pluginrepository.h
     controller/settings.h
     controller/sortlistbyname.h
-    controller/systemdbmanager.h
     controller/trafocontroller.h
     models/activefeaturefunctionsmodel.h
     models/availableelementstreeviewproxymodel.h
@@ -402,7 +398,6 @@ target_link_libraries(OpenIndyApp
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
-        Qt6::Sql
         Qt6::Svg
         Qt6::SerialPort
         Qt6::Network

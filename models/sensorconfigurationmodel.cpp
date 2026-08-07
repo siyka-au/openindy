@@ -1,5 +1,7 @@
 #include "sensorconfigurationmodel.h"
 
+#include <QFont>
+
 /*!
  * \brief SensorConfigurationModel::ActiveFeatureFunctionsModel
  * \param parent

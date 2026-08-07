@@ -7,9 +7,9 @@
 #include <QApplication>
 
 #include "types.h"
-#include "systemdbmanager.h"
 #include "measurementconfig.h"
 #include "console.h"
+#include "oijob.h"
 
 #if defined(OI_MAIN_LIB)
 #  define OI_MAIN_EXPORT Q_DECL_EXPORT

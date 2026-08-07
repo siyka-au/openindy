@@ -3,8 +3,6 @@
 
 #include <QDebug>
 #include <QDialog>
-#include <QtSql/QSqlQueryModel>
-#include <QtSql/QSqlRecord>
 #include <QStandardItemModel>
 #include <QMenu>
 #include <QCloseEvent>

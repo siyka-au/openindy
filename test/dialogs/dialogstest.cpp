@@ -9,7 +9,6 @@
 #include "measurementconfigurationdialog.h"
 #include "projectexchanger.h"
 #include "controller.h"
-#include "defaultsconfiginit.h"
 
 // recomended readings:
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
@@ -74,14 +73,6 @@ void DialogsTest::printMessage(const QString &msg, const MessageTypes &msgType, 
 }
 
 void DialogsTest::initTestCase() {
-    // create in memory database
-    QFile sqlFile1(INIT_SQL);
-    sqlFile1.open(QFile::ReadOnly | QFile::Text);
-    QTextStream in1(&sqlFile1);
-    QStringList statements = in1.readAll().split(";");
-
-    SystemDbManager::initInMemoryDB(statements);
-
 
     QStringList entityTypes;
     entityTypes << "point" << "circle" << "plane"; // comboBox_entityType order
@@ -119,56 +110,9 @@ void DialogsTest::initTestCase() {
     fastPointConfigProject2.makeProjectConfig();
     measurementConfigManager->addProjectConfig(fastPointConfigProject2);
 
-    // create plugin with some functions
-    QList<sdb::Plugin> plugins;
-    sdb::Plugin testPlugin;
-    testPlugin.name = "testplugin";
-    testPlugin.author = "esc";
-
-
-    sdb::Function point;
-    point.name = "function-fitpoint";
-    point.iid = OiMetaData::iid_FitFunction;
-    point.applicableFor << FeatureTypes::ePointFeature;
-    point.neededElements << ElementTypes::eObservationElement;
-
-    sdb::Function plane;
-    plane.name = "function-fitplane";
-    plane.iid = OiMetaData::iid_FitFunction;
-    plane.applicableFor << FeatureTypes::ePlaneFeature;
-    plane.neededElements << ElementTypes::eObservationElement;
-
-    sdb::Function level;
-    level.name = "function-fitlevel";
-    level.iid = OiMetaData::iid_FitFunction;
-    level.applicableFor << FeatureTypes::ePlaneFeature << FeatureTypes::eLevelFeature;
-    level.neededElements << ElementTypes::eObservationElement;
-
-    sdb::Function planefrompoints;
-    planefrompoints.name = "function-planefrompoints";
-    planefrompoints.iid = OiMetaData::iid_ConstructFunction; // set measurement config combox to visible = false
-    planefrompoints.applicableFor << FeatureTypes::ePlaneFeature;
-    planefrompoints.neededElements << ElementTypes::eObservationElement;
-
-    sdb::Function circle;
-    circle.name = "function-fitcircle";
-    circle.iid = OiMetaData::iid_FitFunction;
-    circle.applicableFor << FeatureTypes::eCircleFeature;
-    circle.neededElements << ElementTypes::eObservationElement;
-
-    testPlugin.functions << plane << point << level << circle << planefrompoints;
-
-    plugins << testPlugin;
-
-    // add plugin to database (still needed by setDefaultFunctionAndConfig() below,
-    // which is only migrated off SystemDbManager once it's deleted entirely)
-    QString msg;
-    const bool success = SystemDbManager::addPlugin(testPlugin, msg);
-    qDebug() << "addPlugin" << success << msg;
-
-    // build the same plugin/functions in the PluginRepository domain-object shape
-    // for ModelManager::testInit() - duplicated construction is temporary, both
-    // paths collapse back into one once SystemDbManager goes away
+    // create plugin with some functions, in the PluginRepository domain-object
+    // shape, fed straight into ModelManager::testInit()'s injection seam -
+    // no scan, no registration step needed
     sys::Plugin testPluginRef("testplugin", QString(), QString(), "esc", QString(),
                                QList<sys::Function>(), QList<sys::Sensor>(), QList<sys::Tool>(),
                                QList<sys::Exchange>(), QList<sys::Simulation>());
@@ -845,14 +789,14 @@ void DialogsTest::projectSaveLoad() {
 
 void DialogsTest::setDefaultFunctionAndConfig() {
 
-    QList<sdb::Function> functions = SystemDbManager::getFunctions();
-    foreach(sdb::Function function, functions) {
-        qDebug() << "function: " << function.name << function.plugin.file_path;
-    }
+    QPointer<AvailableFunctionsListProxyModel> proxyModel = ModelManager::getAvailableFunctionsProxyModel();
+    AvailableFunctionsListModel *sourceModel = dynamic_cast<AvailableFunctionsListModel *>(proxyModel->sourceModel());
+    QVERIFY(sourceModel != nullptr);
 
-    QStringList measurementConfigs = SystemDbManager::getMeasurementConfigs();
-    foreach(QString measurementConfig, measurementConfigs) {
-        qDebug() << "measurementConfig: " << measurementConfig;
+    foreach(const sys::Plugin &plugin, sourceModel->getPlugins()) {
+        foreach(const sys::Function &function, plugin.functions()) {
+            qDebug() << "function: " << function.name() << function.plugin().filePath();
+        }
     }
 
     QList<FeatureTypes> featureTypes = getAvailableFeatureTypes();
@@ -865,26 +809,23 @@ void DialogsTest::setDefaultFunctionAndConfig() {
         qDebug() << "elementType: " << elementType << getElementTypeName(elementType);
     }
 
-    sdb::Function function = SystemDbManager::getDefaultFunction(getFeatureTypeEnum("point"));
-    qDebug() << "function: " << function.name << function.plugin.file_path;
-    QString name = SystemDbManager::getDefaultMeasurementConfig("point");
-    qDebug() << "measurementConfig: " << name;
+    // before loading defaults.json: nothing set yet
+    QPair<QString, QString> function = sourceModel->getDefaultFunction(getFeatureTypeEnum("point"));
+    QString name = Settings::get("defaultMeasurementConfig.point");
+    qDebug() << "function: " << function.first << function.second << "measurementConfig: " << name;
+    QVERIFY(function.first.isEmpty());
+    QVERIFY(name.isEmpty());
 
-    QString path;
-    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/../defaults.json");
+    QString path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/../defaults.json");
     qDebug() << "path" << path;
 
-    DefaultsConfigInit defaultsConfig;
-    QObject::connect(&defaultsConfig, &DefaultsConfigInit::sendMessage,
-                     this, &DialogsTest::printMessage);
-    defaultsConfig.init(path);
+    Settings::loadSystemLayerFromFile(path);
 
-    function = SystemDbManager::getDefaultFunction(getFeatureTypeEnum("point"));
-    qDebug() << "function: " << function.name << function.plugin.file_path;
-    name = SystemDbManager::getDefaultMeasurementConfig("point");
-    qDebug() << "measurementConfig: " << name;
+    function = sourceModel->getDefaultFunction(getFeatureTypeEnum("point"));
+    name = Settings::get("defaultMeasurementConfig.point");
+    qDebug() << "function: " << function.first << function.second << "measurementConfig: " << name;
 
-    QVERIFY(function.name == "function-fitpoint");
+    QVERIFY(function.first == "function-fitpoint");
     QVERIFY(name == "FastPoint");
 }
 

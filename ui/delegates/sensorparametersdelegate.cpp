@@ -1,5 +1,7 @@
 #include "sensorparametersdelegate.h"
 
+#include <QComboBox>
+
 /*!
  * \brief SensorParametersDelegate::SensorParametersDelegate
  * \param parent

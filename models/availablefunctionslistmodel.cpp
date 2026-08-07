@@ -115,12 +115,22 @@ sys::Function AvailableFunctionsListModel::getFunctionAtIndex(const QModelIndex 
  */
 QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(const FeatureTypes &type) const{
 
-    std::optional<sys::Function> defaultFunction = PluginRepository::getDefaultFunction(type);
-    if(defaultFunction.has_value()){
-        QPair<QString, QString> result;
-        result.first = defaultFunction->name();
-        result.second = defaultFunction->plugin().filePath();
-        return result;
+    //resolved against this->plugins (this model's own scoped list), not the
+    //global PluginRepository - consistent with every other method here, and
+    //what actually makes this model's result reflect whatever it was given
+    //via setPlugins() (production data or an injected test list alike)
+    QString name = Settings::get(QString("defaultFunction.%1").arg(getFeatureTypeName(type)));
+    if(!name.isEmpty()){
+        foreach(const sys::Plugin &plugin, this->plugins){
+            foreach(const sys::Function &function, plugin.functions()){
+                if(function.name().compare(name) == 0 && function.applicableFor().contains(type)){
+                    QPair<QString, QString> result;
+                    result.first = function.name();
+                    result.second = function.plugin().filePath();
+                    return result;
+                }
+            }
+        }
     }
 
     return QPair<QString, QString>();

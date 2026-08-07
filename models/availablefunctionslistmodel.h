@@ -10,8 +10,8 @@
 
 #include "types.h"
 #include "util.h"
-#include "systemdbmanager.h"
 #include "pluginrepository.h"
+#include "settings.h"
 #include "function.h"
 
 using namespace oi;

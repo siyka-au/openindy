@@ -11,7 +11,6 @@
 #include "function.h"
 #include "featureattributes.h"
 #include "console.h"
-#include "systemdbmanager.h"
 #include "pluginloader.h"
 #include "trafocontroller.h"
 #include "oijob.h"

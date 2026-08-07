@@ -2,6 +2,7 @@
 #define MEASUREMENTCONFIGURATIONDIALOG_H
 
 #include <QDialog>
+#include <QListView>
 #include <QtSerialPort/QSerialPort>
 #include <QComboBox>
 #include <QtSerialPort/QSerialPortInfo>

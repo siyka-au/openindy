@@ -6,7 +6,6 @@
 #include <QObject>
 #include <QApplication>
 
-#include "systemdbmanager.h"
 #include "pluginrepository.h"
 #include "settings.h"
 #include "exchangesimpleascii.h"
@@ -17,7 +16,6 @@
 #include "console.h"
 #include "observationimporter.h"
 #include "measurementconfigmanager.h"
-#include "systemdbmanager.h"
 #include "util.h"
 
 using namespace oi;

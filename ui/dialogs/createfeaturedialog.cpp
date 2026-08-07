@@ -1,6 +1,8 @@
 #include "createfeaturedialog.h"
 #include "ui_createfeaturedialog.h"
 
+#include <QAbstractItemView>
+
 /*!
  * \brief CreateFeatureDialog::CreateFeatureDialog
  * \param parent

@@ -89,10 +89,17 @@ void Settings::clearProjectValues(){
  * philosophy already used for getByName() elsewhere.
  */
 void Settings::loadSystemLayer(){
+    Settings::loadSystemLayerFromFile(qApp->applicationDirPath() + "/config/defaults.json");
+}
+
+/*!
+ * \brief Settings::loadSystemLayerFromFile
+ * \param path
+ */
+void Settings::loadSystemLayerFromFile(const QString &path){
 
     Settings::systemLayer.clear();
 
-    QString path = qApp->applicationDirPath() + "/config/defaults.json";
     QFile file(path);
     if(!file.open(QFile::ReadOnly | QFile::Text)){
         return;
@@ -120,6 +127,8 @@ void Settings::loadSystemLayer(){
             Settings::systemLayer.insert("defaultMeasurementConfig." + featureType, measurementConfig);
         }
     }
+
+    Settings::isInit = true;
 
 }
 
