@@ -8,6 +8,7 @@
 #include "featureattributes.h"
 #include "modelmanager.h"
 #include "systemdbmanager.h"
+#include "settings.h"
 #include "util.h"
 #include "uiutil.h"
 

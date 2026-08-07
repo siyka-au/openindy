@@ -62,7 +62,6 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     this->configs.insert(level.getKey(), level);
 
     for(const MeasurementConfig c : configs) {
-        SystemDbManager::addMeasurementConfig(c.getName()); // insert if name not exists
         addProjectConfig(c);
     }
 }
@@ -324,9 +323,6 @@ void MeasurementConfigManager::replaceMeasurementConfig(const MeasurementConfigK
         return;
     }
 
-    SystemDbManager::removeMeasurementConfig(oldConfig.getName()); // TODO keep name because of FK of default measurement config ???
-    SystemDbManager::addMeasurementConfig(mConfig.getName());
-
     // write user config as xml file
     if(mConfig.isUserConfig()) {
         this->saveToConfigFolder(oldConfig.getName(), mConfig);
@@ -506,12 +502,6 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig &mConfig){
     mConfigXml.save(stream, 4);
     configFile.close();
 
-    //##################
-    //add database entry
-    //##################
-
-    SystemDbManager::addMeasurementConfig(mConfig.getName()); // TODO add key ???
-
     //########################################
     //add mConfig to the list of saved configs
     //########################################
@@ -550,12 +540,6 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
         }
 
     }
-
-    //############################
-    //remove mConfig from database
-    //############################
-
-    SystemDbManager::removeMeasurementConfig(name);
 
     //#############################################
     //remove mConfig from the list of saved configs

@@ -284,15 +284,6 @@ void SensorConfigurationManager::replaceSensorConfig(const QString &name, const 
         isActive = true;
     }
 
-    //###########################
-    //replace mConfig in database
-    //###########################
-
-    if(save){
-        SystemDbManager::removeSensorConfig(name);
-        SystemDbManager::addSensorConfig(sConfig.getName());
-    }
-
     //########################
     //replace sConfig xml file
     //########################
@@ -425,7 +416,7 @@ void SensorConfigurationManager::loadFromConfigFolder(){
     }
 
     //get default sensor config
-    QString sConfigName = SystemDbManager::getDefaultSensorConfig();
+    QString sConfigName = Settings::get("defaultMeasurementDevice");
     if(this->savedSensorConfigsMap.contains(sConfigName)){
         this->activeSensorConfig = this->savedSensorConfigsMap.value(sConfigName);
         emit this->activeSensorConfigurationChanged();
@@ -505,14 +496,6 @@ void SensorConfigurationManager::saveSensorConfig(const SensorConfiguration &sCo
 
     }
 
-    //##################
-    //add database entry
-    //##################
-
-    if(save){
-        SystemDbManager::addSensorConfig(sConfig.getName());
-    }
-
     //########################################
     //add sConfig to the list of saved configs
     //########################################
@@ -554,14 +537,6 @@ void SensorConfigurationManager::deleteSensorConfig(const QString &name, bool sa
             }
 
         }
-    }
-
-    //############################
-    //remove sConfig from database
-    //############################
-
-    if(save){
-        SystemDbManager::removeSensorConfig(name);
     }
 
     //#############################################

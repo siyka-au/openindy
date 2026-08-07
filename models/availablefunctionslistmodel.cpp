@@ -115,11 +115,11 @@ sys::Function AvailableFunctionsListModel::getFunctionAtIndex(const QModelIndex 
  */
 QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(const FeatureTypes &type) const{
 
-    sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(type);
-    if(defaultFunction.name.compare("") != 0){
+    std::optional<sys::Function> defaultFunction = PluginRepository::getDefaultFunction(type);
+    if(defaultFunction.has_value()){
         QPair<QString, QString> result;
-        result.first = defaultFunction.name;
-        result.second = defaultFunction.plugin.file_path;
+        result.first = defaultFunction->name();
+        result.second = defaultFunction->plugin().filePath();
         return result;
     }
 

@@ -7,6 +7,8 @@
 
 #include "pluginloader.h"
 #include "oimetadata.h"
+#include "settings.h"
+#include "util.h"
 
 QList<sys::Plugin> PluginRepository::plugins;
 bool PluginRepository::isInit = false;
@@ -249,4 +251,30 @@ QList<sys::Tool> PluginRepository::getAllTools(){
         result.append(plugin.tools());
     }
     return result;
+}
+
+/*!
+ * \brief PluginRepository::getDefaultFunction
+ * Resolves Settings' "defaultFunction.<type>" key, most specific tier first,
+ * skipping any tier whose reference doesn't actually resolve to a real
+ * applicable function (a stale reference must not come back as a result).
+ * \param type
+ * \return
+ */
+std::optional<sys::Function> PluginRepository::getDefaultFunction(const FeatureTypes &type){
+
+    QString key = QString("defaultFunction.%1").arg(getFeatureTypeName(type));
+    QString name = Settings::get(key);
+    if(name.isEmpty()){
+        return std::nullopt;
+    }
+
+    foreach(const sys::Function &function, PluginRepository::getFunctionsApplicableTo(type)){
+        if(function.name().compare(name) == 0){
+            return function;
+        }
+    }
+
+    return std::nullopt;
+
 }

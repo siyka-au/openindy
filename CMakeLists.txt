@@ -150,6 +150,7 @@ add_library(OpenIndyApp SHARED
     controller/plugincopier.cpp
     controller/pluginloader.cpp
     controller/pluginrepository.cpp
+    controller/settings.cpp
     controller/simplepluginloader.cpp
     controller/sortlistbyname.cpp
     controller/systemdbmanager.cpp
@@ -262,6 +263,7 @@ add_library(OpenIndyApp SHARED
     controller/pluginloader.h
     controller/plugininfo.h
     controller/pluginrepository.h
+    controller/settings.h
     controller/simplepluginloader.h
     controller/sortlistbyname.h
     controller/systemdbmanager.h

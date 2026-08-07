@@ -1,5 +1,4 @@
 #include "controller.h"
-#include "defaultsconfiginit.h"
 #include "featureutil.h"
 /*!
  * \brief Controller::Controller
@@ -2018,10 +2017,7 @@ void Controller::initToolPlugins(){
 }
 
 void Controller::initDefaults(){
-    QString path;
-    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/config/defaults.json");
-    DefaultsConfigInit defaultsConfig;
-    defaultsConfig.init(path);
+    Settings::init();
 }
 
 /*!
@@ -2140,7 +2136,7 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     attr.isActual = true;
 
     //get measurement config
-    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString())));
+    QString elementConfigName = Settings::get(QString("defaultMeasurementConfig.%1").arg(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString()))));
     MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(elementConfigName);
 
     //create actual
@@ -2153,8 +2149,8 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     QList<QPointer<FeatureWrapper> > actuals;
     actuals.append(geometry->getActual()->getFeatureWrapper());
 
-    sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(attr.typeOfFeature);
-    this->addFunctionsAndMConfigs(actuals, mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
+    sys::Function defaultFunction = PluginRepository::getDefaultFunction(attr.typeOfFeature).value_or(sys::Function());
+    this->addFunctionsAndMConfigs(actuals, mConfig, defaultFunction.plugin().filePath(), defaultFunction.name());
 
     return true;
 }

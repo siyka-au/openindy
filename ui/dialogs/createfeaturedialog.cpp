@@ -131,7 +131,7 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
     this->initMeasurementConfigModel();
 
     // get default mConfig in combobox
-    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(this->typeOfFeature)));
+    QString elementConfigName = Settings::get(QString("defaultMeasurementConfig.%1").arg(getElementTypeName(getElementTypeEnum(this->typeOfFeature))));
     if(!elementConfigName.isEmpty()){
         this->ui->comboBox_mConfig->setCurrentText(elementConfigName);
     }

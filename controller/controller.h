@@ -14,6 +14,7 @@
 
 #include "oijob.h"
 #include "modelmanager.h"
+#include "settings.h"
 #include "console.h"
 #include "featuretablecolumnconfig.h"
 #include "trafoparamtablecolumnconfig.h"

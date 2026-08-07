@@ -45,6 +45,17 @@ public:
     static QList<sys::Function> getChangeFunctions(const FeatureTypes &type);         //everything else, i.e. functions used to modify an already-solved feature
     static std::optional<sys::Function> getByQualifiedId(const QString &qualifiedId);
 
+    //################
+    //default function
+    //################
+
+    //resolves Settings' "defaultFunction.<type>" (Project -> User -> System) against
+    //getFunctionsApplicableTo(type) by name - the same convenience-lookup semantics
+    //as getByName(), and falls through to a less specific tier if a more specific
+    //one's reference no longer resolves (e.g. a project saved against a plugin set
+    //that's since changed)
+    static std::optional<sys::Function> getDefaultFunction(const FeatureTypes &type);
+
     //#########
     //get tools
     //#########

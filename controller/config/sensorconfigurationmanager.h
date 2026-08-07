@@ -8,6 +8,7 @@
 
 #include "types.h"
 #include "systemdbmanager.h"
+#include "settings.h"
 #include "sensorconfiguration.h"
 #include "console.h"
 

@@ -444,13 +444,13 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
                 funFeatureType = fAttr.typeOfFeature;
             }
 
-            QString mConfigName = SystemDbManager::getDefaultMeasurementConfig(mcElementTypeName);
+            QString mConfigName = Settings::get(QString("defaultMeasurementConfig.%1").arg(mcElementTypeName));
             MeasurementConfig mConfig = mConfigManager->findConfig(mConfigName);
 
-            sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(funFeatureType);
+            sys::Function defaultFunction = PluginRepository::getDefaultFunction(funFeatureType).value_or(sys::Function());
             QPair<QString, QString> functionPlugin;
-            functionPlugin.first = defaultFunction.name;
-            functionPlugin.second = defaultFunction.plugin.file_path;
+            functionPlugin.first = defaultFunction.name();
+            functionPlugin.second = defaultFunction.plugin().filePath();
             fAttr.functionPlugin = functionPlugin;
 
             QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
