@@ -14,7 +14,6 @@
 
 #include "pluginmetadata.h"
 #include "oimetadata.h"
-#include "systemdbmanager.h"
 
 using namespace oi;
 
@@ -23,7 +22,6 @@ class PluginLoader;
 class PluginCopier : public QObject
 {
     friend class PluginLoader;
-    friend class SimplePluginLoader;
     Q_OBJECT
 
 public:
@@ -55,18 +53,13 @@ private:
     //helper methods
     //##############
 
-    bool checkPluginMetaData(PluginMetaData &metaData, const QString &path);
+    //reads a candidate plugin's own embedded Qt metadata (name, author,
+    //dependencies, ...) - no compatibility gate here, Qt's own plugin
+    //loader already enforces ABI compatibility when the app later loads it
+    void readPluginMetaData(PluginMetaData &metaData, const QString &path);
 
     bool copyDir(const QString &sourcePath, const QString &destinationPath);
     bool checkDependencies(const QString &sourcePath, const PluginMetaData &metaData);
-
-    bool savePlugin(const QString &path);
-
-    //#################
-    //helper attributes
-    //#################
-
-    QString importPluginPath; //save file path of an imported plugin to be able to add it to database later
 
 };
 

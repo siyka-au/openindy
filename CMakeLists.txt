@@ -151,7 +151,6 @@ add_library(OpenIndyApp SHARED
     controller/pluginloader.cpp
     controller/pluginrepository.cpp
     controller/settings.cpp
-    controller/simplepluginloader.cpp
     controller/sortlistbyname.cpp
     controller/systemdbmanager.cpp
     controller/trafocontroller.cpp
@@ -264,7 +263,6 @@ add_library(OpenIndyApp SHARED
     controller/plugininfo.h
     controller/pluginrepository.h
     controller/settings.h
-    controller/simplepluginloader.h
     controller/sortlistbyname.h
     controller/systemdbmanager.h
     controller/trafocontroller.h
@@ -445,17 +443,11 @@ add_custom_command(TARGET openIndy POST_BUILD
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/example" "$<TARGET_FILE_DIR:openIndy>/example"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/plugins" "$<TARGET_FILE_DIR:openIndy>/plugins"
-    COMMAND ${CMAKE_COMMAND}
-        -DSRC_DB=${CMAKE_CURRENT_SOURCE_DIR}/db/oisystemdb.sqlite
-        -DDEST_DB=$<TARGET_FILE_DIR:openIndy>/oisystemdb.sqlite
-        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/SeedDbIfMissing.cmake
-    # package the default plugin itself: refresh the file if it's already
-    # registered, or run the real import pipeline (copy + DB registration)
-    # the first time, via the plugin repo's own deploy script
+    # package the default plugin itself - PluginRepository scans plugins/
+    # directly, no separate registration step needed
     COMMAND ${CMAKE_COMMAND}
         -DPLUGIN_SO=$<TARGET_FILE:OpenIndyDefaultPlugin>
         -DAPP_DIR=$<TARGET_FILE_DIR:openIndy>
-        -DOPENINDY_EXE=$<TARGET_FILE:openIndy>
         -P "${openindydefaultplugin_SOURCE_DIR}/cmake/DeployToApp.cmake"
     VERBATIM
 )

@@ -9,7 +9,6 @@
 
 #include "mainwindow.h"
 #include "chooselalib.h"
-#include "simplepluginloader.h"
 #include "version.h"
 
 const QString _date = __DATE__;
@@ -58,17 +57,9 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     QCommandLineOption silentOption("s", "silent / no splash screen");
     parser.addOption(silentOption);
-    QCommandLineOption importPluginOption("i", "import plugin from direcotry <dir>", "dir");
-    parser.addOption(importPluginOption);
     QCommandLineOption versionOption("v", "print version info");
     parser.addOption(versionOption);
     parser.process(a);
-
-    if(parser.isSet(importPluginOption)) {
-        SimplePluginLoader loader(parser.value(importPluginOption));
-        loader.importPlugin();
-        return 0;
-    }
 
     if(parser.isSet(versionOption)) {
         // always first line

@@ -556,20 +556,9 @@ void PluginLoader::importTaskFinished(const bool &success){
     PluginLoader::copierThread.quit();
     PluginLoader::copierThread.wait();
 
-    //if the plugin has been successfully imported add it to database
-    if(success){
-
-        if(!this->pluginCopier.savePlugin(this->pluginCopier.importPluginPath)){
-            emit this->sendMessage(QString("Plugin %1 has not been saved in system database").arg(this->pluginCopier.importPluginPath), eErrorMessage, eConsoleMessage);
-            emit this->importFinished(false);
-            return;
-        }
-
-        emit this->importFinished(true);
-        return;
-
-    }
-
-    emit this->importFinished(false);
+    //PluginCopier::importPlugin() already did all the work (copy the file
+    //and any dependencies into ~/.openindy/plugins/) - PluginRepository
+    //picks it up on its next scan, no separate registration step needed
+    emit this->importFinished(success);
 
 }
