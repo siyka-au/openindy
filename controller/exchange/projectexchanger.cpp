@@ -790,9 +790,9 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
                 for(int j = 0; j < usedSensorsList.size(); j++){
                     QDomElement usedSensor = usedSensorsList.at(j).toElement();
                     if(usedSensor.hasAttribute("name") && usedSensor.hasAttribute("plugin")){
-                        sdb::Plugin plugin = SystemDbManager::getPlugin(usedSensor.attribute("plugin"));
-                        if(plugin.file_path.compare("") != 0){
-                            QPointer<Sensor> mySensor = PluginLoader::loadSensorPlugin(plugin.file_path, usedSensor.attribute("name"));
+                        std::optional<sys::Plugin> plugin = PluginRepository::getByName(usedSensor.attribute("plugin"));
+                        if(plugin.has_value()){
+                            QPointer<Sensor> mySensor = PluginLoader::loadSensorPlugin(plugin->filePath(), usedSensor.attribute("name"));
                             if(!mySensor.isNull()){
                                 myUsedSensors.append(Sensor(*mySensor.data()));
                                 delete mySensor;
@@ -806,9 +806,9 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
             //load active sensor plugin
             QDomElement activeSensor = station.firstChildElement("activeSensor");
             if(!activeSensor.isNull() && activeSensor.hasAttribute("name") && activeSensor.hasAttribute("plugin")){
-                sdb::Plugin plugin = SystemDbManager::getPlugin(activeSensor.attribute("plugin"));
-                if(plugin.file_path.compare("") != 0){
-                    QPointer<Sensor> mySensor = PluginLoader::loadSensorPlugin(plugin.file_path, activeSensor.attribute("name"));
+                std::optional<sys::Plugin> plugin = PluginRepository::getByName(activeSensor.attribute("plugin"));
+                if(plugin.has_value()){
+                    QPointer<Sensor> mySensor = PluginLoader::loadSensorPlugin(plugin->filePath(), activeSensor.attribute("name"));
                     if(!mySensor.isNull()){
                         myStation->getStation()->setSensor(mySensor);
                     }
@@ -1352,10 +1352,10 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
             }
 
             //load function plugin
-            sdb::Plugin plugin = SystemDbManager::getPlugin(function.attribute("plugin"));
+            std::optional<sys::Plugin> plugin = PluginRepository::getByName(function.attribute("plugin"));
             QPointer<Function> myFunction(NULL);
-            if(plugin.file_path.compare("") != 0){
-                myFunction = PluginLoader::loadFunctionPlugin(plugin.file_path, function.attribute("name"));
+            if(plugin.has_value()){
+                myFunction = PluginLoader::loadFunctionPlugin(plugin->filePath(), function.attribute("name"));
                 if(myFunction.isNull()){
                     continue;
                 }
@@ -1595,10 +1595,10 @@ QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomEleme
             return result;
         }
 
-        sdb::Plugin plugin = SystemDbManager::getPlugin(bundle.attribute("plugin"));
+        std::optional<sys::Plugin> plugin = PluginRepository::getByName(bundle.attribute("plugin"));
         QPointer<BundleAdjustment> myBundle(NULL);
-        if(plugin.file_path.compare("") != 0){
-            myBundle = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundle.attribute("name"));
+        if(plugin.has_value()){
+            myBundle = PluginLoader::loadBundleAdjustmentPlugin(plugin->filePath(), bundle.attribute("name"));
             if(myBundle.isNull()){
                 return result;
             }

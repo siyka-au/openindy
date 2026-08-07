@@ -138,7 +138,7 @@ QVariant PluginTreeViewModel::headerData(int section, Qt::Orientation orientatio
  * \brief PluginTreeViewModel::getPlugins
  * \return
  */
-const QList<sdb::Plugin> &PluginTreeViewModel::getPlugins() const{
+const QList<sys::Plugin> &PluginTreeViewModel::getPlugins() const{
     return this->plugins;
 }
 
@@ -146,7 +146,7 @@ const QList<sdb::Plugin> &PluginTreeViewModel::getPlugins() const{
  * \brief PluginTreeViewModel::setPlugins
  * \param plugins
  */
-void PluginTreeViewModel::setPlugins(const QList<sdb::Plugin> &plugins){
+void PluginTreeViewModel::setPlugins(const QList<sys::Plugin> &plugins){
 
     emit this->beginResetModel();
 
@@ -157,7 +157,7 @@ void PluginTreeViewModel::setPlugins(const QList<sdb::Plugin> &plugins){
     this->rootItem->deleteChildren();
 
     //set up new plugin tree
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
         PluginTreeItem *item = new PluginTreeItem(plugin);
         this->rootItem->appendChild(item);
     }

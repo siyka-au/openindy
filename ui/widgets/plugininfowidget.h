@@ -12,7 +12,7 @@
 
 #include "types.h"
 #include "util.h"
-#include "systemdbmanager.h"
+#include "pluginrepository.h"
 
 using namespace oi;
 
@@ -33,12 +33,11 @@ public slots:
     //display methods for different plugin interfaces
     //###############################################
 
-    void displayFunction(const sdb::Function &function);
-    void displaySensor(const sdb::Sensor &sensor);
-    void displaySimulation(const sdb::Simulation &simulation);
-    void displayTool(const sdb::Tool &tool);
-    void displayNetworkAdjustment(const sdb::NetworkAdjustment &networkAdjustment);
-    void displayExchange(const sdb::Exchange &exchange);
+    void displayFunction(const sys::Function &function);
+    void displaySensor(const sys::Sensor &sensor);
+    void displaySimulation(const sys::Simulation &simulation);
+    void displayTool(const sys::Tool &tool);
+    void displayExchange(const sys::Exchange &exchange);
 
     void reset();
 

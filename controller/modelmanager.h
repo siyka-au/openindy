@@ -10,7 +10,7 @@
 #include <QNetworkInterface>
 
 #include "oimetadata.h"
-#include "systemdbmanager.h"
+#include "pluginrepository.h"
 #include "oijob.h"
 #include "featuretablemodel.h"
 #include "featuretableproxymodel.h"
@@ -95,7 +95,7 @@ public:
 
     static void testInit(QStringList entityTypes,
                          QPointer<MeasurementConfigManager> measurementConfigManager,
-                         QList<sdb::Plugin> plugins);
+                         QList<sys::Plugin> plugins);
 
     //############################
     //get or set the current OiJob
@@ -399,11 +399,11 @@ private:
     static QPointer<SensorConfigurationManager> sensorConfigManager;
     static QPointer<MeasurementConfigManager> measurementConfigManager;
 
-    //###############################################################
-    //save sdb::Plugin so that the database must only be queried once
-    //###############################################################
+    //##########################################################
+    //cache PluginRepository's scan so it's only ever done once
+    //##########################################################
 
-    static QList<sdb::Plugin> plugins;
+    static QList<sys::Plugin> plugins;
 
     //#############################
     //single model manager instance

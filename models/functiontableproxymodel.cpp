@@ -103,16 +103,16 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
     }
 
     int numFunctionPlugins = 0;
-    foreach(const sdb::Plugin &plugin, source_model->getPlugins()){
+    foreach(const sys::Plugin &plugin, source_model->getPlugins()){
 
         //run through all function of the current plugin
-        foreach(const sdb::Function &function, plugin.functions){
+        foreach(const sys::Function &function, plugin.functions()){
 
             //if the current function corresponds to the given row index
             if(source_row == numFunctionPlugins){
 
                 //check if the function is applicable for the active feature's feature type
-                if(!function.applicableFor.contains(this->currentJob->getActiveFeature()->getFeatureTypeEnum())){
+                if(!function.applicableFor().contains(this->currentJob->getActiveFeature()->getFeatureTypeEnum())){
                     return false;
                 }
 
@@ -120,11 +120,11 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
 
                     if(this->currentJob->getActiveFeature()->getGeometry()->getIsNominal()){ //nominal
 
-                        if(function.iid.compare(OiMetaData::iid_SpecialFunction) != 0
-                                && function.iid.compare(OiMetaData::iid_ConstructFunction) != 0
-                                && function.iid.compare(OiMetaData::iid_FitFunction) != 0
-                                && function.iid.compare(OiMetaData::iid_GeodeticFunction) != 0
-                                && function.iid.compare(OiMetaData::iid_SystemTransformation) != 0){
+                        if(function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) != 0
+                                && function.interfaceCategory().compare(OiMetaData::iid_ConstructFunction) != 0
+                                && function.interfaceCategory().compare(OiMetaData::iid_FitFunction) != 0
+                                && function.interfaceCategory().compare(OiMetaData::iid_GeodeticFunction) != 0
+                                && function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) != 0){
                             return true;
                         }
 
@@ -132,18 +132,18 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
 
                         if(this->currentJob->getActiveFeature()->getFeature()->getFunctions().size() == 0){ // first function
 
-                            if(function.iid.compare(OiMetaData::iid_ObjectTransformation) != 0
-                                    && function.iid.compare(OiMetaData::iid_SystemTransformation) != 0){
+                            if(function.interfaceCategory().compare(OiMetaData::iid_ObjectTransformation) != 0
+                                    && function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) != 0){
                                 return true;
                             }
 
                         }else{ //not the first function
 
-                            if(function.iid.compare(OiMetaData::iid_SpecialFunction) != 0
-                                    && function.iid.compare(OiMetaData::iid_ConstructFunction) != 0
-                                    && function.iid.compare(OiMetaData::iid_FitFunction) != 0
-                                    && function.iid.compare(OiMetaData::iid_GeodeticFunction) != 0
-                                    && function.iid.compare(OiMetaData::iid_SystemTransformation) != 0){
+                            if(function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) != 0
+                                    && function.interfaceCategory().compare(OiMetaData::iid_ConstructFunction) != 0
+                                    && function.interfaceCategory().compare(OiMetaData::iid_FitFunction) != 0
+                                    && function.interfaceCategory().compare(OiMetaData::iid_GeodeticFunction) != 0
+                                    && function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) != 0){
                                 return true;
                             }
 
@@ -155,13 +155,13 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
 
                     if(this->currentJob->getActiveFeature()->getFeature()->getFunctions().size() == 0){ // first function
 
-                        if(function.iid.compare(OiMetaData::iid_SystemTransformation) == 0){
+                        if(function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) == 0){
                             return true;
                         }
 
                     }else{ //not the first function
 
-                        if(function.iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
+                        if(function.interfaceCategory().compare(OiMetaData::iid_ObjectTransformation) == 0){
                             return true;
                         }
 

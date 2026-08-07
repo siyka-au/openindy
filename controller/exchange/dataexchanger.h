@@ -7,6 +7,7 @@
 #include <QApplication>
 
 #include "systemdbmanager.h"
+#include "pluginrepository.h"
 #include "exchangesimpleascii.h"
 #include "exchangedefinedformat.h"
 #include "oijob.h"

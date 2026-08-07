@@ -160,13 +160,52 @@ void DialogsTest::initTestCase() {
 
     plugins << testPlugin;
 
-    // add plugin to database
+    // add plugin to database (still needed by setDefaultFunctionAndConfig() below,
+    // which is only migrated off SystemDbManager once it's deleted entirely)
     QString msg;
     const bool success = SystemDbManager::addPlugin(testPlugin, msg);
     qDebug() << "addPlugin" << success << msg;
 
+    // build the same plugin/functions in the PluginRepository domain-object shape
+    // for ModelManager::testInit() - duplicated construction is temporary, both
+    // paths collapse back into one once SystemDbManager goes away
+    sys::Plugin testPluginRef("testplugin", QString(), QString(), "esc", QString(),
+                               QList<sys::Function>(), QList<sys::Sensor>(), QList<sys::Tool>(),
+                               QList<sys::Exchange>(), QList<sys::Simulation>());
+
+    sys::Function sysPoint("function-fitpoint", QString(), testPluginRef,
+                            QList<FeatureTypes>() << FeatureTypes::ePointFeature,
+                            QList<ElementTypes>() << ElementTypes::eObservationElement,
+                            OiMetaData::iid_FitFunction);
+    sys::Function sysPlane("function-fitplane", QString(), testPluginRef,
+                            QList<FeatureTypes>() << FeatureTypes::ePlaneFeature,
+                            QList<ElementTypes>() << ElementTypes::eObservationElement,
+                            OiMetaData::iid_FitFunction);
+    sys::Function sysLevel("function-fitlevel", QString(), testPluginRef,
+                            QList<FeatureTypes>() << FeatureTypes::ePlaneFeature << FeatureTypes::eLevelFeature,
+                            QList<ElementTypes>() << ElementTypes::eObservationElement,
+                            OiMetaData::iid_FitFunction);
+    sys::Function sysPlaneFromPoints("function-planefrompoints", QString(), testPluginRef,
+                            QList<FeatureTypes>() << FeatureTypes::ePlaneFeature,
+                            QList<ElementTypes>() << ElementTypes::eObservationElement,
+                            OiMetaData::iid_ConstructFunction); // set measurement config combox to visible = false
+    sys::Function sysCircle("function-fitcircle", QString(), testPluginRef,
+                            QList<FeatureTypes>() << FeatureTypes::eCircleFeature,
+                            QList<ElementTypes>() << ElementTypes::eObservationElement,
+                            OiMetaData::iid_FitFunction);
+
+    QList<sys::Function> sysFunctions;
+    sysFunctions << sysPlane << sysPoint << sysLevel << sysCircle << sysPlaneFromPoints;
+
+    sys::Plugin sysTestPlugin("testplugin", QString(), QString(), "esc", QString(),
+                              sysFunctions, QList<sys::Sensor>(), QList<sys::Tool>(),
+                              QList<sys::Exchange>(), QList<sys::Simulation>());
+
+    QList<sys::Plugin> sysPlugins;
+    sysPlugins << sysTestPlugin;
+
     // init ModelManager
-    ModelManager::testInit(entityTypes, measurementConfigManager, plugins);
+    ModelManager::testInit(entityTypes, measurementConfigManager, sysPlugins);
 
 }
 

@@ -23,27 +23,25 @@ void AvailableFunctionsListProxyModel::setFilter(const FeatureTypes &type){
  * \param index
  * \return
  */
-sdb::Function AvailableFunctionsListProxyModel::getFunctionAtIndex(const int &index) const{
-
-    sdb::Function result;
+sys::Function AvailableFunctionsListProxyModel::getFunctionAtIndex(const int &index) const{
 
     //check index
     if(index < 0){
-        return result;
+        return sys::Function();
     }
 
     //get and cast source model
     AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->sourceModel());
     if(source_model == NULL){
-        return result;
+        return sys::Function();
     }
 
     //get the function at index
     QModelIndex functionIndex = this->index(index, 0);
     QModelIndex sourceIndex = this->mapToSource(functionIndex);
-    sdb::Function currentFunction = source_model->getFunctionAtIndex(source_model->index(sourceIndex.row(), 0));
-    if(currentFunction.name.compare("") == 0){
-        return result;
+    sys::Function currentFunction = source_model->getFunctionAtIndex(source_model->index(sourceIndex.row(), 0));
+    if(currentFunction.name().compare("") == 0){
+        return sys::Function();
     }
 
     return currentFunction;
@@ -68,21 +66,21 @@ bool AvailableFunctionsListProxyModel::filterAcceptsRow(int source_row, const QM
     if(this->filter < 0) {
         return false;
     }
-    QList<sdb::Function> functions = SystemDbManager::getCreateFunctions(this->filter);
+    QList<sys::Function> functions = PluginRepository::getFunctionsApplicableTo(this->filter);
     if(functions.size() == 0){
         return false;
     }
 
     //get the function at index
-    sdb::Function currentFunction = source_model->getFunctionAtIndex(source_model->index(source_row, 0));
-    if(currentFunction.name.compare("") == 0){
+    sys::Function currentFunction = source_model->getFunctionAtIndex(source_model->index(source_row, 0));
+    if(currentFunction.name().compare("") == 0){
         return false;
     }
 
     //check if the current function is a create function for the specified feature type
-    foreach(const sdb::Function &function, functions){
-        if(function.name.compare(currentFunction.name) == 0
-                && function.plugin.name.compare(currentFunction.plugin.name) == 0){
+    foreach(const sys::Function &function, functions){
+        if(function.name().compare(currentFunction.name()) == 0
+                && function.plugin().name().compare(currentFunction.plugin().name()) == 0){
             return true;
         }
     }

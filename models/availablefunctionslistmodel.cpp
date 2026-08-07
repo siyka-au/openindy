@@ -18,8 +18,8 @@ int AvailableFunctionsListModel::rowCount(const QModelIndex &parent) const{
     int rowCount = 0;
 
     //get the number of function plugins
-    foreach(const sdb::Plugin &plugin, this->plugins){
-        rowCount += plugin.functions.size();
+    foreach(const sys::Plugin &plugin, this->plugins){
+        rowCount += plugin.functions().size();
     }
 
     return rowCount;
@@ -53,10 +53,10 @@ QVariant AvailableFunctionsListModel::data(const QModelIndex &index, int role) c
     int rowCount = 0;
 
     //get the name of the function at index.row()
-    foreach(const sdb::Plugin &plugin, this->plugins){
-        foreach(const sdb::Function &function, plugin.functions){
+    foreach(const sys::Plugin &plugin, this->plugins){
+        foreach(const sys::Function &function, plugin.functions()){
             if(rowCount == index.row()){
-                return function.name;
+                return function.name();
             }
             rowCount++;
         }
@@ -89,26 +89,22 @@ QVariant AvailableFunctionsListModel::headerData(int section, Qt::Orientation or
  * \param index
  * \return
  */
-sdb::Function AvailableFunctionsListModel::getFunctionAtIndex(const QModelIndex &index) const{
-
-    sdb::Function result;
+sys::Function AvailableFunctionsListModel::getFunctionAtIndex(const QModelIndex &index) const{
 
     if(!index.isValid())
-        return result;
+        return sys::Function();
 
     int rowCount = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
-        foreach(const sdb::Function &function, plugin.functions){
+    foreach(const sys::Plugin &plugin, this->plugins){
+        foreach(const sys::Function &function, plugin.functions()){
             if(rowCount == index.row()){
-                result = function;
-                result.plugin = plugin;
-                return result;
+                return function;
             }
             rowCount++;
         }
     }
 
-    return result;
+    return sys::Function();
 
 }
 
@@ -135,7 +131,7 @@ QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(const Fe
  * \brief AvailableFunctionsListModel::getPlugins
  * \return
  */
-const QList<sdb::Plugin> &AvailableFunctionsListModel::getPlugins() const{
+const QList<sys::Plugin> &AvailableFunctionsListModel::getPlugins() const{
     return this->plugins;
 }
 
@@ -143,7 +139,7 @@ const QList<sdb::Plugin> &AvailableFunctionsListModel::getPlugins() const{
  * \brief AvailableFunctionsListModel::setPlugins
  * \param plugins
  */
-void AvailableFunctionsListModel::setPlugins(const QList<sdb::Plugin> &plugins){
+void AvailableFunctionsListModel::setPlugins(const QList<sys::Plugin> &plugins){
     this->plugins = plugins;
     this->updateModel();
 }

@@ -41,7 +41,7 @@ public:
     //get the function at index
     //#########################
 
-    sdb::Function getFunctionAtIndex(const int &index) const;
+    sys::Function getFunctionAtIndex(const int &index) const;
 
 signals:
 

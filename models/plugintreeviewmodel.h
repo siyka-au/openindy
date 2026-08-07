@@ -6,7 +6,7 @@
 #include <QPixmap>
 
 #include "plugintreeitem.h"
-#include "systemdbmanager.h"
+#include "pluginrepository.h"
 
 using namespace oi;
 
@@ -39,8 +39,8 @@ public:
     //get or set plugins
     //##################
 
-    const QList<sdb::Plugin> &getPlugins() const;
-    void setPlugins(const QList<sdb::Plugin> &plugins);
+    const QList<sys::Plugin> &getPlugins() const;
+    void setPlugins(const QList<sys::Plugin> &plugins);
 
 signals:
 
@@ -56,7 +56,7 @@ private:
     //loaded plugins
     //##############
 
-    QList<sdb::Plugin> plugins;
+    QList<sys::Plugin> plugins;
 
     //##############
     //root tree item

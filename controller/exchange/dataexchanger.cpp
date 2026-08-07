@@ -97,9 +97,9 @@ bool DataExchanger::importData(const ExchangeParams &params){
         return false;
     }
 
-    //get the plugin from database and check if it is valid
-    sdb::Plugin plugin = SystemDbManager::getPlugin(params.pluginName);
-    if(plugin.name.compare("") == 0){
+    //get the plugin and check if it is valid
+    std::optional<sys::Plugin> plugin = PluginRepository::getByName(params.pluginName);
+    if(!plugin.has_value()){
         emit this->sendMessage("No valid plugin specified", eErrorMessage, eMessageBoxMessage);
         return false;
     }
@@ -107,13 +107,13 @@ bool DataExchanger::importData(const ExchangeParams &params){
     //load exchange method with plugin loader
     QPointer<ExchangeInterface> exchange(NULL);
     if(params.isDefinedFormat){
-        QPointer<ExchangeDefinedFormat> definedFormat = PluginLoader::loadExchangeDefinedFormatPlugin(plugin.file_path, params.exchangeName);
+        QPointer<ExchangeDefinedFormat> definedFormat = PluginLoader::loadExchangeDefinedFormatPlugin(plugin->filePath(), params.exchangeName);
         if(!definedFormat.isNull()){
             definedFormat->setUsedElements(params.usedElements);
         }
         exchange = definedFormat;
     }else{
-        QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(plugin.file_path, params.exchangeName);
+        QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(plugin->filePath(), params.exchangeName);
         if(!simpleAscii.isNull()){
 
             switch(params.typeOfGeometry) {
@@ -226,9 +226,9 @@ bool DataExchanger::exportData(const ExchangeParams &params){
         return false;
     }
 
-    //get the plugin from database and check if it is valid
-    sdb::Plugin plugin = SystemDbManager::getPlugin(params.pluginName);
-    if(plugin.name.compare("") == 0){
+    //get the plugin and check if it is valid
+    std::optional<sys::Plugin> plugin = PluginRepository::getByName(params.pluginName);
+    if(!plugin.has_value()){
         emit this->sendMessage("No valid plugin specified", eErrorMessage, eMessageBoxMessage);
         return false;
     }
@@ -236,13 +236,13 @@ bool DataExchanger::exportData(const ExchangeParams &params){
     //load exchange method with plugin loader
     QPointer<ExchangeInterface> exchange(NULL);
     if(params.isDefinedFormat){
-        QPointer<ExchangeDefinedFormat> definedFormat = PluginLoader::loadExchangeDefinedFormatPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
+        QPointer<ExchangeDefinedFormat> definedFormat = PluginLoader::loadExchangeDefinedFormatPlugin(qApp->applicationDirPath() + "/" + plugin->filePath(), params.exchangeName);
         if(!definedFormat.isNull()){
             definedFormat->setUsedElements(params.usedElements);
         }
         exchange = definedFormat;
     }else{
-        QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
+        QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(qApp->applicationDirPath() + "/" + plugin->filePath(), params.exchangeName);
         if(!simpleAscii.isNull()){
 
             simpleAscii->setGeometryType(params.typeOfGeometry);

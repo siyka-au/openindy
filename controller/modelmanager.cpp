@@ -30,7 +30,7 @@ SensorTableProxyModel ModelManager::sensorTableProxyModel;
 //SensorConfigurationModel ModelManager::sensorConfigurationModel;
 //SensorConfigurationProxyModel ModelManager::sensorConfigurationProxyModel;
 QStringListModel ModelManager::sensorTypeNamesModel;
-QList<sdb::Plugin> ModelManager::plugins;
+QList<sys::Plugin> ModelManager::plugins;
 QStandardItemModel ModelManager::baudRateTypesModel;
 QStandardItemModel ModelManager::dataBitTypesModel;
 QStandardItemModel ModelManager::flowControlTypesModel;
@@ -93,7 +93,7 @@ void ModelManager::init(){
 
 void ModelManager::testInit(QStringList entityTypes,
                             QPointer<MeasurementConfigManager> measurementConfigManager,
-                            QList<sdb::Plugin> plugins) {
+                            QList<sys::Plugin> plugins) {
 
     ModelManager::plugins = plugins;
     ModelManager::functionsListModel.setPlugins(ModelManager::plugins);
@@ -581,13 +581,13 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiNames(const QStri
     QPointer<QStringListModel> model(NULL);
 
     QStringList exchanges;
-    foreach(const sdb::Plugin &plugin, ModelManager::plugins){
+    foreach(const sys::Plugin &plugin, ModelManager::plugins){
 
         //check if the plugin is the one that was queried and add all simple ascii exchanges
-        if(plugin.name.compare(pluginName) == 0){
-            foreach(const sdb::Exchange &exchange, plugin.exchanges){
-                if(exchange.iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
-                    exchanges.append(exchange.name);
+        if(plugin.name().compare(pluginName) == 0){
+            foreach(const sys::Exchange &exchange, plugin.exchanges()){
+                if(exchange.interfaceCategory().compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
+                    exchanges.append(exchange.name());
                 }
             }
         }
@@ -613,9 +613,9 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(const 
 
     //get plugin file path
     QString path;
-    foreach(const sdb::Plugin &plugin, ModelManager::plugins){
-        if(plugin.name.compare(pluginName) == 0){
-            path = plugin.file_path;
+    foreach(const sys::Plugin &plugin, ModelManager::plugins){
+        if(plugin.name().compare(pluginName) == 0){
+            path = plugin.filePath();
             break;
         }
     }
@@ -644,9 +644,9 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometri
 
     //get plugin file path
     QString path;
-    foreach(const sdb::Plugin &plugin, ModelManager::plugins){
-        if(plugin.name.compare(pluginName) == 0){
-            path = plugin.file_path;
+    foreach(const sys::Plugin &plugin, ModelManager::plugins){
+        if(plugin.name().compare(pluginName) == 0){
+            path = plugin.filePath();
             break;
         }
     }
@@ -1375,8 +1375,8 @@ void ModelManager::initScalarEntityTypesModels(){
  */
 void ModelManager::initPluginModels(){
 
-    //get plugins from database
-    ModelManager::plugins = SystemDbManager::getPlugins();
+    //scan the plugin directories
+    ModelManager::plugins = PluginRepository::getAll();
 
     //pass the plugins list to all static models that need it
     ModelManager::functionTableModel.setPlugins(ModelManager::plugins);
@@ -1386,8 +1386,8 @@ void ModelManager::initPluginModels(){
 
     //update plugin names model
     QStringList pluginNames;
-    foreach(const sdb::Plugin &plugin, plugins){
-        pluginNames.append(plugin.name);
+    foreach(const sys::Plugin &plugin, plugins){
+        pluginNames.append(plugin.name());
     }
     ModelManager::pluginNamesModel.setStringList(pluginNames);
 

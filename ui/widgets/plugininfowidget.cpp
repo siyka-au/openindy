@@ -12,14 +12,14 @@ PluginInfoWidget::PluginInfoWidget(QWidget *parent) :
  * Set up the widget to display information about a given function
  * \param function
  */
-void PluginInfoWidget::displayFunction(const sdb::Function &function){
+void PluginInfoWidget::displayFunction(const sys::Function &function){
 
     //delete old GUI elements
     this->reset();
 
     //fill GUI elements for the selected function
     this->label_description->setText("function description:");
-    this->txt_description->setText(function.description);
+    this->txt_description->setText(function.description());
     this->label_applicableFor->setText("applicable for:");
     this->label_neededElements->setText("needed elements:");
 
@@ -28,12 +28,12 @@ void PluginInfoWidget::displayFunction(const sdb::Function &function){
     this->txt_description->setVisible(true);
     this->label_applicableFor->setVisible(true);
     this->label_neededElements->setVisible(true);
-    foreach(const FeatureTypes &featureType, function.applicableFor){
+    foreach(const FeatureTypes &featureType, function.applicableFor()){
         if(this->applicableFor.contains(featureType)){
             this->applicableFor[featureType]->setVisible(true);
         }
     }
-    foreach(const ElementTypes &elementType, function.neededElements){
+    foreach(const ElementTypes &elementType, function.neededElements()){
         if(this->neededElements.contains(elementType)){
             this->neededElements[elementType]->setVisible(true);
         }
@@ -46,14 +46,14 @@ void PluginInfoWidget::displayFunction(const sdb::Function &function){
  * Set up the widget to display information about a given sensor
  * \param mySensor
  */
-void PluginInfoWidget::displaySensor(const sdb::Sensor &sensor){
+void PluginInfoWidget::displaySensor(const sys::Sensor &sensor){
 
     //delete old GUI elements
     this->clearLayout(this->myLayout);
 
     //fill GUI elements for the selected sensor
     this->label_description->setText("sensor description:");
-    this->txt_description->setText(sensor.description);
+    this->txt_description->setText(sensor.description());
 
     //enable needed GUI elements
     this->label_description->setVisible(true);
@@ -65,14 +65,14 @@ void PluginInfoWidget::displaySensor(const sdb::Sensor &sensor){
  * \brief PluginInfoWidget::displaySimulation
  * \param simulation
  */
-void PluginInfoWidget::displaySimulation(const sdb::Simulation &simulation){
+void PluginInfoWidget::displaySimulation(const sys::Simulation &simulation){
 
     //delete old GUI elements
     this->clearLayout(this->myLayout);
 
     //fill GUI elements for the selected simulation
     this->label_description->setText("simulation description:");
-    this->txt_description->setText(simulation.description);
+    this->txt_description->setText(simulation.description());
 
     //enable needed GUI elements
     this->label_description->setVisible(true);
@@ -84,33 +84,14 @@ void PluginInfoWidget::displaySimulation(const sdb::Simulation &simulation){
  * \brief PluginInfoWidget::displayTool
  * \param tool
  */
-void PluginInfoWidget::displayTool(const sdb::Tool &tool){
+void PluginInfoWidget::displayTool(const sys::Tool &tool){
 
     //delete old GUI elements
     this->clearLayout(this->myLayout);
 
     //fill GUI elements for the selected tool
     this->label_description->setText("tool description:");
-    this->txt_description->setText(tool.description);
-
-    //enable needed GUI elements
-    this->label_description->setVisible(true);
-    this->txt_description->setVisible(true);
-
-}
-
-/*!
- * \brief PluginInfoWidget::displayNetworkAdjustment
- * \param networkAdjustment
- */
-void PluginInfoWidget::displayNetworkAdjustment(const sdb::NetworkAdjustment &networkAdjustment){
-
-    //delete old GUI elements
-    this->clearLayout(this->myLayout);
-
-    //fill GUI elements for the selected network adjustment
-    this->label_description->setText("network adjustment description:");
-    this->txt_description->setText(networkAdjustment.description);
+    this->txt_description->setText(tool.description());
 
     //enable needed GUI elements
     this->label_description->setVisible(true);
@@ -122,14 +103,14 @@ void PluginInfoWidget::displayNetworkAdjustment(const sdb::NetworkAdjustment &ne
  * \brief PluginInfoWidget::displayExchange
  * \param exchange
  */
-void PluginInfoWidget::displayExchange(const sdb::Exchange &exchange){
+void PluginInfoWidget::displayExchange(const sys::Exchange &exchange){
 
     //delete old GUI elements
     this->clearLayout(this->myLayout);
 
     //fill GUI elements for the selected exchange
     this->label_description->setText("exchange description:");
-    this->txt_description->setText(exchange.description);
+    this->txt_description->setText(exchange.description());
 
     //enable needed GUI elements
     this->label_description->setVisible(true);

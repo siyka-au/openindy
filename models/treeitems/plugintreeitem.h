@@ -6,7 +6,7 @@
 
 #include "types.h"
 #include "util.h"
-#include "systemdbmanager.h"
+#include "pluginrepository.h"
 #include "oimetadata.h"
 
 using namespace oi;
@@ -17,13 +17,12 @@ class PluginTreeItem : public QObject
 
 public:
     explicit PluginTreeItem(const QVariant &display, QObject *parent = 0);
-    explicit PluginTreeItem(const sdb::Plugin &plugin, QObject *parent = 0);
-    explicit PluginTreeItem(const sdb::Function &function, QObject *parent = 0);
-    explicit PluginTreeItem(const sdb::Sensor &sensor, QObject *parent = 0);
-    explicit PluginTreeItem(const sdb::NetworkAdjustment &networkAdjustment, QObject *parent = 0);
-    explicit PluginTreeItem(const sdb::Tool &tool, QObject *parent = 0);
-    explicit PluginTreeItem(const sdb::Simulation &simulation, QObject *parent = 0);
-    explicit PluginTreeItem(const sdb::Exchange &exchange, QObject *parent = 0);
+    explicit PluginTreeItem(const sys::Plugin &plugin, QObject *parent = 0);
+    explicit PluginTreeItem(const sys::Function &function, QObject *parent = 0);
+    explicit PluginTreeItem(const sys::Sensor &sensor, QObject *parent = 0);
+    explicit PluginTreeItem(const sys::Tool &tool, QObject *parent = 0);
+    explicit PluginTreeItem(const sys::Simulation &simulation, QObject *parent = 0);
+    explicit PluginTreeItem(const sys::Exchange &exchange, QObject *parent = 0);
     ~PluginTreeItem();
 
     //##########################################
@@ -52,19 +51,17 @@ public:
     const bool &getIsPlugin() const;
     const bool &getIsFunction() const;
     const bool &getIsSensor() const;
-    const bool &getIsNetworkAdjustment() const;
     const bool &getIsTool() const;
     const bool &getIsSimulation() const;
     const bool &getIsExchange() const;
 
     //get object behind tree item
-    const sdb::Plugin &getPlugin() const;
-    const sdb::Function &getFunction() const;
-    const sdb::Sensor &getSensor() const;
-    const sdb::NetworkAdjustment &getNetworkAdjustment() const;
-    const sdb::Tool &getTool() const;
-    const sdb::Simulation &getSimulation() const;
-    const sdb::Exchange &getExchange() const;
+    const sys::Plugin &getPlugin() const;
+    const sys::Function &getFunction() const;
+    const sys::Sensor &getSensor() const;
+    const sys::Tool &getTool() const;
+    const sys::Simulation &getSimulation() const;
+    const sys::Exchange &getExchange() const;
 
 private:
 
@@ -76,7 +73,6 @@ private:
     void setIsPlugin();
     void setIsFunction();
     void setIsSensor();
-    void setIsNetworkAdjustment();
     void setIsTool();
     void setIsSimulation();
     void setIsExchange();
@@ -109,19 +105,17 @@ private:
     bool isPlugin;
     bool isFunction;
     bool isSensor;
-    bool isNetworkAdjustment;
     bool isTool;
     bool isSimulation;
     bool isExchange;
 
     //object behind the tree item
-    sdb::Plugin plugin;
-    sdb::Function function;
-    sdb::Sensor sensor;
-    sdb::NetworkAdjustment networkAdjustment;
-    sdb::Tool tool;
-    sdb::Simulation simulation;
-    sdb::Exchange exchange;
+    sys::Plugin plugin;
+    sys::Function function;
+    sys::Sensor sensor;
+    sys::Tool tool;
+    sys::Simulation simulation;
+    sys::Exchange exchange;
 
 };
 

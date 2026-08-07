@@ -15,7 +15,7 @@
 #include "console.h"
 #include "measurementconfigmanager.h"
 #include "pluginloader.h"
-#include "systemdbmanager.h"
+#include "pluginrepository.h"
 
 using namespace oi;
 

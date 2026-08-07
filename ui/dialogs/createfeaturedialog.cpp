@@ -69,8 +69,8 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
     }
 
     //get selected function
-    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
-    if(function.name.compare("") == 0 || function.plugin.name.compare("") == 0){
+    sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+    if(function.name().compare("") == 0 || function.plugin().name().compare("") == 0){
         if(this->created){
             this->close();
         }
@@ -340,9 +340,9 @@ void CreateFeatureDialog::initMeasurementConfigModel(){
     if(source_model == NULL){
         return;
     }
-    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+    sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
 
-    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor);
+    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor());
 }
 
 /*!
@@ -412,9 +412,9 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
 
     //fill selected function plugin
     if(attributes.isActual){
-        sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
-        attributes.functionPlugin.first = function.name;
-        attributes.functionPlugin.second = function.plugin.file_path;
+        sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+        attributes.functionPlugin.first = function.name();
+        attributes.functionPlugin.second = function.plugin().filePath();
     }
 }
 
@@ -437,10 +437,10 @@ void CreateFeatureDialog::on_comboBox_entityType_currentTextChanged(const QStrin
         this->initFunctionsModel();
 
         for(int i=0; i<this->functionListModel->rowCount(); i++) {
-            sdb::Function function = this->functionListModel->getFunctionAtIndex(i);
-            if(this->ui->comboBox_function->currentText() == function.name) {
+            sys::Function function = this->functionListModel->getFunctionAtIndex(i);
+            if(this->ui->comboBox_function->currentText() == function.name()) {
                 this->neededElements.clear();
-                this->neededElements.append(function.neededElements);
+                this->neededElements.append(function.neededElements());
                 break;
             }
         }
@@ -458,11 +458,11 @@ void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int ind
 }
 
 void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
-    sdb::Function function = this->functionListModel->getFunctionAtIndex(functionIndex);
-    if( function.iid.startsWith("de.openIndy.plugin.function.constructFunction")
-        || function.iid.startsWith("de.openIndy.plugin.function.objectTransformation")
-        || function.iid.startsWith("de.openIndy.plugin.function.specialFunction")
-        || function.name.contains("FromPoints") // fitfunction
+    sys::Function function = this->functionListModel->getFunctionAtIndex(functionIndex);
+    if( function.interfaceCategory().startsWith("de.openIndy.plugin.function.constructFunction")
+        || function.interfaceCategory().startsWith("de.openIndy.plugin.function.objectTransformation")
+        || function.interfaceCategory().startsWith("de.openIndy.plugin.function.specialFunction")
+        || function.name().contains("FromPoints") // fitfunction
         ) {
         this->neededElements.clear();
         this->neededElements.append(ElementTypes::eUndefinedElement);
@@ -470,7 +470,7 @@ void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
         this->ui->label_mConfig->setVisible(false);
     } else {
         this->neededElements.clear();
-        this->neededElements.append(function.neededElements);
+        this->neededElements.append(function.neededElements());
         this->ui->comboBox_mConfig->setVisible(true);
         this->ui->label_mConfig->setVisible(true);
     }

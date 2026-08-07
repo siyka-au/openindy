@@ -11,6 +11,7 @@
 #include "types.h"
 #include "util.h"
 #include "systemdbmanager.h"
+#include "pluginrepository.h"
 #include "function.h"
 
 using namespace oi;
@@ -41,7 +42,7 @@ public:
     //get the function at index
     //#########################
 
-    sdb::Function getFunctionAtIndex(const QModelIndex &index) const;
+    sys::Function getFunctionAtIndex(const QModelIndex &index) const;
 
     //############################
     //get or set default functions
@@ -53,8 +54,8 @@ public:
     //get or set available plugins
     //############################
 
-    const QList<sdb::Plugin> &getPlugins() const;
-    void setPlugins(const QList<sdb::Plugin> &plugins);
+    const QList<sys::Plugin> &getPlugins() const;
+    void setPlugins(const QList<sys::Plugin> &plugins);
 
 signals:
 
@@ -84,7 +85,7 @@ private:
     //available plugins
     //#################
 
-    QList<sdb::Plugin> plugins;
+    QList<sys::Plugin> plugins;
 
 };
 

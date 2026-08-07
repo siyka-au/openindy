@@ -151,7 +151,7 @@ PluginTreeItem::PluginTreeItem(const QVariant &display, QObject *parent) : QObje
  * \param plugin
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sdb::Plugin &plugin, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Plugin &plugin, QObject *parent) : QObject(parent){
 
     //set general tree item attributes
     this->childCount = 0;
@@ -164,7 +164,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Plugin &plugin, QObject *parent) : QOb
     this->plugin = plugin;
 
     //set display value
-    this->displayValue = plugin.name;
+    this->displayValue = plugin.name();
 
     //set up item and its children
     this->setUpPlugin();
@@ -176,7 +176,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Plugin &plugin, QObject *parent) : QOb
  * \param function
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sdb::Function &function, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Function &function, QObject *parent) : QObject(parent){
 
     //set general tree item attributes
     this->childCount = 0;
@@ -189,7 +189,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Function &function, QObject *parent) :
     this->function = function;
 
     //set display value
-    this->displayValue = function.name;
+    this->displayValue = function.name();
 
 }
 
@@ -198,7 +198,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Function &function, QObject *parent) :
  * \param sensor
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sdb::Sensor &sensor, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Sensor &sensor, QObject *parent) : QObject(parent){
 
     //set general tree item attributes
     this->childCount = 0;
@@ -211,29 +211,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Sensor &sensor, QObject *parent) : QOb
     this->sensor = sensor;
 
     //set display value
-    this->displayValue = sensor.name;
-
-}
-
-/*!
- * \brief PluginTreeItem::PluginTreeItem
- * \param networkAdjustment
- * \param parent
- */
-PluginTreeItem::PluginTreeItem(const sdb::NetworkAdjustment &networkAdjustment, QObject *parent) : QObject(parent){
-
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
-
-    //define what kind of tree item this item is
-    this->setIsNetworkAdjustment();
-
-    //set networkAdjustment
-    this->networkAdjustment = networkAdjustment;
-
-    //set display value
-    this->displayValue = networkAdjustment.name;
+    this->displayValue = sensor.name();
 
 }
 
@@ -242,7 +220,7 @@ PluginTreeItem::PluginTreeItem(const sdb::NetworkAdjustment &networkAdjustment, 
  * \param tool
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sdb::Tool &tool, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Tool &tool, QObject *parent) : QObject(parent){
 
     //set general tree item attributes
     this->childCount = 0;
@@ -255,7 +233,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Tool &tool, QObject *parent) : QObject
     this->tool = tool;
 
     //set display value
-    this->displayValue = tool.name;
+    this->displayValue = tool.name();
 
 }
 
@@ -264,7 +242,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Tool &tool, QObject *parent) : QObject
  * \param simulation
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sdb::Simulation &simulation, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Simulation &simulation, QObject *parent) : QObject(parent){
 
     //set general tree item attributes
     this->childCount = 0;
@@ -277,7 +255,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Simulation &simulation, QObject *paren
     this->simulation = simulation;
 
     //set display value
-    this->displayValue = simulation.name;
+    this->displayValue = simulation.name();
 
 }
 
@@ -286,7 +264,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Simulation &simulation, QObject *paren
  * \param exchange
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sdb::Exchange &exchange, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Exchange &exchange, QObject *parent) : QObject(parent){
 
     //set general tree item attributes
     this->childCount = 0;
@@ -299,7 +277,7 @@ PluginTreeItem::PluginTreeItem(const sdb::Exchange &exchange, QObject *parent) :
     this->exchange = exchange;
 
     //set display value
-    this->displayValue = exchange.name;
+    this->displayValue = exchange.name();
 
 }
 
@@ -429,14 +407,6 @@ const bool &PluginTreeItem::getIsSensor() const{
 }
 
 /*!
- * \brief PluginTreeItem::getIsNetworkAdjustment
- * \return
- */
-const bool &PluginTreeItem::getIsNetworkAdjustment() const{
-    return this->isNetworkAdjustment;
-}
-
-/*!
  * \brief PluginTreeItem::getIsTool
  * \return
  */
@@ -464,7 +434,7 @@ const bool &PluginTreeItem::getIsExchange() const{
  * \brief PluginTreeItem::getPlugin
  * \return
  */
-const sdb::Plugin &PluginTreeItem::getPlugin() const{
+const sys::Plugin &PluginTreeItem::getPlugin() const{
     return this->plugin;
 }
 
@@ -472,7 +442,7 @@ const sdb::Plugin &PluginTreeItem::getPlugin() const{
  * \brief PluginTreeItem::getFunction
  * \return
  */
-const sdb::Function &PluginTreeItem::getFunction() const{
+const sys::Function &PluginTreeItem::getFunction() const{
     return this->function;
 }
 
@@ -480,23 +450,15 @@ const sdb::Function &PluginTreeItem::getFunction() const{
  * \brief PluginTreeItem::getSensor
  * \return
  */
-const sdb::Sensor &PluginTreeItem::getSensor() const{
+const sys::Sensor &PluginTreeItem::getSensor() const{
     return this->sensor;
-}
-
-/*!
- * \brief PluginTreeItem::getNetworkAdjustment
- * \return
- */
-const sdb::NetworkAdjustment &PluginTreeItem::getNetworkAdjustment() const{
-    return this->networkAdjustment;
 }
 
 /*!
  * \brief PluginTreeItem::getTool
  * \return
  */
-const sdb::Tool &PluginTreeItem::getTool() const{
+const sys::Tool &PluginTreeItem::getTool() const{
     return this->tool;
 }
 
@@ -504,7 +466,7 @@ const sdb::Tool &PluginTreeItem::getTool() const{
  * \brief PluginTreeItem::getSimulation
  * \return
  */
-const sdb::Simulation &PluginTreeItem::getSimulation() const{
+const sys::Simulation &PluginTreeItem::getSimulation() const{
     return this->simulation;
 }
 
@@ -512,7 +474,7 @@ const sdb::Simulation &PluginTreeItem::getSimulation() const{
  * \brief PluginTreeItem::getExchange
  * \return
  */
-const sdb::Exchange &PluginTreeItem::getExchange() const{
+const sys::Exchange &PluginTreeItem::getExchange() const{
     return this->exchange;
 }
 
@@ -524,7 +486,6 @@ void PluginTreeItem::setIsHeader(){
     this->isPlugin = false;
     this->isFunction = false;
     this->isSensor = false;
-    this->isNetworkAdjustment = false;
     this->isTool = false;
     this->isSimulation = false;
     this->isExchange = false;
@@ -538,7 +499,6 @@ void PluginTreeItem::setIsPlugin(){
     this->isPlugin = true;
     this->isFunction = false;
     this->isSensor = false;
-    this->isNetworkAdjustment = false;
     this->isTool = false;
     this->isSimulation = false;
     this->isExchange = false;
@@ -552,7 +512,6 @@ void PluginTreeItem::setIsFunction(){
     this->isPlugin = false;
     this->isFunction = true;
     this->isSensor = false;
-    this->isNetworkAdjustment = false;
     this->isTool = false;
     this->isSimulation = false;
     this->isExchange = false;
@@ -566,21 +525,6 @@ void PluginTreeItem::setIsSensor(){
     this->isPlugin = false;
     this->isFunction = false;
     this->isSensor = true;
-    this->isNetworkAdjustment = false;
-    this->isTool = false;
-    this->isSimulation = false;
-    this->isExchange = false;
-}
-
-/*!
- * \brief PluginTreeItem::setIsNetworkAdjustment
- */
-void PluginTreeItem::setIsNetworkAdjustment(){
-    this->isHeader = false;
-    this->isPlugin = false;
-    this->isFunction = false;
-    this->isSensor = false;
-    this->isNetworkAdjustment = true;
     this->isTool = false;
     this->isSimulation = false;
     this->isExchange = false;
@@ -594,7 +538,6 @@ void PluginTreeItem::setIsTool(){
     this->isPlugin = false;
     this->isFunction = false;
     this->isSensor = false;
-    this->isNetworkAdjustment = false;
     this->isTool = true;
     this->isSimulation = false;
     this->isExchange = false;
@@ -608,7 +551,6 @@ void PluginTreeItem::setIsSimulation(){
     this->isPlugin = false;
     this->isFunction = false;
     this->isSensor = false;
-    this->isNetworkAdjustment = false;
     this->isTool = false;
     this->isSimulation = true;
     this->isExchange = false;
@@ -622,7 +564,6 @@ void PluginTreeItem::setIsExchange(){
     this->isPlugin = false;
     this->isFunction = false;
     this->isSensor = false;
-    this->isNetworkAdjustment = false;
     this->isTool = false;
     this->isSimulation = false;
     this->isExchange = true;
@@ -637,11 +578,11 @@ void PluginTreeItem::setUpPlugin(){
     PluginTreeItem *sensors = new PluginTreeItem("sensors:");
     PluginTreeItem *laserTracker = new PluginTreeItem("laser tracker:");
     PluginTreeItem *totalStation = new PluginTreeItem("total stations:");
-    foreach(const sdb::Sensor &sensor, plugin.sensors){
+    foreach(const sys::Sensor &sensor, plugin.sensors()){
         PluginTreeItem *sensorItem = new PluginTreeItem(sensor);
-        if(sensor.iid.compare(OiMetaData::iid_LaserTracker) == 0){
+        if(sensor.interfaceCategory().compare(OiMetaData::iid_LaserTracker) == 0){
             laserTracker->appendChild(sensorItem);
-        }else if(sensor.iid.compare(OiMetaData::iid_TotalStation) == 0){
+        }else if(sensor.interfaceCategory().compare(OiMetaData::iid_TotalStation) == 0){
             totalStation->appendChild(sensorItem);
         }else{
             delete sensorItem;
@@ -659,19 +600,19 @@ void PluginTreeItem::setUpPlugin(){
     PluginTreeItem *geodeticFunctions = new PluginTreeItem("geodetic functions:");
     PluginTreeItem *objectTransformations = new PluginTreeItem("object transformations:");
     PluginTreeItem *systemTransformations = new PluginTreeItem("system transformations:");
-    foreach(const sdb::Function &function, plugin.functions){
+    foreach(const sys::Function &function, plugin.functions()){
         PluginTreeItem *functionItem = new PluginTreeItem(function);
-        if(function.iid.compare(OiMetaData::iid_FitFunction) == 0){
+        if(function.interfaceCategory().compare(OiMetaData::iid_FitFunction) == 0){
             fitFunctions->appendChild(functionItem);
-        }else if(function.iid.compare(OiMetaData::iid_ConstructFunction) == 0){
+        }else if(function.interfaceCategory().compare(OiMetaData::iid_ConstructFunction) == 0){
             constructFunctions->appendChild(functionItem);
-        }else if(function.iid.compare(OiMetaData::iid_SpecialFunction) == 0){
+        }else if(function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) == 0){
             specialFunctions->appendChild(functionItem);
-        }else if(function.iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
+        }else if(function.interfaceCategory().compare(OiMetaData::iid_GeodeticFunction) == 0){
             geodeticFunctions->appendChild(functionItem);
-        }else if(function.iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
+        }else if(function.interfaceCategory().compare(OiMetaData::iid_ObjectTransformation) == 0){
             objectTransformations->appendChild(functionItem);
-        }else if(function.iid.compare(OiMetaData::iid_SystemTransformation) == 0){
+        }else if(function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) == 0){
             systemTransformations->appendChild(functionItem);
         }else{
             delete functionItem;
@@ -689,14 +630,14 @@ void PluginTreeItem::setUpPlugin(){
 
     //set up tools
     PluginTreeItem *tools = new PluginTreeItem("tools:");
-    foreach(const sdb::Tool &tool, plugin.tools){
+    foreach(const sys::Tool &tool, plugin.tools()){
         PluginTreeItem *toolItem = new PluginTreeItem(tool);
         tools->appendChild(toolItem);
     }
 
     //set up simulations
     PluginTreeItem *simulations = new PluginTreeItem("simulations:");
-    foreach(const sdb::Simulation &simulation, plugin.simulations){
+    foreach(const sys::Simulation &simulation, plugin.simulations()){
         PluginTreeItem *simulationItem = new PluginTreeItem(simulation);
         simulations->appendChild(simulationItem);
     }
@@ -705,11 +646,11 @@ void PluginTreeItem::setUpPlugin(){
     PluginTreeItem *exchanges = new PluginTreeItem("exchanges:");
     PluginTreeItem *simpleAscii = new PluginTreeItem("simple ascii exchanges:");
     PluginTreeItem *definedFormat = new PluginTreeItem("defined format exchanges:");
-    foreach(const sdb::Exchange &exchange, plugin.exchanges){
+    foreach(const sys::Exchange &exchange, plugin.exchanges()){
         PluginTreeItem *exchangeItem = new PluginTreeItem(exchange);
-        if(exchange.iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
+        if(exchange.interfaceCategory().compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
             simpleAscii->appendChild(exchangeItem);
-        }else if(exchange.iid.compare(OiMetaData::iid_ExchangeDefinedFormat) == 0){
+        }else if(exchange.interfaceCategory().compare(OiMetaData::iid_ExchangeDefinedFormat) == 0){
             definedFormat->appendChild(exchangeItem);
         }else{
             delete exchangeItem;
@@ -719,19 +660,11 @@ void PluginTreeItem::setUpPlugin(){
     exchanges->appendChild(simpleAscii);
     exchanges->appendChild(definedFormat);
 
-    //set up network adjustments
-    PluginTreeItem *networkAdjustments = new PluginTreeItem("network adjustments:");
-    foreach(const sdb::NetworkAdjustment &networkAdjustment, plugin.networkAdjustments){
-        PluginTreeItem *networkAdjustmentItem = new PluginTreeItem(networkAdjustment);
-        networkAdjustments->appendChild(networkAdjustmentItem);
-    }
-
     //add all children
     this->appendChild(sensors);
     this->appendChild(functions);
     this->appendChild(tools);
     this->appendChild(simulations);
     this->appendChild(exchanges);
-    this->appendChild(networkAdjustments);
 
 }

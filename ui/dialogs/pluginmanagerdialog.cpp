@@ -395,10 +395,10 @@ void PluginManagerDialog::on_treeView_plugins_clicked(const QModelIndex &index){
     }
 
     //set general plugin information
-    this->ui->txt_pluginDescription->setText(pluginItem->getPlugin().description);
-    this->ui->txt_pluginAuthor->setText(pluginItem->getPlugin().author);
-    this->ui->txt_pluginFilePath->setText(pluginItem->getPlugin().file_path);
-    this->ui->txt_pluginVersion->setText(pluginItem->getPlugin().version);
+    this->ui->txt_pluginDescription->setText(pluginItem->getPlugin().description());
+    this->ui->txt_pluginAuthor->setText(pluginItem->getPlugin().author());
+    this->ui->txt_pluginFilePath->setText(pluginItem->getPlugin().filePath());
+    this->ui->txt_pluginVersion->setText(pluginItem->getPlugin().version());
 
     //set visibility
     this->ui->pushButton_remove->setVisible(false); // OI-758 TODO set to true
@@ -419,11 +419,6 @@ void PluginManagerDialog::on_treeView_plugins_clicked(const QModelIndex &index){
     }
     if(item->getIsFunction()){
         this->pluginInformation->displayFunction(item->getFunction());
-        this->ui->widget_pluginInfo->setVisible(true);
-        return;
-    }
-    if(item->getIsNetworkAdjustment()){
-        this->pluginInformation->displayNetworkAdjustment(item->getNetworkAdjustment());
         this->ui->widget_pluginInfo->setVisible(true);
         return;
     }

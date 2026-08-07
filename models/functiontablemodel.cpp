@@ -17,8 +17,8 @@ int FunctionTableModel::rowCount(const QModelIndex &parent) const{
 
     int numFunctionPlugins = 0;
 
-    foreach(const sdb::Plugin &plugin, this->plugins){
-        numFunctionPlugins += plugin.functions.size();
+    foreach(const sys::Plugin &plugin, this->plugins){
+        numFunctionPlugins += plugin.functions().size();
     }
 
     return numFunctionPlugins;
@@ -53,20 +53,20 @@ QVariant FunctionTableModel::data(const QModelIndex &index, int role) const{
     }
 
     int numFunctionPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all function of the current plugin
-        foreach(const sdb::Function &function, plugin.functions){
+        foreach(const sys::Function &function, plugin.functions()){
 
             //if the current function corresponds to the given row index
             if(index.row() == numFunctionPlugins){
 
                 if(index.column() == 0){
-                    return function.name;
+                    return function.name();
                 }else if(index.column() == 1){
-                    return plugin.name;
+                    return plugin.name();
                 }else if(index.column() == 2){
-                    return function.iid;
+                    return function.interfaceCategory();
                 }
 
             }
@@ -122,15 +122,15 @@ QString FunctionTableModel::getFunctionDescription(const QModelIndex &index) con
 
     //get description of the right function
     int numFunctionPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all function of the current plugin
-        foreach(const sdb::Function &function, plugin.functions){
+        foreach(const sys::Function &function, plugin.functions()){
 
             //if the current function corresponds to the given row index
             if(index.row() == numFunctionPlugins){
 
-                return function.description;
+                return function.description();
 
             }
 
@@ -157,15 +157,15 @@ QString FunctionTableModel::getFunctionName(const QModelIndex &index) const{
 
     //get description of the right function
     int numFunctionPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all function of the current plugin
-        foreach(const sdb::Function &function, plugin.functions){
+        foreach(const sys::Function &function, plugin.functions()){
 
             //if the current function corresponds to the given row index
             if(index.row() == numFunctionPlugins){
 
-                return function.name;
+                return function.name();
 
             }
 
@@ -192,15 +192,15 @@ QString FunctionTableModel::getPluginFilePath(const QModelIndex &index) const{
 
     //get description of the right function
     int numFunctionPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all function of the current plugin
-        foreach(const sdb::Function &function, plugin.functions){
+        foreach(const sys::Function &function, plugin.functions()){
 
             //if the current function corresponds to the given row index
             if(index.row() == numFunctionPlugins){
 
-                return plugin.file_path;
+                return plugin.filePath();
 
             }
 
@@ -217,7 +217,7 @@ QString FunctionTableModel::getPluginFilePath(const QModelIndex &index) const{
  * \brief FunctionTableModel::getPlugins
  * \return
  */
-const QList<sdb::Plugin> &FunctionTableModel::getPlugins() const{
+const QList<sys::Plugin> &FunctionTableModel::getPlugins() const{
     return plugins;
 }
 
@@ -225,7 +225,7 @@ const QList<sdb::Plugin> &FunctionTableModel::getPlugins() const{
  * \brief FunctionTableModel::setPlugins
  * \param plugins
  */
-void FunctionTableModel::setPlugins(const QList<sdb::Plugin> &plugins){
+void FunctionTableModel::setPlugins(const QList<sys::Plugin> &plugins){
     emit this->beginResetModel();
     this->plugins = plugins;
     emit this->endResetModel();

@@ -13,7 +13,7 @@
 #include <QCryptographicHash>
 
 #include "function.h"
-#include "systemdbmanager.h"
+#include "pluginrepository.h"
 #include "pluginloader.h"
 #include "sensorcontrol.h"
 #include "types.h"

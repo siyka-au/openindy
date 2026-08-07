@@ -682,9 +682,9 @@ QPointer<Function> FeatureTableModel::loadFunctionByName(QString name) {
     //*******************************************************
     QPointer<Function> function(NULL);
 
-    foreach (sdb::Function f, SystemDbManager::getFunctions()) {
-        if(f.name == name){
-            function = PluginLoader::loadFunctionPlugin(f.plugin.file_path, f.name);
+    foreach (const sys::Function &f, PluginRepository::getAllFunctions()) {
+        if(f.name() == name){
+            function = PluginLoader::loadFunctionPlugin(f.plugin().filePath(), f.name());
             break;
         }
     }

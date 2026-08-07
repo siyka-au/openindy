@@ -17,8 +17,8 @@ int SensorTableModel::rowCount(const QModelIndex &parent) const{
 
     int numSensorPlugins = 0;
 
-    foreach(const sdb::Plugin &plugin, this->plugins){
-        numSensorPlugins += plugin.sensors.size();
+    foreach(const sys::Plugin &plugin, this->plugins){
+        numSensorPlugins += plugin.sensors().size();
     }
 
     return numSensorPlugins;
@@ -52,14 +52,14 @@ QVariant SensorTableModel::data(const QModelIndex &index, int role) const{
     int columnIndex = index.column();
 
     //get plugin and sensor
-    sdb::Plugin currentPlugin;
-    sdb::Sensor currentSensor;
+    sys::Plugin currentPlugin;
+    sys::Sensor currentSensor;
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all function of the current plugin
         bool sensorFound = false;
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current sensor corresponds to the given row index
             if(rowIndex == numSensorPlugins){
@@ -82,26 +82,26 @@ QVariant SensorTableModel::data(const QModelIndex &index, int role) const{
 
         switch(columnIndex){
         case 0:
-            return currentSensor.name;
+            return currentSensor.name();
         case 1:
-            return currentPlugin.name;
+            return currentPlugin.name();
         case 2:
-            return currentSensor.iid;
+            return currentSensor.interfaceCategory();
         }
 
     }else if(role == Qt::BackgroundRole){
 
         //active sensor
-        if(this->selectedSensor.first.compare(currentPlugin.name) == 0
-                && this->selectedSensor.second.compare(currentSensor.name) == 0){
+        if(this->selectedSensor.first.compare(currentPlugin.name()) == 0
+                && this->selectedSensor.second.compare(currentSensor.name()) == 0){
             return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
         }
 
     }else if(role == Qt::ForegroundRole){
 
         //active sensor: use a readable text color against the custom background above
-        if(this->selectedSensor.first.compare(currentPlugin.name) == 0
-                && this->selectedSensor.second.compare(currentSensor.name) == 0){
+        if(this->selectedSensor.first.compare(currentPlugin.name()) == 0
+                && this->selectedSensor.second.compare(currentSensor.name()) == 0){
             return QColor(Qt::black);
         }
 
@@ -163,22 +163,22 @@ void SensorTableModel::selectSensorPlugin(const QModelIndex &index){
 
     //get type of the right sensor
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current function corresponds to the given row index
             if(numSensorPlugins == rowIndex){
 
                 //check if sConfig is different from the current selection
-                if(this->selectedSensor.first.compare(plugin.name) == 0
-                        && this->selectedSensor.second.compare(sensor.name) == 0){
+                if(this->selectedSensor.first.compare(plugin.name()) == 0
+                        && this->selectedSensor.second.compare(sensor.name()) == 0){
                     return;
                 }
 
-                this->selectedSensor.first = plugin.name;
-                this->selectedSensor.second = sensor.name;
+                this->selectedSensor.first = plugin.name();
+                this->selectedSensor.second = sensor.name();
 
                 this->updateModel();
 
@@ -246,16 +246,16 @@ SensorTypes SensorTableModel::getSensorType() const{
 
     //get type of the right sensor
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current function corresponds to the given row index
-            if(plugin.name.compare(this->selectedSensor.first) == 0
-                    && sensor.name.compare(this->selectedSensor.second) == 0){
+            if(plugin.name().compare(this->selectedSensor.first) == 0
+                    && sensor.name().compare(this->selectedSensor.second) == 0){
 
-                return OiMetaData::getSensorTypeEnum(sensor.iid);
+                return OiMetaData::getSensorTypeEnum(sensor.interfaceCategory());
 
             }
 
@@ -296,16 +296,16 @@ SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
 
     //get type of the right sensor
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current function corresponds to the given row index
-            if(plugin.name.compare(pluginName) == 0
-                    && sensor.name.compare(sensorName) == 0){
+            if(plugin.name().compare(pluginName) == 0
+                    && sensor.name().compare(sensorName) == 0){
 
-                return OiMetaData::getSensorTypeEnum(sensor.iid);
+                return OiMetaData::getSensorTypeEnum(sensor.interfaceCategory());
 
             }
 
@@ -326,16 +326,16 @@ QString SensorTableModel::getSensorDescription() const{
 
     //get description of the right sensor
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current function corresponds to the given row index
-            if(plugin.name.compare(this->selectedSensor.first) == 0
-                    && sensor.name.compare(this->selectedSensor.second) == 0){
+            if(plugin.name().compare(this->selectedSensor.first) == 0
+                    && sensor.name().compare(this->selectedSensor.second) == 0){
 
-                return sensor.description;
+                return sensor.description();
 
             }
 
@@ -376,16 +376,16 @@ QString SensorTableModel::getSensorDescription(const QModelIndex &index) const{
 
     //get description of the right sensor
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current function corresponds to the given row index
-            if(plugin.name.compare(pluginName) == 0
-                    && sensor.name.compare(sensorName) == 0){
+            if(plugin.name().compare(pluginName) == 0
+                    && sensor.name().compare(sensorName) == 0){
 
-                return sensor.description;
+                return sensor.description();
 
             }
 
@@ -406,16 +406,16 @@ QString SensorTableModel::getPluginFilePath() const{
 
     //get plugin file path of the right sensor
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current function corresponds to the given row index
-            if(plugin.name.compare(this->selectedSensor.first) == 0
-                    && sensor.name.compare(this->selectedSensor.second) == 0){
+            if(plugin.name().compare(this->selectedSensor.first) == 0
+                    && sensor.name().compare(this->selectedSensor.second) == 0){
 
-                return plugin.file_path;
+                return plugin.filePath();
 
             }
 
@@ -456,16 +456,16 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
 
     //get description of the right sensor
     int numSensorPlugins = 0;
-    foreach(const sdb::Plugin &plugin, this->plugins){
+    foreach(const sys::Plugin &plugin, this->plugins){
 
         //run through all sensor of the current plugin
-        foreach(const sdb::Sensor &sensor, plugin.sensors){
+        foreach(const sys::Sensor &sensor, plugin.sensors()){
 
             //if the current function corresponds to the given row index
-            if(plugin.name.compare(pluginName) == 0
-                    && sensor.name.compare(sensorName) == 0){
+            if(plugin.name().compare(pluginName) == 0
+                    && sensor.name().compare(sensorName) == 0){
 
-                return plugin.file_path;
+                return plugin.filePath();
 
             }
 
@@ -624,7 +624,7 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const{
  * \brief SensorTableModel::getPlugins
  * \return
  */
-const QList<sdb::Plugin> &SensorTableModel::getPlugins() const{
+const QList<sys::Plugin> &SensorTableModel::getPlugins() const{
     return plugins;
 }
 
@@ -632,7 +632,7 @@ const QList<sdb::Plugin> &SensorTableModel::getPlugins() const{
  * \brief SensorTableModel::setPlugins
  * \param plugins
  */
-void SensorTableModel::setPlugins(const QList<sdb::Plugin> &plugins){
+void SensorTableModel::setPlugins(const QList<sys::Plugin> &plugins){
     emit this->beginResetModel();
     this->plugins = plugins;
     emit this->endResetModel();

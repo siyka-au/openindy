@@ -290,14 +290,14 @@ void Controller::setSensorConfig(const SensorConfiguration &sConfig, bool connec
     }
 
     //get and check plugin information
-    sdb::Plugin plugin = SystemDbManager::getPlugin(sConfig.getPluginName());
-    if(plugin.id == -1){
+    std::optional<sys::Plugin> plugin = PluginRepository::getByName(sConfig.getPluginName());
+    if(!plugin.has_value()){
         this->log(QString("No plugin available with the name %1").arg(sConfig.getPluginName()), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //create sensor instance and assign it to the active station
-    QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(plugin.file_path, sConfig.getSensorName());
+    QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(plugin->filePath(), sConfig.getSensorName());
     if(sensor.isNull()){
         this->log(QString("No sensor available with the name %1").arg(sConfig.getSensorName()), eErrorMessage, eMessageBoxMessage);
         return;
@@ -765,14 +765,14 @@ void Controller::loadBundleTemplate(const QJsonObject &bundleTemplate){
     pluginName = bundleTemplate.value("plugin").toObject().value("pluginName").toString();
 
     //get and check plugin information
-    sdb::Plugin plugin = SystemDbManager::getPlugin(pluginName);
-    if(plugin.id == -1){
+    std::optional<sys::Plugin> plugin = PluginRepository::getByName(pluginName);
+    if(!plugin.has_value()){
         this->log(QString("No plugin available with the name %1").arg(pluginName), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //load bundle plugin
-    QPointer<BundleAdjustment> bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
+    QPointer<BundleAdjustment> bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin->filePath(), bundleName);
     if(bundlePlugin.isNull()){
         this->log(QString("Cannot load bundle template %1").arg(bundleTemplate.value("name").toString()), eErrorMessage, eMessageBoxMessage);
         return;
@@ -1055,14 +1055,14 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
                     pluginName = bundleTemplate.value("plugin").toObject().value("pluginName").toString();
 
                     //get and check plugin information
-                    sdb::Plugin plugin = SystemDbManager::getPlugin(pluginName);
-                    if(plugin.id == -1){
+                    std::optional<sys::Plugin> plugin = PluginRepository::getByName(pluginName);
+                    if(!plugin.has_value()){
                         this->log(QString("No plugin available with the name %1").arg(pluginName), eErrorMessage, eMessageBoxMessage);
                         return;
                     }
 
                     //load bundle plugin
-                    QPointer<BundleAdjustment> bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
+                    QPointer<BundleAdjustment> bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin->filePath(), bundleName);
                     if(bundlePlugin.isNull()){
                         this->log(QString("Cannot load bundle template %1").arg(bundleTemplate.value("name").toString()), eErrorMessage, eMessageBoxMessage);
                         return;
@@ -1999,14 +1999,14 @@ void Controller::initConfigManager(){
  */
 void Controller::initToolPlugins(){
 
-    //get available tools from database
-    QList<sdb::Tool> toolPlugins = SystemDbManager::getTools();
+    //get available tools
+    QList<sys::Tool> toolPlugins = PluginRepository::getAllTools();
 
     //load all tool plugins and add them to the list of tool plugins
     this->toolPlugins.clear();
-    foreach(const sdb::Tool &tool, toolPlugins){
+    foreach(const sys::Tool &tool, toolPlugins){
 
-        QPointer<Tool> toolPlugin = PluginLoader::loadToolPlugin(tool.plugin.file_path, tool.name);
+        QPointer<Tool> toolPlugin = PluginLoader::loadToolPlugin(tool.plugin().filePath(), tool.name());
         if(!toolPlugin.isNull()){
             toolPlugin->setAttribute(Qt::WA_DeleteOnClose, false);
             this->connectToolPlugin(toolPlugin);
