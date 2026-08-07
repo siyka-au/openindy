@@ -1,6 +1,7 @@
 #include "pluginrepository.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QDir>
 #include <QPluginLoader>
 #include <QJsonObject>
@@ -15,15 +16,40 @@ bool PluginRepository::isInit = false;
 
 /*!
  * \brief PluginRepository::init
- * Scans <appDir>/plugins/ once and caches the result for the session.
+ * Scans both the system tier (<appDir>/plugins/, installed with the app)
+ * and the user tier (~/.openindy/plugins/, always writable without
+ * elevated permissions - where PluginCopier's import flow writes to) once,
+ * caching the merged result for the session. A user-tier plugin sharing a
+ * system-tier one's name shadows it, so a regular user can update/override
+ * a plugin without touching the install directory.
  */
 void PluginRepository::init(){
 
-    PluginRepository::plugins.clear();
-
     QString systemPluginDir = qApp->applicationDirPath() + "/plugins";
-    PluginRepository::plugins.append(PluginRepository::scanDirectory(systemPluginDir));
+    QString userPluginDir = QDir::homePath() + "/.openindy/plugins";
 
+    QList<sys::Plugin> systemPlugins = PluginRepository::scanDirectory(systemPluginDir);
+    QList<sys::Plugin> userPlugins = PluginRepository::scanDirectory(userPluginDir);
+
+    QList<sys::Plugin> merged = systemPlugins;
+    foreach(const sys::Plugin &userPlugin, userPlugins){
+        bool shadowed = false;
+        for(int i = 0; i < merged.size(); i++){
+            if(merged.at(i).name().compare(userPlugin.name()) == 0){
+                qWarning() << "PluginRepository: user plugin" << userPlugin.filePath()
+                           << "shadows system plugin" << merged.at(i).filePath()
+                           << "(both named" << userPlugin.name() << ")";
+                merged[i] = userPlugin;
+                shadowed = true;
+                break;
+            }
+        }
+        if(!shadowed){
+            merged.append(userPlugin);
+        }
+    }
+
+    PluginRepository::plugins = merged;
     PluginRepository::isInit = true;
 
 }

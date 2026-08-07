@@ -1,5 +1,7 @@
 #include "sensorconfigurationmanager.h"
 
+#include <QDebug>
+
 /*!
  * \brief SensorConfigurationManager::SensorConfigurationManager
  */
@@ -412,6 +414,44 @@ void SensorConfigurationManager::loadFromConfigFolder(){
         if(!this->savedSensorConfigsMap.contains(userConfig.getName())){
             this->savedSensorConfigsMap.insert(userConfig.getName(), userConfig);
             this->savedSensorConfigsList.append(userConfig);
+        }
+    }
+
+    //user tier (~/.openindy/sensorConfigs/) - always writable without elevated
+    //permissions, where the GUI "save config" flow actually writes to. A
+    //user-tier config sharing a system-tier one's name shadows it in the
+    //list, same as PluginRepository - no file is ever touched here, unlike
+    //the same-directory dedup above.
+    QDir userSConfigFolder(QDir::homePath() + "/.openindy/sensorConfigs");
+    if(userSConfigFolder.exists()){
+        foreach(const QString &fileName, userSConfigFolder.entryList(xmlFilter, QDir::Files)){
+
+            QFile sConfigFile(userSConfigFolder.absoluteFilePath(fileName));
+            if(!sConfigFile.exists()){
+                continue;
+            }
+
+            QDomDocument sConfigXml;
+            if(!sConfigXml.setContent(&sConfigFile) || sConfigXml.isNull()){
+                continue;
+            }
+
+            SensorConfiguration userConfig;
+            QDomElement sConfigTag = sConfigXml.documentElement();
+            if(!userConfig.fromOpenIndyXML(sConfigTag)){
+                continue;
+            }
+            userConfig.setIsSaved(true);
+
+            if(this->savedSensorConfigsMap.contains(userConfig.getName())){
+                qWarning() << "SensorConfigurationManager: user sensor config" << sConfigFile.fileName()
+                           << "shadows a system one sharing the name" << userConfig.getName();
+                this->savedSensorConfigsList.removeOne(this->savedSensorConfigsMap.value(userConfig.getName()));
+            }
+            this->addSavedSensorConfig(userConfig);
+            this->savedSensorConfigsMap.insert(userConfig.getName(), userConfig);
+            this->savedSensorConfigsList.append(userConfig);
+
         }
     }
 

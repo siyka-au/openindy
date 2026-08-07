@@ -1,5 +1,7 @@
 #include "measurementconfigmanager.h"
 
+#include <QDebug>
+
 /*!
  * \brief MeasurementConfigManager::MeasurementConfigManager
  */
@@ -433,6 +435,52 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         //add the loaded measurement config to the list of saved configs
         if(!this->configs.contains(userConfig.getKey())){
             this->configs.insert(userConfig.getKey(), userConfig);
+        }
+    }
+
+    //user tier (~/.openindy/measurementConfigs/) - always writable without
+    //elevated permissions. A user-tier config sharing a system-tier one's
+    //name shadows it - unlike the system-tier loop above, this never writes
+    //any file (saveUserConfig()/saveConfig() hard-code the system directory,
+    //calling them here would wrongly duplicate the config into that tier).
+    QDir userMConfigFolder(QDir::homePath() + "/.openindy/measurementConfigs");
+    if(userMConfigFolder.exists()){
+        QStringList userMConfigNames;
+        foreach(const QString &fileName, userMConfigFolder.entryList(xmlFilter, QDir::Files)){
+
+            QFile mConfigFile(userMConfigFolder.absoluteFilePath(fileName));
+            if(!mConfigFile.exists()){
+                continue;
+            }
+
+            QDomDocument mConfigXml;
+            if(!mConfigXml.setContent(&mConfigFile) || mConfigXml.isNull()){
+                continue;
+            }
+
+            MeasurementConfig userConfig;
+            QDomElement mConfigTag = mConfigXml.documentElement();
+            if(!userConfig.fromOpenIndyXML(mConfigTag) || userConfig.isStandardConfig()){
+                continue;
+            }
+            userConfig.makeUserConfig();
+
+            if(userMConfigNames.contains(userConfig.getName())){
+                continue;
+            }
+            userMConfigNames.append(userConfig.getName());
+
+            //shadow a same-named system-tier entry, if any
+            foreach(const MeasurementConfigKey &key, this->configs.keys()){
+                if(this->configs.value(key).getName().compare(userConfig.getName()) == 0){
+                    qWarning() << "MeasurementConfigManager: user measurement config" << mConfigFile.fileName()
+                               << "shadows a system one sharing the name" << userConfig.getName();
+                    this->configs.remove(key);
+                    break;
+                }
+            }
+            this->configs.insert(userConfig.getKey(), userConfig);
+
         }
     }
 
