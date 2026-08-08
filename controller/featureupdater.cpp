@@ -1227,6 +1227,13 @@ void FeatureUpdater::transformAllObsToDestSystem(const QPointer<CoordinateSystem
             if(!obs.isNull()){
                 obs->setXYZ(obs->getOriginalXYZ());
                 obs->setIJK(obs->getOriginalIJK());
+                // uncertainty was already computed correctly (Reading propagates
+                // polar sigma into cartesian sigma, setObservation() copies it into
+                // originalSigmaXyz) but nothing ever carried it across into the
+                // working sigmaXyz fit functions actually read - setSigmaXyz() had
+                // no callers anywhere in the codebase before this
+                obs->setSigmaXyz(obs->getOriginalSigmaXyz());
+                obs->setSigmaIjk(obs->getOriginalSigmaIjk());
                 obs->setIsSolved(isSolved);
             }
 
