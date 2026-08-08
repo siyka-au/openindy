@@ -213,18 +213,22 @@ QList<sys::Function> PluginRepository::getAllFunctions(){
  * \param type
  * \return
  */
+bool PluginRepository::isCreateFunctionFor(const sys::Function &function, const FeatureTypes &type){
+    bool isCreateCategory;
+    if(type == eTrafoParamFeature){
+        isCreateCategory = function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) == 0;
+    }else{
+        isCreateCategory = function.interfaceCategory().compare(OiMetaData::iid_FitFunction) == 0
+                || function.interfaceCategory().compare(OiMetaData::iid_ConstructFunction) == 0
+                || function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) == 0;
+    }
+    return isCreateCategory && function.applicableFor().contains(type);
+}
+
 QList<sys::Function> PluginRepository::getFunctionsApplicableTo(const FeatureTypes &type){
     QList<sys::Function> result;
     foreach(const sys::Function &function, PluginRepository::getAllFunctions()){
-        bool isCreateCategory;
-        if(type == eTrafoParamFeature){
-            isCreateCategory = function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) == 0;
-        }else{
-            isCreateCategory = function.interfaceCategory().compare(OiMetaData::iid_FitFunction) == 0
-                    || function.interfaceCategory().compare(OiMetaData::iid_ConstructFunction) == 0
-                    || function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) == 0;
-        }
-        if(isCreateCategory && function.applicableFor().contains(type)){
+        if(PluginRepository::isCreateFunctionFor(function, type)){
             result.append(function);
         }
     }

@@ -9,6 +9,7 @@
 #include "measurementconfigurationdialog.h"
 #include "projectexchanger.h"
 #include "controller.h"
+#include "chooselalib.h"
 
 // recomended readings:
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
@@ -73,6 +74,11 @@ void DialogsTest::printMessage(const QString &msg, const MessageTypes &msgType, 
 }
 
 void DialogsTest::initTestCase() {
+
+    // the math library has no default backend; without this every OiMat
+    // operation dereferences a null linear-algebra pointer (main.cpp does
+    // the same at startup)
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
     QStringList entityTypes;
     entityTypes << "point" << "circle" << "plane"; // comboBox_entityType order
@@ -304,7 +310,7 @@ void DialogsTest::createPlaneFromPoints() {
     qDebug() << "clicking on function" << functionName;
     QVERIFY("function-planefrompoints" == functionName);
 
-    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, Qt::NoModifier, itemPt);
     QTest::qWait(1000);
 
     // check applicable measurement configs
@@ -360,7 +366,7 @@ void DialogsTest::createLevel() {
     qDebug() << "clicking on function" << functionName;
     QVERIFY("function-fitlevel" == functionName);
 
-    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, Qt::NoModifier, itemPt);
     QTest::qWait(1000);
 
     // check applicable measurement configs
@@ -442,7 +448,7 @@ void DialogsTest::reuseDialogInstance() {
     qDebug() << "clicking on function" << functionName;
     QVERIFY("function-fitlevel" == functionName);
 
-    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, Qt::NoModifier, itemPt);
     QTest::qWait(1000);
 
     // check applicable measurement configs
@@ -463,7 +469,8 @@ void DialogsTest::measurementConfigXML_RW() {
     xml.appendChild(root);
 
     MeasurementConfig fromXML;
-    fromXML.fromOpenIndyXML(xml.documentElement());
+    QDomElement docElem = xml.documentElement();
+    fromXML.fromOpenIndyXML(docElem);
 
     QVERIFY(config.getMeasurementMode() == fromXML.getMeasurementMode());
     QVERIFY(config.getMeasurementType() == fromXML.getMeasurementType());
@@ -656,7 +663,7 @@ void DialogsTest::measurementConfigDialog() {
     QModelIndex idx = projectConfigsLV->model()->index(i,0);
     projectConfigsLV->scrollTo(idx);
     QPoint itemPt = projectConfigsLV->visualRect(idx).center();
-    QTest::mouseClick(projectConfigsLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::mouseClick(projectConfigsLV->viewport(), Qt::LeftButton, Qt::NoModifier, itemPt);
     QTest::qWait(1000);
     QPointer<QLabel> configNameL = dialog.findChild<QLabel*>("label_configName");
     QVERIFY("PrecisePoint" == configNameL->text());
@@ -809,15 +816,20 @@ void DialogsTest::setDefaultFunctionAndConfig() {
         qDebug() << "elementType: " << elementType << getElementTypeName(elementType);
     }
 
-    // before loading defaults.json: nothing set yet
+    // start from a known-empty System layer. The test binary sits next to the
+    // app's deployed config/, so a lazy Settings::init() would otherwise pick up
+    // the real shipped defaults and make this test depend on ambient state
+    Settings::loadSystemLayerFromFile(QString("%1/does-not-exist.json").arg(qApp->applicationDirPath()));
+
     QPair<QString, QString> function = sourceModel->getDefaultFunction(getFeatureTypeEnum("point"));
     QString name = Settings::get("defaultMeasurementConfig.point");
     qDebug() << "function: " << function.first << function.second << "measurementConfig: " << name;
     QVERIFY(function.first.isEmpty());
     QVERIFY(name.isEmpty());
 
-    QString path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/../defaults.json");
+    QString path = QString("%1/defaults.json").arg(SRCDIR);
     qDebug() << "path" << path;
+    QVERIFY2(QFile::exists(path), qPrintable(QString("fixture missing: %1").arg(path)));
 
     Settings::loadSystemLayerFromFile(path);
 

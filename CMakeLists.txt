@@ -446,3 +446,47 @@ add_custom_command(TARGET openIndy POST_BUILD
         -P "${openindydefaultplugin_SOURCE_DIR}/cmake/DeployToApp.cmake"
     VERBATIM
 )
+
+# --- tests ---
+#
+# These suites predate the qmake->CMake migration and were never carried over,
+# so the app had no automated verification at all. The sources are the asset;
+# the old .pro files referenced a layout that no longer exists.
+
+enable_testing()
+
+find_package(Qt6 REQUIRED COMPONENTS Test)
+
+# pure logic, no GUI
+add_executable(tst_featuresorter test/featuresorter/featuresortertest.cpp)
+target_compile_definitions(tst_featuresorter PRIVATE
+    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/featuresorter")
+target_link_libraries(tst_featuresorter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
+add_test(NAME featuresorter COMMAND tst_featuresorter)
+
+# mock-based; exercises the controller's sensor-action surface
+add_executable(tst_measurebehavior
+    test/measurebehavior/measurebehaviortest.cpp
+    test/measurebehavior/testcontrollersensoractions.cpp
+    test/measurebehavior/testmeasurebehaviorlogic.cpp
+)
+target_include_directories(tst_measurebehavior PRIVATE test/measurebehavior)
+target_compile_definitions(tst_measurebehavior PRIVATE
+    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/measurebehavior")
+target_link_libraries(tst_measurebehavior PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
+add_test(NAME measurebehavior COMMAND tst_measurebehavior)
+
+# GUI suites - need an offscreen platform plugin in headless environments
+add_executable(tst_watchwindow test/watchwindow/tst_watchwindowtest.cpp)
+target_compile_definitions(tst_watchwindow PRIVATE
+    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/watchwindow")
+target_link_libraries(tst_watchwindow PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
+add_test(NAME watchwindow COMMAND tst_watchwindow)
+set_tests_properties(watchwindow PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+add_executable(tst_dialogs test/dialogs/dialogstest.cpp)
+target_compile_definitions(tst_dialogs PRIVATE
+    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/dialogs")
+target_link_libraries(tst_dialogs PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
+add_test(NAME dialogs COMMAND tst_dialogs)
+set_tests_properties(dialogs PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")

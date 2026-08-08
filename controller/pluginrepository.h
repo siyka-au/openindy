@@ -41,6 +41,12 @@ public:
     //#############
 
     static QList<sys::Function> getAllFunctions();
+    //whether a function is a "create" function for the given feature type, i.e. one
+    //that can produce it from scratch. A pure predicate over the function itself -
+    //exposed so consumers filtering their own function lists (e.g. proxy models over
+    //an injected list) can apply identical semantics without querying this repository
+    static bool isCreateFunctionFor(const sys::Function &function, const FeatureTypes &type);
+
     static QList<sys::Function> getFunctionsApplicableTo(const FeatureTypes &type);   //fit/construct/special/system-transformation functions, i.e. functions used to create a feature
     static QList<sys::Function> getChangeFunctions(const FeatureTypes &type);         //everything else, i.e. functions used to modify an already-solved feature
     static std::optional<sys::Function> getByQualifiedId(const QString &qualifiedId);

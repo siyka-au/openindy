@@ -62,12 +62,7 @@ bool AvailableFunctionsListProxyModel::filterAcceptsRow(int source_row, const QM
         return false;
     }
 
-    //get a list of available first function for the specified feature type
     if(this->filter < 0) {
-        return false;
-    }
-    QList<sys::Function> functions = PluginRepository::getFunctionsApplicableTo(this->filter);
-    if(functions.size() == 0){
         return false;
     }
 
@@ -77,15 +72,11 @@ bool AvailableFunctionsListProxyModel::filterAcceptsRow(int source_row, const QM
         return false;
     }
 
-    //check if the current function is a create function for the specified feature type
-    foreach(const sys::Function &function, functions){
-        if(function.name().compare(currentFunction.name()) == 0
-                && function.plugin().name().compare(currentFunction.plugin().name()) == 0){
-            return true;
-        }
-    }
-
-    return false;
+    //decide purely from the function this row actually holds. Asking
+    //PluginRepository instead would filter against the globally scanned plugin
+    //set rather than whatever the source model was given, which diverges the
+    //moment the model is populated from anywhere else (e.g. ModelManager::testInit)
+    return PluginRepository::isCreateFunctionFor(currentFunction, this->filter);
 
 }
 
