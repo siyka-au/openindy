@@ -59,7 +59,7 @@ public:
 
     static bool findIID(const QString &iid);
 
-    static SensorTypes getSensorTypeEnum(const QString &iid);
+    static SensorType getSensorType(const QString &iid);
 
     //###############################
     //get plugin interface type names

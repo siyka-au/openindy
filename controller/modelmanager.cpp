@@ -1146,8 +1146,8 @@ void ModelManager::initSensorTypeNamesModel(){
 
     QStringList sensorTypes;
 
-    foreach(const SensorTypes &type, getAvailableSensorTypes()){
-        sensorTypes.append(getSensorTypeName(type));
+    foreach(const SensorType &type, SensorTypeRegistry::all()){
+        sensorTypes.append(type.displayName());
     }
 
     ModelManager::sensorTypeNamesModel.setStringList(sensorTypes);

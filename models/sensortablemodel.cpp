@@ -242,7 +242,7 @@ void SensorTableModel::selectSensorPlugin(const QString &sensorName, const QStri
  * \brief SensorTableModel::getSensorType
  * \return
  */
-SensorTypes SensorTableModel::getSensorType() const{
+SensorType SensorTableModel::getSensorType() const{
 
     //get type of the right sensor
     int numSensorPlugins = 0;
@@ -255,7 +255,7 @@ SensorTypes SensorTableModel::getSensorType() const{
             if(plugin.name().compare(this->selectedSensor.first) == 0
                     && sensor.name().compare(this->selectedSensor.second) == 0){
 
-                return OiMetaData::getSensorTypeEnum(sensor.interfaceCategory());
+                return OiMetaData::getSensorType(sensor.interfaceCategory());
 
             }
 
@@ -264,7 +264,7 @@ SensorTypes SensorTableModel::getSensorType() const{
 
     }
 
-    return eUndefinedSensor;
+    return SensorType();
 
 }
 
@@ -273,11 +273,11 @@ SensorTypes SensorTableModel::getSensorType() const{
  * \param index
  * \return
  */
-SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
+SensorType SensorTableModel::getSensorType(const QModelIndex &index) const{
 
     //check index
     if(!index.isValid()){
-        return eUndefinedSensor;
+        return SensorType();
     }
 
     //get rowIndex
@@ -287,7 +287,7 @@ SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
     QModelIndex pluginIndex = this->index(rowIndex, 1);
     QModelIndex sensorIndex = this->index(rowIndex, 0);
     if(!pluginIndex.isValid() || !sensorIndex.isValid()){
-        return eUndefinedSensor;
+        return SensorType();
     }
 
     //get plugin and sensor name
@@ -305,7 +305,7 @@ SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
             if(plugin.name().compare(pluginName) == 0
                     && sensor.name().compare(sensorName) == 0){
 
-                return OiMetaData::getSensorTypeEnum(sensor.interfaceCategory());
+                return OiMetaData::getSensorType(sensor.interfaceCategory());
 
             }
 
@@ -314,7 +314,7 @@ SensorTypes SensorTableModel::getSensorType(const QModelIndex &index) const{
 
     }
 
-    return eUndefinedSensor;
+    return SensorType();
 
 }
 

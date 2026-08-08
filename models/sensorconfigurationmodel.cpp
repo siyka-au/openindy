@@ -197,7 +197,7 @@ SensorConfiguration SensorConfigurationModel::addSensorConfiguration(){
     //create sensor config
     SensorConfiguration sConfig;
     sConfig.setName("newConfig");
-    sConfig.setTypeOfSensor(eUndefinedSensor);
+    sConfig.setTypeOfSensor(SensorType());
     sConfig.setIsSaved(true);
     int index = 0;
     while(this->sensorConfigManager.hasSavedSensorConfig(sConfig.getName())){

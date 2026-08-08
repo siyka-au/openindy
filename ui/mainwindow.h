@@ -392,7 +392,7 @@ private:
     //##############################
 
     //sensor type
-    void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
+    void activeSensorTypeChanged(const SensorType &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
     //magnify
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);

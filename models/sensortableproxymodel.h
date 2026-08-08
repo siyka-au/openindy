@@ -28,8 +28,8 @@ public:
     //set sensor type filter
     //######################
 
-    const SensorTypes &getSensorType() const;
-    void setSensorType(const SensorTypes &type);
+    const SensorType &getSensorType() const;
+    void setSensorType(const SensorType &type);
 
 signals:
 
@@ -54,7 +54,7 @@ private:
     //current sensor type
     //###################
 
-    SensorTypes sensorType;
+    SensorType sensorType;
 
 };
 

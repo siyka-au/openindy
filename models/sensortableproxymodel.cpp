@@ -6,14 +6,14 @@
  */
 SensorTableProxyModel::SensorTableProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-    this->sensorType = eUndefinedSensor;
+    this->sensorType = SensorType();
 }
 
 /*!
  * \brief SensorTableProxyModel::getSensorType
  * \return
  */
-const SensorTypes &SensorTableProxyModel::getSensorType() const{
+const SensorType &SensorTableProxyModel::getSensorType() const{
     return this->sensorType;
 }
 
@@ -21,10 +21,10 @@ const SensorTypes &SensorTableProxyModel::getSensorType() const{
  * \brief SensorTableProxyModel::setSensorType
  * \param type
  */
-void SensorTableProxyModel::setSensorType(const SensorTypes &type){
+void SensorTableProxyModel::setSensorType(const SensorType &type){
 
     //check sensor type
-    if(type != eLaserTracker && type != eTotalStation){
+    if(!type.isValid()){
         return;
     }
 

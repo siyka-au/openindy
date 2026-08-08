@@ -48,8 +48,8 @@ public:
     void selectSensorPlugin(const QString &sensorName, const QString &pluginName);
 
     //get general sensor information
-    SensorTypes getSensorType() const;
-    SensorTypes getSensorType(const QModelIndex &index) const;
+    SensorType getSensorType() const;
+    SensorType getSensorType(const QModelIndex &index) const;
     QString getSensorDescription() const;
     QString getSensorDescription(const QModelIndex &index) const;
     QString getPluginFilePath() const;

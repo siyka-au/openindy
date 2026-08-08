@@ -297,7 +297,7 @@ void MainWindow::stationSensorChanged(const int &featureId){
     }
 
     //set sensor action's visibility depending on the sensor type
-    SensorTypes type = activeStation->getActiveSensorType();
+    SensorType type = activeStation->getActiveSensorType();
     QList<SensorFunctions> sensorActions = activeStation->getSupportedSensorActions();
     QStringList selfDefinedActions = activeStation->getSelfDefinedActions();
     this->activeSensorTypeChanged(type, sensorActions, selfDefinedActions);
@@ -2471,88 +2471,32 @@ void MainWindow::initBundleView(){
  * \param supportedActions
  * \param selfDefinedActions
  */
-void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions){
+void MainWindow::activeSensorTypeChanged(const SensorType &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions){
 
-    //set visibility of standard actions
-    switch(type){
-    case eLaserTracker:
+    //visibility follows what the driver declares it can do, not what its type
+    //is - a switch on sensor type both hardcodes assumptions the driver already
+    //answers and silently excludes any type the switch was not written for
+    const bool hasSensor = type.isValid();
+    const auto setAction = [&supportedActions, hasSensor](QPointer<QAction> action, const SensorFunctions &required){
+        if(action.isNull()){
+            return;
+        }
+        const bool available = hasSensor && supportedActions.contains(required);
+        action->setVisible(available);
+        action->setEnabled(available);
+    };
 
-        this->actionConnect->setVisible(true);
-        this->actionConnect->setEnabled(true);
-        this->actionDisconnect->setVisible(true);
-        this->actionDisconnect->setEnabled(true);
-        this->actionInitialize->setVisible(true);
-        this->actionInitialize->setEnabled(true);
-        this->actionMeasure->setVisible(true);
-        this->actionMeasure->setEnabled(true);
-        this->actionAim->setVisible(true);
-        this->actionAim->setEnabled(true);
-        this->actionMove->setVisible(true);
-        this->actionMove->setEnabled(true);
-        this->actionHome->setVisible(true);
-        this->actionHome->setEnabled(true);
-        this->actionChangeMotorState->setVisible(true);
-        this->actionChangeMotorState->setEnabled(true);
-        this->actionToggleSightOrientation->setVisible(true);
-        this->actionToggleSightOrientation->setEnabled(true);
-        this->actionCompensation->setVisible(true);
-        this->actionCompensation->setEnabled(true);
-        this->actionSearch->setVisible(supportedActions.contains(SensorFunctions::eSearch));
-        this->actionSearch->setEnabled(supportedActions.contains(SensorFunctions::eSearch));
-
-        break;
-
-    case eTotalStation:
-
-        this->actionConnect->setVisible(true);
-        this->actionConnect->setEnabled(true);
-        this->actionDisconnect->setVisible(true);
-        this->actionDisconnect->setEnabled(true);
-        this->actionInitialize->setVisible(false);
-        this->actionInitialize->setEnabled(false);
-        this->actionMeasure->setVisible(true);
-        this->actionMeasure->setEnabled(true);
-        this->actionAim->setVisible(true);
-        this->actionAim->setEnabled(true);
-        this->actionMove->setVisible(true);
-        this->actionMove->setEnabled(true);
-        this->actionHome->setVisible(false);
-        this->actionHome->setEnabled(false);
-        this->actionChangeMotorState->setVisible(false);
-        this->actionChangeMotorState->setEnabled(false);
-        this->actionToggleSightOrientation->setVisible(true);
-        this->actionToggleSightOrientation->setEnabled(true);
-        this->actionCompensation->setVisible(false);
-        this->actionCompensation->setEnabled(false);
-
-        break;
-
-    default:
-
-        this->actionConnect->setVisible(false);
-        this->actionConnect->setEnabled(false);
-        this->actionDisconnect->setVisible(false);
-        this->actionDisconnect->setEnabled(false);
-        this->actionInitialize->setVisible(false);
-        this->actionInitialize->setEnabled(false);
-        this->actionMeasure->setVisible(false);
-        this->actionMeasure->setEnabled(false);
-        this->actionAim->setVisible(false);
-        this->actionAim->setEnabled(false);
-        this->actionMove->setVisible(false);
-        this->actionMove->setEnabled(false);
-        this->actionHome->setVisible(false);
-        this->actionHome->setEnabled(false);
-        this->actionChangeMotorState->setVisible(false);
-        this->actionChangeMotorState->setEnabled(false);
-        this->actionToggleSightOrientation->setVisible(false);
-        this->actionToggleSightOrientation->setEnabled(false);
-        this->actionCompensation->setVisible(false);
-        this->actionCompensation->setEnabled(false);
-
-        break;
-
-    }
+    setAction(this->actionConnect,                SensorFunctions::eConnect);
+    setAction(this->actionDisconnect,             SensorFunctions::eDisconnect);
+    setAction(this->actionInitialize,             SensorFunctions::eInitialize);
+    setAction(this->actionMeasure,                SensorFunctions::eMeasure);
+    setAction(this->actionAim,                    SensorFunctions::eMoveXYZ);
+    setAction(this->actionMove,                   SensorFunctions::eMoveAngle);
+    setAction(this->actionHome,                   SensorFunctions::eHome);
+    setAction(this->actionChangeMotorState,       SensorFunctions::eMotorState);
+    setAction(this->actionToggleSightOrientation, SensorFunctions::eToggleSight);
+    setAction(this->actionCompensation,           SensorFunctions::eCompensation);
+    setAction(this->actionSearch,                 SensorFunctions::eSearch);
 
     //delete old self defined actions
     foreach(const QPointer<QAction> &action, this->selfDefinedActions){

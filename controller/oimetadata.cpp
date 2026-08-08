@@ -65,20 +65,15 @@ bool OiMetaData::findIID(const QString &iid){
 }
 
 /*!
- * \brief OiMetaData::getSensorTypeEnum
+ * \brief OiMetaData::getSensorType
  * \param iid
  * \return
  */
-SensorTypes OiMetaData::getSensorTypeEnum(const QString &iid){
+SensorType OiMetaData::getSensorType(const QString &iid){
 
-    //check the given iid
-    if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
-        return eLaserTracker;
-    }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
-        return eTotalStation;
-    }
-
-    return eUndefinedSensor;
+    //derived from the interface id itself, so a plugin can introduce a sensor
+    //type the core has never heard of without a core change
+    return SensorType::fromInterfaceId(iid);
 
 }
 

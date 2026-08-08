@@ -2042,13 +2042,18 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QPointer<oi::Sensor> >("QPointer<Sensor>");
     qRegisterMetaType<oi::ReadingTypes>("ReadingTypes");
     qRegisterMetaType<QList<oi::ReadingTypes> >("QList<ReadingTypes>");
-    qRegisterMetaType<oi::SensorTypes>("SensorTypes");
-    qRegisterMetaType<QList<oi::SensorTypes> >("QList<SensorTypes>");
+    qRegisterMetaType<oi::SensorType>("SensorType");
+    qRegisterMetaType<QList<oi::SensorType> >("QList<SensorType>");
     qRegisterMetaType<oi::ConnectionTypes>("ConnectionTypes");
     qRegisterMetaType<QList<oi::ConnectionTypes> >("QList<ConnectionTypes>");
     qRegisterMetaType<oi::SensorFunctions>("SensorFunctions");
     qRegisterMetaType<QList<oi::SensorFunctions> >("QList<SensorFunctions>");
-    qRegisterMetaType<oi::SensorTypes>("SensorAction");
+    qRegisterMetaType<oi::AcquisitionMode>("AcquisitionMode");
+    qRegisterMetaType<QList<oi::AcquisitionMode> >("QList<AcquisitionMode>");
+    //SensorAction crosses the SensorWorker thread boundary in commandFinished();
+    //this previously registered the sensor *type* under this name, so the enum
+    //actually being queued was never registered at all
+    qRegisterMetaType<oi::SensorAction>("SensorAction");
 
 }
 

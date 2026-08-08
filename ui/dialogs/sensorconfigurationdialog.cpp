@@ -298,7 +298,12 @@ void SensorConfigurationDialog::sensorPluginChanged(){
  * \param arg1
  */
 void SensorConfigurationDialog::on_comboBox_availableSensorTypes_currentTextChanged(const QString &arg1){
-    ModelManager::getSensorTableProxyModel().setSensorType(getSensorTypeEnum(arg1));
+    foreach(const SensorType &type, SensorTypeRegistry::all()){
+        if(type.displayName().compare(arg1) == 0){
+            ModelManager::getSensorTableProxyModel().setSensorType(type);
+            break;
+        }
+    }
 }
 
 /*!
@@ -417,7 +422,7 @@ void SensorConfigurationDialog::updateGuiFromSensorConfig(const SensorConfigurat
 
     //select the correct sensor type
     this->ui->comboBox_availableSensorTypes->blockSignals(true);
-    this->ui->comboBox_availableSensorTypes->setCurrentText(getSensorTypeName(sConfig.getTypeOfSensor()));
+    this->ui->comboBox_availableSensorTypes->setCurrentText(sConfig.getTypeOfSensor().displayName());
     this->ui->comboBox_availableSensorTypes->blockSignals(false);
     ModelManager::getSensorTableProxyModel().setSensorType(sConfig.getTypeOfSensor());
 
