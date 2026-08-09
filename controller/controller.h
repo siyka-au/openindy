@@ -13,6 +13,7 @@
 #include <QMutexLocker>
 
 #include "oijob.h"
+#include "calibratedconstellation.h"
 #include "modelmanager.h"
 #include "settings.h"
 #include "console.h"

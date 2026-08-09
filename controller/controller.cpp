@@ -2065,6 +2065,8 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QList<oi::SensorFunctions> >("QList<SensorFunctions>");
     qRegisterMetaType<oi::AcquisitionMode>("AcquisitionMode");
     qRegisterMetaType<QList<oi::AcquisitionMode> >("QList<AcquisitionMode>");
+    qRegisterMetaType<oi::LocalPoint>("LocalPoint");
+    qRegisterMetaType<oi::CalibratedConstellation>("CalibratedConstellation");
     //SensorAction crosses the SensorWorker thread boundary in commandFinished();
     //this previously registered the sensor *type* under this name, so the enum
     //actually being queued was never registered at all
