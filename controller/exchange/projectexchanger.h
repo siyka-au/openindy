@@ -79,8 +79,10 @@ private:
     QMap<int, QPointer<FeatureWrapper> > myTransformationParameters;
     QMap<int, QPointer<FeatureWrapper> > myGeometries;
 
-    // all loaded MeasurementConfigs from project file
-    QMap<QString, MeasurementConfig> measurementConfigs;
+    // all loaded MeasurementConfigs from project file, keyed by full
+    // identity (name+sensorType) - name alone collides once two drivers
+    // publish same-named configs (e.g. "FastPoint")
+    QMap<MeasurementConfigKey, MeasurementConfig> measurementConfigs;
     QMap<QString, SensorConfiguration> mySConfigs;
 
     void clearHelperMaps(bool deleteOnClear);

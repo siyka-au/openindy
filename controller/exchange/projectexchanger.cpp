@@ -731,7 +731,7 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 MeasurementConfig mConfig;
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
                     mConfig.makeProjectConfig();
-                    this->measurementConfigs.insert(mConfig.getName(), mConfig);
+                    this->measurementConfigs.insert(mConfig.getKey(), mConfig);
                 }
             }
         }
@@ -1225,8 +1225,26 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
             if( !mConfigElement.isNull() && mConfigElement.hasAttribute("name") && !name.toString().isEmpty()
                     && !isScalar(myGeometry)/* do not have a measurement config */){
 
-                MeasurementConfig projectConfig = this->measurementConfigs.value(name.toString()); // will add to MeasurementConfigManager later !!!
-                MeasurementConfig standardConfig = this->mConfigManager->getStandardConfig(name.toString());
+                //sensorType disambiguates configs that share a name across
+                //driver types (Stage 3's whole reason for adding it to
+                //MeasurementConfigKey's identity) - go through the full
+                //key rather than MeasurementConfigManager::getStandardConfig(name),
+                //which still only matches on name and misses every
+                //driver-published standard config as a result (a separate,
+                //pre-existing bug, tracked but not fixed here). SensorType
+                //identity is its id() alone (SensorType::operator==), so a
+                //bare id is enough to reconstruct one for lookup purposes -
+                //no registry round-trip, and it works for a plugin-defined
+                //type the registry was never told about, too.
+                const SensorType sensorType = mConfigElement.hasAttribute("sensorType")
+                        ? SensorType(mConfigElement.attribute("sensorType"), QString())
+                        : SensorType();
+
+                const MeasurementConfigKey standardKey(name.toString(), eStandardConfig, sensorType);
+                const MeasurementConfigKey projectKey(name.toString(), eProjectConfig, sensorType);
+
+                MeasurementConfig standardConfig = this->mConfigManager->getConfig(standardKey);
+                MeasurementConfig projectConfig = this->measurementConfigs.value(projectKey); // will add to MeasurementConfigManager later !!!
 
                 if(standardConfig.isValid()) { // if standard config with "name" available use it
                     myGeometry->getGeometry()->setMeasurementConfig(standardConfig.getKey());
