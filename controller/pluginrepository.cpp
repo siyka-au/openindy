@@ -125,7 +125,18 @@ sys::Plugin PluginRepository::scanPluginFile(const QString &filePath){
     QList<sys::Sensor> sensors;
     foreach(const QPointer<Sensor> &s, PluginLoader::loadSensorPlugins(filePath)){
         if(s.isNull()){ continue; }
-        sensors.append(sys::Sensor(s->getMetaData().name, s->getMetaData().description, ownerRef, s->getMetaData().iid));
+
+        //tag every config this sensor publishes with its own type here, once,
+        //rather than asking each driver to derive and stamp its own SensorType -
+        //the derivation already lives in one place (SensorType::fromInterfaceId)
+        const SensorType type = SensorType::fromInterfaceId(s->getMetaData().iid);
+        QList<MeasurementConfig> configs = s->getSupportedMeasurementConfigs();
+        for(int i = 0; i < configs.size(); i++){
+            configs[i].setSensorType(type);
+        }
+
+        sensors.append(sys::Sensor(s->getMetaData().name, s->getMetaData().description, ownerRef, s->getMetaData().iid,
+                                    configs, s->getSupportedAcquisitionModes()));
     }
 
     QList<sys::Tool> tools;
@@ -279,6 +290,34 @@ QList<sys::Tool> PluginRepository::getAllTools(){
     QList<sys::Tool> result;
     foreach(const sys::Plugin &plugin, PluginRepository::getAll()){
         result.append(plugin.tools());
+    }
+    return result;
+}
+
+/*!
+ * \brief PluginRepository::getAllSensors
+ * \return
+ */
+QList<sys::Sensor> PluginRepository::getAllSensors(){
+    QList<sys::Sensor> result;
+    foreach(const sys::Plugin &plugin, PluginRepository::getAll()){
+        result.append(plugin.sensors());
+    }
+    return result;
+}
+
+/*!
+ * \brief PluginRepository::getAllMeasurementConfigs
+ * Every config every scanned sensor publishes, tagged with that sensor's
+ * type - the driver-published tier MeasurementConfigManager merges with
+ * the user/project tier. Available without any sensor being connected,
+ * since it comes from the same instantiate+init() scan that already
+ * builds the plugin catalog.
+ */
+QList<MeasurementConfig> PluginRepository::getAllMeasurementConfigs(){
+    QList<MeasurementConfig> result;
+    foreach(const sys::Sensor &sensor, PluginRepository::getAllSensors()){
+        result.append(sensor.measurementConfigs());
     }
     return result;
 }

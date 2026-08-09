@@ -7,64 +7,15 @@
  */
 MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(parent){
 
-    // initial read only standard configs
-    MeasurementConfig fastPoint;
-    fastPoint.setName("FastPoint");
-    fastPoint.setMaxObservations(1);
-    fastPoint.setTimeInterval(0);
-    fastPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    fastPoint.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
-    fastPoint.setDistanceInterval(0);
-    fastPoint.setMeasureTwoSides(false);
-    fastPoint.makeStandardConfig();
-    this->configs.insert(fastPoint.getKey(), fastPoint);
-
-    MeasurementConfig stdPoint;
-    stdPoint.setName("StdPoint");
-    stdPoint.setMaxObservations(1);
-    stdPoint.setTimeInterval(0);
-    stdPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    stdPoint.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
-    stdPoint.setDistanceInterval(0);
-    stdPoint.setMeasureTwoSides(false);
-    stdPoint.makeStandardConfig();
-    this->configs.insert(stdPoint.getKey(), stdPoint);
-
-    MeasurementConfig precisePoint;
-    precisePoint.setName("PrecisePoint");
-    precisePoint.setMaxObservations(1);
-    precisePoint.setTimeInterval(0);
-    precisePoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    precisePoint.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
-    precisePoint.setDistanceInterval(0);
-    precisePoint.setMeasureTwoSides(false);
-    precisePoint.makeStandardConfig();
-    this->configs.insert(precisePoint.getKey(), precisePoint);
-
-    MeasurementConfig stdTwoSide;
-    stdTwoSide.setName("StdTwoSide");
-    stdTwoSide.setMaxObservations(1);
-    stdTwoSide.setTimeInterval(0);
-    stdTwoSide.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
-    stdTwoSide.setDistanceInterval(0);
-    stdTwoSide.setMeasureTwoSides(true);
-    stdTwoSide.makeStandardConfig();
-    this->configs.insert(stdTwoSide.getKey(), stdTwoSide);
-
-    MeasurementConfig level;
-    level.setName("level"); /* lower case */
-    level.setMaxObservations(1);
-    level.setTimeInterval(0);
-    level.setMeasurementType(MeasurementTypes::eLevel_MeasurementType);
-    level.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
-    level.setDistanceInterval(0);
-    level.setMeasureTwoSides(false);
-    level.makeStandardConfig();
-    this->configs.insert(level.getKey(), level);
-
-    for(const MeasurementConfig c : configs) {
-        addProjectConfig(c);
+    // standard configs are driver-published, not hardcoded here - each
+    // scanned sensor's init() declares its own catalog (PluginRepository
+    // tags every entry with that sensor's type), so a config only appears
+    // at all if some loaded driver actually claims to support it. This is
+    // what let "level" default to being offered for every sensor before,
+    // including ones (LeicaTachymeter) that can't produce a level reading.
+    foreach(MeasurementConfig c, PluginRepository::getAllMeasurementConfigs()){
+        this->configs.insert(c.getKey(), c);
+        this->addProjectConfig(c);
     }
 }
 

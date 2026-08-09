@@ -10,6 +10,7 @@
 #include "measurementconfig.h"
 #include "console.h"
 #include "oijob.h"
+#include "pluginrepository.h"
 
 #if defined(OI_MAIN_LIB)
 #  define OI_MAIN_EXPORT Q_DECL_EXPORT

@@ -5,6 +5,7 @@
 #include <QList>
 
 #include "types.h"
+#include "measurementconfig.h"
 
 #if defined(OI_MAIN_LIB)
 #  define OI_MAIN_EXPORT Q_DECL_EXPORT
@@ -76,8 +77,11 @@ private:
 class OI_MAIN_EXPORT Sensor{
 public:
     Sensor() {}
-    Sensor(const QString &name, const QString &description, const Plugin &plugin, const QString &interfaceCategory)
-        : m_name(name), m_description(description), m_plugin(plugin), m_interfaceCategory(interfaceCategory) {}
+    Sensor(const QString &name, const QString &description, const Plugin &plugin, const QString &interfaceCategory,
+           const QList<MeasurementConfig> &measurementConfigs = QList<MeasurementConfig>(),
+           const QList<AcquisitionMode> &acquisitionModes = QList<AcquisitionMode>())
+        : m_name(name), m_description(description), m_plugin(plugin), m_interfaceCategory(interfaceCategory),
+          m_measurementConfigs(measurementConfigs), m_acquisitionModes(acquisitionModes) {}
 
     QString name() const { return m_name; }
     QString description() const { return m_description; }
@@ -86,14 +90,24 @@ public:
 
     //! Sensor_iidd/LaserTracker_iidd/TotalStation_iidd - NOT an identity (shared
     //! by every sensor of that category), kept only to classify sensor type the
-    //! same way the old DB did (OiMetaData::getSensorTypeEnum)
+    //! same way OiMetaData::getSensorType() derives it from a plugin's own iid
     QString interfaceCategory() const { return m_interfaceCategory; }
+
+    //! the config catalog and acquisition capability this sensor's own init()
+    //! declared, captured once at scan time (the same instantiate+init() call
+    //! that already builds this sys::Sensor at all) - MeasurementConfigManager
+    //! merges these across every scanned sensor, not just a connected one, so
+    //! the picker has real options before anything is plugged in
+    QList<MeasurementConfig> measurementConfigs() const { return m_measurementConfigs; }
+    QList<AcquisitionMode> acquisitionModes() const { return m_acquisitionModes; }
 
 private:
     QString m_name;
     QString m_description;
     Plugin m_plugin;
     QString m_interfaceCategory;
+    QList<MeasurementConfig> m_measurementConfigs;
+    QList<AcquisitionMode> m_acquisitionModes;
 };
 
 class OI_MAIN_EXPORT Tool{

@@ -20,13 +20,15 @@ void MeasurementConfigurationProxyModel::setFilter(const bool &showAll){
     this->invalidateFilter();
     this->sort(0);
 }
-void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor) {
+void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor,
+                                                     const SensorType &activeSensorType) {
     this->resetFilter();
 
     this->filterType = eCreateFeature_MeasurementConfigurationFilter;
     this->neededElements = neededElements;
     this->typeOfFeature = typeOfFeature;
     this->functionIsApplicableFor = applicableFor;
+    this->activeSensorType = activeSensorType;
 
     this->invalidateFilter();
     this->sort(0);
@@ -54,6 +56,7 @@ void MeasurementConfigurationProxyModel::resetFilter() {
     this->neededElements.clear();
     this->typeOfFeature = FeatureTypes::eUndefinedFeature;
     this->functionIsApplicableFor.clear();
+    this->activeSensorType = SensorType();
     this->sort(0);
 }
 
@@ -98,6 +101,15 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     MeasurementConfig mc = configs.at(source_row);
     const bool isProject = mc.isValid() && mc.isProjectConfig();
     const bool isUser = mc.isValid() && mc.isUserConfig();
+
+    //an untagged config (user/project-authored generically, or predating
+    //the tag) stays visible regardless of active sensor - only a config
+    //that's explicitly tagged for a *different* type gets narrowed out.
+    //With no active sensor known yet, don't filter by type at all.
+    if(this->activeSensorType.isValid() && mc.getSensorType().isValid()
+            && !(mc.getSensorType() == this->activeSensorType)){
+        return false;
+    }
 
     switch(this->filterType) {
     case eProject_MeasurementConfigurationFilter:

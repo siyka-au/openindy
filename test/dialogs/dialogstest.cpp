@@ -186,13 +186,16 @@ void DialogsTest::createPoint() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    // PseudoTracker and LeicaTachymeter each publish their own FastPoint/
+    // PrecisePoint/StdPoint/StdTwoSide now (sensor-type-tagged, no longer one
+    // shared hardcoded list) - with no active station in this test, the type
+    // filter can't narrow to one sensor, so both show up. Which of a pair of
+    // identically-named entries sorts first isn't meaningful, so check the
+    // full multiset rather than assert brittle per-index identity.
+    QVERIFY(10 == mConfigLV->model()->rowCount());
+    QCOMPARE(getNames(mConfigLV->model()),
+              QStringList({"FastPoint", "FastPoint", "measconfig-fastpoint_project", "measconfig-scandistance [user]",
+                           "PrecisePoint", "PrecisePoint", "StdPoint", "StdPoint", "StdTwoSide", "StdTwoSide"}));
 
 }
 
@@ -222,13 +225,16 @@ void DialogsTest::createCircle() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    // PseudoTracker and LeicaTachymeter each publish their own FastPoint/
+    // PrecisePoint/StdPoint/StdTwoSide now (sensor-type-tagged, no longer one
+    // shared hardcoded list) - with no active station in this test, the type
+    // filter can't narrow to one sensor, so both show up. Which of a pair of
+    // identically-named entries sorts first isn't meaningful, so check the
+    // full multiset rather than assert brittle per-index identity.
+    QVERIFY(10 == mConfigLV->model()->rowCount());
+    QCOMPARE(getNames(mConfigLV->model()),
+              QStringList({"FastPoint", "FastPoint", "measconfig-fastpoint_project", "measconfig-scandistance [user]",
+                           "PrecisePoint", "PrecisePoint", "StdPoint", "StdPoint", "StdTwoSide", "StdTwoSide"}));
 
 }
 
@@ -258,13 +264,16 @@ void DialogsTest::createPlane() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    // PseudoTracker and LeicaTachymeter each publish their own FastPoint/
+    // PrecisePoint/StdPoint/StdTwoSide now (sensor-type-tagged, no longer one
+    // shared hardcoded list) - with no active station in this test, the type
+    // filter can't narrow to one sensor, so both show up. Which of a pair of
+    // identically-named entries sorts first isn't meaningful, so check the
+    // full multiset rather than assert brittle per-index identity.
+    QVERIFY(10 == mConfigLV->model()->rowCount());
+    QCOMPARE(getNames(mConfigLV->model()),
+              QStringList({"FastPoint", "FastPoint", "measconfig-fastpoint_project", "measconfig-scandistance [user]",
+                           "PrecisePoint", "PrecisePoint", "StdPoint", "StdPoint", "StdTwoSide", "StdTwoSide"}));
 
 }
 
@@ -405,13 +414,16 @@ void DialogsTest::reuseDialogInstance() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    // PseudoTracker and LeicaTachymeter each publish their own FastPoint/
+    // PrecisePoint/StdPoint/StdTwoSide now (sensor-type-tagged, no longer one
+    // shared hardcoded list) - with no active station in this test, the type
+    // filter can't narrow to one sensor, so both show up. Which of a pair of
+    // identically-named entries sorts first isn't meaningful, so check the
+    // full multiset rather than assert brittle per-index identity.
+    QVERIFY(10 == mConfigLV->model()->rowCount());
+    QCOMPARE(getNames(mConfigLV->model()),
+              QStringList({"FastPoint", "FastPoint", "measconfig-fastpoint_project", "measconfig-scandistance [user]",
+                           "PrecisePoint", "PrecisePoint", "StdPoint", "StdPoint", "StdTwoSide", "StdTwoSide"}));
 
     dialog.close();
     QTest::qWait(1000);
@@ -579,13 +591,11 @@ void DialogsTest::measurementConfigFilter() {
     proxy->setFilterProjectConfig();
     names = getNames(proxy);
     qDebug() << "project config: " << names;
-    QVERIFY(6 == proxy->rowCount());
-    QVERIFY("FastPoint"                         == proxy->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("level"                             == proxy->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == proxy->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == proxy->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == proxy->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == proxy->index(5, 0).data( Qt::DisplayRole ).toString());
+    // FastPoint/PrecisePoint/StdPoint/StdTwoSide doubled: PseudoTracker and
+    // LeicaTachymeter each publish their own now. "level" is tracker-only
+    // (LeicaTachymeter doesn't support level readings), so it stays singular.
+    QCOMPARE(names, QStringList({"FastPoint", "FastPoint", "level", "measconfig-fastpoint_project",
+                                 "PrecisePoint", "PrecisePoint", "StdPoint", "StdPoint", "StdTwoSide", "StdTwoSide"}));
 
     proxy->setFilterUserConfig();
     names = getNames(proxy);
@@ -597,15 +607,9 @@ void DialogsTest::measurementConfigFilter() {
     proxy->setFilter(true);
     names = getNames(proxy);
     qDebug() << "all:            " << names;
-    QVERIFY(8 == proxy->rowCount());
-    QVERIFY("FastPoint"                         == proxy->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("FastPoint"                         == proxy->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("level"                             == proxy->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == proxy->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance"           == proxy->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == proxy->index(5, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == proxy->index(6, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == proxy->index(7, 0).data( Qt::DisplayRole ).toString());
+    QCOMPARE(names, QStringList({"FastPoint", "FastPoint", "FastPoint", "level", "measconfig-fastpoint_project",
+                                 "measconfig-scandistance", "PrecisePoint", "PrecisePoint", "StdPoint", "StdPoint",
+                                 "StdTwoSide", "StdTwoSide"}));
 }
 
 void DialogsTest::measurementConfigDialog() {
@@ -642,13 +646,15 @@ void DialogsTest::measurementConfigDialog() {
     QPointer<QListView> projectConfigsLV = dialog.findChild<QListView*>("listView_projectConfigs");
     qDebug() <<  getNames(projectConfigsLV->model());
 
-    QVERIFY(6 == userConfigsLV->model()->rowCount());
-    QVERIFY("FastPoint"                     == userConfigsLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("level"                         == userConfigsLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"  == userConfigsLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                  == userConfigsLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                      == userConfigsLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                    == userConfigsLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    // was asserting against userConfigsLV here (stale from before the tab
+    // switch above) - a pre-existing copy/paste bug that happened not to
+    // matter while the counts coincided; the assertions below are clearly
+    // about the project config list, so check that one. FastPoint/PrecisePoint/
+    // StdPoint/StdTwoSide doubled: PseudoTracker and LeicaTachymeter each
+    // publish their own now; "level" stays singular (tracker-only).
+    QCOMPARE(getNames(projectConfigsLV->model()),
+              QStringList({"FastPoint", "FastPoint", "level", "measconfig-fastpoint_project",
+                           "PrecisePoint", "PrecisePoint", "StdPoint", "StdPoint", "StdTwoSide", "StdTwoSide"}));
 
 
     // find index for "PrecisePoint"
@@ -678,7 +684,12 @@ void DialogsTest::measurementConfigurationModel() {
 
     proxy->setFilter(true);
     qDebug() << getNames(proxy).join(", ");
-    QVERIFY("FastPoint, FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
+    // FastPoint/PrecisePoint/StdPoint/StdTwoSide each appear twice: PseudoTracker
+    // and LeicaTachymeter now each publish their own (sensor-type-tagged) standard
+    // catalog rather than sharing one hardcoded list - "level" is tracker-only,
+    // since LeicaTachymeter doesn't support level readings at all. Plus this test's
+    // own user "FastPoint" and its user/project fixtures.
+    QVERIFY("FastPoint, FastPoint, FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, PrecisePoint, StdPoint, StdPoint, StdTwoSide, StdTwoSide" == getNames(proxy).join(", "));
 
     proxy->setFilterUserConfig();
 
@@ -712,7 +723,12 @@ void DialogsTest::measurementConfigurationModel() {
 
     proxy->setFilter(true);
     qDebug() << getNames(proxy).join(", ");
-    QVERIFY("FastPoint, FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
+    // FastPoint/PrecisePoint/StdPoint/StdTwoSide each appear twice: PseudoTracker
+    // and LeicaTachymeter now each publish their own (sensor-type-tagged) standard
+    // catalog rather than sharing one hardcoded list - "level" is tracker-only,
+    // since LeicaTachymeter doesn't support level readings at all. Plus this test's
+    // own user "FastPoint" and its user/project fixtures.
+    QVERIFY("FastPoint, FastPoint, FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, PrecisePoint, StdPoint, StdPoint, StdTwoSide, StdTwoSide" == getNames(proxy).join(", "));
 }
 
 void DialogsTest::projectSaveLoad() {
@@ -768,8 +784,11 @@ void DialogsTest::projectSaveLoad() {
 
     QString name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
     qDebug() << "a" << name;
-    // project, standard & user configs
-    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user)" == name);
+    // project, standard & user configs - FastPoint/PrecisePoint/StdPoint/
+    // StdTwoSide each appear as two "standard" entries now (one per sensor
+    // type; getKeys() doesn't render sensor type, so they're indistinguishable
+    // in this string, just doubled)
+    QVERIFY("(FastPoint, user), (FastPoint, standard), (FastPoint, standard), (PrecisePoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdPoint, standard), (StdTwoSide, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user)" == name);
 
     // clean up
     foreach(const MeasurementConfig mc, ModelManager::getMeasurementConfigManager()->getConfigs()) {
@@ -782,7 +801,7 @@ void DialogsTest::projectSaveLoad() {
     name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
     qDebug() << "b" << name;
     // standard & user configs
-    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-scandistance, user)" == name);
+    QVERIFY("(FastPoint, user), (FastPoint, standard), (FastPoint, standard), (PrecisePoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdPoint, standard), (StdTwoSide, standard), (StdTwoSide, standard), (level, standard), (measconfig-scandistance, user)" == name);
 
     QPointer<OiJob> jobL = projectExchanger.loadProject(project);
 
@@ -790,7 +809,7 @@ void DialogsTest::projectSaveLoad() {
     name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
     qDebug() << "c" << name;
     // project, standard & user configs
-    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user)" == name);
+    QVERIFY("(FastPoint, user), (FastPoint, standard), (FastPoint, standard), (PrecisePoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdPoint, standard), (StdTwoSide, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user)" == name);
 
 }
 

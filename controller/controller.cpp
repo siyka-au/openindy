@@ -1235,6 +1235,21 @@ void Controller::_startMeasurement(bool dummyPoint){
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
     MeasurementConfig mConfig = this->measurementConfigManager->getConfig(activeFeature->getGeometry()->getMeasurementConfig());
+
+    //the authoritative check, not just the UI's convenience filter - a
+    //geometry's staged config can predate the connected sensor (loaded from
+    //a job file, or picked before the sensor was swapped), so this must be
+    //re-checked here rather than trusted from whatever the UI last showed.
+    //An untyped config (generic, or predating the sensor-type tag) is always
+    //allowed, same rule the UI filter uses.
+    const SensorType activeSensorType = activeStation->getActiveSensorType();
+    if(mConfig.getSensorType().isValid() && activeSensorType.isValid()
+            && !(mConfig.getSensorType() == activeSensorType)){
+        this->log(QString("Measurement config \"%1\" is not compatible with the connected sensor").arg(mConfig.getName()),
+                   eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
     mConfig.setTransientData("isDummyPoint", dummyPoint); // use MeasurementConfig for "transportation"
     activeStation->measure(id, mConfig);
 

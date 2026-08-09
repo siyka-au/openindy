@@ -344,7 +344,13 @@ void CreateFeatureDialog::initMeasurementConfigModel(){
     }
     sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
 
-    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor());
+    SensorType activeSensorType;
+    const QPointer<OiJob> job = ModelManager::getCurrentJob();
+    if(!job.isNull() && !job->getActiveStation().isNull()){
+        activeSensorType = job->getActiveStation()->getActiveSensorType();
+    }
+
+    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor(), activeSensorType);
 }
 
 /*!

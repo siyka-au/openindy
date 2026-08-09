@@ -7,6 +7,7 @@
 #include "types.h"
 #include "util.h"
 #include "measurementconfigurationmodel.h"
+#include "sensortype.h"
 
 #if defined(OI_MAIN_LIB)
 #  define OI_MAIN_EXPORT Q_DECL_EXPORT
@@ -40,7 +41,13 @@ public:
     //##########
 
     void setFilter(const bool &showAll);
-    void setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor);
+    //! activeSensorType is a convenience narrowing, not the safety net - a
+    //! config whose own tag doesn't match is still just filtered out of this
+    //! UI list; Controller::_startMeasurement is what actually rejects an
+    //! incompatible config reaching the sensor. Default (invalid) means "no
+    //! sensor known yet" and shows every type, matching prior behaviour.
+    void setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor,
+                    const SensorType &activeSensorType = SensorType());
     void setFilterProjectConfig();
     void setFilterUserConfig();
     void resetFilter();
@@ -78,6 +85,7 @@ private:
     QList<ElementTypes> neededElements;
     FeatureTypes typeOfFeature;
     QList<FeatureTypes> functionIsApplicableFor;
+    SensorType activeSensorType;
 
 };
 

@@ -68,6 +68,9 @@ public:
 
     static QList<sys::Tool> getAllTools();
 
+    static QList<sys::Sensor> getAllSensors();
+    static QList<MeasurementConfig> getAllMeasurementConfigs();
+
 private:
 
     static QList<sys::Plugin> scanDirectory(const QString &dirPath);
