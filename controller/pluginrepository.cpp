@@ -8,10 +8,12 @@
 
 #include "pluginloader.h"
 #include "oimetadata.h"
+#include "pluginabi.h"
 #include "settings.h"
 #include "util.h"
 
 QList<sys::Plugin> PluginRepository::plugins;
+QStringList PluginRepository::rejected;
 bool PluginRepository::isInit = false;
 
 /*!
@@ -73,8 +75,17 @@ QList<sys::Plugin> PluginRepository::scanDirectory(const QString &dirPath){
         QString filePath = dir.absoluteFilePath(fileName);
 
         QPluginLoader probe(filePath);
-        bool isOiPlugin = probe.metaData().value("MetaData").toObject().value("isOiPlugin").toBool();
-        if(!isOiPlugin){
+        QJsonObject meta = probe.metaData().value("MetaData").toObject();
+        if(!meta.value("isOiPlugin").toBool()){
+            continue;
+        }
+
+        //An ABI mismatch used to be indistinguishable from "not an OpenIndy
+        //plugin": qobject_cast<Plugin*> simply returned null and the driver
+        //vanished with no message. It is checked here, from metadata, before
+        //the library is ever instantiated - so the diagnosis names the file,
+        //both versions, and the fix.
+        if(!PluginRepository::checkAbiVersion(filePath, meta)){
             continue;
         }
 
@@ -84,6 +95,55 @@ QList<sys::Plugin> PluginRepository::scanDirectory(const QString &dirPath){
 
     return result;
 
+}
+
+/*!
+ * \brief PluginRepository::checkAbiVersion
+ * \param filePath
+ * \param meta the plugin's "MetaData" object, read without loading the library
+ * \return true if this plugin was built against the ABI this app speaks
+ */
+bool PluginRepository::checkAbiVersion(const QString &filePath, const QJsonObject &meta){
+
+    const QJsonValue declared = meta.value("abiVersion");
+
+    if(!declared.isDouble()){
+        //predates abiVersion entirely, so it cannot be checked and cannot be
+        //assumed compatible - loading it risks a vtable mismatch at runtime,
+        //which is far worse than not loading it
+        const QString reason = QString("%1: no abiVersion in its metadata (built against a core older than "
+                                       "plugin ABI %2). Rebuild the plugin.")
+                                       .arg(filePath).arg(OI_PLUGIN_ABI_VERSION);
+        qWarning().noquote() << "PluginRepository: rejected" << reason;
+        PluginRepository::rejected.append(reason);
+        return false;
+    }
+
+    const int pluginAbi = declared.toInt();
+    if(pluginAbi != OI_PLUGIN_ABI_VERSION){
+        const QString reason = QString("%1: built against plugin ABI %2, this build of OpenIndy requires %3. "
+                                       "Rebuild the plugin against the current core.")
+                                       .arg(filePath).arg(pluginAbi).arg(OI_PLUGIN_ABI_VERSION);
+        qWarning().noquote() << "PluginRepository: rejected" << reason;
+        PluginRepository::rejected.append(reason);
+        return false;
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief PluginRepository::getRejectedPlugins
+ * \return one human-readable line per plugin skipped for ABI reasons, so the
+ * UI can show "3 plugins were not loaded" rather than leaving the user to
+ * wonder where their instrument went
+ */
+const QStringList &PluginRepository::getRejectedPlugins(){
+    if(!PluginRepository::isInit){
+        PluginRepository::init();
+    }
+    return PluginRepository::rejected;
 }
 
 /*!

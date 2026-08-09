@@ -1,8 +1,10 @@
 #ifndef PLUGINREPOSITORY_H
 #define PLUGINREPOSITORY_H
 
+#include <QJsonObject>
 #include <QList>
 #include <QString>
+#include <QStringList>
 #include <optional>
 
 #include "plugininfo.h"
@@ -71,12 +73,23 @@ public:
     static QList<sys::Sensor> getAllSensors();
     static QList<MeasurementConfig> getAllMeasurementConfigs();
 
+    //###################
+    //ABI-rejected plugins
+    //###################
+
+    //one line per plugin found but not loaded because it was built against a
+    //different plugin ABI. Never silently empty-by-omission: a plugin that
+    //fails this check is recorded here precisely so it can be surfaced
+    static const QStringList &getRejectedPlugins();
+
 private:
 
     static QList<sys::Plugin> scanDirectory(const QString &dirPath);
     static sys::Plugin scanPluginFile(const QString &filePath);
+    static bool checkAbiVersion(const QString &filePath, const QJsonObject &meta);
 
     static QList<sys::Plugin> plugins;
+    static QStringList rejected;
     static bool isInit;
 
 };
