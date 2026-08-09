@@ -118,6 +118,26 @@ else()
 endif()
 FetchContent_MakeAvailable(OpenIndyDefaultPlugin)
 
+# --- Leica plugin dependency ---
+# A first-class instrument family living entirely outside the core repos -
+# Stage 5 of the OpenIndy plan. Same FetchContent/local-dir-override shape
+# as the default plugin above; PluginRepository scans plugins/ for every
+# .so it finds, so a second plugin needs nothing beyond being built and
+# deployed there.
+
+set(OI_LEICA_PLUGIN_LOCAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../openindy-leica-plugin" CACHE PATH
+    "Local OpenIndy-LeicaPlugin checkout to build against instead of fetching from git")
+
+if(EXISTS "${OI_LEICA_PLUGIN_LOCAL_DIR}/CMakeLists.txt")
+    FetchContent_Declare(OpenIndyLeicaPlugin SOURCE_DIR "${OI_LEICA_PLUGIN_LOCAL_DIR}")
+else()
+    FetchContent_Declare(OpenIndyLeicaPlugin
+        GIT_REPOSITORY git@github.com:siyka-au/openindy-leica-plugin.git
+        GIT_TAG        master
+    )
+endif()
+FetchContent_MakeAvailable(OpenIndyLeicaPlugin)
+
 # --- appui library ---
 
 add_library(OpenIndyApp SHARED
@@ -423,10 +443,10 @@ endif()
 
 target_link_libraries(openIndy PRIVATE OpenIndyApp)
 
-# make sure the plugin is actually built before openIndy's POST_BUILD step
-# below tries to package it (a plain add_subdirectory/FetchContent dependency
+# make sure the plugins are actually built before openIndy's POST_BUILD step
+# below tries to package them (a plain add_subdirectory/FetchContent dependency
 # alone doesn't order a *targeted* `--target openIndy` build against it)
-add_dependencies(openIndy OpenIndyDefaultPlugin)
+add_dependencies(openIndy OpenIndyDefaultPlugin OpenIndyLeicaPlugin)
 
 # runtime resources the app expects next to its own executable (qmake used
 # to copy these on `make install`; mirror that here so a plain build is
@@ -438,12 +458,16 @@ add_custom_command(TARGET openIndy POST_BUILD
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/example" "$<TARGET_FILE_DIR:openIndy>/example"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/plugins" "$<TARGET_FILE_DIR:openIndy>/plugins"
-    # package the default plugin itself - PluginRepository scans plugins/
+    # package each plugin itself - PluginRepository scans plugins/
     # directly, no separate registration step needed
     COMMAND ${CMAKE_COMMAND}
         -DPLUGIN_SO=$<TARGET_FILE:OpenIndyDefaultPlugin>
         -DAPP_DIR=$<TARGET_FILE_DIR:openIndy>
         -P "${openindydefaultplugin_SOURCE_DIR}/cmake/DeployToApp.cmake"
+    COMMAND ${CMAKE_COMMAND}
+        -DPLUGIN_SO=$<TARGET_FILE:OpenIndyLeicaPlugin>
+        -DAPP_DIR=$<TARGET_FILE_DIR:openIndy>
+        -P "${openindyleicaplugin_SOURCE_DIR}/cmake/DeployToApp.cmake"
     VERBATIM
 )
 
