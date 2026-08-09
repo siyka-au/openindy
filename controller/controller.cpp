@@ -2059,8 +2059,8 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QList<oi::ReadingTypes> >("QList<ReadingTypes>");
     qRegisterMetaType<oi::SensorType>("SensorType");
     qRegisterMetaType<QList<oi::SensorType> >("QList<SensorType>");
-    qRegisterMetaType<oi::ConnectionTypes>("ConnectionTypes");
-    qRegisterMetaType<QList<oi::ConnectionTypes> >("QList<ConnectionTypes>");
+    qRegisterMetaType<oi::ConnectionKind>("ConnectionKind");
+    qRegisterMetaType<QList<oi::ConnectionKind> >("QList<ConnectionKind>");
     qRegisterMetaType<oi::SensorFunctions>("SensorFunctions");
     qRegisterMetaType<QList<oi::SensorFunctions> >("QList<SensorFunctions>");
     qRegisterMetaType<oi::AcquisitionMode>("AcquisitionMode");

@@ -230,7 +230,15 @@ void SensorConfigurationDialog::sensorConnectionChanged(){
 
     //set up connection config from GUI
     ConnectionConfig cConfig;
-    cConfig.typeOfConnection = getConnectionTypeEnum(this->ui->comboBox_typeOfConnection->currentText());
+    {
+        const QString currentText = this->ui->comboBox_typeOfConnection->currentText();
+        foreach(const ConnectionKind &kind, ConnectionKind::knownKinds()){
+            if(kind.displayName().compare(currentText) == 0){
+                cConfig.typeOfConnection = kind;
+                break;
+            }
+        }
+    }
     cConfig.ip = this->ui->comboBox_ip->currentText();
     cConfig.port = this->ui->lineEdit_port->text();
     cConfig.baudRate = static_cast<QSerialPort::BaudRate>(this->ui->comboBox_baudrate->itemData(ui->comboBox_baudrate->currentIndex()).toInt());
@@ -373,12 +381,12 @@ void SensorConfigurationDialog::updateGuiFromSensorConfig(const SensorConfigurat
     this->ui->lineEdit_port->blockSignals(true);
 
     //set up available connection types
-    QList<ConnectionTypes> supportedConnections = ModelManager::getSensorTableModel().getSupportedConnectionTypes();
+    QList<ConnectionKind> supportedConnections = ModelManager::getSensorTableModel().getSupportedConnectionTypes();
     this->ui->comboBox_typeOfConnection->clear();
-    foreach(const ConnectionTypes &type, supportedConnections){
-        this->ui->comboBox_typeOfConnection->addItem(getConnectionTypeName(type));
+    foreach(const ConnectionKind &kind, supportedConnections){
+        this->ui->comboBox_typeOfConnection->addItem(kind.displayName());
     }
-    this->ui->comboBox_typeOfConnection->setCurrentText(getConnectionTypeName(sConfig.getConnectionConfig().typeOfConnection));
+    this->ui->comboBox_typeOfConnection->setCurrentText(sConfig.getConnectionConfig().typeOfConnection.displayName());
 
     //set up connection parameters
     const ConnectionConfig &cConfig = sConfig.getConnectionConfig();
@@ -481,7 +489,7 @@ void SensorConfigurationDialog::toggleVisibility(const SensorConfiguration &sCon
     }
 
     //set visibility depending on connection type
-    if(sConfig.getConnectionConfig().typeOfConnection == eSerialConnection){
+    if(sConfig.getConnectionConfig().typeOfConnection == ConnectionKind::serial()){
         this->ui->comboBox_baudrate->setVisible(true);
         this->ui->label_baudRate->setVisible(true);
         this->ui->comboBox_databits->setVisible(true);
@@ -498,7 +506,7 @@ void SensorConfigurationDialog::toggleVisibility(const SensorConfiguration &sCon
         this->ui->label_ip->setVisible(false);
         this->ui->lineEdit_port->setVisible(false);
         this->ui->label_port->setVisible(false);
-    }else if(sConfig.getConnectionConfig().typeOfConnection == eNetworkConnection){
+    }else if(sConfig.getConnectionConfig().typeOfConnection == ConnectionKind::network()){
         this->ui->comboBox_baudrate->setVisible(false);
         this->ui->label_baudRate->setVisible(false);
         this->ui->comboBox_databits->setVisible(false);

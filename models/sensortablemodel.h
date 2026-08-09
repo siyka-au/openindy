@@ -58,7 +58,7 @@ public:
     //get supported connection / reading or action types
     QList<ReadingTypes> getSupportedReadingTypes() const;
     QList<SensorFunctions> getSupportedSensorActions() const;
-    QList<ConnectionTypes> getSupportedConnectionTypes() const;
+    QList<ConnectionKind> getSupportedConnectionTypes() const;
 
     //get default sensor config
     SensorConfiguration getDefaultSensorConfig() const;

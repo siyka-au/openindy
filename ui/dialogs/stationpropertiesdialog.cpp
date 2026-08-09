@@ -191,7 +191,7 @@ void StationPropertiesDialog::initGUI(){
     this->ui->lineEdit_sensorConfig1->setText(this->sConfig.getName());
 
     //set connection information
-    this->ui->lineEdit_connectionType->setText(getConnectionTypeName(this->sConfig.getConnectionConfig().typeOfConnection));
+    this->ui->lineEdit_connectionType->setText(this->sConfig.getConnectionConfig().typeOfConnection.displayName());
     if(!this->sConfig.getIsValid()){
 
         //set visible states
@@ -212,7 +212,7 @@ void StationPropertiesDialog::initGUI(){
         this->ui->lineEdit_port->setVisible(false);
         this->ui->label_port->setVisible(false);
 
-    }else if(this->sConfig.getConnectionConfig().typeOfConnection == eNetworkConnection){
+    }else if(this->sConfig.getConnectionConfig().typeOfConnection == ConnectionKind::network()){
 
         //set visible states
         this->ui->lineEdit_baudrate->setVisible(false);
@@ -236,7 +236,7 @@ void StationPropertiesDialog::initGUI(){
         this->ui->lineEdit_ip->setText(this->sConfig.getConnectionConfig().ip);
         this->ui->lineEdit_port->setText(this->sConfig.getConnectionConfig().port);
 
-    }else if(this->sConfig.getConnectionConfig().typeOfConnection == eSerialConnection){
+    }else if(this->sConfig.getConnectionConfig().typeOfConnection == ConnectionKind::serial()){
 
         //set visible states
         this->ui->lineEdit_baudrate->setVisible(true);

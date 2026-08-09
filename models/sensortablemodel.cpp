@@ -540,9 +540,9 @@ QList<SensorFunctions> SensorTableModel::getSupportedSensorActions() const{
  * \brief SensorTableModel::getSupportedConnectionTypes
  * \return
  */
-QList<ConnectionTypes> SensorTableModel::getSupportedConnectionTypes() const{
+QList<ConnectionKind> SensorTableModel::getSupportedConnectionTypes() const{
 
-    QList<ConnectionTypes> types;
+    QList<ConnectionKind> types;
 
     //get and check sensor name and plugin file path
     QString sensorName = this->selectedSensor.second;
