@@ -30,6 +30,8 @@ Makefile
 *.Debug
 *.Release
 .qmake.stash
+.qtcreator/
+*.autosave
 
 dist
 build/*_resource.rc
