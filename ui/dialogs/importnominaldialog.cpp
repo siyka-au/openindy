@@ -173,7 +173,7 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     params.nominalSystem = this->ui->comboBox_system_sa->currentText();
     params.pluginName = this->ui->comboBox_plugin_sa->currentText();
     params.skipFirstLine = this->ui->checkBox_skipFirst_sa->isChecked();
-    params.typeOfGeometry = getGeometryTypeEnum(this->ui->comboBox_geometry_sa->currentText());
+    params.typeOfGeometry = static_cast<GeometryTypes>(this->ui->comboBox_geometry_sa->currentData(Qt::UserRole).toInt());
     params.units.insert(eMetric, getUnitTypeEnum(this->ui->comboBox_distance_sa->currentText()));
     params.units.insert(eAngular, getUnitTypeEnum(this->ui->comboBox_angle_sa->currentText()));
     params.units.insert(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperature_sa->currentText()));

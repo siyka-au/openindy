@@ -51,7 +51,7 @@ ReadingModel ModelManager::readingModel;
 ReadingProxyModel ModelManager::readingProxyModel;
 ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
-QStringListModel ModelManager::scalarEntityTypeNamesModel;
+QStandardItemModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
 FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
@@ -91,14 +91,14 @@ void ModelManager::init(){
 
 }
 
-void ModelManager::testInit(QStringList entityTypes,
+void ModelManager::testInit(QList<FeatureTypes> entityTypes,
                             QPointer<MeasurementConfigManager> measurementConfigManager,
                             QList<sys::Plugin> plugins) {
 
     ModelManager::plugins = plugins;
     ModelManager::functionsListModel.setPlugins(ModelManager::plugins);
 
-    ModelManager::scalarEntityTypeNamesModel.setStringList(entityTypes);
+    ModelManager::fillFeatureTypeModel(ModelManager::scalarEntityTypeNamesModel, entityTypes);
 
     ModelManager::setMeasurementConfigManager(measurementConfigManager);
     ModelManager::initMeasurementConfigModels();
@@ -397,8 +397,28 @@ QStringListModel &ModelManager::getReadingTypeNamesModel(){
  * \brief ModelManager::getScalarEntityTypeNamesModel
  * \return
  */
-QStringListModel &ModelManager::getScalarEntityTypeNamesModel(){
+QStandardItemModel &ModelManager::getScalarEntityTypeNamesModel(){
     return ModelManager::scalarEntityTypeNamesModel;
+}
+
+/*!
+ * \brief ModelManager::fillFeatureTypeModel
+ * Populates a model with display names, carrying the FeatureTypes value in
+ * Qt::UserRole so consumers never have to parse the visible text back into an
+ * enum. That reverse parse is why this combo used to show persisted tokens.
+ * \param model
+ * \param types
+ */
+void ModelManager::fillFeatureTypeModel(QStandardItemModel &model, const QList<FeatureTypes> &types){
+
+    model.clear();
+
+    foreach(const FeatureTypes &type, types){
+        QStandardItem *item = new QStandardItem(getFeatureTypeDisplayName(type));
+        item->setData(QVariant::fromValue(static_cast<int>(type)), Qt::UserRole);
+        model.appendRow(item);
+    }
+
 }
 
 /*!
@@ -638,9 +658,9 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(const 
  * \param exchangeName
  * \return
  */
-QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometries(const QString &pluginName, const QString &exchangeName){
+QPointer<QStandardItemModel> ModelManager::getExchangeSimpleAsciiSupportedGeometries(const QString &pluginName, const QString &exchangeName){
 
-    QStringList supportedGeometries;
+    QStandardItemModel *supportedGeometries = new QStandardItemModel();
 
     //get plugin file path
     QString path;
@@ -655,11 +675,15 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometri
     QPointer<ExchangeSimpleAscii> exchange = PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
     if(!exchange.isNull()){
         foreach(const GeometryTypes &type, exchange->getSupportedGeometries()){
-            supportedGeometries.append(getGeometryTypeName(type));
+            //display name for the user; the GeometryTypes value rides along in
+            //Qt::UserRole so the consumer never parses the visible text back
+            QStandardItem *item = new QStandardItem(getGeometryTypeDisplayName(type));
+            item->setData(QVariant::fromValue(static_cast<int>(type)), Qt::UserRole);
+            supportedGeometries->appendRow(item);
         }
     }
 
-    return new QStringListModel(supportedGeometries);
+    return supportedGeometries;
 
 }
 
@@ -1361,12 +1385,12 @@ void ModelManager::initReadingTypesModels(){
  */
 void ModelManager::initScalarEntityTypesModels(){
 
-    QStringList scalarEntityTypes;
-    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityAngleFeature));
-    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityDistanceFeature));
-    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityMeasurementSeriesFeature));
-    scalarEntityTypes.append(getFeatureTypeName(eScalarEntityTemperatureFeature));
-    ModelManager::scalarEntityTypeNamesModel.setStringList(scalarEntityTypes);
+    ModelManager::fillFeatureTypeModel(ModelManager::scalarEntityTypeNamesModel,
+                                       QList<FeatureTypes>()
+                                           << eScalarEntityAngleFeature
+                                           << eScalarEntityDistanceFeature
+                                           << eScalarEntityMeasurementSeriesFeature
+                                           << eScalarEntityTemperatureFeature);
 
 }
 

@@ -63,7 +63,7 @@ private slots:
     void on_toolButton_ok_clicked();
     void on_toolButton_cancel_clicked();
 
-    void on_comboBox_entityType_currentTextChanged(const QString &entityTypeName);
+    void on_comboBox_entityType_currentIndexChanged(int index);
 
     void on_comboBox_function_currentIndexChanged(const int index);
 

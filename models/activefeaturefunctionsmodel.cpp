@@ -563,10 +563,10 @@ void ActiveFeatureFunctionsModel::updateModel(){
 
             //distinguish between 1 and n elements as input element
             if(element.infinite){
-                FunctionTreeItem *itemElement = new FunctionTreeItem(QString("n %2").arg(getElementTypePluralName(element.typeOfElement)));
+                FunctionTreeItem *itemElement = new FunctionTreeItem(QString("n %2").arg(getElementTypeDisplayPluralName(element.typeOfElement)));
                 itemFunction->appendChild(itemElement);
             }else{
-                FunctionTreeItem *itemElement = new FunctionTreeItem(QString("1 %2").arg(getElementTypeName(element.typeOfElement)));
+                FunctionTreeItem *itemElement = new FunctionTreeItem(QString("1 %2").arg(getElementTypeDisplayName(element.typeOfElement)));
                 itemFunction->appendChild(itemElement);
             }
 

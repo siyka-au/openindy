@@ -86,7 +86,12 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
 
     this->setDialogName();
 
-    this->ui->comboBox_entityType->setCurrentText(getFeatureTypeName(this->typeOfFeature));
+    //select by the type carried in Qt::UserRole, not by matching visible
+    //text - the text is a display name now and free to be reworded
+    const int entityIndex = this->ui->comboBox_entityType->findData(static_cast<int>(this->typeOfFeature), Qt::UserRole);
+    if(entityIndex >= 0){
+        this->ui->comboBox_entityType->setCurrentIndex(entityIndex);
+    }
 
     // init function models based on the current feature type
     this->initFunctionsModel();
@@ -336,7 +341,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
 
     }else if(getIsScalarEntity(this->typeOfFeature)){
 
-        attributes.typeOfFeature = getFeatureTypeEnum(this->ui->comboBox_entityType->currentText());
+        attributes.typeOfFeature = static_cast<FeatureTypes>(this->ui->comboBox_entityType->currentData(Qt::UserRole).toInt());
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         if(this->ui->comboBox_nominalSystem->isVisible()){
             attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
@@ -370,18 +375,22 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
 void CreateFeatureDialog::setDialogName()
 {
 
-    QString title = "create " + getFeatureTypeName(typeOfFeature);
+    QString title = "create " + getFeatureTypeDisplayName(typeOfFeature);
     this->setWindowTitle(title);
 }
 
 /*!
- * \brief CreateFeatureDialog::on_comboBox_entityType_currentTextChanged check if the type of the scalar entity changed
- * \param entityTypeName
+ * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check if the type of the scalar entity changed
+ *
+ * Keyed on the index rather than the visible text: the item carries its
+ * FeatureTypes in Qt::UserRole, so rewording an entry in the display-name
+ * table cannot change which type this resolves to.
+ * \param index
  */
-void CreateFeatureDialog::on_comboBox_entityType_currentTextChanged(const QString &entityTypeName)
+void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(int index)
 {
-    if(!entityTypeName.isEmpty()) {
-        this->typeOfFeature = getFeatureTypeEnum(entityTypeName);
+    if(index >= 0) {
+        this->typeOfFeature = static_cast<FeatureTypes>(this->ui->comboBox_entityType->itemData(index, Qt::UserRole).toInt());
 
         this->initFunctionsModel();
 

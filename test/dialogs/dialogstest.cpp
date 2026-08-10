@@ -55,6 +55,7 @@ private Q_SLOTS:
     void projectSaveLoad();
 
     void setDefaultFunctionAndConfig();
+    void entityTypeComboResolvesByDataNotByVisibleText();
 private:
 
     void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
@@ -80,8 +81,10 @@ void DialogsTest::initTestCase() {
     // the same at startup)
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
-    QStringList entityTypes;
-    entityTypes << "point" << "circle" << "plane"; // comboBox_entityType order
+    //the enum values themselves, not their names - the combo carries the type
+    //in Qt::UserRole so its visible text is a display name and can be reworded
+    QList<FeatureTypes> entityTypes;
+    entityTypes << ePointFeature << eCircleFeature << ePlaneFeature; // comboBox_entityType order
 
     QPointer<MeasurementConfigManager> measurementConfigManager = new MeasurementConfigManager();
 
@@ -864,3 +867,51 @@ void DialogsTest::setDefaultFunctionAndConfig() {
 QTEST_MAIN(DialogsTest)
 
 #include "dialogstest.moc"
+
+/*!
+ * The scalar-entity combo used to display persisted tokens ("point",
+ * "circle") because CreateFeatureDialog parsed its visible text back into a
+ * FeatureTypes with getFeatureTypeEnum(currentText()). That coupling meant
+ * capitalising a label for the UI would silently change which type got
+ * created - or create nothing at all.
+ *
+ * Items now show a display name and carry their type in Qt::UserRole. This
+ * pins that: the visible text is a display name, resolution goes through the
+ * data role, and - the property that actually matters - rewriting the visible
+ * text does not change what the combo resolves to.
+ *
+ * The existing dialog cases deliberately bypass this combo ("type is set
+ * directly"), so without this the whole path was untested.
+ */
+void DialogsTest::entityTypeComboResolvesByDataNotByVisibleText() {
+
+    QStandardItemModel &model = ModelManager::getScalarEntityTypeNamesModel();
+    QCOMPARE(model.rowCount(), 3); // seeded by testInit: point, circle, plane
+
+    const QList<FeatureTypes> expected = { ePointFeature, eCircleFeature, ePlaneFeature };
+
+    for(int row = 0; row < model.rowCount(); row++){
+
+        QStandardItem *item = model.item(row);
+        QVERIFY(item != nullptr);
+
+        const FeatureTypes type = expected.at(row);
+
+        //the item carries its type, so a consumer never parses the label
+        QCOMPARE(static_cast<FeatureTypes>(item->data(Qt::UserRole).toInt()), type);
+
+        //and what the user reads is the display name, not the persisted token
+        QCOMPARE(item->text(), getFeatureTypeDisplayName(type));
+
+    }
+
+    //the property that matters: rewording a label must not change resolution
+    QStandardItem *first = model.item(0);
+    const FeatureTypes before = static_cast<FeatureTypes>(first->data(Qt::UserRole).toInt());
+    first->setText(QStringLiteral("Totally Different Wording"));
+    QCOMPARE(static_cast<FeatureTypes>(first->data(Qt::UserRole).toInt()), before);
+
+    //restore, since the model is shared static state
+    first->setText(getFeatureTypeDisplayName(before));
+
+}

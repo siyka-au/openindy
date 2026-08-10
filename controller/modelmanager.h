@@ -93,7 +93,7 @@ public:
 
     static void init();
 
-    static void testInit(QStringList entityTypes,
+    static void testInit(QList<FeatureTypes> entityTypes,
                          QPointer<MeasurementConfigManager> measurementConfigManager,
                          QList<sys::Plugin> plugins);
 
@@ -169,7 +169,12 @@ public:
     static QStringListModel &getReadingTypeNamesModel();
 
     //scalar entity type model
-    static QStringListModel &getScalarEntityTypeNamesModel();
+    //
+    //Items display a *display name* and carry their FeatureTypes in
+    //Qt::UserRole. Read the type back with combo->currentData(), never by
+    //feeding currentText() to getFeatureTypeEnum() - that coupling is what
+    //forced this combo to show the user a persisted token.
+    static QStandardItemModel &getScalarEntityTypeNamesModel();
 
     //function models
     static FunctionTableModel &getFunctionTableModel();
@@ -209,7 +214,7 @@ public:
     //plugin models
     static QPointer<QStringListModel> getExchangeSimpleAsciiNames(const QString &pluginName);
     static QPointer<QStringListModel> getExchangeSimpleAsciiDelimiters(const QString &pluginName, const QString &exchangeName);
-    static QPointer<QStringListModel> getExchangeSimpleAsciiSupportedGeometries(const QString &pluginName, const QString &exchangeName);
+    static QPointer<QStandardItemModel> getExchangeSimpleAsciiSupportedGeometries(const QString &pluginName, const QString &exchangeName);
 
     //function list filter model
     static QPointer<AvailableFunctionsListProxyModel> getAvailableFunctionsProxyModel();
@@ -286,7 +291,9 @@ private:
     static QStringListModel readingTypeNamesModel;
 
     //scalar entity type model
-    static QStringListModel scalarEntityTypeNamesModel;
+    static QStandardItemModel scalarEntityTypeNamesModel;
+
+    static void fillFeatureTypeModel(QStandardItemModel &model, const QList<FeatureTypes> &types);
 
     //function models
     static FunctionTableModel functionTableModel;
