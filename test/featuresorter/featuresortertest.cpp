@@ -9,10 +9,22 @@
 #include "feature.h"
 #include "featurewrapper.h"
 #include "featuresorter.h"
+#include "fitfunction.h"
 
 using namespace oi;
 using namespace oi::math;
 
+// D17/D19: nominal/actual is no longer a constructor flag - it falls out
+// of whether a fit function is attached (Geometry::getOwnerDescription).
+// This stand-in needs no real behaviour, just to be a FitFunction so the
+// dynamic_cast in getOwnerDescription recognises it.
+class FakeFit : public FitFunction {
+    Q_OBJECT
+public:
+    FakeFit(QObject *parent = 0) : FitFunction(parent){
+        this->metaData.name = "FakeFit";
+    }
+};
 
 class FeatureSorterTest : public QObject
 {
@@ -39,9 +51,12 @@ private:
 QPointer<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name, bool isNominal, QString groupname) {
     QPointer<FeatureWrapper> featurewrapper = new FeatureWrapper();
 
-    QPointer<Point> point = new Point(id, isNominal, Position());
+    QPointer<Point> point = new Point(id, Position());
     point->setFeatureName(name);
     point->setGroupName(groupname);
+    if(!isNominal){
+        point->addFunction(new FakeFit());
+    }
     featurewrapper->setPoint(point);
 
     return featurewrapper;
@@ -57,7 +72,7 @@ QString FeatureSorterTest::asString(QList<QPointer<FeatureWrapper>> features, bo
         }
         s.append(features[i]->getFeature()->getFeatureName());
         s.append(", ");
-        s.append(features[i]->getFeature()->getFeatureWrapper()->getGeometry()->getIsNominal() ? "nominal" : "actual");
+        s.append(!features[i]->getFeature()->getFeatureWrapper()->getGeometry()->getOwnerDescription().has_value() ? "nominal" : "actual");
         s.append("; ");
     }
     return s;

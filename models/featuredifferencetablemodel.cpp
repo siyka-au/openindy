@@ -72,8 +72,10 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
         return QVariant();
     }
 
-    //only actual geometries with nominals
-    if(feature->getGeometry().isNull() || feature->getGeometry()->getIsNominal() || feature->getGeometry()->getNominals().isEmpty()){
+    //only actual geometries (D19) that realise a nominal (D17)
+    if(feature->getGeometry().isNull()
+            || !feature->getGeometry()->getOwnerDescription().has_value()
+            || !feature->getGeometry()->getRealises().has_value()){
         return QVariant();
     }
 
@@ -269,19 +271,24 @@ QPair<bool, double> FeatureDifferenceTableModel::getDifferenceAsDisplayUnit(QPoi
         return qMakePair(false, 0.0);
     }
 
-    if(!feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getNominals().isEmpty() && feature->getGeometry()->hasPosition()){
+    //D17: an actual realises at most one nominal (Geometry::realises), so
+    //this is a single lookup rather than a "first solved nominal" search
+    //over a list
+    if(feature->getGeometry()->getOwnerDescription().has_value()
+            && feature->getGeometry()->getRealises().has_value()
+            && feature->getGeometry()->hasPosition()){
 
-        foreach (QPointer<Geometry> geom, feature->getGeometry()->getNominals()) {
-            if(geom->getIsSolved() && feature->getGeometry()->getIsSolved()){ // accept first solved nominal!
-                if(index.column()>=1 && index.column() <=3) { // x, y, z
-                    return qMakePair(true,
-                                     rnd(convertFromDefault(feature->getGeometry()->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
-                                     - rnd(convertFromDefault(geom->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
-                                     );
-                }
-            }else{
-                return qMakePair(false, 0.0);
+        const QPointer<Geometry> nominal = feature->getGeometry()->getRealises().value();
+
+        if(!nominal.isNull() && nominal->getIsSolved() && feature->getGeometry()->getIsSolved()){
+            if(index.column()>=1 && index.column() <=3) { // x, y, z
+                return qMakePair(true,
+                                 rnd(convertFromDefault(feature->getGeometry()->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
+                                 - rnd(convertFromDefault(nominal->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
+                                 );
             }
+        }else{
+            return qMakePair(false, 0.0);
         }
     }
 

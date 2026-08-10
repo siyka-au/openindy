@@ -123,107 +123,34 @@ bool FeatureSorter::lessThan(const QPointer<FeatureWrapper> &left, const QPointe
 }
 
 /*!
+ * \brief FeatureSorter::isNominalLike
+ * D17: nominal/actual is no longer a stored flag, so "isNominal" for
+ * sorting purposes is read from ownership (D19) - a user-owned geometry
+ * (no fit) sorts as nominal, a fit-owned one as actual.
+ */
+static bool isNominalLike(const QPointer<FeatureWrapper> &fw){
+    return !fw.isNull() && !fw->getGeometry().isNull() && !fw->getGeometry()->getOwnerDescription().has_value();
+}
+
+/*!
  * \brief FeatureSorter::sortStandard
- * adding an actual feature to a nominal, or a nominal feature to an existing actual will not impact the order of all features in the job.
- * the added feature will be added next to the existing one
+ * Sorts by id, i.e. job/insertion order. D17: a nominal and its
+ * actual(s) are no longer name-matched pairs kept artificially adjacent
+ * by id juggling when their names differ - each is an ordinary feature
+ * added wherever it was created, same as any other feature.
  * \param left
  * \param right
  * \return
  */
 bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const{
-
-    //get relevant properties of left and right feature
-    QString leftName = left->getFeature()->getFeatureName();
-    QString rightName = right->getFeature()->getFeatureName();
-    int leftId = left->getFeature()->getId();
-    int rightId = right->getFeature()->getId();
-    bool leftNominal = (!left->getGeometry().isNull()
-                        && left->getGeometry()->getIsNominal()) ? true : false;
-    bool rightNominal = (!right->getGeometry().isNull()
-                        && right->getGeometry()->getIsNominal()) ? true : false;
-
-    //compare the properties of left and right feature
-    if(leftName.compare(rightName) == 0){ //if feature names are equal
-
-        //if one is actual and the other one is nominal
-        if(leftNominal != rightNominal){
-            return rightNominal;
-        }
-
-        return leftId < rightId;
-
-    }else{ //if feature names are not equal
-
-        //check the ID of the actual and nominal if this feature
-        if(!left->getGeometry().isNull()){
-
-            if(!left->getGeometry()->getIsNominal()){
-
-                //check for the lower ID and use this for sorting
-                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
-                if(left->getGeometry()->getNominals().size() > 0){
-                    if(left->getGeometry()->getId() < left->getGeometry()->getNominals().at(0)->getId()){
-                        leftId = left->getGeometry()->getId();
-                    }else{
-                        leftId = left->getGeometry()->getNominals().at(0)->getId();
-                    }
-                }else{
-                    leftId = left->getGeometry()->getId();
-                }
-            }else{
-
-                //check for the lower ID and use this for sorting
-                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
-                if(!left->getGeometry()->getActual().isNull()){
-                    if(left->getGeometry()->getId() < left->getGeometry()->getActual()->getId()){
-                        leftId = left->getGeometry()->getId();
-                    }else{
-                        leftId = left->getGeometry()->getActual()->getId();
-                    }
-                }else{
-                    leftId = left->getGeometry()->getId();
-                }
-            }
-        }
-        if(!right->getGeometry().isNull()){
-
-            if(!right->getGeometry()->getIsNominal()){
-
-                //check for the lower ID and use this for sorting
-                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
-                if(right->getGeometry()->getNominals().size() > 0){
-                    if(right->getGeometry()->getId() < right->getGeometry()->getNominals().at(0)->getId()){
-                        rightId = right->getGeometry()->getId();
-                    }else{
-                        rightId = right->getGeometry()->getNominals().at(0)->getId();
-                    }
-                }else{
-                    rightId = right->getGeometry()->getId();
-                }
-            }else{
-
-                //check for the lower ID and use this for sorting
-                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
-                if(!right->getGeometry()->getActual().isNull()){
-                    if(right->getGeometry()->getId() < right->getGeometry()->getActual()->getId()){
-                        rightId = right->getGeometry()->getId();
-                    }else{
-                        rightId = right->getGeometry()->getActual()->getId();
-                    }
-                }else{
-                    rightId = right->getGeometry()->getId();
-                }
-            }
-        }
-        return leftId < rightId;
-    }
+    return left->getFeature()->getId() < right->getFeature()->getId();
 }
 
 bool FeatureSorter::sortBy_Name_ActNom(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const {
     if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) < 0) {
         return true;
     } else if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) == 0) {
-        return left->getGeometry()->getIsNominal() < right->getGeometry()->getIsNominal();
+        return isNominalLike(left) < isNominalLike(right);
     }
 
     return false;
@@ -236,7 +163,7 @@ bool FeatureSorter::sortBy_Group_Name(QPointer<FeatureWrapper> left, QPointer<Fe
         if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) < 0) {
             return true;
         } else if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) == 0) {
-            return left->getGeometry()->getIsNominal() < right->getGeometry()->getIsNominal();
+            return isNominalLike(left) < isNominalLike(right);
         }
     }
 

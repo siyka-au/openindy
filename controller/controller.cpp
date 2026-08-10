@@ -1217,15 +1217,16 @@ void Controller::_startMeasurement(bool dummyPoint){
         return;
     }
 
-    //create actual from nominal (if a nominal is selected)
-    if(activeFeature->getGeometry()->getIsNominal()){
-        if(!this->createActualFromNominal(activeFeature->getGeometry())
-                || activeFeature->getGeometry()->getActual().isNull()
-                || activeFeature->getGeometry()->getActual()->getFeatureWrapper().isNull()){
+    //"measure this nominal": swap in a fresh actual before measuring
+    //(D17/D19 - a nominal has no fit to measure into, so a read-only
+    //actual realising it is created first)
+    if(!activeFeature->getGeometry()->getOwnerDescription().has_value()){
+        QPointer<FeatureWrapper> actual = this->createActualForNominal(activeFeature->getGeometry());
+        if(actual.isNull() || actual->getGeometry().isNull()){
             this->log("Cannot create actual for nominal", eErrorMessage, eMessageBoxMessage);
             return;
         }
-        activeFeature = activeFeature->getGeometry()->getActual()->getFeatureWrapper();
+        activeFeature = actual;
         activeFeature->getFeature()->setActiveFeatureState(true);
     }
 
@@ -1350,34 +1351,27 @@ void Controller::startAim(){
             ? activeStation->getEstimatedCoordinateSystem()
             : activeStation->getCoordinateSystem();
 
-    if(activeFeature->getGeometry()->getIsNominal()){ //nominal
+    if(!activeFeature->getGeometry()->getOwnerDescription().has_value()){ //nominal (user-owned, D19)
 
         //transform the nominal into the station coordinate system
         if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), cs)){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
-                 && activeFeature->getGeometry()->getActual()->getIsSolved()
-                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, cs)){
-            pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
-            pos = t * pos;
         }
 
-    }else{ //actual
+    }else{ //actual (fit-owned, D19)
 
         //transform the actual into the station coordinate system
          if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, cs)){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(activeFeature->getGeometry()->getNominals().size() > 0){
+        }else if(activeFeature->getGeometry()->getRealises().has_value() && !activeFeature->getGeometry()->getRealises()->isNull()){
 
-            //use nominal instead of actual
-            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
-                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), cs)){
-                    pos = nominal->getPosition().getVectorH();
-                    pos = t * pos;
-                    break;
-                }
+            //fall back to the nominal this actual realises
+            const QPointer<Geometry> nominal = activeFeature->getGeometry()->getRealises().value();
+            if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), cs)){
+                pos = nominal->getPosition().getVectorH();
+                pos = t * pos;
             }
 
         }
@@ -1442,34 +1436,27 @@ void Controller::startAimAndMeasure(){
 
     //transform the active feature into the station coordinate system
     //switch between actual and nominal if the active feature is not solved
-    if(activeFeature->getGeometry()->getIsNominal()){ //nominal
+    if(!activeFeature->getGeometry()->getOwnerDescription().has_value()){ //nominal (user-owned, D19)
 
         //transform the nominal into the station coordinate system
         if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), activeStation->getCoordinateSystem())){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
-                 && activeFeature->getGeometry()->getActual()->getIsSolved()
-                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
-            pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
-            pos = t * pos;
         }
 
-    }else{ //actual
+    }else{ //actual (fit-owned, D19)
 
         //transform the actual into the station coordinate system
         if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
-        }else if(activeFeature->getGeometry()->getNominals().size() > 0){
+        }else if(activeFeature->getGeometry()->getRealises().has_value() && !activeFeature->getGeometry()->getRealises()->isNull()){
 
-            //use nominal instead of actual
-            foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
-                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
-                    pos = nominal->getPosition().getVectorH();
-                    pos = t * pos;
-                    break;
-                }
+            //fall back to the nominal this actual realises
+            const QPointer<Geometry> nominal = activeFeature->getGeometry()->getRealises().value();
+            if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
+                pos = nominal->getPosition().getVectorH();
+                pos = t * pos;
             }
 
         }
@@ -1772,32 +1759,20 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
         return;
     }
 
-    //if the feature is a nominal add the observation to its actual
-    if(feature->getGeometry()->getIsNominal()){
+    //the geometry the observations actually get attached to - normally
+    //geomId itself, unless this measurement was triggered by a path that
+    //skipped _startMeasurement's nominal->actual swap (aim-and-measure
+    //moves straight to a geometry id), in which case an actual is
+    //created here instead (D17/D19: a nominal has no fit to measure into)
+    int targetId = geomId;
 
-        //check actual
-        if(!feature->getGeometry()->getActual().isNull() && !feature->getGeometry()->getActual()->getFeatureWrapper().isNull()
-                && !feature->getGeometry()->getActual()->getFeatureWrapper()->getGeometry().isNull()){ //has actual
-            feature = feature->getGeometry()->getActual()->getFeatureWrapper();
-        }else if(feature->getGeometry()->getActual().isNull()){ //does not have an actual
+    if(!feature->getGeometry()->getOwnerDescription().has_value()){
 
-            //create a new feature
-            FeatureAttributes attributes;
-            attributes.count = 1;
-            attributes.group = feature->getFeature()->getGroupName();
-            attributes.name = feature->getFeature()->getFeatureName();
-            attributes.typeOfFeature = feature->getFeatureTypeEnum();
-            QList<QPointer<FeatureWrapper> > features = this->job->addFeatures(attributes);
-
-            //check feature
-            if(features.size() == 1 && !features.at(0).isNull() && !features.at(0)->getGeometry().isNull()){
-                feature = features.at(0);
-            }
-
-        }
+        QPointer<FeatureWrapper> actual = this->createActualForNominal(feature->getGeometry());
+        feature = actual;
 
         //check feature
-        if(feature.isNull() || feature->getGeometry().isNull() || feature->getGeometry()->getIsNominal()){
+        if(feature.isNull() || feature->getGeometry().isNull() || !feature->getGeometry()->getOwnerDescription().has_value()){
             foreach(const QPointer<Reading> &reading, readings){
                 if(!reading.isNull()){
                     delete reading;
@@ -1805,6 +1780,8 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
             }
             return;
         }
+
+        targetId = feature->getGeometry()->getId();
 
     }
 
@@ -1820,7 +1797,7 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
     }
 
     //add observations
-    this->job->addMeasurementResults(geomId, readings);
+    this->job->addMeasurementResults(targetId, readings);
 
     //complete the measurement task by informing MainWindow about its success
     emit this->measurementCompleted();
@@ -1890,10 +1867,8 @@ void Controller::setJob(const QPointer<OiJob> &job){
     //geometry specific attributes changed
     QObject::connect(this->job.data(), &OiJob::geometryIsCommonChanged,
                      this, &Controller::geometryIsCommonChanged, Qt::AutoConnection);
-    QObject::connect(this->job.data(), &OiJob::geometryNominalsChanged,
-                     this, &Controller::geometryNominalsChanged, Qt::AutoConnection);
-    QObject::connect(this->job.data(), &OiJob::geometryActualChanged,
-                     this, &Controller::geometryActualChanged, Qt::AutoConnection);
+    QObject::connect(this->job.data(), &OiJob::geometryRealisesChanged,
+                     this, &Controller::geometryRealisesChanged, Qt::AutoConnection);
     QObject::connect(this->job.data(), &OiJob::geometryObservationsChanged,
                      this, &Controller::geometryObservationsChanged, Qt::AutoConnection);
     QObject::connect(this->job.data(), &OiJob::geometryNominalSystemChanged,
@@ -2128,53 +2103,62 @@ void Controller::stopServer(){
 #endif
 
 /*!
- * \brief Controller::createActualFromNominal
- * \param geometry
- * \return
+ * \brief Controller::createActualForNominal
+ * "Measure this nominal" (domain-model.md §4, D17): always creates a new
+ * actual - many actuals may realise the same nominal over repeated
+ * inspection, so there is no "the" existing actual to reuse or update.
+ * \param nominal
+ * \return the new actual, or null on failure
  */
-bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
+QPointer<FeatureWrapper> Controller::createActualForNominal(const QPointer<Geometry> &nominal){
 
-    //check job
-    if(this->job.isNull()){
-        return false;
+    //check job and nominal
+    if(this->job.isNull() || nominal.isNull() || nominal->getFeatureWrapper().isNull()){
+        return QPointer<FeatureWrapper>(NULL);
     }
 
-    //check geometry
-    if(geometry.isNull() || geometry->getFeatureWrapper().isNull()){
-        return false;
-    }
+    const FeatureTypes type = nominal->getFeatureWrapper()->getFeatureTypeEnum();
 
-    //check if actual already exists
-    if(!geometry->getActual().isNull()){
-        return true;
+    //find a free name - actuals no longer share the nominal's name (that
+    //name-matching was the mechanism that let one object be ticked as
+    //both nominal and actual in the old model)
+    QString baseName = QString("%1 actual").arg(nominal->getFeatureName());
+    QString name = baseName;
+    int suffix = 2;
+    while(!this->job->validateFeatureName(name, type)){
+        name = QString("%1 (%2)").arg(baseName).arg(suffix);
+        suffix++;
     }
 
     //set up feature attributes
     FeatureAttributes attr;
     attr.count = 1;
-    attr.typeOfFeature = geometry->getFeatureWrapper()->getFeatureTypeEnum();
-    attr.name = geometry->getFeatureName();
-    attr.group = geometry->getGroupName();
-    attr.isActual = true;
+    attr.typeOfFeature = type;
+    attr.name = name;
+    attr.group = nominal->getGroupName();
 
     //get measurement config
-    QString elementConfigName = Settings::get(QString("defaultMeasurementConfig.%1").arg(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString()))));
+    QString elementConfigName = Settings::get(QString("defaultMeasurementConfig.%1").arg(getElementTypeName(getElementTypeEnum(nominal->getFeatureWrapper()->getFeatureTypeString()))));
     MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(elementConfigName);
 
-    //create actual
-    this->job->addFeatures(attr);
-    if(geometry->getActual().isNull() || geometry->getActual()->getFeatureWrapper().isNull()){
-        return false;
+    //create the actual
+    QList<QPointer<FeatureWrapper> > created = this->job->addFeatures(attr);
+    if(created.size() != 1 || created.first().isNull() || created.first()->getGeometry().isNull()){
+        return QPointer<FeatureWrapper>(NULL);
     }
+    QPointer<FeatureWrapper> actual = created.first();
 
-    //set function and measurement config
+    //attach its fit function and measurement config
     QList<QPointer<FeatureWrapper> > actuals;
-    actuals.append(geometry->getActual()->getFeatureWrapper());
-
-    sys::Function defaultFunction = PluginRepository::getDefaultFunction(attr.typeOfFeature).value_or(sys::Function());
+    actuals.append(actual);
+    sys::Function defaultFunction = PluginRepository::getDefaultFunction(type).value_or(sys::Function());
     this->addFunctionsAndMConfigs(actuals, mConfig, defaultFunction.plugin().filePath(), defaultFunction.name());
 
-    return true;
+    //now that it has a fit attached it is read-only (D19) - record which
+    //nominal it realises
+    actual->getGeometry()->setRealises(nominal);
+
+    return actual;
 }
 
 /*!
@@ -2195,11 +2179,6 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
 
         //check feature
         if(feature.isNull() || feature->getFeature().isNull()){
-            continue;
-        }
-
-        //check if the feature is a nominal geometry
-        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
             continue;
         }
 

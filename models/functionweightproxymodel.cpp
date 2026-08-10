@@ -96,7 +96,7 @@ bool FunctionWeightProxyModel::filterAcceptsRow(int source_row, const QModelInde
 
         QPointer<FeatureWrapper> fw = source_model->getCurrentJob()->getFeatureById(inputElem.at(source_row).id);
 
-        if(!fw->getGeometry().isNull() && !fw->getGeometry()->getIsNominal()){
+        if(!fw->getGeometry().isNull() && fw->getGeometry()->getOwnerDescription().has_value()){
             return true;
         }
     }

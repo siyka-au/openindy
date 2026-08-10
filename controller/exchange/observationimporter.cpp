@@ -71,7 +71,7 @@ bool ObservationImporter::importObservations(){
 
     //check active feature
     if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getGeometry().isNull()
-            || this->currentJob->getActiveFeature()->getGeometry()->getIsNominal()){
+            || !this->currentJob->getActiveFeature()->getGeometry()->getOwnerDescription().has_value()){
         emit this->sendMessage("You have to select an actual geometry before importing observations", eErrorMessage, eMessageBoxMessage);
         emit this->importFinished(false);
         return false;

@@ -93,9 +93,9 @@ QVariant UsedElementsModel::data(const QModelIndex &index, int role) const{
 
     if(role == Qt::DisplayRole){
 
-        if(!element.geometry.isNull() && element.geometry->getIsNominal() && !element.geometry->getNominalSystem().isNull()){
+        if(!element.geometry.isNull() && !element.geometry->getOwnerDescription().has_value() && !element.geometry->getNominalSystem().isNull()){
             return QString("%1 - nominal (%3)").arg(element.geometry->getFeatureName()).arg(element.geometry->getNominalSystem()->getFeatureName());
-        }else if(!element.geometry.isNull() && !element.geometry->getIsNominal()){
+        }else if(!element.geometry.isNull() && element.geometry->getOwnerDescription().has_value()){
             return QString("%1 - actual").arg(element.geometry->getFeatureName());
         }else if(!element.station.isNull()){
             return element.station->getFeatureName();

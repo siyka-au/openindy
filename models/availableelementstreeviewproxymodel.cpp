@@ -372,11 +372,11 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
 
             if(this->filterActualNominal == ActualNominalFilter::eFilterNominal // filter by nominal
                     && !item->getFeature()->getGeometry().isNull()
-                    && !item->getFeature()->getGeometry()->getIsNominal()) {
+                    && item->getFeature()->getGeometry()->getOwnerDescription().has_value()) {
                 accept = false;
             } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual  // filter by actual
                       && !item->getFeature()->getGeometry().isNull()
-                      && item->getFeature()->getGeometry()->getIsNominal()) {
+                      && !item->getFeature()->getGeometry()->getOwnerDescription().has_value()) {
                 accept = false;
             }
 

@@ -763,7 +763,6 @@ void DialogsTest::projectSaveLoad() {
 
     FeatureAttributes point1;
     point1.count = 1;
-    point1.isActual = true;
     point1.typeOfFeature = ePointFeature;
     point1.name = "Point01";
     point1.measurementConfig = ModelManager::getMeasurementConfigManager()->getProjectConfig("measconfig-fastpoint_project");

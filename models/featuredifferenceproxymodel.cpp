@@ -67,11 +67,13 @@ bool FeatureDifferenceProxyModel::filterAcceptsRow(int source_row, const QModelI
         return false;
     }
 
-    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+    //only an actual (fit-owned, D19) belongs in the difference table
+    if(!feature->getGeometry()->getOwnerDescription().has_value()){
         return false;
     }
 
-    if(!feature->getGeometry().isNull() && feature->getGeometry()->getNominals().isEmpty()){
+    //...and only one that actually realises a nominal to diff against (D17)
+    if(!feature->getGeometry()->getRealises().has_value()){
         return false;
     }
 

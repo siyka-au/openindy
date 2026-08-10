@@ -118,7 +118,7 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
 
                 if(getIsGeometry(this->currentJob->getActiveFeature()->getFeatureTypeEnum())){ //geometry
 
-                    if(this->currentJob->getActiveFeature()->getGeometry()->getIsNominal()){ //nominal
+                    if(!this->currentJob->getActiveFeature()->getGeometry()->getOwnerDescription().has_value()){ //nominal
 
                         if(function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) != 0
                                 && function.interfaceCategory().compare(OiMetaData::iid_ConstructFunction) != 0

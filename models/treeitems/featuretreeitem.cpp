@@ -520,17 +520,21 @@ void FeatureTreeItem::setUpFeature(){
     }else if(getIsGeometry(this->feature->getFeatureTypeEnum())){
 
         //check geometry
-        if(this->feature->getGeometry().isNull() || (this->feature->getGeometry()->getIsNominal() && this->feature->getGeometry()->getNominalSystem().isNull())){
+        if(this->feature->getGeometry().isNull()){
+            return;
+        }
+        const bool isNominalLike = !this->feature->getGeometry()->getOwnerDescription().has_value();
+        if(isNominalLike && this->feature->getGeometry()->getNominalSystem().isNull()){
             return;
         }
 
         //set display value
         this->displayValue = QString("%1 - %2").arg(this->feature->getGeometry()->getFeatureName())
-                .arg(this->feature->getGeometry()->getIsNominal()?QString("nominal (%1)")
+                .arg(isNominalLike?QString("nominal (%1)")
                                                                   .arg(this->feature->getGeometry()->getNominalSystem()->getFeatureName()):"actual");
 
         //add observations and readings as children (only for actuals)
-        if(this->feature->getGeometry()->getIsNominal()){
+        if(isNominalLike){
             return;
         }
         FeatureTreeItem *itemObservations = new FeatureTreeItem("observations:");

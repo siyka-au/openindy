@@ -146,8 +146,8 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
     }
 
     //filter by actual nominal
-    if((source_model->getActualNominalFilter() == eFilterActual && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal())
-            || (source_model->getActualNominalFilter() == eFilterNominal && (feature->getGeometry().isNull() || !feature->getGeometry()->getIsNominal()))){
+    if((source_model->getActualNominalFilter() == eFilterActual && !feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value())
+            || (source_model->getActualNominalFilter() == eFilterNominal && (feature->getGeometry().isNull() || feature->getGeometry()->getOwnerDescription().has_value()))){
         return false;
     }
 

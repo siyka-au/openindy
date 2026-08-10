@@ -312,7 +312,7 @@ bool FeatureTableDelegate::activeFeatureIsNominal(const FeatureTableProxyModel *
     }
     if(!featureTablePM->getCurrentJob()->getActiveFeature().isNull()){
         if(!featureTablePM->getCurrentJob()->getActiveFeature()->getGeometry().isNull()){
-            if(featureTablePM->getCurrentJob()->getActiveFeature()->getGeometry()->getIsNominal()){
+            if(!featureTablePM->getCurrentJob()->getActiveFeature()->getGeometry()->getOwnerDescription().has_value()){
                 return true;
             }
         }

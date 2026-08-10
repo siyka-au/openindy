@@ -62,8 +62,6 @@ private slots:
 
     void on_toolButton_ok_clicked();
     void on_toolButton_cancel_clicked();
-    void on_checkBox_nominal_toggled(bool checked);
-    void on_checkBox_actual_toggled(bool checked);
 
     void on_comboBox_entityType_currentTextChanged(const QString &entityTypeName);
 
@@ -83,10 +81,6 @@ private:
     void initFunctionsModel();
     void initMeasurementConfigModel();
 
-    void toggleActualLabels(bool toggle);
-
-    void toggleNominalLabels(bool toggle);
-
     //################
     //GUI interactions
     //################
@@ -94,6 +88,12 @@ private:
     void featureAttributesFromGUI(FeatureAttributes &attributes);
 
     void initMeasurementConfigUI(const int functionIndex);
+
+    //D17: there is no isNominal/isActual checkbox any more - a nominal
+    //producer is just a function whose shape says so (a ConstructFunction
+    //declaring no needed elements, taking scalar parameters only). This
+    //is what decides whether the nominal-system picker is relevant.
+    bool isNominalShapedFunction(const sys::Function &function) const;
 
 private:
     Ui::CreateFeatureDialog *ui;

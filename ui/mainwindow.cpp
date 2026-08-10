@@ -1509,13 +1509,13 @@ void MainWindow::showFeatureProperties(bool checked){
     const ParameterDisplayConfig &dConfig = sourceModel->getParameterDisplayConfig();
 
     //display properties dialog for actuals
-    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
+    if(!feature->getGeometry().isNull() && feature->getGeometry()->getOwnerDescription().has_value()){
         showCentered(this->actualPropertiesDialog);
         return;
     }
 
     //display properties dialog for nominals
-    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal() && feature->getGeometry()->getIsSolved()){
+    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value() && feature->getGeometry()->getIsSolved()){
 
         this->nominalPropertiesDialog.setCurrentNominal(feature->getFeature()->getId(), feature->getFeature()->getFeatureName(),
                                                         feature->getFeatureTypeEnum());
@@ -1529,7 +1529,7 @@ void MainWindow::showFeatureProperties(bool checked){
 
         return;
 
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getIsSolved()){
+    }else if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value() && !feature->getGeometry()->getIsSolved()){
         emit this->log(QString("Switch to the nominal system of %1 to edit its properties").arg(feature->getGeometry()->getFeatureName()),
                        eInformationMessage, eMessageBoxMessage);
         return;
@@ -2543,7 +2543,7 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     //update contents
     this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
     if(!feature->getGeometry().isNull()){
-        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nom":"act");
+        this->ui->label_magnifyActualNominal->setText(!feature->getGeometry()->getOwnerDescription().has_value()?"nom":"act");
     }else{
         this->ui->label_magnifyActualNominal->setText("-/-");
     }
@@ -2897,7 +2897,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
 
             watchWindowKey = QString("%1%2")
                                 .arg(feature->getFeature()->getFeatureName())
-                                .arg(feature->getGeometry().isNull() ? ""  : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
+                                .arg(feature->getGeometry().isNull() ? ""  : !feature->getGeometry()->getOwnerDescription().has_value() ? "  nom" : "  act");
             windowTitleSuffix =  QString("[%1]").arg(watchWindowKey.toString());
             break;
         }

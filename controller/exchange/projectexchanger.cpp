@@ -525,7 +525,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
             //depending on the type of geometry call the right fromOpenIndyXML method
             switch(geomType){
             case eCircleFeature:{
-                QPointer<Circle> myCircle = new Circle(false);
+                QPointer<Circle> myCircle = new Circle();
                 myFeatureWrapper->setCircle(myCircle);
                 if(!myCircle->fromOpenIndyXML(geometry)){
                     delete myCircle;
@@ -534,7 +534,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eConeFeature:{
-                QPointer<Cone> myCone = new Cone(false);
+                QPointer<Cone> myCone = new Cone();
                 myFeatureWrapper->setCone(myCone);
                 if(!myCone->fromOpenIndyXML(geometry)){
                     delete myCone;
@@ -543,7 +543,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eCylinderFeature:{
-                QPointer<Cylinder> myCylinder = new Cylinder(false);
+                QPointer<Cylinder> myCylinder = new Cylinder();
                 myFeatureWrapper->setCylinder(myCylinder);
                 if(!myCylinder->fromOpenIndyXML(geometry)){
                     delete myCylinder;
@@ -552,7 +552,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eEllipseFeature:{
-                QPointer<Ellipse> myEllipse = new Ellipse(false);
+                QPointer<Ellipse> myEllipse = new Ellipse();
                 myFeatureWrapper->setEllipse(myEllipse);
                 if(!myEllipse->fromOpenIndyXML(geometry)){
                     delete myEllipse;
@@ -561,7 +561,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eEllipsoidFeature:{
-                QPointer<Ellipsoid> myEllipsoid = new Ellipsoid(false);
+                QPointer<Ellipsoid> myEllipsoid = new Ellipsoid();
                 myFeatureWrapper->setEllipsoid(myEllipsoid);
                 if(!myEllipsoid->fromOpenIndyXML(geometry)){
                     delete myEllipsoid;
@@ -570,7 +570,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eHyperboloidFeature:{
-                QPointer<Hyperboloid> myHyperboloid = new Hyperboloid(false);
+                QPointer<Hyperboloid> myHyperboloid = new Hyperboloid();
                 myFeatureWrapper->setHyperboloid(myHyperboloid);
                 if(!myHyperboloid->fromOpenIndyXML(geometry)){
                     delete myHyperboloid;
@@ -579,7 +579,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eLineFeature:{
-                QPointer<Line> myLine = new Line(false);
+                QPointer<Line> myLine = new Line();
                 myFeatureWrapper->setLine(myLine);
                 if(!myLine->fromOpenIndyXML(geometry)){
                     delete myLine;
@@ -588,7 +588,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eNurbsFeature:{
-                QPointer<Nurbs> myNurbs = new Nurbs(false);
+                QPointer<Nurbs> myNurbs = new Nurbs();
                 myFeatureWrapper->setNurbs(myNurbs);
                 if(!myNurbs->fromOpenIndyXML(geometry)){
                     delete myNurbs;
@@ -597,7 +597,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eParaboloidFeature:{
-                QPointer<Paraboloid> myParaboloid = new Paraboloid(false);
+                QPointer<Paraboloid> myParaboloid = new Paraboloid();
                 myFeatureWrapper->setParaboloid(myParaboloid);
                 if(!myParaboloid->fromOpenIndyXML(geometry)){
                     delete myParaboloid;
@@ -606,7 +606,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case ePlaneFeature:{
-                QPointer<Plane> myPlane = new Plane(false);
+                QPointer<Plane> myPlane = new Plane();
                 myFeatureWrapper->setPlane(myPlane);
                 if(!myPlane->fromOpenIndyXML(geometry)){
                     delete myPlane;
@@ -615,7 +615,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case ePointFeature:{
-                QPointer<Point> myPoint = new Point(false);
+                QPointer<Point> myPoint = new Point();
                 myFeatureWrapper->setPoint(myPoint);
                 if(!myPoint->fromOpenIndyXML(geometry)){
                     delete myPoint;
@@ -624,7 +624,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case ePointCloudFeature:{
-                QPointer<PointCloud> myPointCloud = new PointCloud(false);
+                QPointer<PointCloud> myPointCloud = new PointCloud();
                 myFeatureWrapper->setPointCloud(myPointCloud);
                 if(!myPointCloud->fromOpenIndyXML(geometry)){
                     delete myPointCloud;
@@ -633,7 +633,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eScalarEntityAngleFeature:{
-                QPointer<ScalarEntityAngle> myAngle = new ScalarEntityAngle(false);
+                QPointer<ScalarEntityAngle> myAngle = new ScalarEntityAngle();
                 myFeatureWrapper->setScalarEntityAngle(myAngle);
                 if(!myAngle->fromOpenIndyXML(geometry)){
                     delete myAngle;
@@ -642,7 +642,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eScalarEntityDistanceFeature:{
-                QPointer<ScalarEntityDistance> myDistance = new ScalarEntityDistance(false);
+                QPointer<ScalarEntityDistance> myDistance = new ScalarEntityDistance();
                 myFeatureWrapper->setScalarEntityDistance(myDistance);
                 if(!myDistance->fromOpenIndyXML(geometry)){
                     delete myDistance;
@@ -651,7 +651,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eScalarEntityMeasurementSeriesFeature:{
-                QPointer<ScalarEntityMeasurementSeries> myMeasurementSeries = new ScalarEntityMeasurementSeries(false);
+                QPointer<ScalarEntityMeasurementSeries> myMeasurementSeries = new ScalarEntityMeasurementSeries();
                 myFeatureWrapper->setScalarEntityMeasurementSeries(myMeasurementSeries);
                 if(!myMeasurementSeries->fromOpenIndyXML(geometry)){
                     delete myMeasurementSeries;
@@ -660,7 +660,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eScalarEntityTemperatureFeature:{
-                QPointer<ScalarEntityTemperature> myTemperature = new ScalarEntityTemperature(false);
+                QPointer<ScalarEntityTemperature> myTemperature = new ScalarEntityTemperature();
                 myFeatureWrapper->setScalarEntityTemperature(myTemperature);
                 if(!myTemperature->fromOpenIndyXML(geometry)){
                     delete myTemperature;
@@ -669,7 +669,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eSlottedHoleFeature:{
-                QPointer<SlottedHole> mySlottedHole = new SlottedHole(false);
+                QPointer<SlottedHole> mySlottedHole = new SlottedHole();
                 myFeatureWrapper->setSlottedHole(mySlottedHole);
                 if(!mySlottedHole->fromOpenIndyXML(geometry)){
                     delete mySlottedHole;
@@ -678,7 +678,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eSphereFeature:{
-                QPointer<Sphere> mySphere = new Sphere(false);
+                QPointer<Sphere> mySphere = new Sphere();
                 myFeatureWrapper->setSphere(mySphere);
                 if(!mySphere->fromOpenIndyXML(geometry)){
                     delete mySphere;
@@ -687,7 +687,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
                 }
                 break;
             }case eTorusFeature:{
-                QPointer<Torus> myTorus = new Torus(false);
+                QPointer<Torus> myTorus = new Torus();
                 myFeatureWrapper->setTorus(myTorus);
                 if(!myTorus->fromOpenIndyXML(geometry)){
                     delete myTorus;
@@ -935,7 +935,7 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     QDomElement geometry = geometryList.at(j).toElement();
                     if(geometry.hasAttribute("ref") && this->myGeometries.contains(geometry.attribute("ref").toInt())){
                         QPointer<FeatureWrapper> myGeometry = this->myGeometries.value(geometry.attribute("ref").toInt());
-                        if(myGeometry->getGeometry()->getIsNominal()){
+                        if(!myGeometry->getGeometry()->getOwnerDescription().has_value()){
                             myCoordinateSystem->getCoordinateSystem()->nominalsList.append(myGeometry);
                             myCoordinateSystem->getCoordinateSystem()->nominalsMap.insert(myGeometry->getGeometry()->getId(), myGeometry);
                         }
@@ -1192,24 +1192,16 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                 }
             }
 
-            //set nominal geometries
-            QDomElement nominalGeometries = geometry.firstChildElement("nominalGeometries");
-            if(!nominalGeometries.isNull()){
-                QDomNodeList nominalList = nominalGeometries.childNodes();
-                for(int j = 0; j < nominalList.size(); j++){
-                    QDomElement nominalGeometry = nominalList.at(j).toElement();
-                    if(nominalGeometry.hasAttribute("ref") && this->myGeometries.contains(nominalGeometry.attribute("ref").toInt())){
-                        QPointer<FeatureWrapper> myNominalGeometry = this->myGeometries.value(nominalGeometry.attribute("ref").toInt());
-                        myGeometry->getGeometry()->addNominal(myNominalGeometry->getGeometry());
-                    }
+            //set what this actual realises, if anything (D17) - replaces
+            //the old nominalGeometries/actual pair, which encoded a
+            //bidirectional link that assumed exactly one actual per
+            //nominal
+            QDomElement realisesElement = geometry.firstChildElement("realises");
+            if(!realisesElement.isNull() && realisesElement.hasAttribute("ref") && this->myGeometries.contains(realisesElement.attribute("ref").toInt())){
+                QPointer<FeatureWrapper> myNominal = this->myGeometries.value(realisesElement.attribute("ref").toInt());
+                if(!myNominal.isNull() && !myNominal->getGeometry().isNull()){
+                    myGeometry->getGeometry()->setRealises(myNominal->getGeometry());
                 }
-            }
-
-            //set actual
-            QDomElement actualGeometry = geometry.firstChildElement("actual");
-            if(!actualGeometry.isNull() && actualGeometry.hasAttribute("ref") && this->myGeometries.contains(actualGeometry.attribute("ref").toInt())){
-                QPointer<FeatureWrapper> myActualGeometry = this->myGeometries.value(actualGeometry.attribute("ref").toInt());
-                myGeometry->getGeometry()->setActual(myActualGeometry->getGeometry());
             }
 
             //set nominal system

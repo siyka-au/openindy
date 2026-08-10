@@ -67,31 +67,31 @@ QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type, doubl
 
     switch(type) {
     case ePointFeature: {
-            QPointer<Point> point = new Point(false, Position(xyz));
+            QPointer<Point> point = new Point(Position(xyz));
             point->setIsSolved(true);
             featurewrapper->setPoint(point);
             break;
         }
     case eLineFeature: {
-            QPointer<Line> line = new Line(false, Position(xyz), Direction(ijk));
+            QPointer<Line> line = new Line(Position(xyz), Direction(ijk));
             line->setIsSolved(true);
             featurewrapper->setLine(line);
         break;
     }
     case ePlaneFeature: {
-            QPointer<Plane> plane = new Plane(false, Position(xyz), Direction(ijk));
+            QPointer<Plane> plane = new Plane(Position(xyz), Direction(ijk));
             plane->setIsSolved(true);
             featurewrapper->setPlane(plane);
         break;
     }
     case eCircleFeature:{
-            QPointer<Circle> circle = new Circle(false, Position(xyz), Direction(ijk), Radius(radius));
+            QPointer<Circle> circle = new Circle(Position(xyz), Direction(ijk), Radius(radius));
             circle->setIsSolved(true);
             featurewrapper->setCircle(circle);
         break;
     }
     case eCylinderFeature: {
-            QPointer<Cylinder> cylinder = new Cylinder(false, Position(xyz), Direction(ijk), Radius(radius));
+            QPointer<Cylinder> cylinder = new Cylinder(Position(xyz), Direction(ijk), Radius(radius));
             cylinder->setIsSolved(true);
             featurewrapper->setCylinder(cylinder);
         break;

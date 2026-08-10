@@ -475,7 +475,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -502,8 +502,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
 
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if(!element.point->getIsNominal() && element.point->getIsSolved()){
-                    Point p(false);
+                if(element.point->getOwnerDescription().has_value() && element.point->getIsSolved()){
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addLocPoint(p);
@@ -540,7 +540,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -567,8 +567,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
 
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if(!element.point->getIsNominal() && element.point->getIsSolved()){
-                    Point p(false);
+                if(element.point->getOwnerDescription().has_value() && element.point->getIsSolved()){
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addRefPoint(p);
@@ -664,7 +664,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -691,9 +691,9 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if((!trafoParam->getStartSystem()->getIsStationSystem() && element.point->getIsNominal())
+                if((!trafoParam->getStartSystem()->getIsStationSystem() && !element.point->getOwnerDescription().has_value())
                         || element.point->getIsSolved()){
-                    Point p(element.point->getIsNominal());
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addLocPoint(p);
@@ -715,7 +715,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
                 Plane plane = *element.geometry->getFeatureWrapper()->getPlane();
@@ -755,7 +755,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -782,9 +782,9 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if((!trafoParam->getDestinationSystem()->getIsStationSystem() && element.point->getIsNominal())
+                if((!trafoParam->getDestinationSystem()->getIsStationSystem() && !element.point->getOwnerDescription().has_value())
                         || element.point->getIsSolved()){
-                    Point p(element.point->getIsNominal());
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addRefPoint(p);
@@ -806,7 +806,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -892,8 +892,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
 
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if(element.point->getIsNominal() && element.point->getNominalSystem() == trafoParam->getStartSystem()){
-                    Point p(true);
+                if(!element.point->getOwnerDescription().has_value() && element.point->getNominalSystem() == trafoParam->getStartSystem()){
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addLocPoint(p);
@@ -920,8 +920,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
 
             //add all points
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if(element.point->getIsNominal() && element.point->getNominalSystem() == trafoParam->getDestinationSystem()){
-                    Point p(true);
+                if(!element.point->getOwnerDescription().has_value() && element.point->getNominalSystem() == trafoParam->getDestinationSystem()){
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addRefPoint(p);
@@ -1029,7 +1029,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -1055,7 +1055,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
 
                 if(!trafoParam->getStartSystem()->getIsStationSystem() && element.point->getIsSolved()){
-                    Point p(element.point->getIsNominal());
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addLocPoint(p);
@@ -1077,7 +1077,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
                 Plane plane = *element.geometry->getFeatureWrapper()->getPlane();
@@ -1117,7 +1117,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -1144,7 +1144,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
             if(element.typeOfElement == ePointElement && !element.point.isNull()){
 
                 if(!trafoParam->getDestinationSystem()->getIsStationSystem() && element.point->getIsSolved()){
-                    Point p(element.point->getIsNominal());
+                    Point p;
                     p.setFeatureName(element.point->getFeatureName());
                     p.setPoint(element.point->getPosition());
                     sorter.addRefPoint(p);
@@ -1165,7 +1165,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
                 }
 
                 //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                if(!element.geometry->getOwnerDescription().has_value() || !element.geometry->getIsSolved()){
                     continue;
                 }
 
@@ -1289,7 +1289,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
             bool isSolved = (system == destinationSystem);
 
             //check feature
-            if(!feature.isNull() && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature.isNull() && !feature->getGeometry().isNull()){
                 feature->getGeometry()->setIsSolved(isSolved);
             }
 
@@ -1427,7 +1427,7 @@ void FeatureUpdater::transformObsAndNominals(const QPointer<CoordinateSystem> &d
             bool isSolved = (system == destinationSystem);
 
             //check feature
-            if(!feature.isNull() && !feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature.isNull() && !feature->getGeometry().isNull()){
                 feature->getFeature()->blockSignals(true);
                 feature->getGeometry()->setIsSolved(isSolved);
                 feature->getFeature()->blockSignals(false);
@@ -1693,7 +1693,7 @@ void FeatureUpdater::saveBundleResults(const QPointer<CoordinateSystem> &bundleS
 
         //create point
         QPointer<FeatureWrapper> feature = new FeatureWrapper();
-        QPointer<Point> point = new Point(true);
+        QPointer<Point> point = new Point();
         feature->setPoint(point);
 
         //set up point attributes

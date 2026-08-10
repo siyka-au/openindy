@@ -812,7 +812,7 @@ void OiRequestHandler::getFeatures(OiRequestResponse &request){
         isSolved.appendChild(isSolvedText);
         featureTag.appendChild(isSolved);
         QDomElement isNominal = request.response.createElement("isNominal");
-        QDomText isNominalText = request.response.createTextNode((feature->getGeometry().isNull() || !feature->getGeometry()->getIsNominal())?"0":"1");
+        QDomText isNominalText = request.response.createTextNode((feature->getGeometry().isNull() || feature->getGeometry()->getOwnerDescription().has_value())?"0":"1");
         isNominal.appendChild(isNominalText);
         featureTag.appendChild(isNominal);
 
@@ -847,8 +847,6 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     QDomElement name = request.request.documentElement().firstChildElement("name");
     QDomElement group = request.request.documentElement().firstChildElement("group");
     QDomElement count = request.request.documentElement().firstChildElement("count");
-    QDomElement isActual = request.request.documentElement().firstChildElement("isActual");
-    QDomElement isNominal = request.request.documentElement().firstChildElement("isNominal");
     QDomElement nominalSystem = request.request.documentElement().firstChildElement("nominalSystem");
     QDomElement measurementConfig = request.request.documentElement().firstChildElement("measurementConfig");
     if(type.isNull() || name.isNull() || group.isNull() || count.isNull()
@@ -863,12 +861,10 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     attr.name = name.text();
     attr.group = group.text();
     attr.count = count.text().toInt();
-    if(!isActual.isNull()){
-        attr.isActual = isActual.text().toInt();
-    }
-    if(!isNominal.isNull()){
-        attr.isNominal = isNominal.text().toInt();
-    }
+    //D17: isActual/isNominal are no longer settable attributes - whether
+    //a created geometry ends up nominal or actual now falls out of the
+    //producer function attached to it, which this legacy network request
+    //never specified in the first place
     if(!nominalSystem.isNull()){
         attr.nominalSystem = nominalSystem.text();
     }
@@ -887,7 +883,7 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
 
     //pass measurement config to features
     foreach(const QPointer<FeatureWrapper> &feature, features){
-        if(!feature.isNull() && !feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
+        if(!feature.isNull() && !feature->getGeometry().isNull() && feature->getGeometry()->getOwnerDescription().has_value()){
             feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
         }
     }
@@ -1126,7 +1122,7 @@ void OiRequestHandler::getParameters(OiRequestResponse &request){
     isSolved.appendChild(isSolvedText);
     request.response.documentElement().appendChild(isSolved);
     QDomElement isNominal = request.response.createElement("isNominal");
-    QDomText isNominalText = request.response.createTextNode((feature->getGeometry().isNull() || !feature->getGeometry()->getIsNominal())?"0":"1");
+    QDomText isNominalText = request.response.createTextNode((feature->getGeometry().isNull() || feature->getGeometry()->getOwnerDescription().has_value())?"0":"1");
     isNominal.appendChild(isNominalText);
     request.response.documentElement().appendChild(isNominal);
 

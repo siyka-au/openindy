@@ -57,27 +57,14 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
 
     this->created = false;
 
-    //get feature attributes from GUI elements and emit add features signal
+    //get feature attributes from GUI elements and emit add features signal.
+    //D17: there is no separate nominal/actual creation path any more -
+    //featureAttributesFromGUI always attaches whichever function is
+    //selected, and whether that makes the result a nominal or an actual
+    //falls out of the function's own shape (D19), not a checkbox here.
     FeatureAttributes attributes;
     this->featureAttributesFromGUI(attributes);
     emit this->addFeatures(attributes);
-
-    //only set default function, if an actual feature has been created
-    if(!attributes.isActual){
-        if(this->created){
-            this->close();
-        }
-        return;
-    }
-
-    //get selected function
-    sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
-    if(function.name().compare("") == 0 || function.plugin().name().compare("") == 0){
-        if(this->created){
-            this->close();
-        }
-        return;
-    }
 
     if(this->created){
         this->close();
@@ -89,26 +76,6 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
  */
 void CreateFeatureDialog::on_toolButton_cancel_clicked(){
     this->close();
-}
-
-/*!
- * \brief CreateFeatureDialog::on_checkBox_nominal_toggled
- * \param checked
- */
-void CreateFeatureDialog::on_checkBox_nominal_toggled(bool checked){
-
-    //set visible states of actual/nominal dependent GUI elements
-    this->toggleNominalLabels(checked);
-}
-
-/*!
- * \brief CreateFeatureDialog::on_checkBox_actual_toggled
- * \param checked
- */
-void CreateFeatureDialog::on_checkBox_actual_toggled(bool checked){
-
-    //set visible states of actual/nominal dependent GUI elements
-    this->toggleActualLabels(checked);
 }
 
 /*!
@@ -153,9 +120,7 @@ void CreateFeatureDialog::initGUI(){
     this->ui->lineEdit_name->setText("");
     this->ui->comboBox_group->setCurrentIndex(0);
     this->ui->spinBox_count->setValue(1);
-    this->ui->checkBox_actual->setChecked(true);
     this->ui->checkBox_common->setChecked(false);
-    this->ui->checkBox_nominal->setChecked(false);
 
     this->ui->lineEdit_name->setFocus();
 
@@ -185,8 +150,6 @@ void CreateFeatureDialog::initGUI(){
         this->ui->comboBox_function->setVisible(false);
         this->ui->label_nominalSystem->setVisible(false);
         this->ui->comboBox_nominalSystem->setVisible(false);
-        this->ui->checkBox_actual->setVisible(false);
-        this->ui->checkBox_nominal->setVisible(false);
         this->ui->checkBox_common->setVisible(false);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
@@ -221,8 +184,6 @@ void CreateFeatureDialog::initGUI(){
         this->ui->comboBox_function->setVisible(false);
         this->ui->label_nominalSystem->setVisible(false);
         this->ui->comboBox_nominalSystem->setVisible(false);
-        this->ui->checkBox_actual->setVisible(false);
-        this->ui->checkBox_nominal->setVisible(false);
         this->ui->checkBox_common->setVisible(false);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
@@ -231,51 +192,50 @@ void CreateFeatureDialog::initGUI(){
 
     }else if(getIsScalarEntity(this->typeOfFeature)){
 
-        //set visibility
+        //set visibility. D17: there is no actual/nominal checkbox any
+        //more - the function combo is always shown, and whether the
+        //nominal-system picker or the measurement-config picker is
+        //relevant is decided by the selected function's own shape
+        //(initMeasurementConfigUI, called for the current selection
+        //right after this).
         this->ui->label_startSystem->setVisible(false);
         this->ui->comboBox_startSystem->setVisible(false);
         this->ui->label_destinationSystem->setVisible(false);
         this->ui->comboBox_destinationSystem->setVisible(false);
         this->ui->label_function->setVisible(true);
         this->ui->comboBox_function->setVisible(true);
-        this->ui->label_nominalSystem->setVisible(false);
-        this->ui->comboBox_nominalSystem->setVisible(false);
-        this->ui->checkBox_actual->setVisible(true);
-        this->ui->checkBox_nominal->setVisible(true);
         this->ui->checkBox_common->setVisible(true);
         this->ui->label_entityType->setVisible(true);
         this->ui->comboBox_entityType->setVisible(true);
-        this->ui->label_mConfig->setVisible(false);
-        this->ui->comboBox_mConfig->setVisible(false);
 
         //set checked state
-        this->ui->checkBox_actual->setChecked(true);
-        this->ui->checkBox_nominal->setChecked(false);
         this->ui->checkBox_common->setChecked(false);
+
+        //D17: refresh nominal-system/measurement-config visibility for
+        //whichever function is currently selected, since it is no
+        //longer set from a checkbox
+        this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
 
     }else{ //geometry
 
-        //set visibility
+        //set visibility - see the comment in the scalar-entity branch above
         this->ui->label_startSystem->setVisible(false);
         this->ui->comboBox_startSystem->setVisible(false);
         this->ui->label_destinationSystem->setVisible(false);
         this->ui->comboBox_destinationSystem->setVisible(false);
         this->ui->label_function->setVisible(true);
         this->ui->comboBox_function->setVisible(true);
-        this->ui->label_nominalSystem->setVisible(false);
-        this->ui->comboBox_nominalSystem->setVisible(false);
-        this->ui->checkBox_actual->setVisible(true);
-        this->ui->checkBox_nominal->setVisible(true);
         this->ui->checkBox_common->setVisible(true);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
-        this->ui->label_mConfig->setVisible(true);
-        this->ui->comboBox_mConfig->setVisible(true);
 
         //set checked state
-        this->ui->checkBox_actual->setChecked(true);
-        this->ui->checkBox_nominal->setChecked(false);
         this->ui->checkBox_common->setChecked(false);
+
+        //D17: refresh nominal-system/measurement-config visibility for
+        //whichever function is currently selected, since it is no
+        //longer set from a checkbox
+        this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
 
     }
 
@@ -354,28 +314,6 @@ void CreateFeatureDialog::initMeasurementConfigModel(){
 }
 
 /*!
- * \brief CreateFeatureDialog::toggleActualLabels
- * \param toggle
- */
-void CreateFeatureDialog::toggleActualLabels(bool toggle)
-{
-    this->ui->label_function->setVisible(toggle);
-    this->ui->comboBox_function->setVisible(toggle);
-    this->ui->label_mConfig->setVisible(toggle);
-    this->ui->comboBox_mConfig->setVisible(toggle);
-}
-
-/*!
- * \brief CreateFeatureDialog::toggleNominalLabels
- * \param toggle
- */
-void CreateFeatureDialog::toggleNominalLabels(bool toggle)
-{
-    this->ui->label_nominalSystem->setVisible(toggle);
-    this->ui->comboBox_nominalSystem->setVisible(toggle);
-}
-
-/*!
  * \brief CreateFeatureDialog::featureAttributesFromGUI
  * \param attributes
  */
@@ -399,18 +337,18 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
     }else if(getIsScalarEntity(this->typeOfFeature)){
 
         attributes.typeOfFeature = getFeatureTypeEnum(this->ui->comboBox_entityType->currentText());
-        attributes.isActual = this->ui->checkBox_actual->isChecked();
-        attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
-        attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
+        if(this->ui->comboBox_nominalSystem->isVisible()){
+            attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
+        }
 
     }else if(this->typeOfFeature != eCoordinateSystemFeature
              && this->typeOfFeature != eStationFeature){
 
-        attributes.isActual = this->ui->checkBox_actual->isChecked();
-        attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
-        attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
+        if(this->ui->comboBox_nominalSystem->isVisible()){
+            attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
+        }
         if(!this->neededElements.isEmpty()) {
                 attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
                 measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
@@ -418,8 +356,11 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         }
     }
 
-    //fill selected function plugin
-    if(attributes.isActual){
+    //fill selected function plugin - D17: every geometry/scalar-entity
+    //feature now gets its producer function attached at creation,
+    //whether it turns out nominal (a scalar-only producer) or actual (a
+    //fit); there is no longer a checkbox that skips this for "nominal"
+    if(getIsGeometry(attributes.typeOfFeature) || getIsScalarEntity(attributes.typeOfFeature)){
         sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
         attributes.functionPlugin.first = function.name();
         attributes.functionPlugin.second = function.plugin().filePath();
@@ -482,4 +423,21 @@ void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
         this->ui->comboBox_mConfig->setVisible(true);
         this->ui->label_mConfig->setVisible(true);
     }
+
+    //D17/D19: a nominal producer is a function with no needed elements at
+    //all (not just "hides the measurement config", which ObjectTransformation
+    //and SpecialFunction also do) - only that shape needs a nominal system
+    const bool nominalShaped = this->isNominalShapedFunction(function);
+    this->ui->label_nominalSystem->setVisible(nominalShaped);
+    this->ui->comboBox_nominalSystem->setVisible(nominalShaped);
+}
+
+/*!
+ * \brief CreateFeatureDialog::isNominalShapedFunction
+ * \param function
+ * \return
+ */
+bool CreateFeatureDialog::isNominalShapedFunction(const sys::Function &function) const{
+    return function.interfaceCategory().startsWith("de.openIndy.plugin.function.constructFunction")
+            && function.neededElements().isEmpty();
 }

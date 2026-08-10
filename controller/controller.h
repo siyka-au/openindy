@@ -218,8 +218,7 @@ signals:
 
     //geometry specific attributes changed
     void geometryIsCommonChanged(const int &featureId);
-    void geometryNominalsChanged(const int &featureId);
-    void geometryActualChanged(const int &featureId);
+    void geometryRealisesChanged(const int &featureId);
     void geometryObservationsChanged(const int &featureId);
     void geometryNominalSystemChanged(const int &featureId);
     void geometryStatisticChanged(const int &featureId);
@@ -347,7 +346,12 @@ private:
 #endif
 
     //create feature helpers
-    bool createActualFromNominal(const QPointer<Geometry> &geometry);
+
+    //"measure this nominal" (domain-model.md §4): always creates a new
+    //actual referencing this nominal via Geometry::realises - D17
+    //deliberately allows many actuals per nominal (re-inspection over
+    //time), so this never reuses an existing one.
+    QPointer<FeatureWrapper> createActualForNominal(const QPointer<Geometry> &nominal);
     void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
                                  const MeasurementConfig &mConfig, const QString &path, const QString &fName);
 

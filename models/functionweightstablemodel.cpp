@@ -268,7 +268,7 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
         case 1:{
             bool useX = value.toBool();
 
-            if(!fw->getGeometry()->getIsNominal()){ //save the ignored parameters for actual features
+            if(fw->getGeometry()->getOwnerDescription().has_value()){ //save the ignored parameters for actual features
 
                 for(int i=0; i<inputElem.size();i++){
                     if(fw->getGeometry()->getId() == inputElem.at(i).id){ //check id of current feature and input element
@@ -298,7 +298,7 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
         case 2:{
             bool useY = value.toBool();
 
-            if(!fw->getGeometry()->getIsNominal()){ //save the ignored parameters for actual features
+            if(fw->getGeometry()->getOwnerDescription().has_value()){ //save the ignored parameters for actual features
 
                 for(int i=0; i<inputElem.size();i++){
                     if(fw->getGeometry()->getId() == inputElem.at(i).id){
@@ -328,7 +328,7 @@ bool FunctionWeightsTableModel::setData(const QModelIndex &index, const QVariant
         case 3:{
             bool useZ = value.toBool();
 
-            if(!fw->getGeometry()->getIsNominal()){ //save the ignored parameters for actual features
+            if(fw->getGeometry()->getOwnerDescription().has_value()){ //save the ignored parameters for actual features
 
                 for(int i=0; i<inputElem.size();i++){
                     if(fw->getGeometry()->getId() == inputElem.at(i).id){

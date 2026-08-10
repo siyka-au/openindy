@@ -351,7 +351,7 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper> > features
         }
 
         foreach(QPointer<FeatureWrapper> jobFeature, jobFeatures) {
-            if(jobFeature->getGeometry()->getIsNominal()) {
+            if(!jobFeature->getGeometry()->getOwnerDescription().has_value()) {
                 qDebug() << "isNominal: " << jobFeature->getGeometry()->getFeatureName();
                 continue;
             }
@@ -430,8 +430,6 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
             fAttr.name = fw->getFeature()->getFeatureName();
             fAttr.group = fw->getFeature()->getGroupName();
 
-            fAttr.isActual = true;
-            fAttr.isNominal = false;
             fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
 
             QString mcElementTypeName;
@@ -456,6 +454,20 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
             QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
 
             this->addFunctionsAndMConfigs(addedFeatures, mConfig, fAttr.functionPlugin.second, fAttr.functionPlugin.first);
+
+            //this workflow's whole point is "add actuals to nominals at
+            //import" (D17): link the new actual to a same-named, same-
+            //type nominal already in the job, if there is one
+            if(addedFeatures.size() == 1 && !addedFeatures.first().isNull() && !addedFeatures.first()->getGeometry().isNull()){
+                foreach(const QPointer<FeatureWrapper> &candidate, this->currentJob->getFeaturesByName(fAttr.name)){
+                    if(!candidate.isNull() && !candidate->getGeometry().isNull()
+                            && candidate->getFeatureTypeEnum() == fAttr.typeOfFeature
+                            && !candidate->getGeometry()->getOwnerDescription().has_value()){
+                        addedFeatures.first()->getGeometry()->setRealises(candidate->getGeometry());
+                        break;
+                    }
+                }
+            }
 
             break;
         } //case
@@ -581,11 +593,6 @@ void DataExchanger::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper>
 
         //check feature
         if(feature.isNull() || feature->getFeature().isNull()){
-            continue;
-        }
-
-        //check if the feature is a nominal geometry
-        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
             continue;
         }
 

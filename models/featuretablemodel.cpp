@@ -82,7 +82,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         return this->getForegroundValue(feature, columnIndex);
 
     }else if(role == Qt::CheckStateRole && !feature->getGeometry().isNull()
-             && !feature->getGeometry()->getIsNominal()){
+             && feature->getGeometry()->getOwnerDescription().has_value()){
 
         //get the display attribute
         int attr = getFeatureDisplayAttributes().at(columnIndex);
@@ -324,11 +324,11 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
                 || fAttr == eFeatureDisplayGroup){
             return (myFlags | Qt::ItemIsEditable);
         }else if(fAttr == eFeatureDisplayIsCommon && !feature->getGeometry().isNull()
-                 && !feature->getGeometry()->getIsNominal()){
+                 && feature->getGeometry()->getOwnerDescription().has_value()){
             return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
         }else if(fAttr == eFeatureDisplayIsSolved){
             return (myFlags | Qt::ItemIsUserCheckable);
-        }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+        }else if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
             if(fAttr == eFeatureDisplayX || fAttr == eFeatureDisplayY || fAttr == eFeatureDisplayZ ||
                     fAttr == eFeatureDisplayPrimaryI || eFeatureDisplayPrimaryJ || fAttr == eFeatureDisplayPrimaryK){
                 return (myFlags | Qt::ItemIsEditable);
@@ -395,16 +395,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         switch((FeatureDisplayAttributes)attr){
         case eFeatureDisplayName:{
 
-            //check if the feature is a nominal geometry
-            bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
-            QPointer<CoordinateSystem> nominalSystem(NULL);
-            if(isNominal){
-                return false;
-                nominalSystem = feature->getGeometry()->getNominalSystem();
-            }
-
-            //only commit the new feature name if it is valid
-            if(!this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum(), isNominal, nominalSystem)){
+            //D17: nominal and actual are ordinary features now, not a
+            //name-matched pair, so there is no special-case to block here
+            //any more - only commit the new feature name if it is valid
+            if(!this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum())){
                 return false;
             }
 
@@ -453,7 +447,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
 
             //only actual features have a function
-            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
                 return false;
             }
 
@@ -538,7 +532,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             break;
         }
         case eFeatureDisplayX:
-            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownX, convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
                 feature->getGeometry()->setUnknownParameters(parameters);
@@ -547,7 +541,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
             break;
         case eFeatureDisplayY:
-            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownY,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
                 feature->getGeometry()->setUnknownParameters(parameters);
@@ -556,7 +550,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
             break;
         case eFeatureDisplayZ:
-            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownZ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
                 feature->getGeometry()->setUnknownParameters(parameters);
@@ -565,7 +559,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
             break;
         case eFeatureDisplayPrimaryI:
-            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownPrimaryI,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
                 feature->getGeometry()->setUnknownParameters(parameters);
@@ -574,7 +568,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
             break;
         case eFeatureDisplayPrimaryJ:
-            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownPrimaryJ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
                 feature->getGeometry()->setUnknownParameters(parameters);
@@ -583,7 +577,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             }
             break;
         case eFeatureDisplayPrimaryK:
-            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
                 QMap<GeometryParameters, double> parameters;
                 parameters.insert(eUnknownPrimaryK,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
                 feature->getGeometry()->setUnknownParameters(parameters);
@@ -598,15 +592,8 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         switch((TrafoParamDisplayAttributes)attr){
         case eTrafoParamDisplayName:{
 
-            //check if the feature is a nominal geometry
-            bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
-            QPointer<CoordinateSystem> nominalSystem(NULL);
-            if(isNominal){
-                nominalSystem = feature->getGeometry()->getNominalSystem();
-            }
-
             //only commit the new feature name if it is valid
-            if(!this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum(), isNominal, nominalSystem)){
+            if(!this->currentJob->validateFeatureName(value.toString(), feature->getFeatureTypeEnum())){
                 return false;
             }
 
@@ -1310,7 +1297,7 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
     }
 
     //nominals
-    if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+    if(!feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value()){
         return QColor(QColor::fromRgb(230,230,180));
     }
 

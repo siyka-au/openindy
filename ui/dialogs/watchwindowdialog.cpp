@@ -295,7 +295,7 @@ QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
 
     return QString("%1%2")
             .arg(feature->getFeature()->getFeatureName())
-            .arg(feature->getGeometry().isNull() ? "" : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
+            .arg(feature->getGeometry().isNull() ? "" : !feature->getGeometry()->getOwnerDescription().has_value() ? "  nom" : "  act");
 }
 
 /*!
