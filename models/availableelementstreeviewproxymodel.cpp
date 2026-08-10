@@ -179,7 +179,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
 
     //get needed element
     NeededElement neededElement = feature->getFunctions().at(this->functionPosition)->getNeededElements().at(this->neededElementIndex);
-    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+    const int inputElementKey = this->neededElementIndex; // D12: position is always the real NeededElement index now
     ElementTypes neededElementType = neededElement.typeOfElement;
 
     //check each model index
@@ -498,7 +498,7 @@ void AvailableElementsTreeViewProxyModel::addInputElement(QList<FeatureTreeItem 
         //check if function already contains the element
         QPointer<Function> function = this->currentJob->getActiveFeature()->getFeature()->getFunctions().at(this->functionPosition);
         NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
-        const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+        const int inputElementKey = this->neededElementIndex; // D12: position is always the real NeededElement index now
         QMap<int, QList<InputElement> > functionInputElements = function->getInputElements();
         foreach(const InputElement &element, functionInputElements[inputElementKey]) {
             if(element.id == item->getId()) {

@@ -34,7 +34,7 @@ int UsedElementsModel::rowCount(const QModelIndex &parent) const{
     Function *function = feature->getFunctions().at(this->functionPosition);
 
     NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
-    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+    const int inputElementKey = this->neededElementIndex; // D12: position is always the real NeededElement index now
 
     //check input elements
     if(!function->getInputElements().contains(inputElementKey)){
@@ -83,7 +83,7 @@ QVariant UsedElementsModel::data(const QModelIndex &index, int role) const{
     Function *function = feature->getFunctions().at(this->functionPosition);
 
     NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
-    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+    const int inputElementKey = this->neededElementIndex; // D12: position is always the real NeededElement index now
     //check and get input element
     if(!function->getInputElements().contains(inputElementKey)
             || index.row() >= function->getInputElements()[inputElementKey].size()){
@@ -222,7 +222,7 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList &selection){
     Function *function = feature->getFunctions().at(this->functionPosition);
 
     NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
-    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+    const int inputElementKey = this->neededElementIndex; // D12: position is always the real NeededElement index now
     //check and get input elements
     if(!function->getInputElements().contains(inputElementKey)){
         return;

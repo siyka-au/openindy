@@ -1785,16 +1785,17 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
 
     }
 
-    //check if feature has a fit function, else regret measurement
-    if(feature->getGeometry()->getFunctions().size() == 0 || feature->getGeometry()->getFunctions().first().isNull()){
-        this->log("Measurement failed - no fit function set", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    if(feature->getGeometry()->getFunctions().first()->getMetaData().iid != FitFunction_iidd){
-        this->log("Measurement failed - no fit function set", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
+    //D12/Stage 7f: OiJob::addMeasurementResults no longer feeds a fixed
+    //position on the target's first function - it always creates a
+    //tagged Point and lets tag resolution feed whatever function(s)
+    //declare a matching role, of any kind (a FitFunction such as
+    //BestFitPlane, pending Stage 7c-ii migration, or a tag-resolved
+    //ConstructFunction such as PlaneFromPointCollection). The old
+    //"first function must be a FitFunction" gate is not just unnecessary
+    //now, it is actively wrong - it would reject measuring into a plane
+    //using PlaneFromPointCollection, which is exactly the case this stage
+    //exists to make work. addMeasurementResults itself reports (with a
+    //message) if the target feature cannot be resolved at all.
 
     //add observations
     this->job->addMeasurementResults(targetId, readings);
