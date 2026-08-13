@@ -50,9 +50,21 @@ void FeatureUpdater::recalcFeatureSet(){
         return;
     }
 
-    //set all features to not have been updated
+    //set all features to not have been updated - except function-owned
+    //sub-geometry (Stage 7h, D19 applied to functions), which is left
+    //however clean/dirty it already is. A freshly loaded owned accessor
+    //was marked clean by ProjectExchanger (its persisted value is still
+    //current); Geometry::recalc() is what actually dirties one again,
+    //the moment its owner's own value changes. Resetting it here
+    //unconditionally, like any ordinary feature, would re-execute its
+    //construction chain on every recalc pass including the one that
+    //follows every project load - exactly what domain-model.md S1/S6
+    //says must not happen.
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
         if(!feature.isNull() && !feature->getFeature().isNull()){
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getOwnerFeature().has_value()){
+                continue;
+            }
             feature->getFeature()->blockSignals(true);
             feature->getFeature()->setIsUpdated(false);
             feature->getFeature()->blockSignals(false);
@@ -106,9 +118,13 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
     //transform all observations of the feature to the active coordinate system
     this->trafoController.transformObservations(feature, this->currentJob->getActiveCoordinateSystem());
 
-    //set all features to not have been updated
+    //set all features to not have been updated - except function-owned
+    //sub-geometry; see recalcFeatureSet()'s comment
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
         if(!feature.isNull() && !feature->getFeature().isNull()){
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getOwnerFeature().has_value()){
+                continue;
+            }
             feature->getFeature()->blockSignals(true);
             feature->getFeature()->setIsUpdated(false);
             feature->getFeature()->blockSignals(false);
@@ -1309,9 +1325,14 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
         return;
     }
 
-    //set all features to not have been updated before recalcFeatureWithoutTransformation()
+    //set all features to not have been updated before
+    //recalcFeatureWithoutTransformation() - except function-owned
+    //sub-geometry; see recalcFeatureSet()'s comment
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
         if(!feature.isNull() && !feature->getFeature().isNull()){
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getOwnerFeature().has_value()){
+                continue;
+            }
             feature->getFeature()->blockSignals(true);
             feature->getFeature()->setIsUpdated(false);
             feature->getFeature()->blockSignals(false);

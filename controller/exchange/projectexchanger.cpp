@@ -1204,6 +1204,29 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                 }
             }
 
+            //D19 applied to functions (Stage 7h): resolve the feature this
+            //geometry is a bound, read-only, owned sub-geometry of, if
+            //any - same two-pass ref-resolution shape as realises above.
+            //Feature::fromOpenIndyXML already restored isSolved and the
+            //geometry-specific fromOpenIndyXML (Line/Point/...) already
+            //restored the last-computed position/direction/radius, so
+            //once the owner is resolved and the geometry is solved there
+            //is nothing left to (re)compute - mark it clean so opening
+            //this project does not re-execute its construction chain.
+            //FeatureUpdater::recalcFeatureSet's blanket isUpdated reset
+            //deliberately skips owned sub-geometry for the same reason
+            //(see its comment); a later real change to the owner is what
+            //dirties this again (Geometry::recalc()).
+            QDomElement ownerFeatureElement = geometry.firstChildElement("ownerFeature");
+            if(!ownerFeatureElement.isNull() && ownerFeatureElement.hasAttribute("ref") && this->myGeometries.contains(ownerFeatureElement.attribute("ref").toInt())){
+                QPointer<FeatureWrapper> myOwner = this->myGeometries.value(ownerFeatureElement.attribute("ref").toInt());
+                if(!myOwner.isNull() && !myOwner->getGeometry().isNull()){
+                    if(myGeometry->getGeometry()->setOwnerFeature(myOwner->getGeometry()) && myGeometry->getFeature()->getIsSolved()){
+                        myGeometry->getFeature()->setIsUpdated(true);
+                    }
+                }
+            }
+
             //set nominal system
             QDomElement nominalSystem = geometry.firstChildElement("nominalCoordinateSystem");
             if(!nominalSystem.isNull() && nominalSystem.hasAttribute("ref") && this->myCoordinateSystems.contains(nominalSystem.attribute("ref").toInt())){
