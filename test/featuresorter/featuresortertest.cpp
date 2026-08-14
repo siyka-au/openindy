@@ -16,13 +16,20 @@ using namespace oi::math;
 
 // D17/D19: nominal/actual is no longer a constructor flag - it falls out
 // of whether a fit function is attached (Geometry::getOwnerDescription).
-// This stand-in needs no real behaviour, just to be a FitFunction so the
-// dynamic_cast in getOwnerDescription recognises it.
-class FakeFit : public FitFunction {
+// This stand-in needs no real behaviour beyond being attachable, just to
+// be a FitFunction so the dynamic_cast in getOwnerDescription recognises
+// it. Stage 7d/D21: also implements Producer<Point> - Feature::addFunction()
+// now rejects (does not attach) a function that implements neither
+// Producer<T> nor Transform<T> for the feature's type, so a fake with no
+// real exec() would silently fail to become this Point's producer.
+class FakeFit : public FitFunction, public Producer<Point> {
     Q_OBJECT
 public:
     FakeFit(QObject *parent = 0) : FitFunction(parent){
         this->metaData.name = "FakeFit";
+    }
+    std::expected<Point, QString> exec() override {
+        return Point();
     }
 };
 
