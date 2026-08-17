@@ -91,6 +91,13 @@ public slots:
     //recalculation
     void recalcActiveFeature();
 
+    //UI verification checkpoint: generate a function-owned sub-geometry
+    //(Stage 7h, D19) for the active feature - "check a box in a
+    //relationship" per the user's own framing. No-arg, operates on the
+    //active feature, same convention as startAim()/recalcActiveFeature().
+    void generateOwnedNormalLine();
+    void generateOwnedOriginPoint();
+
     //set sensor configuration for active station
     void setSensorConfig(const SensorConfiguration &sConfig, bool connectSensor);
 
@@ -354,6 +361,11 @@ private:
     QPointer<FeatureWrapper> createActualForNominal(const QPointer<Geometry> &nominal);
     void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
                                  const MeasurementConfig &mConfig, const QString &path, const QString &fName);
+
+    //shared by generateOwnedNormalLine()/generateOwnedOriginPoint(): creates
+    //a bare subType feature with no function attached, then attaches
+    //functionName as its owned producer via OiJob::addOwnedSubGeometry.
+    void generateOwnedSubGeometry(const FeatureTypes &subType, const QString &functionName, const QString &namePrefix);
 
     //###############
     //set up connects

@@ -263,6 +263,87 @@ void Controller::recalcActiveFeature(){
 }
 
 /*!
+ * \brief Controller::generateOwnedNormalLine
+ * UI verification checkpoint: the "check a box in a relationship" trigger
+ * for a solved Plane's owned normal line (Stage 7h, D19). No-arg, operates
+ * on the active feature - same convention as recalcActiveFeature()/startAim().
+ */
+void Controller::generateOwnedNormalLine(){
+    this->generateOwnedSubGeometry(eLineFeature, "LineFromPlaneNormal", "NormalLine");
+}
+
+/*!
+ * \brief Controller::generateOwnedOriginPoint
+ * See generateOwnedNormalLine() - same mechanism, PointFromPlaneOrigin.
+ */
+void Controller::generateOwnedOriginPoint(){
+    this->generateOwnedSubGeometry(ePointFeature, "PointFromPlaneOrigin", "OriginPoint");
+}
+
+/*!
+ * \brief Controller::generateOwnedSubGeometry
+ * Creates a bare subType feature with no function attached, then attaches
+ * functionName as its owned producer via OiJob::addOwnedSubGeometry - the
+ * same three-step shape (bare feature -> instantiate producer -> attach as
+ * owned) tst_ownedplaneaccessors.cpp already exercises at the API level,
+ * now reachable from the UI. Silently no-ops on a missing/unsuitable active
+ * feature or an unresolvable producer function, matching
+ * recalcActiveFeature()'s own silent-return convention for "nothing to do
+ * here" - OiJob::addFeatures()/addOwnedSubGeometry() already emit their own
+ * sendMessage() on any error worth surfacing to the user (invalid name, no
+ * valid producer, etc).
+ * \param subType
+ * \param functionName
+ * \param namePrefix
+ */
+void Controller::generateOwnedSubGeometry(const FeatureTypes &subType, const QString &functionName, const QString &namePrefix){
+
+    //check job
+    if(this->job.isNull()){
+        return;
+    }
+
+    //get and check active feature - must be a solved Plane (the only owner
+    //type this checkpoint's producers support; other geometry types are
+    //Stage 7h's Haiku-replication follow-up, not this one)
+    QPointer<FeatureWrapper> owner = this->job->getActiveFeature();
+    if(owner.isNull() || owner->getPlane().isNull() || !owner->getGeometry()->getIsSolved()){
+        return;
+    }
+
+    //resolve the producer function's plugin, then instantiate it
+    QList<sys::Function> candidates = PluginRepository::getFunctionsApplicableTo(subType);
+    QPointer<Function> producerFunction(NULL);
+    for(const sys::Function &candidate : candidates){
+        if(candidate.name().compare(functionName) == 0){
+            producerFunction = PluginLoader::loadFunctionPlugin(candidate.plugin().filePath(), candidate.name());
+            break;
+        }
+    }
+    if(producerFunction.isNull()){
+        return;
+    }
+
+    //create the bare sub-geometry - no function attached yet, that's what
+    //addOwnedSubGeometry below does. Suffix by owner id, not name, since
+    //the owner's name is user-editable and not guaranteed unique-safe to
+    //derive a second unique name from on a repeat click.
+    FeatureAttributes subAttributes;
+    subAttributes.typeOfFeature = subType;
+    subAttributes.name = QString("%1_%2").arg(namePrefix).arg(owner->getFeature()->getId());
+    subAttributes.count = 1;
+    QList<QPointer<FeatureWrapper> > created = this->job->addFeatures(subAttributes);
+    if(created.size() != 1 || created.at(0).isNull()){
+        return;
+    }
+
+    //attach it as owner's owned sub-geometry - mints the producer's id,
+    //binds owner as input, records ownership, triggers the initial compute
+    this->job->addOwnedSubGeometry(owner, created.at(0), producerFunction);
+
+}
+
+/*!
  * \brief Controller::sensorConfigurationChanged
  * Set a new sensor configuration for the active sensor
  * \param name

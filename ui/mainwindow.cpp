@@ -830,6 +830,20 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/aim.png"),
                             QString("aim to feature %1").arg(featureName),
                             &this->control, SLOT(startAim()));
+
+            //UI verification checkpoint: Stage 7h's owned sub-geometry,
+            //reachable from the UI for the first time - "check a box in a
+            //relationship" per the user's own framing. Only offered for a
+            //solved Plane, the only owner type this checkpoint's producer
+            //functions (LineFromPlaneNormal/PointFromPlaneOrigin) support.
+            if(!selectedFeature->getPlane().isNull() && selectedFeature->getGeometry()->getIsSolved()){
+                menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"),
+                                QString("generate normal line for %1").arg(featureName),
+                                &this->control, SLOT(generateOwnedNormalLine()));
+                menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"),
+                                QString("generate origin point for %1").arg(featureName),
+                                &this->control, SLOT(generateOwnedOriginPoint()));
+            }
         } else if(isStation){
 
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/activate station.png"),

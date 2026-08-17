@@ -12,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SerialPort Network Xml WebSockets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SerialPort Network Xml WebSockets LinguistTools)
 
 # --- version, derived from this repo's own git describe ---
 
@@ -384,6 +384,32 @@ add_library(OpenIndyApp SHARED
     res/res.qrc
 )
 
+qt_add_translations(OpenIndyApp
+    TS_FILES
+    i18n/OpenIndy_en_AU.ts
+    RESOURCE_PREFIX "/i18n"
+)
+
+# If you are deploying to Linux (e.g., via /usr/share/) or an embedded system, you might want to\
+# install .qm files as external assets so Linux package managers can handle them.
+#
+# MyProject/
+# ├── CMakeLists.txt
+# ├── main.cpp
+# └── translations/
+#     ├── myproject_en.ts
+#     └── myproject_fr.ts
+#
+# qt_add_translations(MyProject
+#     TS_FILES
+#         translations/myproject_en.ts
+#         translations/myproject_fr.ts
+#     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/translations"
+# )
+# # Install them to the system directory during 'make install'
+# install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/translations/"
+#         DESTINATION "share/myproject/translations")
+
 target_compile_definitions(OpenIndyApp
     PRIVATE
         OI_MAIN_LIB
@@ -520,3 +546,12 @@ set_tests_properties(dialogs PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 add_executable(tst_projectexchange test/projectexchange/tst_projectexchange.cpp)
 target_link_libraries(tst_projectexchange PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME projectexchange COMMAND tst_projectexchange)
+
+# UI verification checkpoint - Controller::generateOwnedNormalLine()/
+# generateOwnedOriginPoint(), the new feature-table context-menu actions,
+# through a real PluginRepository scan (not ModelManager::testInit()'s fake
+# seam), so this needs the plugins/ directory the post-build copy step
+# already deploys next to every test binary in this file
+add_executable(tst_ownedsubgeometryui test/ownedsubgeometryui/tst_ownedsubgeometryui.cpp)
+target_link_libraries(tst_ownedsubgeometryui PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
+add_test(NAME ownedsubgeometryui COMMAND tst_ownedsubgeometryui)
