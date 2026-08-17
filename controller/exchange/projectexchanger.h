@@ -13,6 +13,8 @@
 #include <QCryptographicHash>
 
 #include "function.h"
+#include "group.h"
+#include "pointgroup.h"
 #include "pluginrepository.h"
 #include "pluginloader.h"
 #include "sensorcontrol.h"
@@ -59,6 +61,7 @@ private:
     bool loadCoordinateSystems(const QDomDocument &project);
     bool loadTransformationParameters(const QDomDocument &project);
     bool loadGeometries(const QDomDocument &project);
+    bool loadGroups(const QDomDocument &project);
     bool loadConfigs(const QDomDocument &project);
 
     //helper methods for restoring the dependencies between the loaded elements
@@ -66,6 +69,7 @@ private:
     bool restoreCoordinateSystemDependencies(const QDomDocument &project);
     bool restoreTrafoParamDependencies(const QDomDocument &project);
     bool restoreGeometryDependencies(const QDomDocument &project);
+    bool restoreGroupDependencies(const QDomDocument &project);
     bool restoreObservationDependencies(const QDomDocument &project);
 
     QList<QPointer<Function> > restoreFunctionDependencies(const QDomElement &functions);
@@ -78,6 +82,7 @@ private:
     QMap<int, QPointer<FeatureWrapper> > myCoordinateSystems;
     QMap<int, QPointer<FeatureWrapper> > myTransformationParameters;
     QMap<int, QPointer<FeatureWrapper> > myGeometries;
+    QMap<int, QPointer<FeatureWrapper> > myGroups;
 
     // all loaded MeasurementConfigs from project file, keyed by full
     // identity (name+sensorType) - name alone collides once two drivers

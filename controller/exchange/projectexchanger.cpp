@@ -109,6 +109,27 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     }
     root.appendChild(geometries);
 
+    //add groups (organisational only, Stage 7e - never a Geometry, so they
+    //don't live in job->getGeometriesList() and need their own section)
+    QDomElement groups = project.createElement("groups");
+    foreach(const QPointer<FeatureWrapper> &g, job->getFeaturesByType(eGroupFeature)){
+        if(!g.isNull() && !g->getGroup().isNull()){
+            QDomElement group = g->getGroup()->toOpenIndyXML(project);
+            if(!group.isNull()){
+                groups.appendChild(group);
+            }
+        }
+    }
+    foreach(const QPointer<FeatureWrapper> &g, job->getFeaturesByType(ePointGroupFeature)){
+        if(!g.isNull() && !g->getGroup().isNull()){
+            QDomElement group = g->getGroup()->toOpenIndyXML(project);
+            if(!group.isNull()){
+                groups.appendChild(group);
+            }
+        }
+    }
+    root.appendChild(groups);
+
     //add observations (search the station coordinate systems for observations)
     QDomElement observations = project.createElement("observations");
     foreach(const QPointer<Station> &s, job->getStationsList()){
@@ -210,6 +231,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
             || !this->loadCoordinateSystems(project)
             || !this->loadTransformationParameters(project)
             || !this->loadGeometries(project)
+            || !this->loadGroups(project)
             || !this->loadConfigs(project)){
 
         //clear all created elements if an error occured in one of the loading helpers (e.g. no station available)
@@ -223,7 +245,8 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
             || !this->restoreStationDependencies(project)
             || !this->restoreCoordinateSystemDependencies(project)
             || !this->restoreTrafoParamDependencies(project)
-            || !this->restoreGeometryDependencies(project)){
+            || !this->restoreGeometryDependencies(project)
+            || !this->restoreGroupDependencies(project)){
 
         //clear all created elements if an error occured in one of the loading helpers (e.g. no station available)
         this->clearHelperMaps(true);
@@ -245,6 +268,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
     job->addFeaturesFromXml(this->myCoordinateSystems.values());
     job->addFeaturesFromXml(this->myTransformationParameters.values());
     job->addFeaturesFromXml(this->myGeometries.values());
+    job->addFeaturesFromXml(this->myGroups.values());
 
     //set id count
     if(project.documentElement().hasAttribute("idCount")){
@@ -702,6 +726,71 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
 
             //add the feature wrapper to the list of successfully loaded geometries
             this->myGeometries.insert(myFeatureWrapper->getFeature()->getId(), myFeatureWrapper);
+
+        }
+
+    }
+
+    return true;
+
+}
+
+/*!
+ * \brief ProjectExchanger::loadGroups
+ * Group/PointGroup are organisational Features, not Geometry, so they get
+ * their own XML section and load pass rather than sharing loadGeometries's
+ * switch (Stage 7e). Membership itself is not resolved here - a member may
+ * be a feature not loaded yet, so that happens in restoreGroupDependencies
+ * once every feature in the project exists, the same two-pass shape
+ * restoreGeometryDependencies already uses for realises/ownerFeature.
+ * \param project
+ * \return
+ */
+bool ProjectExchanger::loadGroups(const QDomDocument &project){
+
+    QDomElement groups = project.documentElement().firstChildElement("groups");
+    if(!groups.isNull()){
+
+        QDomNodeList groupList = groups.childNodes();
+
+        for(int i = 0; i < groupList.size(); i++){
+
+            QDomElement group = groupList.at(i).toElement();
+            if(group.isNull() || !group.hasAttribute("type")){
+                continue;
+            }
+
+            const FeatureTypes groupType = getFeatureTypeEnum(group.attribute("type"));
+
+            QPointer<FeatureWrapper> myFeatureWrapper = new FeatureWrapper();
+
+            switch(groupType){
+            case eGroupFeature:{
+                QPointer<Group> myGroup = new Group();
+                myFeatureWrapper->setGroup(myGroup);
+                if(!myGroup->fromOpenIndyXML(group)){
+                    delete myGroup;
+                    delete myFeatureWrapper;
+                    continue;
+                }
+                break;
+            }case ePointGroupFeature:{
+                QPointer<PointGroup> myPointGroup = new PointGroup();
+                myFeatureWrapper->setPointGroup(myPointGroup);
+                if(!myPointGroup->fromOpenIndyXML(group)){
+                    delete myPointGroup;
+                    delete myFeatureWrapper;
+                    continue;
+                }
+                break;
+            }default:{
+                delete myFeatureWrapper;
+                continue;
+            }
+            }
+
+            //add the feature wrapper to the list of successfully loaded groups
+            this->myGroups.insert(myFeatureWrapper->getFeature()->getId(), myFeatureWrapper);
 
         }
 
@@ -1276,6 +1365,46 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
 
 }
 
+/*!
+ * \brief ProjectExchanger::restoreGroupDependencies
+ * Resolves Group::pendingMemberIds into real member references now that
+ * every feature in the project has been loaded (Stage 7e) - the gap
+ * domain-model.md's trap list records: fromOpenIndyXML only ever recorded
+ * the ids, nothing resolved them, so a Group did not survive save/reload
+ * at all before this. Same two-pass shape as restoreGeometryDependencies's
+ * realises/ownerFeature resolution above: build a combined id->feature
+ * lookup across every loaded map a member could plausibly reference (a
+ * Group's accepted member types are not restricted to Geometry - see
+ * Group::accepts), including myGroups itself so a group of groups
+ * resolves too, then hand it to Group::restoreMembers.
+ * \param project
+ * \return
+ */
+bool ProjectExchanger::restoreGroupDependencies(const QDomDocument &project){
+
+    Q_UNUSED(project);
+
+    if(this->myGroups.isEmpty()){
+        return true;
+    }
+
+    QMap<int, QPointer<FeatureWrapper> > resolvedFeatures;
+    resolvedFeatures.insert(this->myGeometries);
+    resolvedFeatures.insert(this->myStations);
+    resolvedFeatures.insert(this->myCoordinateSystems);
+    resolvedFeatures.insert(this->myTransformationParameters);
+    resolvedFeatures.insert(this->myGroups);
+
+    foreach(const QPointer<FeatureWrapper> &g, this->myGroups){
+        if(!g.isNull() && !g->getGroup().isNull()){
+            g->getGroup()->restoreMembers(resolvedFeatures);
+        }
+    }
+
+    return true;
+
+}
+
 bool ProjectExchanger::isScalar(QPointer<FeatureWrapper> geometry) {
     return geometry->getFeatureTypeEnum() == eScalarEntityAngleFeature
             || geometry->getFeatureTypeEnum() == eScalarEntityDistanceFeature
@@ -1704,6 +1833,13 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
             delete g;
         }
 
+        //delete groups
+        QList<QPointer<FeatureWrapper> > myGroups = this->myGroups.values();
+        foreach(QPointer<FeatureWrapper> g, myGroups){
+            delete g->getFeature();
+            delete g;
+        }
+
     }
 
     //clear the helper maps
@@ -1713,6 +1849,7 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
     this->myReadings.clear();
     this->myTransformationParameters.clear();
     this->myGeometries.clear();
+    this->myGroups.clear();
     this->measurementConfigs.clear();
     this->mySConfigs.clear();
     this->stationPoints.clear();

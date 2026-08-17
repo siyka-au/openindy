@@ -514,3 +514,9 @@ target_compile_definitions(tst_dialogs PRIVATE
 target_link_libraries(tst_dialogs PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME dialogs COMMAND tst_dialogs)
 set_tests_properties(dialogs PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+# pure logic, no GUI - Group/PointGroup save/load through the real
+# ProjectExchanger entry points (Stage 7e)
+add_executable(tst_projectexchange test/projectexchange/tst_projectexchange.cpp)
+target_link_libraries(tst_projectexchange PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
+add_test(NAME projectexchange COMMAND tst_projectexchange)
