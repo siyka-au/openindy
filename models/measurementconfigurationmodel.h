@@ -32,16 +32,18 @@ class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel {
   // override methods of abstract item model
   // #######################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int rowCount(
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int columnCount(
+      const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index,
-                int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const override;
 
-  QVariant headerData(int section, Qt::Orientation orientation,
-                      int role) const override;
+  [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role) const override;
 
-  Qt::ItemFlags flags(const QModelIndex& index) const override;
+  [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   bool setData(const QModelIndex& index, const QVariant& value,
                int role = Qt::EditRole) override;
@@ -50,11 +52,12 @@ class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel {
   // get informations about measurement configs
   // ##########################################
 
-  QModelIndex getIndex(const MeasurementConfig& mConfig) const;
+  [[nodiscard]] QModelIndex getIndex(const MeasurementConfig& mConfig) const;
 
-  MeasurementConfig getMeasurementConfig(const QModelIndex& index) const;
+  [[nodiscard]] MeasurementConfig getMeasurementConfig(
+      const QModelIndex& index) const;
 
-  bool isUserConfig(const QModelIndex& index) const;
+  [[nodiscard]] bool isUserConfig(const QModelIndex& index) const;
 
   // #################################
   // add or remove measurement configs
@@ -72,8 +75,8 @@ class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel {
   // get or set sensor configuration manager
   // #######################################
 
-  const QPointer<MeasurementConfigManager>& getMeasurementConfigurationManager()
-      const;
+  [[nodiscard]] const QPointer<MeasurementConfigManager>&
+  getMeasurementConfigurationManager() const;
   void setMeasurementConfigurationManager(
       const QPointer<MeasurementConfigManager>& manager);
 

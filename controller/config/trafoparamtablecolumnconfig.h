@@ -16,15 +16,18 @@ class TrafoParamTableColumnConfig {
  public:
   explicit TrafoParamTableColumnConfig(bool initBundle = false);
 
-  bool getColumnVisibility(const TrafoParamDisplayAttributes& column) const;
+  [[nodiscard]] bool getColumnVisibility(
+      const TrafoParamDisplayAttributes& column) const;
   void setColumnVisibility(const TrafoParamDisplayAttributes& column,
                            const bool& isVisible);
 
-  int getColumnPosition(const TrafoParamDisplayAttributes& column) const;
+  [[nodiscard]] int getColumnPosition(
+      const TrafoParamDisplayAttributes& column) const;
   void setColumnPosition(const TrafoParamDisplayAttributes& column,
                          const int& index);
 
-  TrafoParamDisplayAttributes getDisplayAttributeAt(const int& column) const;
+  [[nodiscard]] TrafoParamDisplayAttributes getDisplayAttributeAt(
+      const int& column) const;
 
  private:
   void init();

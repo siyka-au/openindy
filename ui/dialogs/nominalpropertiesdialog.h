@@ -28,19 +28,20 @@ class NominalPropertiesDialog : public QDialog {
   // get or set information about the current nominal feature
   // ########################################################
 
-  const int& getId() const;
+  [[nodiscard]] const int& getId() const;
   void setId(const int& id);
 
-  const QString& getName() const;
+  [[nodiscard]] const QString& getName() const;
   void setName(const QString& name);
 
-  const FeatureTypes& getType() const;
+  [[nodiscard]] const FeatureTypes& getType() const;
   void setType(const FeatureTypes& type);
 
   void setCurrentNominal(const int& id, const QString& name,
                          const FeatureTypes& type);
 
-  const QMap<GeometryParameters, QString>& getUnknownNominalParameters() const;
+  [[nodiscard]] const QMap<GeometryParameters, QString>&
+  getUnknownNominalParameters() const;
   void setUnknownNominalParameters(
       const QMap<GeometryParameters, QString>& parameters);
 

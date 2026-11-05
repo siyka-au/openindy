@@ -17,15 +17,18 @@ class FeatureTableColumnConfig {
   FeatureTableColumnConfig();
   explicit FeatureTableColumnConfig(QList<FeatureDisplayAttributes>);
 
-  bool getColumnVisibility(const FeatureDisplayAttributes& column) const;
+  [[nodiscard]] bool getColumnVisibility(
+      const FeatureDisplayAttributes& column) const;
   void setColumnVisibility(const FeatureDisplayAttributes& column,
                            const bool& isVisible);
 
-  int getColumnPosition(const FeatureDisplayAttributes& column) const;
+  [[nodiscard]] int getColumnPosition(
+      const FeatureDisplayAttributes& column) const;
   void setColumnPosition(const FeatureDisplayAttributes& column,
                          const int& index);
 
-  FeatureDisplayAttributes getDisplayAttributeAt(const int& column) const;
+  [[nodiscard]] FeatureDisplayAttributes getDisplayAttributeAt(
+      const int& column) const;
 
  private:
   void init();

@@ -27,10 +27,10 @@ class ObservationImporter : public QObject {
   // get or set general attributes
   // #############################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
-  const QString& getFileName() const;
+  [[nodiscard]] const QString& getFileName() const;
   void setFileName(const QString& filename);
 
  public slots:

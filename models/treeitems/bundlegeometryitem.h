@@ -20,12 +20,12 @@ class BundleGeometryItem {
   void appendChild(BundleGeometryItem* child);
   void removeAllChildren();
   BundleGeometryItem* child(int row);
-  int childCount() const;
+  [[nodiscard]] int childCount() const;
 
   // row and column count
-  int columnCount() const;
-  QVariant data(int column) const;
-  int row() const;
+  [[nodiscard]] int columnCount() const;
+  [[nodiscard]] QVariant data(int column) const;
+  [[nodiscard]] int row() const;
 
   // parent
   BundleGeometryItem* parentItem();
@@ -36,7 +36,7 @@ class BundleGeometryItem {
   // #################
 
   // key
-  const QString& getKey() const;
+  [[nodiscard]] const QString& getKey() const;
 
  private:
   // ##########

@@ -27,28 +27,30 @@ class FunctionTableModel : public QAbstractTableModel {
   // override methods of abstract table model
   // ########################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int rowCount(
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int columnCount(
+      const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index,
-                int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const override;
 
-  QVariant headerData(int section, Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role = Qt::DisplayRole) const override;
 
   // ########################
   // get function information
   // ########################
 
-  QString getFunctionDescription(const QModelIndex& index) const;
-  QString getFunctionName(const QModelIndex& index) const;
-  QString getPluginFilePath(const QModelIndex& index) const;
+  [[nodiscard]] QString getFunctionDescription(const QModelIndex& index) const;
+  [[nodiscard]] QString getFunctionName(const QModelIndex& index) const;
+  [[nodiscard]] QString getPluginFilePath(const QModelIndex& index) const;
 
   // ######################################
   // get or set currently available plugins
   // ######################################
 
-  const QList<sys::Plugin>& getPlugins() const;
+  [[nodiscard]] const QList<sys::Plugin>& getPlugins() const;
   void setPlugins(const QList<sys::Plugin>& plugins);
 
  signals:

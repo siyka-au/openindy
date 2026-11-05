@@ -26,14 +26,14 @@ class ExchangeParams {
   QString exchangeFilePath;
 
   // plugin information
-  QString pluginName;    // name of the plugin
-  QString exchangeName;  // name of the exchange implementation
+  QString pluginName;      // name of the plugin
+  QString exchangeName;    // name of the exchange implementation
   bool isDefinedFormat{};  // true if the exchange is a defined format exchange,
                            // false if it is a simple ascii one
 
   // general exchange parameters
   QList<QPointer<FeatureWrapper> >
-      exportFeatures;       // features that shall be exported
+      exportFeatures;         // features that shall be exported
   bool exportObservations{};  // true if observations shall be exported
   QString groupName;
   QString nominalSystem;

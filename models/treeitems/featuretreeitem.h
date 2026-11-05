@@ -35,40 +35,40 @@ class FeatureTreeItem : public QObject {
   // ##########################################
 
   // query what kind of tree item this item is
-  const bool& getIsHeader() const;
-  const bool& getIsFeature() const;
-  const bool& getIsObservation() const;
-  const bool& getIsReading() const;
+  [[nodiscard]] const bool& getIsHeader() const;
+  [[nodiscard]] const bool& getIsFeature() const;
+  [[nodiscard]] const bool& getIsObservation() const;
+  [[nodiscard]] const bool& getIsReading() const;
 
   // get pointer to corresponding element
-  const QPointer<FeatureWrapper>& getFeature() const;
-  const QPointer<Observation>& getObservation() const;
-  const QPointer<Reading>& getReading() const;
+  [[nodiscard]] const QPointer<FeatureWrapper>& getFeature() const;
+  [[nodiscard]] const QPointer<Observation>& getObservation() const;
+  [[nodiscard]] const QPointer<Reading>& getReading() const;
 
   int getId();
 
   // get the type of the corresponding element
-  ElementTypes getElementType() const;
+  [[nodiscard]] ElementTypes getElementType() const;
 
   // get information about child items
-  bool getHasElement(const ElementTypes& typeOfElement) const;
+  [[nodiscard]] bool getHasElement(const ElementTypes& typeOfElement) const;
 
   // get or set children of this tree item
-  int getChildCount() const;
+  [[nodiscard]] int getChildCount() const;
   void appendChild(const QPointer<FeatureTreeItem>& child);
   QPointer<FeatureTreeItem> getChild(const int& index);
   // void removeChild(const int &index);
   void deleteChildren();
 
   // get the index of this tree item in the children list of its parent
-  const int& getIndex() const;
+  [[nodiscard]] const int& getIndex() const;
 
   // get parent of this tree item
-  bool hasParent() const;
-  const QPointer<FeatureTreeItem>& getParent() const;
+  [[nodiscard]] bool hasParent() const;
+  [[nodiscard]] const QPointer<FeatureTreeItem>& getParent() const;
 
   // get the value to display in the tree view
-  const QVariant& getDisplayValue() const;
+  [[nodiscard]] const QVariant& getDisplayValue() const;
 
  private:
   // #############################################

@@ -18,9 +18,10 @@ class BundleOverviewDelegate : public QAbstractItemDelegate {
   explicit BundleOverviewDelegate(QObject* parent);
   void paint(QPainter* painter, const QStyleOptionViewItem& option,
              const QModelIndex& index) const override;
-  bool isBundleStationTrafo(const QPointer<TrafoParam>& param) const;
-  QSize sizeHint(const QStyleOptionViewItem& option,
-                 const QModelIndex& index) const override;
+  [[nodiscard]] bool isBundleStationTrafo(
+      const QPointer<TrafoParam>& param) const;
+  [[nodiscard]] QSize sizeHint(const QStyleOptionViewItem& option,
+                               const QModelIndex& index) const override;
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

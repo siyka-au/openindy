@@ -28,7 +28,7 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // get or set current OpenIndy job
   // ###############################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // ##########
@@ -42,7 +42,7 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // get or set information about available elements
   // ###############################################
 
-  bool validateSelection(const QModelIndexList& selection) const;
+  [[nodiscard]] bool validateSelection(const QModelIndexList& selection) const;
 
   void addInputElements(const QModelIndexList& selection);
 
@@ -50,8 +50,8 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  QVariant headerData(int section, Qt::Orientation orientation,
-                      int role) const override;
+  [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role) const override;
 
   void filterByActualNominal(ActualNominalFilter filter);
   void filterByGroup(QString groupName);
@@ -90,10 +90,10 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row,
-                        const QModelIndex& source_parent) const override;
-  bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
 
  private:
   // ##############

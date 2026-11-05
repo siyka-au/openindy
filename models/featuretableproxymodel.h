@@ -24,22 +24,25 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
   // get or set current OpenIndy job
   // ###############################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // #########################
   // get or set display config
   // #########################
 
-  const FeatureTableColumnConfig& getFeatureTableColumnConfig() const;
+  [[nodiscard]] const FeatureTableColumnConfig& getFeatureTableColumnConfig()
+      const;
   void setFeatureTableColumnConfig(const FeatureTableColumnConfig& config);
 
   // ###########################################
   // override methods of sort filter proxy model
   // ###########################################
 
-  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const override;
-  QModelIndex mapToSource(const QModelIndex& proxyIndex) const override;
+  [[nodiscard]] QModelIndex mapFromSource(
+      const QModelIndex& sourceIndex) const override;
+  [[nodiscard]] QModelIndex mapToSource(
+      const QModelIndex& proxyIndex) const override;
 
   void setSortingMode(FeatureSorter::SortingMode mode);
 
@@ -54,13 +57,13 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
                        MessageDestinations::eConsoleMessage) const;
 
  protected:
-  bool filterAcceptsRow(int source_row,
-                        const QModelIndex& source_parent) const override;
-  bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
 
-  bool lessThan(const QModelIndex& left,
-                const QModelIndex& right) const override;
+  [[nodiscard]] bool lessThan(const QModelIndex& left,
+                              const QModelIndex& right) const override;
 
  private:
   // ##############

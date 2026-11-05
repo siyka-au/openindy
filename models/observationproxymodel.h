@@ -23,7 +23,8 @@ class ObservationProxyModel : public QSortFilterProxyModel {
   // get or set display config
   // #########################
 
-  const ObservationTableColumnConfig& getObservationTableColumnConfig() const;
+  [[nodiscard]] const ObservationTableColumnConfig&
+  getObservationTableColumnConfig() const;
   void setObservationTableColumnConfig(
       const ObservationTableColumnConfig& config);
 
@@ -42,12 +43,12 @@ class ObservationProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row,
-                        const QModelIndex& source_parent) const override;
-  bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const override;
-  bool lessThan(const QModelIndex& source_left,
-                const QModelIndex& source_right) const override;
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool lessThan(const QModelIndex& source_left,
+                              const QModelIndex& source_right) const override;
 
  private:
   // ##############

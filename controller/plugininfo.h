@@ -51,19 +51,19 @@ class OI_MAIN_EXPORT Plugin {
         m_exchanges(exchanges),
         m_simulations(simulations) {}
 
-  QString name() const { return m_name; }
-  QString description() const { return m_description; }
-  QString version() const { return m_version; }
-  QString author() const { return m_author; }
-  QString filePath() const {
+  [[nodiscard]] QString name() const { return m_name; }
+  [[nodiscard]] QString description() const { return m_description; }
+  [[nodiscard]] QString version() const { return m_version; }
+  [[nodiscard]] QString author() const { return m_author; }
+  [[nodiscard]] QString filePath() const {
     return m_filePath;
   }  // the real, collision-safe identity - see PluginRepository
 
-  QList<Function> functions() const { return m_functions; }
-  QList<Sensor> sensors() const { return m_sensors; }
-  QList<Tool> tools() const { return m_tools; }
-  QList<Exchange> exchanges() const { return m_exchanges; }
-  QList<Simulation> simulations() const { return m_simulations; }
+  [[nodiscard]] QList<Function> functions() const { return m_functions; }
+  [[nodiscard]] QList<Sensor> sensors() const { return m_sensors; }
+  [[nodiscard]] QList<Tool> tools() const { return m_tools; }
+  [[nodiscard]] QList<Exchange> exchanges() const { return m_exchanges; }
+  [[nodiscard]] QList<Simulation> simulations() const { return m_simulations; }
 
  private:
   QString m_name;
@@ -98,29 +98,33 @@ class OI_MAIN_EXPORT Sensor {
         m_measurementConfigs(measurementConfigs),
         m_acquisitionModes(acquisitionModes) {}
 
-  QString name() const { return m_name; }
-  QString description() const { return m_description; }
-  Plugin plugin() const {
+  [[nodiscard]] QString name() const { return m_name; }
+  [[nodiscard]] QString description() const { return m_description; }
+  [[nodiscard]] Plugin plugin() const {
     return m_plugin;
   }  // owning plugin, so callers can always disambiguate
-  QString qualifiedId() const {
+  [[nodiscard]] QString qualifiedId() const {
     return m_plugin.filePath() + "#" + m_name;
   }  // real, collision-safe identity
 
   //! Sensor_iidd/LaserTracker_iidd/TotalStation_iidd - NOT an identity (shared
   //! by every sensor of that category), kept only to classify sensor type the
   //! same way OiMetaData::getSensorType() derives it from a plugin's own iid
-  QString interfaceCategory() const { return m_interfaceCategory; }
+  [[nodiscard]] QString interfaceCategory() const {
+    return m_interfaceCategory;
+  }
 
   //! the config catalog and acquisition capability this sensor's own init()
   //! declared, captured once at scan time (the same instantiate+init() call
   //! that already builds this sys::Sensor at all) - MeasurementConfigManager
   //! merges these across every scanned sensor, not just a connected one, so
   //! the picker has real options before anything is plugged in
-  QList<MeasurementConfig> measurementConfigs() const {
+  [[nodiscard]] QList<MeasurementConfig> measurementConfigs() const {
     return m_measurementConfigs;
   }
-  QList<AcquisitionMode> acquisitionModes() const { return m_acquisitionModes; }
+  [[nodiscard]] QList<AcquisitionMode> acquisitionModes() const {
+    return m_acquisitionModes;
+  }
 
  private:
   QString m_name;
@@ -137,10 +141,12 @@ class OI_MAIN_EXPORT Tool {
   Tool(const QString& name, const QString& description, const Plugin& plugin)
       : m_name(name), m_description(description), m_plugin(plugin) {}
 
-  QString name() const { return m_name; }
-  QString description() const { return m_description; }
-  Plugin plugin() const { return m_plugin; }
-  QString qualifiedId() const { return m_plugin.filePath() + "#" + m_name; }
+  [[nodiscard]] QString name() const { return m_name; }
+  [[nodiscard]] QString description() const { return m_description; }
+  [[nodiscard]] Plugin plugin() const { return m_plugin; }
+  [[nodiscard]] QString qualifiedId() const {
+    return m_plugin.filePath() + "#" + m_name;
+  }
 
  private:
   QString m_name;
@@ -158,15 +164,19 @@ class OI_MAIN_EXPORT Exchange {
         m_plugin(plugin),
         m_interfaceCategory(interfaceCategory) {}
 
-  QString name() const { return m_name; }
-  QString description() const { return m_description; }
-  Plugin plugin() const { return m_plugin; }
-  QString qualifiedId() const { return m_plugin.filePath() + "#" + m_name; }
+  [[nodiscard]] QString name() const { return m_name; }
+  [[nodiscard]] QString description() const { return m_description; }
+  [[nodiscard]] Plugin plugin() const { return m_plugin; }
+  [[nodiscard]] QString qualifiedId() const {
+    return m_plugin.filePath() + "#" + m_name;
+  }
 
   //! ExchangeSimpleAscii_iidd vs ExchangeDefinedFormat_iidd - NOT an identity
   //! (shared by every exchange of that category), kept only to distinguish
   //! the two exchange kinds the same way the old DB did
-  QString interfaceCategory() const { return m_interfaceCategory; }
+  [[nodiscard]] QString interfaceCategory() const {
+    return m_interfaceCategory;
+  }
 
  private:
   QString m_name;
@@ -182,10 +192,12 @@ class OI_MAIN_EXPORT Simulation {
              const Plugin& plugin)
       : m_name(name), m_description(description), m_plugin(plugin) {}
 
-  QString name() const { return m_name; }
-  QString description() const { return m_description; }
-  Plugin plugin() const { return m_plugin; }
-  QString qualifiedId() const { return m_plugin.filePath() + "#" + m_name; }
+  [[nodiscard]] QString name() const { return m_name; }
+  [[nodiscard]] QString description() const { return m_description; }
+  [[nodiscard]] Plugin plugin() const { return m_plugin; }
+  [[nodiscard]] QString qualifiedId() const {
+    return m_plugin.filePath() + "#" + m_name;
+  }
 
  private:
   QString m_name;
@@ -207,18 +219,26 @@ class OI_MAIN_EXPORT Function {
         m_neededElements(neededElements),
         m_interfaceCategory(interfaceCategory) {}
 
-  QString name() const { return m_name; }
-  QString description() const { return m_description; }
-  Plugin plugin() const { return m_plugin; }
-  QString qualifiedId() const { return m_plugin.filePath() + "#" + m_name; }
-  QList<FeatureTypes> applicableFor() const { return m_applicableFor; }
-  QList<ElementTypes> neededElements() const { return m_neededElements; }
+  [[nodiscard]] QString name() const { return m_name; }
+  [[nodiscard]] QString description() const { return m_description; }
+  [[nodiscard]] Plugin plugin() const { return m_plugin; }
+  [[nodiscard]] QString qualifiedId() const {
+    return m_plugin.filePath() + "#" + m_name;
+  }
+  [[nodiscard]] QList<FeatureTypes> applicableFor() const {
+    return m_applicableFor;
+  }
+  [[nodiscard]] QList<ElementTypes> neededElements() const {
+    return m_neededElements;
+  }
 
   //! the function's Qt interface iid (ConstructFunction_iidd, FitFunction_iidd,
   //! ...) - NOT an identity (shared by every function of that category, see
   //! PluginRepository), kept only to classify "create" vs "change" functions
   //! the same way the old DB did
-  QString interfaceCategory() const { return m_interfaceCategory; }
+  [[nodiscard]] QString interfaceCategory() const {
+    return m_interfaceCategory;
+  }
 
  private:
   QString m_name;

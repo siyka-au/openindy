@@ -28,28 +28,31 @@ class FeatureTreeViewModel : public QAbstractItemModel {
   // override methods of abstract item model
   // #######################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int rowCount(
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int columnCount(
+      const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index,
-                int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const override;
 
-  QModelIndex index(int row, int column,
-                    const QModelIndex& parent = QModelIndex()) const override;
-  QModelIndex parent(const QModelIndex& index) const override;
+  [[nodiscard]] QModelIndex index(
+      int row, int column,
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] QModelIndex parent(const QModelIndex& index) const override;
 
   // ###############################
   // get or set current OpenIndy job
   // ###############################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // #############
   // get root item
   // #############
 
-  const QPointer<FeatureTreeItem>& getRootItem() const;
+  [[nodiscard]] const QPointer<FeatureTreeItem>& getRootItem() const;
 
  signals:
 

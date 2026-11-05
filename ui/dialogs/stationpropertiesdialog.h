@@ -34,11 +34,11 @@ class StationPropertiesDialog : public QDialog {
   // ##############################
 
   // sensor config
-  const SensorConfiguration& getSensorConfiguration() const;
+  [[nodiscard]] const SensorConfiguration& getSensorConfiguration() const;
   void setSensorConfiguration(const SensorConfiguration& sConfig);
 
   // active station state
-  bool getIsActiveStation() const;
+  [[nodiscard]] bool getIsActiveStation() const;
   void setIsActiveStation(bool isActiveStation);
 
  signals:

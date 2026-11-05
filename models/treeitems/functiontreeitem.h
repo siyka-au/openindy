@@ -29,20 +29,20 @@ class FunctionTreeItem : public QObject {
   // ##########################################
 
   // get or set children of this tree item
-  int getChildCount() const;
+  [[nodiscard]] int getChildCount() const;
   void appendChild(const QPointer<FunctionTreeItem>& child);
   QPointer<FunctionTreeItem> getChild(const int& index);
   void deleteChildren();
 
   // get the index of this tree item in the children list of its parent
-  const int& getIndex() const;
+  [[nodiscard]] const int& getIndex() const;
 
   // get parent of this tree item
-  bool hasParent() const;
-  const QPointer<FunctionTreeItem>& getParent() const;
+  [[nodiscard]] bool hasParent() const;
+  [[nodiscard]] const QPointer<FunctionTreeItem>& getParent() const;
 
   // get the value to display in the tree view
-  const QVariant& getDisplayValue() const;
+  [[nodiscard]] const QVariant& getDisplayValue() const;
 
  private:
   // ####################################################

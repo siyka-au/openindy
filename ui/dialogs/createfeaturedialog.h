@@ -37,7 +37,7 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
   // get or set the feature type
   // ###########################
 
-  const FeatureTypes& getFeatureType() const;
+  [[nodiscard]] const FeatureTypes& getFeatureType() const;
   void setFeatureType(const FeatureTypes& type);
 
   bool featureCreated(bool created);
@@ -91,7 +91,8 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
   // producer is just a function whose shape says so (a ConstructFunction
   // declaring no needed elements, taking scalar parameters only). This
   // is what decides whether the nominal-system picker is relevant.
-  bool isNominalShapedFunction(const sys::Function& function) const;
+  [[nodiscard]] bool isNominalShapedFunction(
+      const sys::Function& function) const;
 
  private:
   Ui::CreateFeatureDialog* ui;

@@ -42,16 +42,18 @@ class FeatureTableModel : public QAbstractTableModel {
   // override methods of abstract table model
   // ########################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int rowCount(
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int columnCount(
+      const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index,
-                int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const override;
 
-  QVariant headerData(int section, Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role = Qt::DisplayRole) const override;
 
-  Qt::ItemFlags flags(const QModelIndex& index) const override;
+  [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   bool setData(const QModelIndex& index, const QVariant& value,
                int role = Qt::EditRole) override;
@@ -69,50 +71,51 @@ class FeatureTableModel : public QAbstractTableModel {
   // get or set active feature
   // #########################
 
-  QPointer<FeatureWrapper> getActiveFeature() const;
+  [[nodiscard]] QPointer<FeatureWrapper> getActiveFeature() const;
   void setActiveFeature(const QModelIndex& index);
   void setActiveFeature(const int& id);
 
-  QPointer<Station> getActiveStation() const;
+  [[nodiscard]] QPointer<Station> getActiveStation() const;
   void setActiveStation(const QModelIndex& index);
   void setActiveStation(const int& id);
 
-  QPointer<CoordinateSystem> getActiveCoordinateSystem() const;
+  [[nodiscard]] QPointer<CoordinateSystem> getActiveCoordinateSystem() const;
   void setActiveCoordinateSystem(const QString& name);
 
   // #######################
   // get or set active group
   // #######################
 
-  const QString getActiveGroupName() const;
+  [[nodiscard]] const QString getActiveGroupName() const;
   void setActiveGroupName(const QString& group);
 
   // ################################
   // get or set actual nominal filter
   // ################################
 
-  const ActualNominalFilter& getActualNominalFilter() const;
+  [[nodiscard]] const ActualNominalFilter& getActualNominalFilter() const;
   void setActualNominalFilter(const ActualNominalFilter& filter);
 
   // ###############################
   // get or set current OpenIndy job
   // ###############################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // #########################
   // get or set display config
   // #########################
 
-  const ParameterDisplayConfig& getParameterDisplayConfig() const;
+  [[nodiscard]] const ParameterDisplayConfig& getParameterDisplayConfig() const;
   void setParameterDisplayConfig(const ParameterDisplayConfig& config);
 
   // #########################
   // get or set config manager
   // #########################
 
-  const QPointer<MeasurementConfigManager>& getMeasurementConfigManager() const;
+  [[nodiscard]] const QPointer<MeasurementConfigManager>&
+  getMeasurementConfigManager() const;
   void setMeasurementConfigManager(
       const QPointer<MeasurementConfigManager>& mConfigManager);
 
@@ -142,12 +145,12 @@ class FeatureTableModel : public QAbstractTableModel {
   // helper methods
   // ##############
 
-  QVariant getDisplayValue(const QPointer<FeatureWrapper>& feature,
-                           const int& column) const;
-  QVariant getBackgroundValue(const QPointer<FeatureWrapper>& feature,
-                              const int& column) const;
-  QVariant getForegroundValue(const QPointer<FeatureWrapper>& feature,
-                              const int& column) const;
+  [[nodiscard]] QVariant getDisplayValue(
+      const QPointer<FeatureWrapper>& feature, const int& column) const;
+  [[nodiscard]] QVariant getBackgroundValue(
+      const QPointer<FeatureWrapper>& feature, const int& column) const;
+  [[nodiscard]] QVariant getForegroundValue(
+      const QPointer<FeatureWrapper>& feature, const int& column) const;
 
   void connectJob();
   void disconnectJob();

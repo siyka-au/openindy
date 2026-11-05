@@ -30,7 +30,7 @@ class OiWebSocket : public QObject {
   // get socket identifier
   // #####################
 
-  int getInternalRef() const;
+  [[nodiscard]] int getInternalRef() const;
 
  signals:
 

@@ -15,11 +15,13 @@ class ReadingTableColumnConfig {
  public:
   ReadingTableColumnConfig();
 
-  bool getColumnVisibility(const ReadingDisplayAttributes& column) const;
+  [[nodiscard]] bool getColumnVisibility(
+      const ReadingDisplayAttributes& column) const;
   void setColumnVisibility(const ReadingDisplayAttributes& column,
                            const bool& isVisible);
 
-  int getColumnPosition(const ReadingDisplayAttributes& column) const;
+  [[nodiscard]] int getColumnPosition(
+      const ReadingDisplayAttributes& column) const;
   void setColumnPosition(const ReadingDisplayAttributes& column,
                          const int& index);
 

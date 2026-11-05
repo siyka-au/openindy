@@ -58,7 +58,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // getter to query available tools
   // ###############################
 
-  const QList<QPointer<Tool> >& getAvailableTools() const;
+  [[nodiscard]] const QList<QPointer<Tool>>& getAvailableTools() const;
 
   bool hasProjectDigestChanged();
 
@@ -335,7 +335,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // ################################
 
   void measurementFinished(const int& geomId,
-                           const QList<QPointer<Reading> >& readings);
+                           const QList<QPointer<Reading>>& readings);
 
  private:
   // ##############
@@ -370,7 +370,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // time), so this never reuses an existing one.
   QPointer<FeatureWrapper> createActualForNominal(
       const QPointer<Geometry>& nominal);
-  void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> >& actuals,
+  void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper>>& actuals,
                                const MeasurementConfig& mConfig,
                                const QString& path, const QString& fName);
 
@@ -420,7 +420,7 @@ class Controller : public QObject, public ControllerSensorActions {
 #endif
 
   // tool plugins
-  QList<QPointer<Tool> > toolPlugins;
+  QList<QPointer<Tool>> toolPlugins;
 
   // synchronize saveProject calls
   QMutex saveProjectMutex;

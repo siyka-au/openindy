@@ -15,11 +15,13 @@ class ObservationTableColumnConfig {
  public:
   ObservationTableColumnConfig();
 
-  bool getColumnVisibility(const ObservationDisplayAttributes& column) const;
+  [[nodiscard]] bool getColumnVisibility(
+      const ObservationDisplayAttributes& column) const;
   void setColumnVisibility(const ObservationDisplayAttributes& column,
                            const bool& isVisible);
 
-  int getColumnPosition(const ObservationDisplayAttributes& column) const;
+  [[nodiscard]] int getColumnPosition(
+      const ObservationDisplayAttributes& column) const;
   void setColumnPosition(const ObservationDisplayAttributes& column,
                          const int& index);
 

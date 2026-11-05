@@ -15,8 +15,8 @@ class ToolAction : public QAction {
   void setPluginName(const QString& pName);
   void setToolName(const QString& tName);
 
-  const QString& getPluginName() const;
-  const QString& getToolName() const;
+  [[nodiscard]] const QString& getPluginName() const;
+  [[nodiscard]] const QString& getToolName() const;
 
  signals:
   void openToolWidget(const QString& pluginName, const QString& toolName);

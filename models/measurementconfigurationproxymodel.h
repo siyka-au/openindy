@@ -58,10 +58,11 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
   // override methods of sort filter proxy model
   // ###########################################
 
-  QVariant headerData(int section, Qt::Orientation orientation,
-                      int role) const override;
+  [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role) const override;
 
-  MeasurementConfig getMeasurementConfig(const QModelIndex& index) const;
+  [[nodiscard]] MeasurementConfig getMeasurementConfig(
+      const QModelIndex& index) const;
 
  signals:
 
@@ -74,14 +75,14 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
                        MessageDestinations::eConsoleMessage);
 
  protected:
-  bool filterAcceptsRow(int source_row,
-                        const QModelIndex& source_parent) const override;
-  bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const override;
-  bool lessThan(const QModelIndex& left,
-                const QModelIndex& right) const override;
-  QVariant data(const QModelIndex& index,
-                int role = Qt::DisplayRole) const override;
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool lessThan(const QModelIndex& left,
+                              const QModelIndex& right) const override;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const override;
 
  private:
   // ################

@@ -32,38 +32,38 @@ class PluginTreeItem : public QObject {
   // ##########################################
 
   // get the value to display in the tree view
-  const QVariant& getDisplayValue() const;
+  [[nodiscard]] const QVariant& getDisplayValue() const;
 
   // get or set children of this tree item
-  int getChildCount() const;
+  [[nodiscard]] int getChildCount() const;
   void appendChild(const QPointer<PluginTreeItem>& child);
   QPointer<PluginTreeItem> getChild(const int& index);
   // void removeChild(const int &index);
   void deleteChildren();
 
   // get parent of this tree item
-  bool hasParent() const;
-  const QPointer<PluginTreeItem>& getParent() const;
+  [[nodiscard]] bool hasParent() const;
+  [[nodiscard]] const QPointer<PluginTreeItem>& getParent() const;
 
   // get the index of this tree item in the children list of its parent
-  const int& getIndex() const;
+  [[nodiscard]] const int& getIndex() const;
 
   // query what kind of tree item this item is
-  const bool& getIsHeader() const;
-  const bool& getIsPlugin() const;
-  const bool& getIsFunction() const;
-  const bool& getIsSensor() const;
-  const bool& getIsTool() const;
-  const bool& getIsSimulation() const;
-  const bool& getIsExchange() const;
+  [[nodiscard]] const bool& getIsHeader() const;
+  [[nodiscard]] const bool& getIsPlugin() const;
+  [[nodiscard]] const bool& getIsFunction() const;
+  [[nodiscard]] const bool& getIsSensor() const;
+  [[nodiscard]] const bool& getIsTool() const;
+  [[nodiscard]] const bool& getIsSimulation() const;
+  [[nodiscard]] const bool& getIsExchange() const;
 
   // get object behind tree item
-  const sys::Plugin& getPlugin() const;
-  const sys::Function& getFunction() const;
-  const sys::Sensor& getSensor() const;
-  const sys::Tool& getTool() const;
-  const sys::Simulation& getSimulation() const;
-  const sys::Exchange& getExchange() const;
+  [[nodiscard]] const sys::Plugin& getPlugin() const;
+  [[nodiscard]] const sys::Function& getFunction() const;
+  [[nodiscard]] const sys::Sensor& getSensor() const;
+  [[nodiscard]] const sys::Tool& getTool() const;
+  [[nodiscard]] const sys::Simulation& getSimulation() const;
+  [[nodiscard]] const sys::Exchange& getExchange() const;
 
  private:
   // #############################################

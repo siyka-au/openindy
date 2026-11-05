@@ -23,14 +23,17 @@ class TrafoParamTableProxyModel : public QSortFilterProxyModel {
   // get or set display config
   // #########################
 
-  const TrafoParamTableColumnConfig& getTrafoParamTableColumnConfig() const;
+  [[nodiscard]] const TrafoParamTableColumnConfig&
+  getTrafoParamTableColumnConfig() const;
 
   // ###########################################
   // override methods of sort filter proxy model
   // ###########################################
 
-  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const override;
-  QModelIndex mapToSource(const QModelIndex& proxyIndex) const override;
+  [[nodiscard]] QModelIndex mapFromSource(
+      const QModelIndex& sourceIndex) const override;
+  [[nodiscard]] QModelIndex mapToSource(
+      const QModelIndex& proxyIndex) const override;
 
  signals:
 
@@ -47,10 +50,10 @@ class TrafoParamTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row,
-                        const QModelIndex& source_parent) const override;
-  bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
 
  private:
   // ##############
@@ -63,7 +66,8 @@ class TrafoParamTableProxyModel : public QSortFilterProxyModel {
   // helper method
   // #############
 
-  bool isBundleStationTrafo(const QPointer<TrafoParam>& param) const;
+  [[nodiscard]] bool isBundleStationTrafo(
+      const QPointer<TrafoParam>& param) const;
 };
 
 #endif  // TRAFOPARAMTABLEPROXYMODEL_H

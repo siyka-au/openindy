@@ -40,7 +40,7 @@ class OI_MAIN_EXPORT AvailableFunctionsListProxyModel
   // get the function at index
   // #########################
 
-  sys::Function getFunctionAtIndex(const int& index) const;
+  [[nodiscard]] sys::Function getFunctionAtIndex(const int& index) const;
 
  signals:
 
@@ -57,10 +57,10 @@ class OI_MAIN_EXPORT AvailableFunctionsListProxyModel
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row,
-                        const QModelIndex& source_parent) const override;
-  bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
 
  private:
   // #################

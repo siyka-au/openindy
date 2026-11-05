@@ -20,12 +20,12 @@ class BundleStationItem {
   void appendChild(BundleStationItem* child);
   void removeAllChildren();
   BundleStationItem* child(int row);
-  int childCount() const;
+  [[nodiscard]] int childCount() const;
 
   // row and column count
-  int columnCount() const;
-  QVariant data(int column) const;
-  int row() const;
+  [[nodiscard]] int columnCount() const;
+  [[nodiscard]] QVariant data(int column) const;
+  [[nodiscard]] int row() const;
 
   // parent
   BundleStationItem* parentItem();
@@ -36,13 +36,13 @@ class BundleStationItem {
   // #################
 
   // station id
-  const int& getStationId() const;
+  [[nodiscard]] const int& getStationId() const;
 
   // key
-  const QString& getKey() const;
+  [[nodiscard]] const QString& getKey() const;
 
   // value
-  bool getValue() const;
+  [[nodiscard]] bool getValue() const;
   void setValue(const bool& value);
 
  private:

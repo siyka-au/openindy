@@ -36,7 +36,7 @@ class DataExchanger : public QObject {
   // get or set general attributes
   // #############################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   const QPointer<MeasurementConfigManager>& getMeasurementConfigManager();

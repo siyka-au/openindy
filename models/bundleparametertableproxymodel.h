@@ -23,8 +23,10 @@ class BundleParameterTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const override;
-  QModelIndex mapToSource(const QModelIndex& proxyIndex) const override;
+  [[nodiscard]] QModelIndex mapFromSource(
+      const QModelIndex& sourceIndex) const override;
+  [[nodiscard]] QModelIndex mapToSource(
+      const QModelIndex& proxyIndex) const override;
 
  signals:
 
@@ -41,10 +43,10 @@ class BundleParameterTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row,
-                        const QModelIndex& source_parent) const override;
-  bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
 
  private:
   // ##############
@@ -57,7 +59,8 @@ class BundleParameterTableProxyModel : public QSortFilterProxyModel {
   // helper method
   // #############
 
-  bool isBundleStationTrafo(const QPointer<TrafoParam>& param) const;
+  [[nodiscard]] bool isBundleStationTrafo(
+      const QPointer<TrafoParam>& param) const;
 };
 
 #endif  // BUNDLEPARAMETERTABLEPROXYMODEL_H

@@ -43,7 +43,7 @@ class FeatureUpdater : public QObject {
   // get or set the current OpenIndy job
   // ###################################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
  public slots:

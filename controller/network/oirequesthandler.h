@@ -39,18 +39,20 @@ class OiRequestHandler : public QObject {
   // get or set current job
   // ######################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // ##########################
   // get or set config managers
   // ##########################
 
-  const QPointer<SensorConfigurationManager>& getSensorConfigManager() const;
+  [[nodiscard]] const QPointer<SensorConfigurationManager>&
+  getSensorConfigManager() const;
   void setSensorConfigManager(
       const QPointer<SensorConfigurationManager>& sensorConfigManager);
 
-  const QPointer<MeasurementConfigManager>& getMeasurementConfigManager() const;
+  [[nodiscard]] const QPointer<MeasurementConfigManager>&
+  getMeasurementConfigManager() const;
   void setMeasurementConfigManager(
       const QPointer<MeasurementConfigManager>& measurementConfigManager);
 
@@ -142,10 +144,10 @@ class OiRequestHandler : public QObject {
   void getCoordinateSystems(OiRequestResponse& request);
 
   // parse request type id
-  OiRequestResponse::RequestType getRequestType(int id) const;
+  [[nodiscard]] OiRequestResponse::RequestType getRequestType(int id) const;
 
   // parse feature type
-  FeatureTypes getFeatureType(int type) const;
+  [[nodiscard]] FeatureTypes getFeatureType(int type) const;
 
   // add feature parameters
   void addParameters(QDomDocument& document, QDomElement& parameters,

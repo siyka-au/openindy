@@ -30,14 +30,16 @@ class UsedElementsModel : public QAbstractListModel {
   // override methods of abstract item model
   // #######################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int rowCount(
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int columnCount(
+      const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index,
-                int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const override;
 
-  QVariant headerData(int section, Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role = Qt::DisplayRole) const override;
 
   // ####################
   // remove used elements
@@ -49,7 +51,7 @@ class UsedElementsModel : public QAbstractListModel {
   // get or set current OpenIndy job
   // ###############################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // ##########

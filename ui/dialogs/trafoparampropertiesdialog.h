@@ -29,16 +29,16 @@ class TrafoParamPropertiesDialog : public QDialog {
   // get or set information about the current trafo param feature
   // ############################################################
 
-  const int& getId() const;
+  [[nodiscard]] const int& getId() const;
   void setId(const int& id);
 
-  const QString& getName() const;
+  [[nodiscard]] const QString& getName() const;
   void setName(const QString& name);
 
   void setCurrentTrafoParam(const int& id, const QString& name);
 
-  const QMap<TrafoParamParameters, QString>& getUnknownTrafoParamParameters()
-      const;
+  [[nodiscard]] const QMap<TrafoParamParameters, QString>&
+  getUnknownTrafoParamParameters() const;
   void setUnknownTrafoParamParameters(
       const QMap<TrafoParamParameters, QString>& parameters);
 

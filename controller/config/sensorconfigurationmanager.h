@@ -39,13 +39,16 @@ class SensorConfigurationManager : public QObject {
   bool hasProjectSensorConfig(const SensorConfiguration& sConfig);
 
   // get configs
-  SensorConfiguration getSavedSensorConfig(const QString& name) const;
-  SensorConfiguration getProjectSensorConfig(const QString& name) const;
-  const QList<SensorConfiguration>& getSavedSensorConfigs() const;
-  const QList<SensorConfiguration>& getProjectSensorConfigs() const;
+  [[nodiscard]] SensorConfiguration getSavedSensorConfig(
+      const QString& name) const;
+  [[nodiscard]] SensorConfiguration getProjectSensorConfig(
+      const QString& name) const;
+  [[nodiscard]] const QList<SensorConfiguration>& getSavedSensorConfigs() const;
+  [[nodiscard]] const QList<SensorConfiguration>& getProjectSensorConfigs()
+      const;
 
   // active config
-  const SensorConfiguration& getActiveSensorConfig() const;
+  [[nodiscard]] const SensorConfiguration& getActiveSensorConfig() const;
   void setActiveSensorConfig(const SensorConfiguration& sConfig);
 
   // add or remove configs

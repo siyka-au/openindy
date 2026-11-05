@@ -22,7 +22,7 @@ class OiWebSocketStreamer : public QObject {
   // get or set current job
   // ######################
 
-  const QPointer<oi::OiJob>& getJob() const;
+  [[nodiscard]] const QPointer<oi::OiJob>& getJob() const;
   void setJob(const QPointer<oi::OiJob>& job);
 
  public slots:

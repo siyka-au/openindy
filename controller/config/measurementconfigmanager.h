@@ -39,7 +39,7 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
   // get or set the current OpenIndy job
   // ###################################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // ##############################
@@ -47,19 +47,21 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
   // ##############################
 
   // get configs
-  MeasurementConfig getConfig(const MeasurementConfigKey& key) const;
-  MeasurementConfig getUserConfig(const QString& name) const;
-  MeasurementConfig getProjectConfig(const QString& name) const;
-  MeasurementConfig getStandardConfig(const QString& name) const;
-  MeasurementConfig findConfig(const QString& name) const;
-  const QList<MeasurementConfig> getConfigs() const;
-  const QList<MeasurementConfig> getUserConfigs() const;
-  const QList<MeasurementConfig> getProjectConfigs() const;
-  const QList<QString> getUserConfigNames() const;
-  const QList<QString> getProjectConfigNames() const;
+  [[nodiscard]] MeasurementConfig getConfig(
+      const MeasurementConfigKey& key) const;
+  [[nodiscard]] MeasurementConfig getUserConfig(const QString& name) const;
+  [[nodiscard]] MeasurementConfig getProjectConfig(const QString& name) const;
+  [[nodiscard]] MeasurementConfig getStandardConfig(const QString& name) const;
+  [[nodiscard]] MeasurementConfig findConfig(const QString& name) const;
+  [[nodiscard]] const QList<MeasurementConfig> getConfigs() const;
+  [[nodiscard]] const QList<MeasurementConfig> getUserConfigs() const;
+  [[nodiscard]] const QList<MeasurementConfig> getProjectConfigs() const;
+  [[nodiscard]] const QList<QString> getUserConfigNames() const;
+  [[nodiscard]] const QList<QString> getProjectConfigNames() const;
 
   // active config
-  MeasurementConfig getActiveConfig(const GeometryTypes& type) const;
+  [[nodiscard]] MeasurementConfig getActiveConfig(
+      const GeometryTypes& type) const;
 
   // add or remove configs
   void saveUserConfig(const MeasurementConfig& mConfig);

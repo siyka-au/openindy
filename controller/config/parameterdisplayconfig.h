@@ -17,16 +17,16 @@ class ParameterDisplayConfig {
  public:
   ParameterDisplayConfig();
 
-  UnitType getDisplayUnit(const DimensionType& dimension) const;
+  [[nodiscard]] UnitType getDisplayUnit(const DimensionType& dimension) const;
   void setDisplayUnitType(const DimensionType& dimension, const UnitType& unit);
 
-  int getDisplayDigits(const DimensionType& dimension) const;
+  [[nodiscard]] int getDisplayDigits(const DimensionType& dimension) const;
   void setDisplayDigits(const DimensionType& dimension, const int& digits);
 
-  QMap<DimensionType, UnitType> getDisplayUnits() const;
-  QMap<DimensionType, int> getDisplayDigits() const;
+  [[nodiscard]] QMap<DimensionType, UnitType> getDisplayUnits() const;
+  [[nodiscard]] QMap<DimensionType, int> getDisplayDigits() const;
 
-  bool getUseSounds() const;
+  [[nodiscard]] bool getUseSounds() const;
   void setUseSounds(const bool use);
 
  private:

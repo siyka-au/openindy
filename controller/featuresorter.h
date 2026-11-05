@@ -46,26 +46,26 @@ class OI_MAIN_EXPORT FeatureSorter {
   // get or set sorting mode an config
   // #################################
 
-  SortingMode getSortingMode() const;
+  [[nodiscard]] SortingMode getSortingMode() const;
   void setSortingMode(SortingMode mode);
 
-  const FeatureTableSortingConfig getSortingConfig() const;
+  [[nodiscard]] const FeatureTableSortingConfig getSortingConfig() const;
   void setSortingConfig(const FeatureTableSortingConfig& config);
 
   // ###################################
   // get or set the current OpenIndy job
   // ###################################
 
-  const QPointer<OiJob>& getCurrentJob() const;
+  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
   // ####################
   // comparison functions
   // ####################
 
-  bool lessThan(const int& left, const int& right) const;
-  bool lessThan(const QPointer<FeatureWrapper>& left,
-                const QPointer<FeatureWrapper>& right) const;
+  [[nodiscard]] bool lessThan(const int& left, const int& right) const;
+  [[nodiscard]] bool lessThan(const QPointer<FeatureWrapper>& left,
+                              const QPointer<FeatureWrapper>& right) const;
 
  private:
   // #################
@@ -82,12 +82,12 @@ class OI_MAIN_EXPORT FeatureSorter {
   // helper methods
   // ##############
 
-  bool sortStandard(QPointer<FeatureWrapper> left,
-                    QPointer<FeatureWrapper> right) const;
-  bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left,
-                          QPointer<FeatureWrapper> right) const;
-  bool sortBy_Group_Name(QPointer<FeatureWrapper> left,
-                         QPointer<FeatureWrapper> right) const;
+  [[nodiscard]] bool sortStandard(QPointer<FeatureWrapper> left,
+                                  QPointer<FeatureWrapper> right) const;
+  [[nodiscard]] bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left,
+                                        QPointer<FeatureWrapper> right) const;
+  [[nodiscard]] bool sortBy_Group_Name(QPointer<FeatureWrapper> left,
+                                       QPointer<FeatureWrapper> right) const;
 };
 
 #endif  // FEATURESORTER_H
