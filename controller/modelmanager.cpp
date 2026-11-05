@@ -608,7 +608,7 @@ ReadingProxyModel& ModelManager::getReadingProxyModel() {
  */
 QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiNames(
     const QString& pluginName) {
-  QPointer<QStringListModel> model(NULL);
+  QPointer<QStringListModel> model(nullptr);
 
   QStringList exchanges;
   foreach (const sys::Plugin& plugin, ModelManager::plugins) {
@@ -636,7 +636,7 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiNames(
  */
 QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(
     const QString& pluginName, const QString& exchangeName) {
-  QPointer<QStringListModel> model(NULL);
+  QPointer<QStringListModel> model(nullptr);
 
   QStringList delimiters;
 

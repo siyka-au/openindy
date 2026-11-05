@@ -42,7 +42,7 @@ bool SensorTableProxyModel::filterAcceptsRow(
   // get and cast source model
   SensorTableModel* source_model =
       dynamic_cast<SensorTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 

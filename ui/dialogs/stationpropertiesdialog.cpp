@@ -316,8 +316,8 @@ void StationPropertiesDialog::initModels() {
  */
 void StationPropertiesDialog::copyToClipboard() {
   // init variables
-  QPointer<QAbstractItemModel> model = NULL;
-  QPointer<QItemSelectionModel> selectionModel = NULL;
+  QPointer<QAbstractItemModel> model = nullptr;
+  QPointer<QItemSelectionModel> selectionModel = nullptr;
 
   // get selection
   if (this->ui->tabWidget_stationProperties->currentWidget() ==
@@ -338,8 +338,8 @@ void StationPropertiesDialog::copyToClipboard() {
  */
 void StationPropertiesDialog::pasteFromClipboard() {
   // init variables
-  QAbstractItemModel* model = NULL;
-  QItemSelectionModel* selectionModel = NULL;
+  QAbstractItemModel* model = nullptr;
+  QItemSelectionModel* selectionModel = nullptr;
   QModelIndexList selection;
 
   // get selection

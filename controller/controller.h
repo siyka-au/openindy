@@ -48,8 +48,8 @@ class Controller : public QObject, public ControllerSensorActions {
   Q_OBJECT
 
  public:
-  explicit Controller(QObject* parent = 0);
-  ~Controller();
+  explicit Controller(QObject* parent = nullptr);
+  ~Controller() override;
 
   void init();
 
@@ -69,7 +69,7 @@ class Controller : public QObject, public ControllerSensorActions {
   QList<QJsonObject> loadBundleTemplates();
 
  private slots:
-  void startAimAndMeasure();
+  void startAimAndMeasure() override;
 
  public slots:
 
@@ -154,21 +154,21 @@ class Controller : public QObject, public ControllerSensorActions {
   const QPointer<OiJob>& createDefaultJob();
 
   // sensor actions
-  void startConnect();
-  void startDisconnect();
-  void startMeasurement();
-  void startMove(const Reading& reading);
-  void startAim();
-  void startToggleSight();
-  void startInitialize();
-  void startHome();
-  void startCompensation();
-  void startChangeMotorState();
-  void startCustomAction(const QString& task);
-  void startReadingStream(ReadingTypes streamFormat);
-  void stopReadingStream();
-  void finishMeasurement();
-  void startSearch();
+  void startConnect() override;
+  void startDisconnect() override;
+  void startMeasurement() override;
+  void startMove(const Reading& reading) override;
+  void startAim() override;
+  void startToggleSight() override;
+  void startInitialize() override;
+  void startHome() override;
+  void startCompensation() override;
+  void startChangeMotorState() override;
+  void startCustomAction(const QString& task) override;
+  void startReadingStream(ReadingTypes streamFormat) override;
+  void stopReadingStream() override;
+  void finishMeasurement() override;
+  void startSearch() override;
 
   // log messages to the specified destination
   void log(const QString& msg, const MessageTypes& msgType,

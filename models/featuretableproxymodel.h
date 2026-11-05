@@ -18,7 +18,7 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit FeatureTableProxyModel(QObject* parent = 0);
+  explicit FeatureTableProxyModel(QObject* parent = nullptr);
 
   // ###############################
   // get or set current OpenIndy job
@@ -38,8 +38,8 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const;
-  QModelIndex mapToSource(const QModelIndex& proxyIndex) const;
+  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const override;
+  QModelIndex mapToSource(const QModelIndex& proxyIndex) const override;
 
   void setSortingMode(FeatureSorter::SortingMode mode);
 
@@ -53,11 +53,13 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
                    const MessageDestinations& msgDest = eConsoleMessage) const;
 
  protected:
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
-  bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
+  bool lessThan(const QModelIndex& left,
+                const QModelIndex& right) const override;
 
  private:
   // ##############

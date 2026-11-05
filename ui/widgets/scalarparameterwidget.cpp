@@ -9,7 +9,7 @@ ScalarParameterWidget::ScalarParameterWidget(QWidget* parent)
   this->intValidator = new QRegularExpressionValidator(this->validInt);
   this->doubleValidator = new QRegularExpressionValidator(this->validDouble);
 
-  this->myLayout = NULL;
+  this->myLayout = nullptr;
 
   this->setUpGui();
 }
@@ -105,7 +105,7 @@ void ScalarParameterWidget::setUpGui() {
   QMapIterator<QString, QStringList> stringIterator(this->stringParameter);
 
   // set up layout
-  if (this->myLayout != NULL) {
+  if (this->myLayout != nullptr) {
     delete this->myLayout;
   }
   this->myLayout = new QFormLayout();

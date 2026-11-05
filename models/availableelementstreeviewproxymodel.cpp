@@ -144,7 +144,7 @@ bool AvailableElementsTreeViewProxyModel::validateSelection(
     }
 
     // get and check corresponding feature tree item
-    QPointer<FeatureTreeItem> item(NULL);
+    QPointer<FeatureTreeItem> item(nullptr);
     if (!sourceIndex.isValid()) {
       return false;
     }
@@ -214,7 +214,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
     }
 
     // get and check corresponding feature tree item
-    QPointer<FeatureTreeItem> item(NULL);
+    QPointer<FeatureTreeItem> item(nullptr);
     if (!sourceIndex.isValid()) {
       continue;
     }
@@ -351,19 +351,19 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(
   ElementTypes neededElementType = neededElement.typeOfElement;
 
   // get feature tree item
-  QPointer<FeatureTreeItem> item(NULL);
+  QPointer<FeatureTreeItem> item(nullptr);
   {
     if (!source_parent.isValid()) {  // parent is root item
       FeatureTreeViewModel* model =
           dynamic_cast<FeatureTreeViewModel*>(this->sourceModel());
-      if (model != NULL && !model->getRootItem().isNull() &&
+      if (model != nullptr && !model->getRootItem().isNull() &&
           source_row < model->getRootItem()->getChildCount()) {
         item = model->getRootItem()->getChild(source_row);
       }
     } else {
       FeatureTreeItem* parent =
           static_cast<FeatureTreeItem*>(source_parent.internalPointer());
-      if (parent != NULL && source_row < parent->getChildCount()) {
+      if (parent != nullptr && source_row < parent->getChildCount()) {
         item = parent->getChild(source_row);
       }
     }
@@ -518,7 +518,7 @@ void AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition() {
     QObject::disconnect(this->connectedFunction.data(),
                         &Function::inputElementsChanged, this,
                         &AvailableElementsTreeViewProxyModel::invalidateFilter);
-    this->connectedFunction = QPointer<Function>(NULL);
+    this->connectedFunction = QPointer<Function>(nullptr);
   }
 }
 

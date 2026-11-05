@@ -24,7 +24,7 @@ int ReadingModel::rowCount(const QModelIndex& parent) const {
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(NULL);
+  QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == eStationFeature &&
@@ -71,7 +71,7 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(NULL);
+  QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == eStationFeature &&
@@ -87,7 +87,7 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
   int columnIndex = index.column();
 
   // get and check reading
-  QPointer<Reading> reading(NULL);
+  QPointer<Reading> reading(nullptr);
   if (rowIndex < geometry->getObservations().size() &&
       !geometry->getObservations().at(rowIndex).isNull()) {
     reading = geometry->getObservations().at(rowIndex)->getReading();

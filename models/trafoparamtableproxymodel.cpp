@@ -53,7 +53,7 @@ QModelIndex TrafoParamTableProxyModel::mapToSource(
   // get and cast source model
   FeatureTableModel* source_model =
       dynamic_cast<FeatureTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return QModelIndex();
   }
 
@@ -82,7 +82,7 @@ bool TrafoParamTableProxyModel::filterAcceptsRow(
   // get and cast source model
   FeatureTableModel* source_model =
       dynamic_cast<FeatureTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 

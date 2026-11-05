@@ -22,7 +22,7 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit FunctionTableProxyModel(QObject* parent = 0);
+  explicit FunctionTableProxyModel(QObject* parent = nullptr);
 
   // ####################################
   // add a function to the active feature
@@ -37,7 +37,7 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   const QPointer<OiJob>& getCurrentJob() const;
   void setCurrentJob(const QPointer<OiJob>& job);
 
-  QVariant data(const QModelIndex& index, int role) const;
+  QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
 
@@ -59,9 +59,10 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
  private:
   // ##############

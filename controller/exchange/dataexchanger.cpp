@@ -110,7 +110,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   }
 
   // load exchange method with plugin loader
-  QPointer<ExchangeInterface> exchange(NULL);
+  QPointer<ExchangeInterface> exchange(nullptr);
   if (params.isDefinedFormat) {
     QPointer<ExchangeDefinedFormat> definedFormat =
         PluginLoader::loadExchangeDefinedFormatPlugin(plugin->filePath(),
@@ -262,7 +262,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   }
 
   // load exchange method with plugin loader
-  QPointer<ExchangeInterface> exchange(NULL);
+  QPointer<ExchangeInterface> exchange(nullptr);
   if (params.isDefinedFormat) {
     QPointer<ExchangeDefinedFormat> definedFormat =
         PluginLoader::loadExchangeDefinedFormatPlugin(
@@ -415,7 +415,7 @@ void DataExchanger::importMeasurements(
       }
 
       QList<QPointer<Reading>> importedReadings;
-      QPointer<Reading> reading = NULL;
+      QPointer<Reading> reading = nullptr;
 
       switch (jobFeature->getFeatureTypeEnum()) {
         case ePointFeature: {
@@ -672,7 +672,7 @@ void DataExchanger::addFunctionsAndMConfigs(
     }
 
     // load function plugin
-    QPointer<Function> function(NULL);
+    QPointer<Function> function(nullptr);
     if (!path.isEmpty() && !fName.isEmpty()) {
       function = PluginLoader::loadFunctionPlugin(path, fName);
     }

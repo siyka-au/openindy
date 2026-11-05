@@ -24,19 +24,20 @@ class UsedElementsModel : public QAbstractListModel {
   Q_OBJECT
 
  public:
-  explicit UsedElementsModel(QObject* parent = 0);
+  explicit UsedElementsModel(QObject* parent = nullptr);
 
   // #######################################
   // override methods of abstract item model
   // #######################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
   QVariant headerData(int section, Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const;
+                      int role = Qt::DisplayRole) const override;
 
   // ####################
   // remove used elements

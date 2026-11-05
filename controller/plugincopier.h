@@ -24,7 +24,7 @@ class PluginCopier : public QObject {
   Q_OBJECT
 
  public:
-  explicit PluginCopier(QObject* parent = 0);
+  explicit PluginCopier(QObject* parent = nullptr);
 
  public slots:
 

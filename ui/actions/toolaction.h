@@ -10,7 +10,7 @@ class ToolAction : public QAction {
   Q_OBJECT
 
  public:
-  explicit ToolAction(QObject* parent = 0);
+  explicit ToolAction(QObject* parent = nullptr);
 
   void setPluginName(const QString& pName);
   void setToolName(const QString& tName);

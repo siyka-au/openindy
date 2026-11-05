@@ -31,7 +31,7 @@ void FunctionTableProxyModel::addFunction(const QModelIndex& index) {
   // get and check source model
   FunctionTableModel* sourceModel =
       static_cast<FunctionTableModel*>(this->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -97,7 +97,7 @@ bool FunctionTableProxyModel::filterAcceptsRow(
   // get and cast source model
   FunctionTableModel* source_model =
       dynamic_cast<FunctionTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 

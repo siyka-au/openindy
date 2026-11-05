@@ -36,8 +36,8 @@ class FeatureFunctionsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit FeatureFunctionsDialog(QWidget* parent = 0);
-  ~FeatureFunctionsDialog();
+  explicit FeatureFunctionsDialog(QWidget* parent = nullptr);
+  ~FeatureFunctionsDialog() override;
 
  signals:
 
@@ -114,7 +114,7 @@ class FeatureFunctionsDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initGUI();
   void initModels();

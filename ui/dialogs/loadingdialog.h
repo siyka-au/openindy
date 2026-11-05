@@ -17,8 +17,8 @@ class LoadingDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit LoadingDialog(QWidget* parent = 0);
-  ~LoadingDialog();
+  explicit LoadingDialog(QWidget* parent = nullptr);
+  ~LoadingDialog() override;
 
  public slots:
 
@@ -34,7 +34,7 @@ class LoadingDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void closeEvent(QCloseEvent* event);
+  void closeEvent(QCloseEvent* event) override;
 
  private:
   Ui::LoadingDialog* ui;

@@ -10,12 +10,12 @@ class MultiSelectionModel : public QItemSelectionModel {
 
  public:
   MultiSelectionModel(QAbstractItemModel* myModel);
-  ~MultiSelectionModel();
+  ~MultiSelectionModel() override;
 
  public slots:
-  void select(const QItemSelection& selection, SelectionFlags command);
+  void select(const QItemSelection& selection, SelectionFlags command) override;
   void select(const QModelIndex& index,
-              QItemSelectionModel::SelectionFlags command);
+              QItemSelectionModel::SelectionFlags command) override;
 
  private:
   bool checkIndex(const QModelIndex& index, const QItemSelection& selection);

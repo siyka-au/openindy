@@ -338,7 +338,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   // resolve the producer function's plugin, then instantiate it
   QList<sys::Function> candidates =
       PluginRepository::getFunctionsApplicableTo(subType);
-  QPointer<Function> producerFunction(NULL);
+  QPointer<Function> producerFunction(nullptr);
   for (const sys::Function& candidate : candidates) {
     if (candidate.name().compare(functionName) == 0) {
       producerFunction = PluginLoader::loadFunctionPlugin(
@@ -763,7 +763,7 @@ QPointer<oi::BundleAdjustment> Controller::getBundleAdjustment() {
   // check job
   if (this->job.isNull()) {
     this->log("No job available", eErrorMessage, eMessageBoxMessage);
-    return QPointer<oi::BundleAdjustment>(NULL);
+    return QPointer<oi::BundleAdjustment>(nullptr);
   }
   return this->job->getActiveBundleAdjustment();
 }
@@ -1090,7 +1090,7 @@ void Controller::loadProject(const QString& projectName,
   }
 
   // create empty job
-  QPointer<OiJob> newJob(NULL);
+  QPointer<OiJob> newJob(nullptr);
 
   // load xml file to DOM tree
   QDomDocument project;
@@ -1749,21 +1749,21 @@ void Controller::startCustomAction(const QString& task) {
 QPointer<Station> Controller::getConnectedActiveStation() {
   // check current job
   if (this->job.isNull()) {
-    return 0;
+    return nullptr;
   }
 
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
     this->log("No active station", eErrorMessage, eMessageBoxMessage);
-    return 0;
+    return nullptr;
   }
 
   // check sensor
   if (!activeStation->getIsSensorConnected()) {
     this->log("No sensor connected to the active station", eErrorMessage,
               eMessageBoxMessage);
-    return 0;
+    return nullptr;
   }
 
   return activeStation;
@@ -1874,10 +1874,11 @@ void Controller::activeStationChangedCallback() {
     }
 
     // disconnect all slots from signals
-    QObject::disconnect(station, &Station::commandFinished, 0, 0);
-    QObject::disconnect(station, &Station::measurementFinished, 0, 0);
-    QObject::disconnect(station, &Station::measurementDone, 0, 0);
-    QObject::disconnect(station, &Station::sensorMessage, 0, 0);
+    QObject::disconnect(station, &Station::commandFinished, nullptr, nullptr);
+    QObject::disconnect(station, &Station::measurementFinished, nullptr,
+                        nullptr);
+    QObject::disconnect(station, &Station::measurementDone, nullptr, nullptr);
+    QObject::disconnect(station, &Station::sensorMessage, nullptr, nullptr);
   }
 
   // connect sensor action results of active station
@@ -2293,7 +2294,7 @@ QPointer<FeatureWrapper> Controller::createActualForNominal(
   // check job and nominal
   if (this->job.isNull() || nominal.isNull() ||
       nominal->getFeatureWrapper().isNull()) {
-    return QPointer<FeatureWrapper>(NULL);
+    return QPointer<FeatureWrapper>(nullptr);
   }
 
   const FeatureTypes type = nominal->getFeatureWrapper()->getFeatureTypeEnum();
@@ -2328,7 +2329,7 @@ QPointer<FeatureWrapper> Controller::createActualForNominal(
   QList<QPointer<FeatureWrapper> > created = this->job->addFeatures(attr);
   if (created.size() != 1 || created.first().isNull() ||
       created.first()->getGeometry().isNull()) {
-    return QPointer<FeatureWrapper>(NULL);
+    return QPointer<FeatureWrapper>(nullptr);
   }
   QPointer<FeatureWrapper> actual = created.first();
 
@@ -2371,7 +2372,7 @@ void Controller::addFunctionsAndMConfigs(
     }
 
     // load function plugin
-    QPointer<Function> function(NULL);
+    QPointer<Function> function(nullptr);
     if (!path.isEmpty() && !fName.isEmpty()) {
       function = PluginLoader::loadFunctionPlugin(path, fName);
     }

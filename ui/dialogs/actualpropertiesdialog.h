@@ -37,8 +37,8 @@ class ActualPropertiesDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit ActualPropertiesDialog(QWidget* parent = 0);
-  ~ActualPropertiesDialog();
+  explicit ActualPropertiesDialog(QWidget* parent = nullptr);
+  ~ActualPropertiesDialog() override;
 
  signals:
 
@@ -62,7 +62,7 @@ class ActualPropertiesDialog : public QDialog {
   // #########################
 
   // key pressed
-  void keyPressEvent(QKeyEvent* e);
+  void keyPressEvent(QKeyEvent* e) override;
 
   // import observations
   void on_tableView_observation_customContextMenuRequested(const QPoint& pos);
@@ -93,7 +93,7 @@ class ActualPropertiesDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initGUI();
   void initModels();

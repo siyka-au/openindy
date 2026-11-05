@@ -13,8 +13,8 @@ class MeasureBehaviorDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit MeasureBehaviorDialog(QWidget* parent = 0);
-  ~MeasureBehaviorDialog();
+  explicit MeasureBehaviorDialog(QWidget* parent = nullptr);
+  ~MeasureBehaviorDialog() override;
 
  private slots:
   void on_pushButton_searchSMR_clicked();

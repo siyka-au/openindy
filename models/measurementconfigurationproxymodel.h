@@ -35,7 +35,7 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
   Q_OBJECT
 
  public:
-  explicit MeasurementConfigurationProxyModel(QObject* parent = 0);
+  explicit MeasurementConfigurationProxyModel(QObject* parent = nullptr);
 
   // ##########
   // set filter
@@ -58,7 +58,8 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
   // override methods of sort filter proxy model
   // ###########################################
 
-  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role) const override;
 
   MeasurementConfig getMeasurementConfig(const QModelIndex& index) const;
 
@@ -72,12 +73,14 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
                    const MessageDestinations& msgDest = eConsoleMessage);
 
  protected:
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
   bool lessThan(const QModelIndex& left,
                 const QModelIndex& right) const override;
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
  private:
   // ################

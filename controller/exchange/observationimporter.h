@@ -19,9 +19,9 @@ class ObservationImporter : public QObject {
   Q_OBJECT
 
  public:
-  explicit ObservationImporter(QObject* parent = 0);
+  explicit ObservationImporter(QObject* parent = nullptr);
 
-  ~ObservationImporter();
+  ~ObservationImporter() override;
 
   // #############################
   // get or set general attributes

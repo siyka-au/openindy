@@ -15,7 +15,7 @@ class ScalarParameterWidget : public QWidget {
   Q_OBJECT
 
  public:
-  explicit ScalarParameterWidget(QWidget* parent = 0);
+  explicit ScalarParameterWidget(QWidget* parent = nullptr);
 
  signals:
 

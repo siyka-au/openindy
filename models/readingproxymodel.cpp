@@ -55,7 +55,7 @@ bool ReadingProxyModel::filterAcceptsColumn(
 bool ReadingProxyModel::lessThan(const QModelIndex& source_left,
                                  const QModelIndex& source_right) const {
   ReadingModel* source_model = dynamic_cast<ReadingModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 

@@ -24,8 +24,8 @@ class MoveSensorDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit MoveSensorDialog(QWidget* parent = 0);
-  ~MoveSensorDialog();
+  explicit MoveSensorDialog(QWidget* parent = nullptr);
+  ~MoveSensorDialog() override;
 
  signals:
 
@@ -54,7 +54,7 @@ class MoveSensorDialog : public QDialog {
 
   void initGUI();
   void initModels();
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
  private:
   // #################

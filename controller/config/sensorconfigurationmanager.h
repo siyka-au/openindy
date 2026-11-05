@@ -21,10 +21,10 @@ class SensorConfigurationManager : public QObject {
   Q_OBJECT
 
  public:
-  explicit SensorConfigurationManager(QObject* parent = 0);
+  explicit SensorConfigurationManager(QObject* parent = nullptr);
 
   SensorConfigurationManager(const SensorConfigurationManager& copy,
-                             QObject* parent = 0);
+                             QObject* parent = nullptr);
 
   SensorConfigurationManager& operator=(const SensorConfigurationManager& copy);
 

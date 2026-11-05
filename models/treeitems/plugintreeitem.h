@@ -15,15 +15,17 @@ class PluginTreeItem : public QObject {
   Q_OBJECT
 
  public:
-  explicit PluginTreeItem(const QVariant& display, QObject* parent = 0);
-  explicit PluginTreeItem(const sys::Plugin& plugin, QObject* parent = 0);
-  explicit PluginTreeItem(const sys::Function& function, QObject* parent = 0);
-  explicit PluginTreeItem(const sys::Sensor& sensor, QObject* parent = 0);
-  explicit PluginTreeItem(const sys::Tool& tool, QObject* parent = 0);
+  explicit PluginTreeItem(const QVariant& display, QObject* parent = nullptr);
+  explicit PluginTreeItem(const sys::Plugin& plugin, QObject* parent = nullptr);
+  explicit PluginTreeItem(const sys::Function& function,
+                          QObject* parent = nullptr);
+  explicit PluginTreeItem(const sys::Sensor& sensor, QObject* parent = nullptr);
+  explicit PluginTreeItem(const sys::Tool& tool, QObject* parent = nullptr);
   explicit PluginTreeItem(const sys::Simulation& simulation,
-                          QObject* parent = 0);
-  explicit PluginTreeItem(const sys::Exchange& exchange, QObject* parent = 0);
-  ~PluginTreeItem();
+                          QObject* parent = nullptr);
+  explicit PluginTreeItem(const sys::Exchange& exchange,
+                          QObject* parent = nullptr);
+  ~PluginTreeItem() override;
 
   // ##########################################
   // get or set information about the tree item

@@ -65,7 +65,7 @@ bool ObservationProxyModel::lessThan(const QModelIndex& source_left,
 
   ObservationModel* source_model =
       dynamic_cast<ObservationModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 

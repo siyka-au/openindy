@@ -131,14 +131,14 @@ void MainWindow::activeFeatureChanged() {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -159,14 +159,14 @@ void MainWindow::activeStationChanged() {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -200,14 +200,14 @@ void MainWindow::activeCoordinateSystemChanged() {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -244,14 +244,14 @@ void MainWindow::featureNameChanged(const int& featureId,
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -282,14 +282,14 @@ void MainWindow::stationSensorChanged(const int& featureId) {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -494,14 +494,14 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -683,14 +683,14 @@ void MainWindow::on_tableView_features_clicked(const QModelIndex& index) {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -706,14 +706,14 @@ void MainWindow::on_tableView_features_doubleClicked(const QModelIndex& index) {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -759,13 +759,13 @@ void MainWindow::on_tableView_features_customContextMenuRequested(
   // get feature table models
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     delete menu;
     return;
   }
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     delete menu;
     return;
   }
@@ -931,14 +931,14 @@ void MainWindow::on_tableView_trafoParams_clicked(const QModelIndex& index) {
   // get and check model
   TrafoParamTableProxyModel* model = static_cast<TrafoParamTableProxyModel*>(
       this->ui->tableView_trafoParams->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -955,14 +955,14 @@ void MainWindow::on_tableView_trafoParams_doubleClicked(
   // get and check model
   TrafoParamTableProxyModel* model = static_cast<TrafoParamTableProxyModel*>(
       this->ui->tableView_trafoParams->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1013,13 +1013,13 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(
   // get trafo param table models
   TrafoParamTableProxyModel* model = static_cast<TrafoParamTableProxyModel*>(
       this->ui->tableView_trafoParams->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     delete menu;
     return;
   }
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     delete menu;
     return;
   }
@@ -1069,14 +1069,14 @@ void MainWindow::on_actionSet_function_triggered() {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1137,12 +1137,12 @@ void MainWindow::on_actionStationProperties_triggered() {
   // get feature table models
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1205,14 +1205,14 @@ void MainWindow::on_comboBox_groups_currentTextChanged(const QString& arg1) {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1236,14 +1236,14 @@ void MainWindow::on_comboBox_activeCoordSystem_currentTextChanged(
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1269,14 +1269,14 @@ void MainWindow::on_comboBox_actualNominal_currentTextChanged(
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1411,14 +1411,14 @@ void MainWindow::on_actionActivate_station_triggered() {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1490,14 +1490,14 @@ void MainWindow::removeObservationOfActiveFeature() {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1540,12 +1540,12 @@ void MainWindow::showFeatureProperties(bool checked) {
   // get feature table models
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1632,12 +1632,12 @@ void MainWindow::aimAndMeasureFeatures() {
   // get feature table models
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1685,8 +1685,8 @@ void MainWindow::deleteFeatures(bool checked) {
   }
 
   // init variables
-  QSortFilterProxyModel* model = NULL;
-  QItemSelectionModel* selectionModel = NULL;
+  QSortFilterProxyModel* model = nullptr;
+  QItemSelectionModel* selectionModel = nullptr;
   QModelIndexList selection;
 
   // get models depending on the current tab view
@@ -1695,7 +1695,7 @@ void MainWindow::deleteFeatures(bool checked) {
 
     model = static_cast<FeatureTableProxyModel*>(
         this->ui->tableView_features->model());
-    if (model == NULL) {
+    if (model == nullptr) {
       return;
     }
 
@@ -1707,7 +1707,7 @@ void MainWindow::deleteFeatures(bool checked) {
 
     model = static_cast<TrafoParamTableProxyModel*>(
         this->ui->tableView_trafoParams->model());
-    if (model == NULL) {
+    if (model == nullptr) {
       return;
     }
 
@@ -1718,7 +1718,7 @@ void MainWindow::deleteFeatures(bool checked) {
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -1751,8 +1751,8 @@ void MainWindow::deleteFeatures(bool checked) {
  */
 void MainWindow::copyToClipboard() {
   // init variables
-  QPointer<QAbstractItemModel> model = NULL;
-  QPointer<QItemSelectionModel> selectionModel = NULL;
+  QPointer<QAbstractItemModel> model = nullptr;
+  QPointer<QItemSelectionModel> selectionModel = nullptr;
   bool isFunctionColumnSelected = false;
   bool isMeasurementConfigColumnSelected = false;
 
@@ -1832,8 +1832,8 @@ void MainWindow::copyToClipboard() {
  */
 void MainWindow::copyDifferencesToClipboard() {
   // init variables
-  QPointer<QAbstractItemModel> model = NULL;
-  QPointer<QItemSelectionModel> selectionModel = NULL;
+  QPointer<QAbstractItemModel> model = nullptr;
+  QPointer<QItemSelectionModel> selectionModel = nullptr;
 
   model = this->ui->tableView_FeatureDifferences->model();
   selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
@@ -1852,8 +1852,8 @@ void MainWindow::pasteFromClipboard() {
   };
 
   // init variables
-  QPointer<QSortFilterProxyModel> model = NULL;
-  QPointer<QItemSelectionModel> selectionModel = NULL;
+  QPointer<QSortFilterProxyModel> model = nullptr;
+  QPointer<QItemSelectionModel> selectionModel = nullptr;
   bool isFunctionColumnSelected = false;
 
   ProxyModelType proxyModelType;
@@ -2478,31 +2478,31 @@ void MainWindow::initSensorPad() {
   this->ui->toolBar_controlPad->setVisible(false);
 
   // initialize sensor actions
-  this->actionConnect = new QAction(0);
+  this->actionConnect = new QAction(nullptr);
   this->actionConnect->setText("connect");
-  this->actionDisconnect = new QAction(0);
+  this->actionDisconnect = new QAction(nullptr);
   this->actionDisconnect->setText("disconnect");
-  this->actionInitialize = new QAction(0);
+  this->actionInitialize = new QAction(nullptr);
   this->actionInitialize->setText("initialize");
-  this->actionMeasure = new QAction(0);
+  this->actionMeasure = new QAction(nullptr);
   this->actionMeasure->setShortcut(Qt::Key_F3);
   this->actionMeasure->setText("measure (F3)");
-  this->actionAim = new QAction(0);
+  this->actionAim = new QAction(nullptr);
   this->actionAim->setShortcut(QKeySequence(Qt::ALT + Qt::Key_A));
   this->actionAim->setText("aim (ALT + A)");
-  this->actionMove = new QAction(0);
+  this->actionMove = new QAction(nullptr);
   this->actionMove->setText("move");
-  this->actionHome = new QAction(0);
+  this->actionHome = new QAction(nullptr);
   this->actionHome->setShortcut(Qt::Key_F9);
   this->actionHome->setText("home (F9)");
-  this->actionChangeMotorState = new QAction(0);
+  this->actionChangeMotorState = new QAction(nullptr);
   this->actionChangeMotorState->setText("change motor state");
-  this->actionToggleSightOrientation = new QAction(0);
+  this->actionToggleSightOrientation = new QAction(nullptr);
   this->actionToggleSightOrientation->setText("toggle sight orientation");
-  this->actionCompensation = new QAction(0);
+  this->actionCompensation = new QAction(nullptr);
   this->actionCompensation->setText("compensation");
 
-  this->actionSearch = new QAction(0);
+  this->actionSearch = new QAction(nullptr);
   this->actionSearch->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
   this->actionSearch->setText("search (Alt + S)");
 
@@ -2783,7 +2783,7 @@ void MainWindow::activeSensorTypeChanged(
                      : " " + match.captured(2));
     QString actionCommand = match.captured(1);
 
-    QPointer<QAction> customAction = new QAction(0);
+    QPointer<QAction> customAction = new QAction(nullptr);
     customAction->setShortcut(actionShortCut);
     customAction->setText(actionLabel);
     this->selfDefinedActions.append(customAction);
@@ -3070,13 +3070,13 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(
   FeatureDifferenceProxyModel* model =
       static_cast<FeatureDifferenceProxyModel*>(
           this->ui->tableView_FeatureDifferences->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     delete menu;
     return;
   }
   FeatureDifferenceTableModel* sourceModel =
       static_cast<FeatureDifferenceTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     delete menu;
     return;
   }
@@ -3120,14 +3120,14 @@ void MainWindow::enableOrDisableObservationsOfActiveFeature(bool enable) {
   // get and check model
   FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FeatureTableModel* sourceModel =
       static_cast<FeatureTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -3192,12 +3192,12 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
       {
         QSortFilterProxyModel* model = static_cast<FeatureTableProxyModel*>(
             this->ui->tableView_features->model());
-        if (model == NULL) {
+        if (model == nullptr) {
           return;
         }
         FeatureTableModel* sourceModel =
             static_cast<FeatureTableModel*>(model->sourceModel());
-        if (sourceModel == NULL) {
+        if (sourceModel == nullptr) {
           return;
         }
         QModelIndexList selection =
@@ -3263,7 +3263,7 @@ void MainWindow::updateCompleter() {
   if (!job.isNull()) {
     FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
         this->ui->tableView_features->model());
-    if (model == NULL) {
+    if (model == nullptr) {
       return;
     }
 
@@ -3320,14 +3320,14 @@ void MainWindow::showFoundFeature(int index) {
     if (!feature.isNull()) {
       FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
           this->ui->tableView_features->model());
-      if (model == NULL) {
+      if (model == nullptr) {
         return;
       }
 
       // get and check source model
       FeatureTableModel* sourceModel =
           static_cast<FeatureTableModel*>(model->sourceModel());
-      if (sourceModel == NULL) {
+      if (sourceModel == nullptr) {
         return;
       }
 
@@ -3390,14 +3390,14 @@ void MainWindow::showStatusSensor(const SensorStatus& status,
 void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index) {
   FeatureTableProxyModel* ftmodel = static_cast<FeatureTableProxyModel*>(
       this->ui->tableView_features->model());
-  if (ftmodel != NULL) {
+  if (ftmodel != nullptr) {
     ftmodel->setSortingMode((FeatureSorter::SortingMode)index);
   }
 
   FeatureDifferenceProxyModel* fdmodel =
       static_cast<FeatureDifferenceProxyModel*>(
           this->ui->tableView_FeatureDifferences->model());
-  if (fdmodel != NULL) {
+  if (fdmodel != nullptr) {
     fdmodel->setSortingMode((FeatureSorter::SortingMode)index);
   }
 }

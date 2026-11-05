@@ -36,7 +36,7 @@ void SensorConfigurationListDelegate::setEditorData(
 
   // get and check editor
   QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
-  if (customEditor == NULL) {
+  if (customEditor == nullptr) {
     return;
   }
 
@@ -62,13 +62,13 @@ void SensorConfigurationListDelegate::setModelData(
   // get and check sensor config proxy model
   const SensorConfigurationProxyModel* sensorConfigProxyModel =
       static_cast<const SensorConfigurationProxyModel*>(index.model());
-  if (sensorConfigProxyModel == NULL) {
+  if (sensorConfigProxyModel == nullptr) {
     return;
   }
 
   // get and check editor
   QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
-  if (customEditor == NULL) {
+  if (customEditor == nullptr) {
     return;
   }
 

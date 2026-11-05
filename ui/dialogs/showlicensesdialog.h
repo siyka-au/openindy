@@ -16,8 +16,8 @@ class ShowLicensesDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit ShowLicensesDialog(QWidget* parent = 0);
-  ~ShowLicensesDialog();
+  explicit ShowLicensesDialog(QWidget* parent = nullptr);
+  ~ShowLicensesDialog() override;
 
  public slots:
   void onClick(const QModelIndex&);

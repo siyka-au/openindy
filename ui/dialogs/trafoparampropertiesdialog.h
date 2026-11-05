@@ -22,8 +22,8 @@ class TrafoParamPropertiesDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit TrafoParamPropertiesDialog(QWidget* parent = 0);
-  ~TrafoParamPropertiesDialog();
+  explicit TrafoParamPropertiesDialog(QWidget* parent = nullptr);
+  ~TrafoParamPropertiesDialog() override;
 
   // ############################################################
   // get or set information about the current trafo param feature
@@ -65,7 +65,7 @@ class TrafoParamPropertiesDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initGUI();
   void initModels();

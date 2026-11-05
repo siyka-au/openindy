@@ -24,7 +24,7 @@ int ObservationModel::rowCount(const QModelIndex& parent) const {
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(NULL);
+  QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == eStationFeature &&
@@ -72,7 +72,7 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(NULL);
+  QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == eStationFeature &&
@@ -88,7 +88,7 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
   int columnIndex = index.column();
 
   // get and check observation
-  QPointer<Observation> observation(NULL);
+  QPointer<Observation> observation(nullptr);
   if (rowIndex < geometry->getObservations().size()) {
     observation = geometry->getObservations().at(rowIndex);
   }
@@ -300,7 +300,7 @@ bool ObservationModel::setData(const QModelIndex& index, const QVariant& value,
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(NULL);
+  QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == eStationFeature &&
@@ -316,7 +316,7 @@ bool ObservationModel::setData(const QModelIndex& index, const QVariant& value,
   int columnIndex = index.column();
 
   // get and check observation
-  QPointer<Observation> observation(NULL);
+  QPointer<Observation> observation(nullptr);
   if (rowIndex < geometry->getObservations().size()) {
     observation = geometry->getObservations().at(rowIndex);
   }
@@ -391,7 +391,7 @@ void ObservationModel::setParameterDisplayConfig(
  */
 QPointer<Observation> ObservationModel::getObservation(
     const QModelIndex& index) {
-  QPointer<Observation> observation(NULL);
+  QPointer<Observation> observation(nullptr);
   // check current job and model index
   if (this->currentJob.isNull() || !index.isValid()) {
     return observation;
@@ -404,7 +404,7 @@ QPointer<Observation> ObservationModel::getObservation(
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(NULL);
+  QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == eStationFeature &&

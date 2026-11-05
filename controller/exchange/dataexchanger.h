@@ -28,9 +28,9 @@ class DataExchanger : public QObject {
   Q_OBJECT
 
  public:
-  explicit DataExchanger(QObject* parent = 0);
+  explicit DataExchanger(QObject* parent = nullptr);
 
-  ~DataExchanger();
+  ~DataExchanger() override;
 
   // #############################
   // get or set general attributes

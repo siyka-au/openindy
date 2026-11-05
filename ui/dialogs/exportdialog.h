@@ -26,8 +26,8 @@ class ExportDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit ExportDialog(QWidget* parent = 0);
-  ~ExportDialog();
+  explicit ExportDialog(QWidget* parent = nullptr);
+  ~ExportDialog() override;
 
  signals:
 
@@ -45,7 +45,7 @@ class ExportDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initModels();
 

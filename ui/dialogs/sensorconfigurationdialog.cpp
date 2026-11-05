@@ -592,7 +592,7 @@ void SensorConfigurationDialog::showEvent(QShowEvent* event) {
     // select the active sensor config
     QItemSelectionModel* selectionModel =
         this->ui->listView_sensorConfigs->selectionModel();
-    if (selectionModel != NULL && index.isValid()) {
+    if (selectionModel != nullptr && index.isValid()) {
       selectionModel->select(index, QItemSelectionModel::SelectCurrent);
 
     } else {
@@ -752,7 +752,7 @@ void SensorConfigurationDialog::connectModels() {
   // connect configs list
   QItemSelectionModel* selectionModel =
       this->ui->listView_sensorConfigs->selectionModel();
-  if (selectionModel != NULL) {
+  if (selectionModel != nullptr) {
     QObject::connect(selectionModel, &QItemSelectionModel::selectionChanged,
                      this, &SensorConfigurationDialog::configSelectionChanged,
                      Qt::AutoConnection);

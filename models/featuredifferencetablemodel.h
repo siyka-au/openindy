@@ -21,22 +21,23 @@ class FeatureDifferenceTableModel : public QAbstractTableModel {
 
  public:
   explicit FeatureDifferenceTableModel(const QPointer<OiJob>& job,
-                                       QObject* parent = 0);
-  explicit FeatureDifferenceTableModel(QObject* parent = 0);
+                                       QObject* parent = nullptr);
+  explicit FeatureDifferenceTableModel(QObject* parent = nullptr);
 
   // ########################################
   // override methods of abstract table model
   // ########################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
   QVariant headerData(int section, Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const;
+                      int role = Qt::DisplayRole) const override;
 
-  Qt::ItemFlags flags(const QModelIndex& index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   // ###############################
   // get or set current OpenIndy job

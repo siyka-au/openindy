@@ -30,8 +30,8 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit CreateFeatureDialog(QWidget* parent = 0);
-  ~CreateFeatureDialog();
+  explicit CreateFeatureDialog(QWidget* parent = nullptr);
+  ~CreateFeatureDialog() override;
 
   // ###########################
   // get or set the feature type
@@ -71,7 +71,7 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initGUI();
   void initModels();

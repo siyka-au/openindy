@@ -16,7 +16,7 @@ class FunctionWeightProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit FunctionWeightProxyModel(QObject* parent = 0);
+  explicit FunctionWeightProxyModel(QObject* parent = nullptr);
 
   // ###############################
   // get or set current OpenIndy job
@@ -29,15 +29,16 @@ class FunctionWeightProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const;
-  QModelIndex mapToSource(const QModelIndex& proxyIndex) const;
+  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const override;
+  QModelIndex mapToSource(const QModelIndex& proxyIndex) const override;
 
  protected:
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
   bool lessThan(const QModelIndex& source_left,
-                const QModelIndex& source_right) const;
+                const QModelIndex& source_right) const override;
 
  private:
   QPointer<OiJob> job;

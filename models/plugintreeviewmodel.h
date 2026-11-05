@@ -18,23 +18,24 @@ class PluginTreeViewModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
-  explicit PluginTreeViewModel(QObject* parent = 0);
+  explicit PluginTreeViewModel(QObject* parent = nullptr);
 
   // #######################################
   // override methods of abstract item model
   // #######################################
 
   QModelIndex index(int row, int column,
-                    const QModelIndex& parent = QModelIndex()) const;
-  QModelIndex parent(const QModelIndex& index) const;
+                    const QModelIndex& parent = QModelIndex()) const override;
+  QModelIndex parent(const QModelIndex& index) const override;
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
   QVariant headerData(int section, Qt::Orientation orientation,
-                      int role = Qt::DisplayRole) const;
+                      int role = Qt::DisplayRole) const override;
 
   // ##################
   // get or set plugins

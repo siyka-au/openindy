@@ -27,8 +27,8 @@ class ImportNominalDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit ImportNominalDialog(QWidget* parent = 0);
-  ~ImportNominalDialog();
+  explicit ImportNominalDialog(QWidget* parent = nullptr);
+  ~ImportNominalDialog() override;
 
  signals:
 
@@ -55,7 +55,7 @@ class ImportNominalDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initModels();
 

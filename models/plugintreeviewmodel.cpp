@@ -15,16 +15,16 @@ QModelIndex PluginTreeViewModel::index(int row, int column,
                                        const QModelIndex& parent) const {
   if (!hasIndex(row, column, parent)) return QModelIndex();
 
-  PluginTreeItem* parentItem = NULL;
+  PluginTreeItem* parentItem = nullptr;
 
   if (!parent.isValid())
     parentItem = this->rootItem;
   else
     parentItem = static_cast<PluginTreeItem*>(parent.internalPointer());
 
-  if (parentItem != NULL) {
+  if (parentItem != nullptr) {
     PluginTreeItem* childItem = parentItem->getChild(row);
-    if (childItem != NULL)
+    if (childItem != nullptr)
       return createIndex(row, column, childItem);
     else
       return QModelIndex();
@@ -44,10 +44,10 @@ QModelIndex PluginTreeViewModel::parent(const QModelIndex& index) const {
   PluginTreeItem* childItem =
       static_cast<PluginTreeItem*>(index.internalPointer());
 
-  if (childItem != NULL) {
+  if (childItem != nullptr) {
     PluginTreeItem* parentItem = childItem->getParent();
 
-    if (parentItem == NULL || parentItem == this->rootItem)
+    if (parentItem == nullptr || parentItem == this->rootItem)
       return QModelIndex();
 
     return createIndex(parentItem->getIndex(), 0, parentItem);
@@ -62,14 +62,14 @@ QModelIndex PluginTreeViewModel::parent(const QModelIndex& index) const {
  * \return
  */
 int PluginTreeViewModel::rowCount(const QModelIndex& parent) const {
-  PluginTreeItem* childItem = NULL;
+  PluginTreeItem* childItem = nullptr;
 
   if (!parent.isValid()) {
     childItem = this->rootItem;
   } else {
     childItem = static_cast<PluginTreeItem*>(parent.internalPointer());
   }
-  if (childItem != NULL) {
+  if (childItem != nullptr) {
     return childItem->getChildCount();
   }
 
@@ -96,7 +96,7 @@ QVariant PluginTreeViewModel::data(const QModelIndex& index, int role) const {
 
   PluginTreeItem* item = static_cast<PluginTreeItem*>(index.internalPointer());
 
-  if (item != NULL) {
+  if (item != nullptr) {
     if (role == Qt::DisplayRole) {  // return display text for tree view item
       return item->getDisplayValue();
     } else if (role == Qt::DecorationRole) {  // return icon for tree view item

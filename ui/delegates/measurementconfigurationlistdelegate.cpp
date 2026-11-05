@@ -37,7 +37,7 @@ void MeasurementConfigurationListDelegate::setEditorData(
 
   // get and check editor
   QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
-  if (customEditor == NULL) {
+  if (customEditor == nullptr) {
     return;
   }
 
@@ -63,13 +63,13 @@ void MeasurementConfigurationListDelegate::setModelData(
   // get and check sensor config proxy model
   const MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<const MeasurementConfigurationProxyModel*>(index.model());
-  if (mConfigProxyModel == NULL) {
+  if (mConfigProxyModel == nullptr) {
     return;
   }
 
   // get and check editor
   QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
-  if (customEditor == NULL) {
+  if (customEditor == nullptr) {
     return;
   }
 

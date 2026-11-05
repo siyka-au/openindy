@@ -36,8 +36,8 @@ class SensorConfigurationDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit SensorConfigurationDialog(QWidget* parent = 0);
-  ~SensorConfigurationDialog();
+  explicit SensorConfigurationDialog(QWidget* parent = nullptr);
+  ~SensorConfigurationDialog() override;
 
  signals:
 
@@ -121,8 +121,8 @@ class SensorConfigurationDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
-  void closeEvent(QCloseEvent* event);
+  void showEvent(QShowEvent* event) override;
+  void closeEvent(QCloseEvent* event) override;
 
   void initGUI();
   void initModels();

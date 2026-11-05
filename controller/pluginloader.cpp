@@ -1,7 +1,7 @@
 #include "pluginloader.h"
 
 // initialize static variables
-QPointer<PluginLoader> PluginLoader::myInstance(NULL);
+QPointer<PluginLoader> PluginLoader::myInstance(nullptr);
 PluginCopier PluginLoader::pluginCopier;
 QThread PluginLoader::copierThread;
 
@@ -161,7 +161,7 @@ void PluginLoader::deletePlugin(const QString& name) {
  */
 QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString& path,
                                                 const QString& name) {
-  QPointer<Sensor> sensor(NULL);
+  QPointer<Sensor> sensor(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -198,7 +198,7 @@ QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString& path,
  */
 QPointer<Function> PluginLoader::loadFunctionPlugin(const QString& path,
                                                     const QString& name) {
-  QPointer<Function> function(NULL);
+  QPointer<Function> function(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -235,7 +235,7 @@ QPointer<Function> PluginLoader::loadFunctionPlugin(const QString& path,
  */
 QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(
     const QString& path, const QString& name) {
-  QPointer<SimulationModel> simulation(NULL);
+  QPointer<SimulationModel> simulation(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -272,7 +272,7 @@ QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(
  */
 QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(
     const QString& path, const QString& name) {
-  QPointer<BundleAdjustment> bundleAdjustment(NULL);
+  QPointer<BundleAdjustment> bundleAdjustment(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -315,7 +315,7 @@ QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(
  */
 QPointer<Tool> PluginLoader::loadToolPlugin(const QString& path,
                                             const QString& name) {
-  QPointer<Tool> tool(NULL);
+  QPointer<Tool> tool(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -352,7 +352,7 @@ QPointer<Tool> PluginLoader::loadToolPlugin(const QString& path,
  */
 QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(
     const QString& path, const QString& name) {
-  QPointer<ExchangeSimpleAscii> exchange(NULL);
+  QPointer<ExchangeSimpleAscii> exchange(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -389,7 +389,7 @@ QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(
  */
 QPointer<ExchangeDefinedFormat> PluginLoader::loadExchangeDefinedFormatPlugin(
     const QString& path, const QString& name) {
-  QPointer<ExchangeDefinedFormat> exchange(NULL);
+  QPointer<ExchangeDefinedFormat> exchange(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();

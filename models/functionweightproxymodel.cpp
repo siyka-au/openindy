@@ -59,7 +59,7 @@ QModelIndex FunctionWeightProxyModel::mapToSource(
   // get and cast source model
   FunctionWeightsTableModel* source_model =
       dynamic_cast<FunctionWeightsTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return QModelIndex();
   }
 
@@ -78,7 +78,7 @@ bool FunctionWeightProxyModel::filterAcceptsRow(
   // get and cast source model
   FunctionWeightsTableModel* source_model =
       dynamic_cast<FunctionWeightsTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 
@@ -135,7 +135,7 @@ bool FunctionWeightProxyModel::lessThan(const QModelIndex& source_left,
   // get and cast source model
   FunctionWeightsTableModel* source_model =
       dynamic_cast<FunctionWeightsTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 

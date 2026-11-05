@@ -18,7 +18,7 @@ QWidget* SensorAccuracyDelegate::createEditor(
     QWidget* parent, const QStyleOptionViewItem& option,
     const QModelIndex& index) const {
   // create line edit
-  QLineEdit* editor = NULL;
+  QLineEdit* editor = nullptr;
 
   // check model index
   if (!index.isValid()) {
@@ -28,7 +28,7 @@ QWidget* SensorAccuracyDelegate::createEditor(
   // get and check model
   const SensorAccuracyModel* model =
       static_cast<const SensorAccuracyModel*>(index.model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return editor;
   }
 
@@ -64,7 +64,7 @@ void SensorAccuracyDelegate::setEditorData(QWidget* editor,
   // get and check model
   const SensorAccuracyModel* model =
       static_cast<const SensorAccuracyModel*>(index.model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -79,9 +79,9 @@ void SensorAccuracyDelegate::setEditorData(QWidget* editor,
   }
 
   // set editor default input
-  QLineEdit* customEditor = NULL;
+  QLineEdit* customEditor = nullptr;
   customEditor = qobject_cast<QLineEdit*>(editor);
-  if (customEditor != NULL) {
+  if (customEditor != nullptr) {
     customEditor->setText(index.data().toString());
   }
 }
@@ -113,7 +113,7 @@ void SensorAccuracyDelegate::setModelData(QWidget* editor,
 
   // commit changes
   QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
-  if (customEditor != NULL) {
+  if (customEditor != nullptr) {
     model->setData(index, customEditor->text());
   }
 }

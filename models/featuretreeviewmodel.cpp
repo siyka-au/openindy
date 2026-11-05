@@ -25,13 +25,13 @@ FeatureTreeViewModel::FeatureTreeViewModel(QObject* parent) {
  * \return
  */
 int FeatureTreeViewModel::rowCount(const QModelIndex& parent) const {
-  FeatureTreeItem* childItem = NULL;
+  FeatureTreeItem* childItem = nullptr;
   if (!parent.isValid()) {
     childItem = rootItem;
   } else {
     childItem = static_cast<FeatureTreeItem*>(parent.internalPointer());
   }
-  if (childItem != NULL) {
+  if (childItem != nullptr) {
     return childItem->getChildCount();
   }
   return 0;
@@ -58,7 +58,7 @@ QVariant FeatureTreeViewModel::data(const QModelIndex& index, int role) const {
   FeatureTreeItem* item =
       static_cast<FeatureTreeItem*>(index.internalPointer());
 
-  if (item != NULL) {
+  if (item != nullptr) {
     if (role == Qt::DisplayRole) {  // return display text for tree view item
 
       return item->getDisplayValue();
@@ -94,16 +94,16 @@ QModelIndex FeatureTreeViewModel::index(int row, int column,
                                         const QModelIndex& parent) const {
   if (!hasIndex(row, column, parent)) return QModelIndex();
 
-  FeatureTreeItem* parentItem = NULL;
+  FeatureTreeItem* parentItem = nullptr;
 
   if (!parent.isValid())
     parentItem = rootItem;
   else
     parentItem = static_cast<FeatureTreeItem*>(parent.internalPointer());
 
-  if (parentItem != NULL) {
+  if (parentItem != nullptr) {
     FeatureTreeItem* childItem = parentItem->getChild(row);
-    if (childItem != NULL)
+    if (childItem != nullptr)
       return createIndex(row, column, childItem);
     else
       return QModelIndex();
@@ -122,9 +122,9 @@ QModelIndex FeatureTreeViewModel::parent(const QModelIndex& index) const {
 
   FeatureTreeItem* childItem =
       static_cast<FeatureTreeItem*>(index.internalPointer());
-  if (childItem != NULL) {
+  if (childItem != nullptr) {
     FeatureTreeItem* parentItem = childItem->getParent();
-    if (parentItem == NULL || parentItem == rootItem) return QModelIndex();
+    if (parentItem == nullptr || parentItem == rootItem) return QModelIndex();
     return createIndex(parentItem->getIndex(), 0, parentItem);
   } else {
     return QModelIndex();

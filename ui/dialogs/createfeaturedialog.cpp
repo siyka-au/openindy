@@ -294,7 +294,7 @@ void CreateFeatureDialog::initFunctionsModel() {
   AvailableFunctionsListModel* source_model =
       dynamic_cast<AvailableFunctionsListModel*>(
           this->functionListModel->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return;
   }
 
@@ -307,7 +307,7 @@ void CreateFeatureDialog::initMeasurementConfigModel() {
   AvailableFunctionsListModel* source_model =
       dynamic_cast<AvailableFunctionsListModel*>(
           this->functionListModel->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return;
   }
   sys::Function function = this->functionListModel->getFunctionAtIndex(

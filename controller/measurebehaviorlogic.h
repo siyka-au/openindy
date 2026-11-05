@@ -20,7 +20,7 @@
 class OI_MAIN_EXPORT MeasureBehaviorLogic : public QObject {
   Q_OBJECT
  public:
-  explicit MeasureBehaviorLogic(QObject* parent = 0);
+  explicit MeasureBehaviorLogic(QObject* parent = nullptr);
 
   void init(ControllerSensorActions* control, QList<int> measureFeatures,
             FeatureTableModel* sourceModel);

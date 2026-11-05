@@ -244,7 +244,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(
     // clear all created elements if an error occured in one of the loading
     // helpers (e.g. no station available)
     this->clearHelperMaps(true);
-    return NULL;
+    return nullptr;
   }
 
   // restore dependencies between the elements
@@ -257,7 +257,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(
     // clear all created elements if an error occured in one of the loading
     // helpers (e.g. no station available)
     this->clearHelperMaps(true);
-    return NULL;
+    return nullptr;
   }
 
   // remove station points
@@ -287,7 +287,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(
     FeatureUtil util;
     if (!util.createInitialBundleTransformation(job)) {
       this->clearHelperMaps(true);
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -964,7 +964,7 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument& project) {
         for (int j = 0; j < usedForList.size(); j++) {
           QDomElement feature = usedForList.at(j).toElement();
           if (feature.hasAttribute("ref")) {
-            QPointer<FeatureWrapper> myFeature(NULL);
+            QPointer<FeatureWrapper> myFeature(nullptr);
             if (this->myGeometries.contains(feature.attribute("ref").toInt())) {
               myFeature =
                   this->myGeometries.value(feature.attribute("ref").toInt());
@@ -1661,7 +1661,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(
       // load function plugin
       std::optional<sys::Plugin> plugin =
           PluginRepository::getByName(function.attribute("plugin"));
-      QPointer<Function> myFunction(NULL);
+      QPointer<Function> myFunction(nullptr);
       if (plugin.has_value()) {
         myFunction = PluginLoader::loadFunctionPlugin(
             plugin->filePath(), function.attribute("name"));
@@ -1934,7 +1934,7 @@ QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(
 
     std::optional<sys::Plugin> plugin =
         PluginRepository::getByName(bundle.attribute("plugin"));
-    QPointer<BundleAdjustment> myBundle(NULL);
+    QPointer<BundleAdjustment> myBundle(nullptr);
     if (plugin.has_value()) {
       myBundle = PluginLoader::loadBundleAdjustmentPlugin(
           plugin->filePath(), bundle.attribute("name"));

@@ -17,8 +17,8 @@ class OiWebSocket : public QObject {
   Q_OBJECT
 
  public:
-  explicit OiWebSocket(QObject* parent = 0);
-  ~OiWebSocket();
+  explicit OiWebSocket(QObject* parent = nullptr);
+  ~OiWebSocket() override;
 
   // ##########
   // set socket

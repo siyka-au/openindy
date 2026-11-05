@@ -86,8 +86,8 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  explicit MainWindow(QWidget* parent = 0);
-  ~MainWindow();
+  explicit MainWindow(QWidget* parent = nullptr);
+  ~MainWindow() override;
 
   void loadProjectFile(QString file);
  signals:
@@ -211,7 +211,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   // #########################
 
   // key pressed
-  void keyPressEvent(QKeyEvent* e);
+  void keyPressEvent(QKeyEvent* e) override;
 
   // create feature actions
   void on_actionCreate_point_triggered();
@@ -275,7 +275,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
 
   // close OpenIndy
   void on_actionClose_triggered();
-  void closeEvent(QCloseEvent* event);
+  void closeEvent(QCloseEvent* event) override;
 
   // show measurement config dialog
   void on_actionMeasurement_Configuration_triggered();

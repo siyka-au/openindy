@@ -16,7 +16,7 @@ class OiWebSocketStreamer : public QObject {
   Q_OBJECT
 
  public:
-  explicit OiWebSocketStreamer(QObject* parent = 0);
+  explicit OiWebSocketStreamer(QObject* parent = nullptr);
 
   // ######################
   // get or set current job

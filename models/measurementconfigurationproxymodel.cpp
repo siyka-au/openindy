@@ -90,7 +90,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(
   // get and check source model
   MeasurementConfigurationModel* sourceModel =
       static_cast<MeasurementConfigurationModel*>(this->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return false;
   }
 
@@ -168,7 +168,7 @@ bool MeasurementConfigurationProxyModel::lessThan(
     const QModelIndex& left, const QModelIndex& right) const {
   MeasurementConfigurationModel* sourceModel =
       static_cast<MeasurementConfigurationModel*>(this->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return false;
   }
   QVariant leftData = sourceModel->data(left);
@@ -182,7 +182,7 @@ QVariant MeasurementConfigurationProxyModel::data(const QModelIndex& index,
                                                   int role) const {
   MeasurementConfigurationModel* sourceModel =
       static_cast<MeasurementConfigurationModel*>(this->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return QVariant();
   }
   QVariant data = sourceModel->data(this->mapToSource(index), role);

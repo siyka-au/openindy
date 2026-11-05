@@ -46,7 +46,7 @@ bool SensorConfigurationProxyModel::filterAcceptsRow(
   // get and check source model
   SensorConfigurationModel* sourceModel =
       static_cast<SensorConfigurationModel*>(this->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return false;
   }
 

@@ -22,7 +22,7 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit AvailableElementsTreeViewProxyModel(QObject* parent = 0);
+  explicit AvailableElementsTreeViewProxyModel(QObject* parent = nullptr);
 
   // ###############################
   // get or set current OpenIndy job
@@ -50,7 +50,8 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role) const override;
 
   void filterByActualNominal(ActualNominalFilter filter);
   void filterByGroup(QString groupName);
@@ -88,9 +89,10 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
  private:
   // ##############

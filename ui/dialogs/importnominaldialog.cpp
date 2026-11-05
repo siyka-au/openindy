@@ -31,7 +31,7 @@ void ImportNominalDialog::on_comboBox_plugin_sa_currentTextChanged(
   }
 
   // delete old model and set new one
-  if (this->ui->comboBox_exchange_sa->model() != NULL) {
+  if (this->ui->comboBox_exchange_sa->model() != nullptr) {
     delete this->ui->comboBox_exchange_sa->model();
   }
   this->ui->comboBox_exchange_sa->setModel(
@@ -52,14 +52,14 @@ void ImportNominalDialog::on_comboBox_exchange_sa_currentTextChanged(
   }
 
   // delete old models and set new models for other gui elements
-  if (this->ui->comboBox_separator_sa->model() != NULL) {
+  if (this->ui->comboBox_separator_sa->model() != nullptr) {
     delete this->ui->comboBox_separator_sa->model();
   }
   this->ui->comboBox_separator_sa->setModel(
       ModelManager::getExchangeSimpleAsciiDelimiters(
           this->ui->comboBox_plugin_sa->currentText(), arg1)
           .data());
-  if (this->ui->comboBox_geometry_sa->model() != NULL) {
+  if (this->ui->comboBox_geometry_sa->model() != nullptr) {
     delete this->ui->comboBox_geometry_sa->model();
   }
   this->ui->comboBox_geometry_sa->setModel(
@@ -155,13 +155,14 @@ void ImportNominalDialog::initModels() {
 void ImportNominalDialog::on_pushButton_import_sa_clicked() {
   // check if all necessary parameters have been specified
   if (this->ui->lineEdit_file_sa->text().compare("") == 0) {
-    QMessageBox::warning(NULL, "no file", "No import file has been selected.");
+    QMessageBox::warning(nullptr, "no file",
+                         "No import file has been selected.");
     return;
   } else if (this->ui->comboBox_plugin_sa->currentText().compare("") == 0) {
-    QMessageBox::warning(NULL, "no plugin", "No plugin has been selected.");
+    QMessageBox::warning(nullptr, "no plugin", "No plugin has been selected.");
     return;
   } else if (this->ui->comboBox_exchange_sa->currentText().compare("") == 0) {
-    QMessageBox::warning(NULL, "no plugin",
+    QMessageBox::warning(nullptr, "no plugin",
                          "No exchange method has been selected.");
     return;
   }

@@ -9,7 +9,7 @@
 class BundleStationItem {
  public:
   BundleStationItem(const QString& key, const bool& value, const int& stationId,
-                    BundleStationItem* parentItem = 0);
+                    BundleStationItem* parentItem = nullptr);
   ~BundleStationItem();
 
   // ######################

@@ -26,7 +26,7 @@ class FeatureUpdater : public QObject {
   Q_OBJECT
 
  public:
-  explicit FeatureUpdater(QObject* parent = 0);
+  explicit FeatureUpdater(QObject* parent = nullptr);
 
  signals:
 

@@ -21,8 +21,8 @@ class NominalPropertiesDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit NominalPropertiesDialog(QWidget* parent = 0);
-  ~NominalPropertiesDialog();
+  explicit NominalPropertiesDialog(QWidget* parent = nullptr);
+  ~NominalPropertiesDialog() override;
 
   // ########################################################
   // get or set information about the current nominal feature
@@ -67,7 +67,7 @@ class NominalPropertiesDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initGUI();
   void initModels();

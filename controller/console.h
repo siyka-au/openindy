@@ -23,10 +23,10 @@ class Console : public QObject {
   Q_OBJECT
 
  private:
-  explicit Console(QObject* parent = 0);
+  explicit Console(QObject* parent = nullptr);
 
  public:
-  ~Console();
+  ~Console() override;
 
   static const QPointer<Console>& getInstance();
 

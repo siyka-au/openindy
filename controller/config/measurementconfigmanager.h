@@ -28,10 +28,10 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
   Q_OBJECT
 
  public:
-  explicit MeasurementConfigManager(QObject* parent = 0);
+  explicit MeasurementConfigManager(QObject* parent = nullptr);
 
   MeasurementConfigManager(const MeasurementConfigManager& copy,
-                           QObject* parent = 0);
+                           QObject* parent = nullptr);
 
   MeasurementConfigManager& operator=(const MeasurementConfigManager& copy);
 

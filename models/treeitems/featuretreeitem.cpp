@@ -306,7 +306,7 @@ QPointer<FeatureTreeItem> FeatureTreeItem::getChild(const int& index) {
   if (this->childCount > index) {
     return this->children.at(index);
   }
-  return QPointer<FeatureTreeItem>(NULL);
+  return QPointer<FeatureTreeItem>(nullptr);
 }
 
 /*!

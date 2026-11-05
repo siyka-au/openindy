@@ -17,7 +17,7 @@ class TrafoController : public QObject {
   Q_OBJECT
 
  public:
-  explicit TrafoController(QObject* parent = 0);
+  explicit TrafoController(QObject* parent = nullptr);
 
  signals:
 

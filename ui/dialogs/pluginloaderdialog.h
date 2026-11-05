@@ -22,8 +22,8 @@ class PluginLoaderDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit PluginLoaderDialog(QWidget* parent = 0);
-  ~PluginLoaderDialog();
+  explicit PluginLoaderDialog(QWidget* parent = nullptr);
+  ~PluginLoaderDialog() override;
 
  signals:
 

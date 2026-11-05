@@ -48,7 +48,7 @@ BundleGeometryItem* BundleGeometryItem::child(int row) {
   if (this->m_childItems.size() > row) {
     return this->m_childItems.value(row);
   }
-  return NULL;
+  return nullptr;
 }
 
 /*!
@@ -83,7 +83,7 @@ QVariant BundleGeometryItem::data(int column) const {
  */
 int BundleGeometryItem::row() const {
   // check parent
-  if (this->m_parentItem == NULL) {
+  if (this->m_parentItem == nullptr) {
     return 0;
   }
 

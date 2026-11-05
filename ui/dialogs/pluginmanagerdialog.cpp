@@ -395,7 +395,7 @@ void PluginManagerDialog::on_treeView_plugins_clicked(
 
   // get selected tree item
   PluginTreeItem* item = static_cast<PluginTreeItem*>(index.internalPointer());
-  if (item == NULL) {
+  if (item == nullptr) {
     return;
   }
 
@@ -406,7 +406,7 @@ void PluginManagerDialog::on_treeView_plugins_clicked(
   }
   PluginTreeItem* pluginItem =
       static_cast<PluginTreeItem*>(pluginIndex.internalPointer());
-  if (pluginItem == NULL) {
+  if (pluginItem == nullptr) {
     return;
   }
 

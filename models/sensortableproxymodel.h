@@ -21,7 +21,7 @@ class SensorTableProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit SensorTableProxyModel(QObject* parent = 0);
+  explicit SensorTableProxyModel(QObject* parent = nullptr);
 
   // ######################
   // set sensor type filter
@@ -44,9 +44,10 @@ class SensorTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
  private:
   // ###################

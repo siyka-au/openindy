@@ -33,7 +33,7 @@ class OiRequestHandler : public QObject {
   Q_OBJECT
 
  public:
-  explicit OiRequestHandler(QObject* parent = 0);
+  explicit OiRequestHandler(QObject* parent = nullptr);
 
   // ######################
   // get or set current job

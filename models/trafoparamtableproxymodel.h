@@ -17,7 +17,7 @@ class TrafoParamTableProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit TrafoParamTableProxyModel(QObject* parent = 0);
+  explicit TrafoParamTableProxyModel(QObject* parent = nullptr);
 
   // #########################
   // get or set display config
@@ -29,8 +29,8 @@ class TrafoParamTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const;
-  QModelIndex mapToSource(const QModelIndex& proxyIndex) const;
+  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const override;
+  QModelIndex mapToSource(const QModelIndex& proxyIndex) const override;
 
  signals:
 
@@ -46,9 +46,10 @@ class TrafoParamTableProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
  private:
   // ##############

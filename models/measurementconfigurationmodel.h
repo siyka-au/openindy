@@ -26,23 +26,25 @@ class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel {
   Q_OBJECT
 
  public:
-  explicit MeasurementConfigurationModel(QObject* parent = 0);
+  explicit MeasurementConfigurationModel(QObject* parent = nullptr);
 
   // #######################################
   // override methods of abstract item model
   // #######################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
-  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role) const override;
 
-  Qt::ItemFlags flags(const QModelIndex& index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   bool setData(const QModelIndex& index, const QVariant& value,
-               int role = Qt::EditRole);
+               int role = Qt::EditRole) override;
 
   // ##########################################
   // get informations about measurement configs

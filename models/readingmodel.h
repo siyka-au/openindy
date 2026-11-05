@@ -17,21 +17,22 @@ class ReadingModel : public QAbstractTableModel {
   Q_OBJECT
 
  public:
-  explicit ReadingModel(QObject* parent = 0);
+  explicit ReadingModel(QObject* parent = nullptr);
 
   // ########################################
   // override methods of abstract table model
   // ########################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
-  virtual QVariant headerData(int section, Qt::Orientation orientation,
-                              int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const override;
 
-  Qt::ItemFlags flags(const QModelIndex& index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   // ###############################
   // get or set current OpenIndy job

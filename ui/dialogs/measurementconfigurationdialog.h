@@ -45,8 +45,8 @@ class OI_MAIN_EXPORT MeasurementConfigurationDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit MeasurementConfigurationDialog(QWidget* parent = 0);
-  ~MeasurementConfigurationDialog();
+  explicit MeasurementConfigurationDialog(QWidget* parent = nullptr);
+  ~MeasurementConfigurationDialog() override;
 
   // #############################################
   // set the currently selected measurement config
@@ -121,8 +121,8 @@ class OI_MAIN_EXPORT MeasurementConfigurationDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
-  void closeEvent(QCloseEvent* event);
+  void showEvent(QShowEvent* event) override;
+  void closeEvent(QCloseEvent* event) override;
 
   void initGUI();
   void initModels();

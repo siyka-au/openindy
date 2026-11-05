@@ -22,8 +22,8 @@ class SettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit SettingsDialog(QWidget* parent = 0);
-  ~SettingsDialog();
+  explicit SettingsDialog(QWidget* parent = nullptr);
+  ~SettingsDialog() override;
 
   ParameterDisplayConfig updateDisplayConfigFromSelection();
 
@@ -46,7 +46,7 @@ class SettingsDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initGUI();
   void initModels();

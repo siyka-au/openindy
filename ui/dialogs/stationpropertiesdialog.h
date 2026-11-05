@@ -26,8 +26,8 @@ class StationPropertiesDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit StationPropertiesDialog(QWidget* parent = 0);
-  ~StationPropertiesDialog();
+  explicit StationPropertiesDialog(QWidget* parent = nullptr);
+  ~StationPropertiesDialog() override;
 
   // ##############################
   // get or set station information
@@ -69,7 +69,7 @@ class StationPropertiesDialog : public QDialog {
   void on_pushButton_sensorConfig1_clicked();
 
   // key pressed
-  void keyPressEvent(QKeyEvent* e);
+  void keyPressEvent(QKeyEvent* e) override;
 
   // sensor config changed
   void updateSensorAccuracy(const SensorConfiguration& sConfig);
@@ -82,7 +82,7 @@ class StationPropertiesDialog : public QDialog {
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 
   void initGUI();
   void initModels();

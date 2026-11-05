@@ -418,6 +418,6 @@ void UsedElementsModel::resetSelectedFunctionPosition() {
     QObject::disconnect(this->connectedFunction.data(),
                         &Function::inputElementsChanged, this,
                         &UsedElementsModel::updateModel);
-    this->connectedFunction = QPointer<Function>(NULL);
+    this->connectedFunction = QPointer<Function>(nullptr);
   }
 }

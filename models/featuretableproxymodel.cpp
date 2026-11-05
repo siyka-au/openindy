@@ -81,7 +81,7 @@ QModelIndex FeatureTableProxyModel::mapToSource(
   // get and cast source model
   FeatureTableModel* source_model =
       dynamic_cast<FeatureTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return QModelIndex();
   }
 
@@ -115,7 +115,7 @@ bool FeatureTableProxyModel::filterAcceptsRow(
   // get and cast source model
   FeatureTableModel* source_model =
       dynamic_cast<FeatureTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 
@@ -199,7 +199,7 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex& left,
   // get and cast source model
   FeatureTableModel* source_model =
       dynamic_cast<FeatureTableModel*>(this->sourceModel());
-  if (source_model == NULL || source_model->getCurrentJob().isNull()) {
+  if (source_model == nullptr || source_model->getCurrentJob().isNull()) {
     return false;
   }
 

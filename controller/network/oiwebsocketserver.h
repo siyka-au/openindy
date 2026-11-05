@@ -18,8 +18,8 @@ class OiWebSocketServer : public QWebSocketServer {
   Q_OBJECT
 
  public:
-  explicit OiWebSocketServer(QObject* parent = 0);
-  ~OiWebSocketServer();
+  explicit OiWebSocketServer(QObject* parent = nullptr);
+  ~OiWebSocketServer() override;
 
   static int generateUniqueId();
 

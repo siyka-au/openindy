@@ -17,7 +17,7 @@ class FeatureDifferenceProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit FeatureDifferenceProxyModel(QObject* parent = 0);
+  explicit FeatureDifferenceProxyModel(QObject* parent = nullptr);
 
   // ###############################
   // get or set current OpenIndy job
@@ -38,11 +38,13 @@ class FeatureDifferenceProxyModel : public QSortFilterProxyModel {
                    const MessageDestinations& msgDest = eConsoleMessage);
 
  protected:
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
-  bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
+  bool lessThan(const QModelIndex& left,
+                const QModelIndex& right) const override;
 
  private:
   // ###########

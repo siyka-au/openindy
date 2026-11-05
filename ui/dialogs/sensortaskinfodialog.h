@@ -16,9 +16,9 @@ class SensorTaskInfoDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit SensorTaskInfoDialog(QWidget* parent = 0);
+  explicit SensorTaskInfoDialog(QWidget* parent = nullptr);
 
-  ~SensorTaskInfoDialog();
+  ~SensorTaskInfoDialog() override;
 
   // ################
   // set display text

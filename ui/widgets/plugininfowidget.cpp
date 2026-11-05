@@ -2,11 +2,11 @@
 
 PluginInfoWidget::PluginInfoWidget(QWidget* parent)
     : QWidget(parent),
-      myLayout(NULL),
-      label_description(NULL),
-      txt_description(NULL),
-      layout_applicableFor(NULL),
-      layout_neededElements(NULL) {
+      myLayout(nullptr),
+      label_description(nullptr),
+      txt_description(nullptr),
+      layout_applicableFor(nullptr),
+      layout_neededElements(nullptr) {
   this->initGUI();
 }
 

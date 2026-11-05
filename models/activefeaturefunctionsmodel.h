@@ -23,23 +23,25 @@ class ActiveFeatureFunctionsModel : public QAbstractItemModel {
 
  public:
   explicit ActiveFeatureFunctionsModel(QPointer<OiJob> job,
-                                       QObject* parent = 0);
-  explicit ActiveFeatureFunctionsModel(QObject* parent = 0);
+                                       QObject* parent = nullptr);
+  explicit ActiveFeatureFunctionsModel(QObject* parent = nullptr);
 
   // #######################################
   // override methods of abstract item model
   // #######################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
   QModelIndex index(int row, int column,
-                    const QModelIndex& parent = QModelIndex()) const;
-  QModelIndex parent(const QModelIndex& index) const;
+                    const QModelIndex& parent = QModelIndex()) const override;
+  QModelIndex parent(const QModelIndex& index) const override;
 
-  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role) const override;
 
   // ###############################
   // get or set function information

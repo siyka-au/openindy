@@ -19,7 +19,7 @@ SensorParametersDelegate::SensorParametersDelegate(QObject* parent)
 QWidget* SensorParametersDelegate::createEditor(
     QWidget* parent, const QStyleOptionViewItem& option,
     const QModelIndex& index) const {
-  QWidget* editor = NULL;
+  QWidget* editor = nullptr;
 
   // check model index
   if (!index.isValid()) {
@@ -29,7 +29,7 @@ QWidget* SensorParametersDelegate::createEditor(
   // get and check model
   const SensorParametersModel* model =
       static_cast<const SensorParametersModel*>(index.model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return editor;
   }
 
@@ -79,7 +79,7 @@ void SensorParametersDelegate::setEditorData(QWidget* editor,
   // get and check model
   const SensorParametersModel* model =
       static_cast<const SensorParametersModel*>(index.model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -92,27 +92,27 @@ void SensorParametersDelegate::setEditorData(QWidget* editor,
 
   // set editor default input
   if (rowIndex < sConfig.getStringParameter().keys().size()) {
-    QComboBox* customEditor = NULL;
+    QComboBox* customEditor = nullptr;
     customEditor = qobject_cast<QComboBox*>(editor);
-    if (customEditor != NULL) {
+    if (customEditor != nullptr) {
       customEditor->setCurrentText(index.data().toString());
     }
 
   } else if (rowIndex < sConfig.getDoubleParameter().size() +
                             sConfig.getStringParameter().keys().size()) {
     rowIndex = rowIndex - sConfig.getStringParameter().keys().size();
-    QLineEdit* customEditor = NULL;
+    QLineEdit* customEditor = nullptr;
     customEditor = qobject_cast<QLineEdit*>(editor);
-    if (customEditor != NULL) {
+    if (customEditor != nullptr) {
       customEditor->setText(index.data().toString());
     }
 
   } else {
     rowIndex = rowIndex - sConfig.getStringParameter().keys().size() -
                sConfig.getDoubleParameter().size();
-    QLineEdit* customEditor = NULL;
+    QLineEdit* customEditor = nullptr;
     customEditor = qobject_cast<QLineEdit*>(editor);
-    if (customEditor != NULL) {
+    if (customEditor != nullptr) {
       customEditor->setText(index.data().toString());
     }
   }
@@ -136,7 +136,7 @@ void SensorParametersDelegate::setModelData(QWidget* editor,
   // get and check model
   const SensorParametersModel* sensorParamModel =
       static_cast<const SensorParametersModel*>(index.model());
-  if (sensorParamModel == NULL) {
+  if (sensorParamModel == nullptr) {
     return;
   }
 
@@ -151,7 +151,7 @@ void SensorParametersDelegate::setModelData(QWidget* editor,
   // commit changes
   if (rowIndex < sConfig.getStringParameter().keys().size()) {
     QComboBox* customEditor = qobject_cast<QComboBox*>(editor);
-    if (customEditor != NULL) {
+    if (customEditor != nullptr) {
       model->setData(index, customEditor->currentText());
     }
 
@@ -159,7 +159,7 @@ void SensorParametersDelegate::setModelData(QWidget* editor,
                             sConfig.getStringParameter().keys().size()) {
     rowIndex = rowIndex - sConfig.getStringParameter().keys().size();
     QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
-    if (customEditor != NULL) {
+    if (customEditor != nullptr) {
       model->setData(index, customEditor->text());
     }
 
@@ -167,7 +167,7 @@ void SensorParametersDelegate::setModelData(QWidget* editor,
     rowIndex = rowIndex - sConfig.getStringParameter().keys().size() -
                sConfig.getDoubleParameter().size();
     QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
-    if (customEditor != NULL) {
+    if (customEditor != nullptr) {
       model->setData(index, customEditor->text());
     }
   }

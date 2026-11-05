@@ -28,7 +28,7 @@ class OI_MAIN_EXPORT AvailableFunctionsListProxyModel
   Q_OBJECT
 
  public:
-  explicit AvailableFunctionsListProxyModel(QObject* parent = 0);
+  explicit AvailableFunctionsListProxyModel(QObject* parent = nullptr);
 
   // ######################
   // filter by feature type
@@ -56,9 +56,10 @@ class OI_MAIN_EXPORT AvailableFunctionsListProxyModel
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
  private:
   // #################

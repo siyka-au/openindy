@@ -21,21 +21,22 @@ class FeatureTreeViewModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
-  explicit FeatureTreeViewModel(QPointer<OiJob> job, QObject* parent = 0);
-  explicit FeatureTreeViewModel(QObject* parent = 0);
+  explicit FeatureTreeViewModel(QPointer<OiJob> job, QObject* parent = nullptr);
+  explicit FeatureTreeViewModel(QObject* parent = nullptr);
 
   // #######################################
   // override methods of abstract item model
   // #######################################
 
-  int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index,
+                int role = Qt::DisplayRole) const override;
 
   QModelIndex index(int row, int column,
-                    const QModelIndex& parent = QModelIndex()) const;
-  QModelIndex parent(const QModelIndex& index) const;
+                    const QModelIndex& parent = QModelIndex()) const override;
+  QModelIndex parent(const QModelIndex& index) const override;
 
   // ###############################
   // get or set current OpenIndy job

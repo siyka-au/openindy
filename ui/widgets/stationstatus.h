@@ -11,8 +11,8 @@ class StationStatus : public QWidget {
   Q_OBJECT
 
  public:
-  explicit StationStatus(QWidget* parent = 0);
-  ~StationStatus();
+  explicit StationStatus(QWidget* parent = nullptr);
+  ~StationStatus() override;
 
   void setName(QString name);
   void setTemperature(QString temperature);

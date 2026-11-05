@@ -68,7 +68,7 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   Q_OBJECT
 
  private:
-  explicit ModelManager(QObject* parent = 0);
+  explicit ModelManager(QObject* parent = nullptr);
 
  signals:
 
@@ -237,20 +237,20 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
 
   // sensor models
   static QPointer<SensorConfigurationModel> getSensorConfigurationModel(
-      QObject* parent = NULL);
+      QObject* parent = nullptr);
   static QPointer<SensorConfigurationProxyModel>
   getSensorConfigurationProxyModel(
       QPointer<SensorConfigurationModel> sourceModel);
   static QPointer<SensorAccuracyModel> getSensorAccuracyModel(
-      QObject* parent = NULL);
+      QObject* parent = nullptr);
   static QPointer<SensorParametersModel> getSensorParametersModel(
-      QObject* parent = NULL);
+      QObject* parent = nullptr);
 
   // bundle models
   static QPointer<BundleStationsModel> getBundleStationsModel(
-      QObject* parent = NULL);
+      QObject* parent = nullptr);
   static QPointer<BundleGeometriesModel> getBundleGeometriesModel(
-      QObject* parent = NULL);
+      QObject* parent = nullptr);
 
  private slots:
 

@@ -18,7 +18,7 @@ QWidget* ReadingTableDelegate::createEditor(QWidget* parent,
                                             const QStyleOptionViewItem& option,
                                             const QModelIndex& index) const {
   // create line edit
-  QLineEdit* editor = NULL;
+  QLineEdit* editor = nullptr;
 
   return editor;
 }

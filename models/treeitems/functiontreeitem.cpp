@@ -55,7 +55,7 @@ QPointer<FunctionTreeItem> FunctionTreeItem::getChild(const int& index) {
   if (this->childCount > index) {
     return this->children.at(index);
   }
-  return QPointer<FunctionTreeItem>(NULL);
+  return QPointer<FunctionTreeItem>(nullptr);
 }
 
 /*!

@@ -153,7 +153,7 @@ bool BundleStationsModel::setData(const QModelIndex& index,
   if (columnIndex == 1) {
     // set used state of item
     bool isUsed = value.toBool();
-    if (isUsed == true && item->parentItem() != NULL &&
+    if (isUsed == true && item->parentItem() != nullptr &&
         item->parentItem() != this->rootItem &&
         item->parentItem()->getValue() == false) {
       return false;
@@ -488,7 +488,7 @@ void BundleStationsModel::updateJson() {
     inputStation.insert("used", station->getValue());
     for (int j = 0; j < station->childCount(); j++) {
       BundleStationItem* item = station->child(j);
-      if (item != NULL) {
+      if (item != nullptr) {
         inputStation.insert(item->getKey(), item->getValue());
       }
     }

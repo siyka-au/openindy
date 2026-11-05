@@ -78,8 +78,8 @@ class WatchWindowDialog : public QDialog {
  public:
   explicit WatchWindowDialog(WatchWindowBehavior behavior, QPointer<OiJob> job,
                              QList<QPointer<FeatureWrapper> > features,
-                             QWidget* parent = 0);
-  ~WatchWindowDialog();
+                             QWidget* parent = nullptr);
+  ~WatchWindowDialog() override;
 
  signals:
 
@@ -127,15 +127,15 @@ class WatchWindowDialog : public QDialog {
 
   void on_checkBox_showLastMeasurement_clicked();
 
-  void keyPressEvent(QKeyEvent* e);
+  void keyPressEvent(QKeyEvent* e) override;
 
  private:
   // ##################################
   // methods to initialize GUI elements
   // ##################################
 
-  void showEvent(QShowEvent* event);
-  void closeEvent(QCloseEvent* event);
+  void showEvent(QShowEvent* event) override;
+  void closeEvent(QCloseEvent* event) override;
 
   void initGUI();
 

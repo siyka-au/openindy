@@ -87,7 +87,7 @@ void MeasurementConfigurationDialog::on_listView_configs_clicked(
   MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<MeasurementConfigurationProxyModel*>(
           currentListView()->model());
-  if (mConfigProxyModel == NULL) {
+  if (mConfigProxyModel == nullptr) {
     return;
   }
 
@@ -95,7 +95,7 @@ void MeasurementConfigurationDialog::on_listView_configs_clicked(
   MeasurementConfigurationModel* mConfigModel =
       static_cast<MeasurementConfigurationModel*>(
           mConfigProxyModel->sourceModel());
-  if (mConfigModel == NULL) {
+  if (mConfigModel == nullptr) {
     return;
   }
 
@@ -128,7 +128,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(
   MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<MeasurementConfigurationProxyModel*>(
           currentListView()->model());
-  if (mConfigProxyModel == NULL) {
+  if (mConfigProxyModel == nullptr) {
     return;
   }
 
@@ -136,7 +136,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(
   MeasurementConfigurationModel* mConfigModel =
       static_cast<MeasurementConfigurationModel*>(
           mConfigProxyModel->sourceModel());
-  if (mConfigModel == NULL) {
+  if (mConfigModel == nullptr) {
     return;
   }
 
@@ -192,7 +192,7 @@ void MeasurementConfigurationDialog::removeSelectedMeasurementConfig() {
   MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<MeasurementConfigurationProxyModel*>(
           currentListView()->model());
-  if (mConfigProxyModel == NULL) {
+  if (mConfigProxyModel == nullptr) {
     return;
   }
 
@@ -200,7 +200,7 @@ void MeasurementConfigurationDialog::removeSelectedMeasurementConfig() {
   MeasurementConfigurationModel* mConfigModel =
       static_cast<MeasurementConfigurationModel*>(
           mConfigProxyModel->sourceModel());
-  if (mConfigModel == NULL) {
+  if (mConfigModel == nullptr) {
     return;
   }
 
@@ -233,7 +233,7 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig() {
   MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<MeasurementConfigurationProxyModel*>(
           currentListView()->model());
-  if (mConfigProxyModel == NULL) {
+  if (mConfigProxyModel == nullptr) {
     return;
   }
 
@@ -241,7 +241,7 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig() {
   MeasurementConfigurationModel* mConfigModel =
       static_cast<MeasurementConfigurationModel*>(
           mConfigProxyModel->sourceModel());
-  if (mConfigModel == NULL) {
+  if (mConfigModel == nullptr) {
     return;
   }
 
@@ -267,7 +267,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked() {
   MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<MeasurementConfigurationProxyModel*>(
           currentListView()->model());
-  if (mConfigProxyModel == NULL) {
+  if (mConfigProxyModel == nullptr) {
     return;
   }
 
@@ -275,7 +275,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked() {
   MeasurementConfigurationModel* mConfigModel =
       static_cast<MeasurementConfigurationModel*>(
           mConfigProxyModel->sourceModel());
-  if (mConfigModel == NULL) {
+  if (mConfigModel == nullptr) {
     return;
   }
 
@@ -442,7 +442,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection() {
   MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<MeasurementConfigurationProxyModel*>(
           currentListView()->model());
-  if (mConfigProxyModel == NULL) {
+  if (mConfigProxyModel == nullptr) {
     return;
   }
 
@@ -450,7 +450,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection() {
   MeasurementConfigurationModel* mConfigModel =
       static_cast<MeasurementConfigurationModel*>(
           mConfigProxyModel->sourceModel());
-  if (mConfigModel == NULL) {
+  if (mConfigModel == nullptr) {
     return;
   }
 
@@ -510,7 +510,7 @@ void MeasurementConfigurationDialog::showEvent(QShowEvent* event) {
   MeasurementConfigurationProxyModel* mConfigProxyModel =
       static_cast<MeasurementConfigurationProxyModel*>(
           currentListView()->model());
-  if (mConfigProxyModel != NULL) {
+  if (mConfigProxyModel != nullptr) {
     mConfigProxyModel->resetFilter();
   }
 

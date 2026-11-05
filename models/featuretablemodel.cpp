@@ -751,7 +751,7 @@ QPointer<Function> FeatureTableModel::loadFunctionByName(QString name) {
   // correctly in the metadata of the functions (It is a bug!!), thats why this
   // workaraound is needed
   //*******************************************************
-  QPointer<Function> function(NULL);
+  QPointer<Function> function(nullptr);
 
   foreach (const sys::Function& f, PluginRepository::getAllFunctions()) {
     if (f.name() == name) {
@@ -807,7 +807,7 @@ int FeatureTableModel::getFeatureIdAtIndex(const QModelIndex& index) {
 QPointer<FeatureWrapper> FeatureTableModel::getActiveFeature() const {
   // check current job
   if (this->currentJob.isNull()) {
-    return QPointer<FeatureWrapper>(NULL);
+    return QPointer<FeatureWrapper>(nullptr);
   }
 
   return this->currentJob->getActiveFeature();
@@ -876,7 +876,7 @@ void FeatureTableModel::setActiveFeature(const int& id) {
 QPointer<Station> FeatureTableModel::getActiveStation() const {
   // check current job
   if (this->currentJob.isNull()) {
-    return QPointer<Station>(NULL);
+    return QPointer<Station>(nullptr);
   }
 
   return this->currentJob->getActiveStation();
@@ -943,7 +943,7 @@ QPointer<CoordinateSystem> FeatureTableModel::getActiveCoordinateSystem()
     const {
   // check current job
   if (this->currentJob.isNull()) {
-    return QPointer<CoordinateSystem>(NULL);
+    return QPointer<CoordinateSystem>(nullptr);
   }
 
   return this->currentJob->getActiveCoordinateSystem();
@@ -968,7 +968,7 @@ void FeatureTableModel::setActiveCoordinateSystem(const QString& name) {
   QPointer<FeatureWrapper> feature = features.at(0);
 
   // get and check coordinate system
-  QPointer<CoordinateSystem> system(NULL);
+  QPointer<CoordinateSystem> system(nullptr);
   if (!feature->getStation().isNull() && !feature->getStation()
                                               ->getCoordinateSystem()
                                               .isNull()) {  // station system

@@ -14,7 +14,7 @@ QWidget* TrafoParamDelegate::createEditor(QWidget* parent,
                                           const QStyleOptionViewItem& option,
                                           const QModelIndex& index) const {
   // create editor
-  QWidget* editor = NULL;
+  QWidget* editor = nullptr;
 
   // check model index
   if (!index.isValid()) {
@@ -24,7 +24,7 @@ QWidget* TrafoParamDelegate::createEditor(QWidget* parent,
   // get and check models
   const TrafoParamTableProxyModel* model =
       static_cast<const TrafoParamTableProxyModel*>(index.model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return editor;
   }
 
@@ -84,7 +84,7 @@ void TrafoParamDelegate::setEditorData(QWidget* editor,
   // get and check models
   const TrafoParamTableProxyModel* model =
       static_cast<const TrafoParamTableProxyModel*>(index.model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -146,7 +146,7 @@ void TrafoParamDelegate::setModelData(QWidget* editor,
   // get and check models
   const TrafoParamTableProxyModel* trafoModel =
       static_cast<const TrafoParamTableProxyModel*>(index.model());
-  if (trafoModel == NULL) {
+  if (trafoModel == nullptr) {
     return;
   }
 

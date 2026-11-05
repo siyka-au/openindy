@@ -17,7 +17,7 @@ FunctionWeightDelegate::FunctionWeightDelegate(QObject* parent)
 QWidget* FunctionWeightDelegate::createEditor(
     QWidget* parent, const QStyleOptionViewItem& option,
     const QModelIndex& index) const {
-  return NULL;
+  return nullptr;
 }
 
 /*!

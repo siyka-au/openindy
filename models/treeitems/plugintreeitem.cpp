@@ -323,7 +323,7 @@ QPointer<PluginTreeItem> PluginTreeItem::getChild(const int& index) {
   if (this->childCount > index) {
     return this->children.at(index);
   }
-  return QPointer<PluginTreeItem>(NULL);
+  return QPointer<PluginTreeItem>(nullptr);
 }
 
 /*!

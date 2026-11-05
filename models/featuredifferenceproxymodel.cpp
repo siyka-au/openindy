@@ -39,7 +39,7 @@ bool FeatureDifferenceProxyModel::filterAcceptsRow(
   // get and cast source model
   FeatureDifferenceTableModel* source_model =
       dynamic_cast<FeatureDifferenceTableModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
   // check if job is set
@@ -111,7 +111,7 @@ bool FeatureDifferenceProxyModel::lessThan(const QModelIndex& left,
   // get and cast source model
   FeatureDifferenceTableModel* source_model =
       dynamic_cast<FeatureDifferenceTableModel*>(this->sourceModel());
-  if (source_model == NULL || source_model->getCurrentJob().isNull()) {
+  if (source_model == nullptr || source_model->getCurrentJob().isNull()) {
     return false;
   }
 

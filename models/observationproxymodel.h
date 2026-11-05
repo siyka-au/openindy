@@ -17,7 +17,7 @@ class ObservationProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit ObservationProxyModel(QObject* parent = 0);
+  explicit ObservationProxyModel(QObject* parent = nullptr);
 
   // #########################
   // get or set display config
@@ -41,11 +41,12 @@ class ObservationProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
   bool lessThan(const QModelIndex& source_left,
-                const QModelIndex& source_right) const;
+                const QModelIndex& source_right) const override;
 
  private:
   // ##############

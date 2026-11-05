@@ -19,7 +19,7 @@ class SensorConfigurationProxyModel : public QSortFilterProxyModel {
   Q_OBJECT
 
  public:
-  explicit SensorConfigurationProxyModel(QObject* parent = 0);
+  explicit SensorConfigurationProxyModel(QObject* parent = nullptr);
 
   // ##########
   // set filter
@@ -31,7 +31,8 @@ class SensorConfigurationProxyModel : public QSortFilterProxyModel {
   // override methods of sort filter proxy model
   // ###########################################
 
-  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role) const override;
 
  signals:
 
@@ -43,9 +44,10 @@ class SensorConfigurationProxyModel : public QSortFilterProxyModel {
                    const MessageDestinations& msgDest = eConsoleMessage);
 
  protected:
-  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsRow(int source_row,
+                        const QModelIndex& source_parent) const override;
   bool filterAcceptsColumn(int source_column,
-                           const QModelIndex& source_parent) const;
+                           const QModelIndex& source_parent) const override;
 
  private:
   // ################

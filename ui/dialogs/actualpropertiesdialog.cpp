@@ -84,14 +84,14 @@ void ActualPropertiesDialog::
   // get observation table models
   ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
       this->ui->tableView_observation->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     delete menu;
     return;
   }
 
   ObservationModel* sourceModel =
       static_cast<ObservationModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     delete menu;
     return;
   }
@@ -147,8 +147,8 @@ void ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged(
  */
 void ActualPropertiesDialog::copyToClipboard() {
   // init variables
-  QPointer<QAbstractItemModel> model = NULL;
-  QPointer<QItemSelectionModel> selectionModel = NULL;
+  QPointer<QAbstractItemModel> model = nullptr;
+  QPointer<QItemSelectionModel> selectionModel = nullptr;
 
   // get selection of the active table view
   if (this->ui->tabWidget_selectedFeature->currentWidget() ==
@@ -238,7 +238,7 @@ QModelIndexList ActualPropertiesDialog::getSelection() {
 
   model = static_cast<ObservationProxyModel*>(
       this->ui->tableView_observation->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return selection;
   }
 
@@ -248,7 +248,7 @@ QModelIndexList ActualPropertiesDialog::getSelection() {
   // get and check source model
   ObservationModel* sourceModel =
       static_cast<ObservationModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return selection;
   }
 
@@ -281,14 +281,14 @@ void ActualPropertiesDialog::
   // get observation table models
   ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
       this->ui->tableView_observation->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     delete menu;
     return;
   }
 
   ObservationModel* sourceModel =
       static_cast<ObservationModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     delete menu;
     return;
   }
@@ -315,7 +315,7 @@ void ActualPropertiesDialog::useObservations(bool use) {
   if (selection.size() > 0) {
     ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
         this->ui->tableView_observation->model());
-    if (model == NULL) {
+    if (model == nullptr) {
       return;
     }
     QModelIndexList s;
@@ -340,7 +340,7 @@ void ActualPropertiesDialog::deleteObservations() {
     QList<int> selectedIds;
     ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
         this->ui->tableView_observation->model());
-    if (model == NULL) {
+    if (model == nullptr) {
       return;
     }
     foreach (QModelIndex idx, selection) {

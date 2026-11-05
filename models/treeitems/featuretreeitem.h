@@ -21,14 +21,14 @@ class FeatureTreeItem : public QObject {
   Q_OBJECT
 
  public:
-  explicit FeatureTreeItem(const QVariant& display, QObject* parent = 0);
+  explicit FeatureTreeItem(const QVariant& display, QObject* parent = nullptr);
   explicit FeatureTreeItem(const QPointer<FeatureWrapper>& feature,
-                           QObject* parent = 0);
+                           QObject* parent = nullptr);
   explicit FeatureTreeItem(const QPointer<Observation>& observation,
-                           QObject* parent = 0);
+                           QObject* parent = nullptr);
   explicit FeatureTreeItem(const QPointer<Reading>& reading,
-                           QObject* parent = 0);
-  ~FeatureTreeItem();
+                           QObject* parent = nullptr);
+  ~FeatureTreeItem() override;
 
   // ##########################################
   // get or set information about the tree item

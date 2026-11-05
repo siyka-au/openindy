@@ -24,7 +24,7 @@ using namespace oi::math;
 class FakeFit : public FitFunction, public Producer<Point> {
   Q_OBJECT
  public:
-  FakeFit(QObject* parent = 0) : FitFunction(parent) {
+  FakeFit(QObject* parent = nullptr) : FitFunction(parent) {
     this->metaData.name = "FakeFit";
   }
   std::expected<Point, QString> exec() override { return Point(); }

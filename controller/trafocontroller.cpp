@@ -332,5 +332,5 @@ QPointer<TrafoParam> TrafoController::findTransformation(
     }
   }
 
-  return QPointer<TrafoParam>(NULL);
+  return QPointer<TrafoParam>(nullptr);
 }

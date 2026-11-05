@@ -60,13 +60,14 @@ void ExportDialog::initModels() {
 void ExportDialog::on_pushButton_export_clicked() {
   // check if all necessary parameters have been specified
   if (this->ui->lineEdit_choosePath->text().compare("") == 0) {
-    QMessageBox::warning(NULL, "no file", "No export file has been selected.");
+    QMessageBox::warning(nullptr, "no file",
+                         "No export file has been selected.");
     return;
   } else if (this->ui->comboBox_plugin->currentText().compare("") == 0) {
-    QMessageBox::warning(NULL, "no plugin", "No plugin has been selected.");
+    QMessageBox::warning(nullptr, "no plugin", "No plugin has been selected.");
     return;
   } else if (this->ui->comboBox_method->currentText().compare("") == 0) {
-    QMessageBox::warning(NULL, "no plugin",
+    QMessageBox::warning(nullptr, "no plugin",
                          "No exchange method has been selected.");
     return;
   }
@@ -115,7 +116,7 @@ void ExportDialog::on_comboBox_plugin_currentTextChanged(const QString& arg1) {
     this->ui->comboBox_method->clear();
   }
   // delete old model and set new one
-  if (this->ui->comboBox_method->model() != NULL) {
+  if (this->ui->comboBox_method->model() != nullptr) {
     delete this->ui->comboBox_method->model();
   }
   this->ui->comboBox_method->setModel(

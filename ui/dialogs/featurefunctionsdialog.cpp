@@ -42,7 +42,7 @@ void FeatureFunctionsDialog::scalarParameterChanged() {
   ActiveFeatureFunctionsModel* model =
       static_cast<ActiveFeatureFunctionsModel*>(
           this->ui->treeView_functions->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -64,14 +64,14 @@ void FeatureFunctionsDialog::on_tableView_functionPlugins_clicked(
   // get and check model
   FunctionTableProxyModel* model = static_cast<FunctionTableProxyModel*>(
       this->ui->tableView_functionPlugins->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
   // get and check source model
   FunctionTableModel* sourceModel =
       static_cast<FunctionTableModel*>(model->sourceModel());
-  if (sourceModel == NULL) {
+  if (sourceModel == nullptr) {
     return;
   }
 
@@ -91,7 +91,7 @@ void FeatureFunctionsDialog::on_tableView_functionPlugins_doubleClicked(
   // get and check model
   FunctionTableProxyModel* model = static_cast<FunctionTableProxyModel*>(
       this->ui->tableView_functionPlugins->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -157,7 +157,7 @@ void FeatureFunctionsDialog::on_treeView_availableElements_clicked(
   AvailableElementsTreeViewProxyModel* model =
       static_cast<AvailableElementsTreeViewProxyModel*>(
           this->ui->treeView_availableElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -189,7 +189,7 @@ void FeatureFunctionsDialog::on_treeView_availableElements_entered(
   AvailableElementsTreeViewProxyModel* model =
       static_cast<AvailableElementsTreeViewProxyModel*>(
           this->ui->treeView_availableElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -227,7 +227,7 @@ void FeatureFunctionsDialog::on_treeView_usedElements_clicked(
   // get and check used elements proxy model
   UsedElementsModel* model =
       static_cast<UsedElementsModel*>(this->ui->treeView_usedElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -252,7 +252,7 @@ void FeatureFunctionsDialog::on_treeView_usedElements_entered(
   // get and check used elements proxy model
   UsedElementsModel* model =
       static_cast<UsedElementsModel*>(this->ui->treeView_usedElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -283,7 +283,7 @@ void FeatureFunctionsDialog::on_cmd_addElement_clicked() {
   AvailableElementsTreeViewProxyModel* model =
       static_cast<AvailableElementsTreeViewProxyModel*>(
           this->ui->treeView_availableElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -312,7 +312,7 @@ void FeatureFunctionsDialog::on_cmd_removeElement_clicked() {
   // get and check used elements model
   UsedElementsModel* model =
       static_cast<UsedElementsModel*>(this->ui->treeView_usedElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -349,7 +349,7 @@ void FeatureFunctionsDialog::activeFeatureFunctionsContextMenuRequested(
   ActiveFeatureFunctionsModel* model =
       static_cast<ActiveFeatureFunctionsModel*>(
           this->ui->treeView_functions->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -388,7 +388,7 @@ void FeatureFunctionsDialog::removeSelectedFunction() {
   ActiveFeatureFunctionsModel* model =
       static_cast<ActiveFeatureFunctionsModel*>(
           this->ui->treeView_functions->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -517,7 +517,7 @@ void FeatureFunctionsDialog::setFunctionParameters(const QModelIndex& index) {
   ActiveFeatureFunctionsModel* actFeatModel =
       static_cast<ActiveFeatureFunctionsModel*>(
           this->ui->treeView_functions->model());
-  if (actFeatModel == NULL) {
+  if (actFeatModel == nullptr) {
     return;
   }
 
@@ -549,7 +549,7 @@ void FeatureFunctionsDialog::setFunctionElements(const QModelIndex& index) {
   ActiveFeatureFunctionsModel* model =
       static_cast<ActiveFeatureFunctionsModel*>(
           this->ui->treeView_functions->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -559,7 +559,7 @@ void FeatureFunctionsDialog::setFunctionElements(const QModelIndex& index) {
           this->ui->treeView_availableElements->model());
   UsedElementsModel* usedElementsModel =
       static_cast<UsedElementsModel*>(this->ui->treeView_usedElements->model());
-  if (availableElementsModel != NULL || usedElementsModel != NULL) {
+  if (availableElementsModel != nullptr || usedElementsModel != nullptr) {
     availableElementsModel->setSelectedFunctionPosition(index.parent().row(),
                                                         index.row());
     usedElementsModel->setSelectedFunctionPosition(index.parent().row(),
@@ -604,7 +604,7 @@ bool FeatureFunctionsDialog::checkSupportsWeights() {
   ActiveFeatureFunctionsModel* model =
       static_cast<ActiveFeatureFunctionsModel*>(
           this->ui->treeView_functions->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return false;
   }
 
@@ -616,7 +616,7 @@ void FeatureFunctionsDialog::on_comboBox_features_currentIndexChanged(
   AvailableElementsTreeViewProxyModel* model =
       static_cast<AvailableElementsTreeViewProxyModel*>(
           this->ui->treeView_availableElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
   model->filterByActualNominal((ActualNominalFilter)index);
@@ -626,7 +626,7 @@ void FeatureFunctionsDialog::on_comboBox_groups_currentIndexChanged(int index) {
   AvailableElementsTreeViewProxyModel* model =
       static_cast<AvailableElementsTreeViewProxyModel*>(
           this->ui->treeView_availableElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
   if (index == 0) {
@@ -641,7 +641,7 @@ void FeatureFunctionsDialog::on_lineEdit_searchByFeatureName_textChanged(
   AvailableElementsTreeViewProxyModel* model =
       static_cast<AvailableElementsTreeViewProxyModel*>(
           this->ui->treeView_availableElements->model());
-  if (model == NULL) {
+  if (model == nullptr) {
     return;
   }
 
@@ -654,7 +654,7 @@ void FeatureFunctionsDialog::selectFunctionItem(Row row) {
   ActiveFeatureFunctionsModel* actFeatModel =
       static_cast<ActiveFeatureFunctionsModel*>(
           this->ui->treeView_functions->model());
-  if (actFeatModel != NULL) {
+  if (actFeatModel != nullptr) {
     QModelIndex index;
     switch (row) {
       case Last:

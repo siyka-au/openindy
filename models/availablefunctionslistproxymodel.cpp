@@ -32,7 +32,7 @@ sys::Function AvailableFunctionsListProxyModel::getFunctionAtIndex(
   // get and cast source model
   AvailableFunctionsListModel* source_model =
       dynamic_cast<AvailableFunctionsListModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return sys::Function();
   }
 
@@ -59,7 +59,7 @@ bool AvailableFunctionsListProxyModel::filterAcceptsRow(
   // get and cast source model
   AvailableFunctionsListModel* source_model =
       dynamic_cast<AvailableFunctionsListModel*>(this->sourceModel());
-  if (source_model == NULL) {
+  if (source_model == nullptr) {
     return false;
   }
 

@@ -21,8 +21,8 @@ class FunctionTreeItem : public QObject {
   Q_OBJECT
 
  public:
-  explicit FunctionTreeItem(const QVariant& display, QObject* parent = 0);
-  ~FunctionTreeItem();
+  explicit FunctionTreeItem(const QVariant& display, QObject* parent = nullptr);
+  ~FunctionTreeItem() override;
 
   // ##########################################
   // get or set information about the tree item
