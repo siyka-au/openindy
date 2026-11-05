@@ -1223,13 +1223,13 @@ void Controller::loadProject(const QString& projectName,
             // create initial BundleStation
             BundleStation bundleStation;
             bundleStation.id = station->getId();
-            bundleStation.tx = 0.0;
-            bundleStation.ty = 0.0;
-            bundleStation.tz = 0.0;
-            bundleStation.rx = 0.0;
-            bundleStation.ry = 0.0;
-            bundleStation.rz = 0.0;
-            bundleStation.m = 1.0;
+            bundleStation.tx = false;
+            bundleStation.ty = false;
+            bundleStation.tz = false;
+            bundleStation.rx = false;
+            bundleStation.ry = false;
+            bundleStation.rz = false;
+            bundleStation.m = true;
             bundleStations.append(bundleStation);
           }
 

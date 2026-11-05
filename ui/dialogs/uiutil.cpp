@@ -24,7 +24,7 @@ const int getDropDownMenuSize(QStringList list, const int menuSize) {
 
   // get largest width
   if ((width + (0.1 * width)) > menuSize) {
-    return (width + (0.1 * width));
+    return static_cast<int>(width + (0.1 * width));
   } else {
     return menuSize;
   }

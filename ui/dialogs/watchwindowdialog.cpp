@@ -541,34 +541,34 @@ void WatchWindowDialog::resizeWatchWindowValues() {
     h = this->streamData[eName]->height();
     double w = this->streamData[eName]->width();
     QFontMetrics fmName(fName);
-    fName.setPointSize(
+    fName.setPointSize(static_cast<int>(
         fName.pointSize() *
         min(h / fmName.height(),
-            w / fmName.horizontalAdvance(streamData[eName]->text())));
+            w / fmName.horizontalAdvance(streamData[eName]->text()))));
 
     // x
     h = this->streamData[eX]->height();
     QFontMetrics fmX(fX);
     scale = h / fmX.height();
-    fX.setPointSize(fX.pointSize() * scale);
+    fX.setPointSize(static_cast<int>(fX.pointSize() * scale));
 
     // y
     h = this->streamData[eY]->height();
     QFontMetrics fmY(fY);
     scale = h / fmY.height();
-    fY.setPointSize(fY.pointSize() * scale);
+    fY.setPointSize(static_cast<int>(fY.pointSize() * scale));
 
     // z
     h = this->streamData[eZ]->height();
     QFontMetrics fmZ(fZ);
     scale = h / fmZ.height();
-    fZ.setPointSize(fZ.pointSize() * scale);
+    fZ.setPointSize(static_cast<int>(fZ.pointSize() * scale));
 
     // d3D
     h = this->streamData[eD3D]->height();
     QFontMetrics fmd3D(fd3D);
     scale = h / fmd3D.height();
-    fd3D.setPointSize(fd3D.pointSize() * scale);
+    fd3D.setPointSize(static_cast<int>(fd3D.pointSize() * scale));
 
     // set new fonts
     this->streamData[eName]->setFont(fName);

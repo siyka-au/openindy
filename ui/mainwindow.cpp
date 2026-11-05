@@ -2836,8 +2836,8 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper>& feature) {
   this->ui->label_magnifyActualNominal->setFont(fontActualNominal);
 
   // set label witdh
-  this->ui->label_magnifyActualNominal->setFixedWidth(tw *
-                                                      std::min(scaleH, scaleW));
+  this->ui->label_magnifyActualNominal->setFixedWidth(
+      static_cast<int>(tw * std::min(scaleH, scaleW)));
 
   QFont fontName = this->ui->label_magnifyName->font();
   h = this->ui->label_magnifyName->height();
