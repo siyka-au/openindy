@@ -14,7 +14,7 @@
  */
 class SensorAccuracyDelegate : public QItemDelegate {
  public:
-  SensorAccuracyDelegate(QObject* parent = nullptr);
+  explicit SensorAccuracyDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

@@ -7,9 +7,9 @@ int OiWebSocketServer::currentId = 0;
  * \param parent
  */
 OiWebSocketServer::OiWebSocketServer(QObject* parent)
-    : QWebSocketServer("OiServer", QWebSocketServer::NonSecureMode, parent) {
+    : QWebSocketServer("OiServer", QWebSocketServer::NonSecureMode, parent),
+      streamer(new OiWebSocketStreamer()) {
   // create web socket streamer
-  this->streamer = new OiWebSocketStreamer();
 
   // listen to incoming connections
   QObject::connect(this, &OiWebSocketServer::newConnection, this,
@@ -54,10 +54,10 @@ void OiWebSocketServer::stopServer() {
   }
 
   // close the already existing sockets
-  for (int i = 0; i < this->usedSockets.size(); i++) {
-    if (!this->usedSockets[i].isNull()) {
-      this->usedSockets[i]->close();
-      delete this->usedSockets[i];
+  for (const auto& usedSocket : this->usedSockets) {
+    if (!usedSocket.isNull()) {
+      usedSocket->close();
+      delete usedSocket;
     }
   }
 }

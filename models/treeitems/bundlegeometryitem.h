@@ -8,8 +8,8 @@
  */
 class BundleGeometryItem {
  public:
-  BundleGeometryItem(const QString& key,
-                     BundleGeometryItem* parentItem = nullptr);
+  explicit BundleGeometryItem(const QString& key,
+                              BundleGeometryItem* parentItem = nullptr);
   ~BundleGeometryItem();
 
   // ######################

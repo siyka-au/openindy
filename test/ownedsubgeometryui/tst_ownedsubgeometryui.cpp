@@ -26,7 +26,8 @@ namespace {
 class SetPlaneFunction : public ConstructFunction, public Producer<Plane> {
   Q_OBJECT
  public:
-  SetPlaneFunction(QObject* parent = nullptr) : ConstructFunction(parent) {
+  explicit SetPlaneFunction(QObject* parent = nullptr)
+      : ConstructFunction(parent) {
     this->metaData.name = "SetPlaneFunction";
     this->applicableFor.append(ePlaneFeature);
   }

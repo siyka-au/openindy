@@ -10,18 +10,17 @@ inline double rnd(double value, int digits) {
  * \param parent
  */
 FeatureDifferenceTableModel::FeatureDifferenceTableModel(
-    const QPointer<OiJob>& job, QObject* parent) {
+    const QPointer<OiJob>& job, QObject* parent)
+    : tolerance(0.2) {
   this->setCurrentJob(job);
-  this->tolerance = 0.2;
 }
 
 /*!
  * \brief FeatureDifferenceTableModel::FeatureDifferenceTableModel
  * \param parent
  */
-FeatureDifferenceTableModel::FeatureDifferenceTableModel(QObject* parent) {
-  this->tolerance = 0.2;
-}
+FeatureDifferenceTableModel::FeatureDifferenceTableModel(QObject* parent)
+    : tolerance(0.2) {}
 
 /*!
  * \brief FeatureDifferenceTableModel::rowCount

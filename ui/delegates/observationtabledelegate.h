@@ -16,7 +16,7 @@ using namespace oi;
  */
 class ObservationTableDelegate : public QItemDelegate {
  public:
-  ObservationTableDelegate(QObject* parent = nullptr);
+  explicit ObservationTableDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

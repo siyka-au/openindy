@@ -75,7 +75,7 @@ class OI_MAIN_EXPORT FeatureSorter {
   QPointer<OiJob> job;
 
   // sorting mode and config
-  SortingMode mode;
+  SortingMode mode{eSortStandard};
   FeatureTableSortingConfig config;
 
   // ##############

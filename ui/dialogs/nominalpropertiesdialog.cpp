@@ -7,10 +7,7 @@
  * \param parent
  */
 NominalPropertiesDialog::NominalPropertiesDialog(QWidget* parent)
-    : QDialog(parent),
-      ui(new Ui::NominalPropertiesDialog),
-      id(-1),
-      type(eUndefinedFeature) {
+    : QDialog(parent), ui(new Ui::NominalPropertiesDialog) {
   this->ui->setupUi(this);
 
   // init GUI elements and assign models

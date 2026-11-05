@@ -13,7 +13,11 @@ WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job,
       ui(new Ui::WatchWindowDialog),
       behavior(b),
       currentJob(job),
-      features(f) {
+      features(f),
+      lablesRescaled(false),
+      oldWindowHeight(0),
+      oldWindowWidth(0),
+      watchWindowUpdated(false) {
   ui->setupUi(this);
 
   // initialize dynamic GUI elements
@@ -28,12 +32,9 @@ WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job,
   this->setWindowFlags(flags);
 
   // set values to 0 and false => on first view everything has to be resized
-  oldWindowHeight = 0;
-  oldWindowWidth = 0;
-  this->lablesRescaled = false;
 
   // time that monitors "watchWindowUpdated" state
-  this->watchWindowUpdated = false;
+
   static QTimer* timer = new QTimer(parent);
   connect(timer, SIGNAL(timeout()), this, SLOT(clearWatchWindow()));
   timer->start(500);

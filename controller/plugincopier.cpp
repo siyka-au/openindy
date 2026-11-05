@@ -197,13 +197,13 @@ bool PluginCopier::copyDir(const QString& sourcePath,
 
   // remove files and folders in destination folder and add source files and
   // folders
-  for (int i = 0; i < destFiles.size(); i++) {
-    if (QFileInfo::exists(destinationPath + "/" + destFiles.at(i))) {
-      QFile::remove(destinationPath + "/" + destFiles.at(i));
+  for (const auto& destFile : destFiles) {
+    if (QFileInfo::exists(destinationPath + "/" + destFile)) {
+      QFile::remove(destinationPath + "/" + destFile);
     }
 
-    if (!QFile::copy(sourcePath + "/" + destFiles.at(i),
-                     destinationPath + "/" + destFiles.at(i))) {
+    if (!QFile::copy(sourcePath + "/" + destFile,
+                     destinationPath + "/" + destFile)) {
       return false;
     } else {
     }

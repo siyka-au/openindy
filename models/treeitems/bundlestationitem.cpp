@@ -9,14 +9,11 @@
  */
 BundleStationItem::BundleStationItem(const QString& key, const bool& value,
                                      const int& stationId,
-                                     BundleStationItem* parentItem) {
+                                     BundleStationItem* parentItem)
+    : m_parentItem(parentItem), key(key), stationId(stationId), value(value) {
   // set parent
-  this->m_parentItem = parentItem;
 
   // set display values
-  this->value = value;
-  this->key = key;
-  this->stationId = stationId;
 }
 
 /*!

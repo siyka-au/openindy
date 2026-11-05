@@ -15,13 +15,12 @@ SensorConfigurationManager::SensorConfigurationManager(QObject* parent)
  */
 SensorConfigurationManager::SensorConfigurationManager(
     const SensorConfigurationManager& copy, QObject* parent)
-    : QObject(parent) {
-  this->savedSensorConfigsMap = copy.savedSensorConfigsMap;
-  this->savedSensorConfigsList = copy.savedSensorConfigsList;
-  this->projectSensorConfigsMap = copy.projectSensorConfigsMap;
-  this->projectSensorConfigsList = copy.projectSensorConfigsList;
-  this->activeSensorConfig = copy.activeSensorConfig;
-}
+    : QObject(parent),
+      activeSensorConfig(copy.activeSensorConfig),
+      projectSensorConfigsList(copy.projectSensorConfigsList),
+      projectSensorConfigsMap(copy.projectSensorConfigsMap),
+      savedSensorConfigsList(copy.savedSensorConfigsList),
+      savedSensorConfigsMap(copy.savedSensorConfigsMap) {}
 
 /*!
  * \brief SensorConfigurationManager::operator =
@@ -393,9 +392,9 @@ void SensorConfigurationManager::loadFromConfigFolder() {
   QStringList sConfigNames;
 
   // load all files and create a SensorConfiguration object for each of them
-  for (int i = 0; i < fileNames.size(); i++) {
+  for (const auto& fileName : fileNames) {
     // create file from file name and check if it exists
-    QFile sConfigFile(sConfigFolder.absoluteFilePath(fileNames.at(i)));
+    QFile sConfigFile(sConfigFolder.absoluteFilePath(fileName));
     if (!sConfigFile.exists()) {
       continue;
     }

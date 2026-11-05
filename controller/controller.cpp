@@ -126,37 +126,23 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
   emit this->featureCreated(true);
 
   // check used states of trafo params
-  for (int i = 0; i < features.size(); i++) {
-    if (!features.at(i)->getTrafoParam().isNull()) {
+  for (const auto& feature : features) {
+    if (!feature->getTrafoParam().isNull()) {
       // check if other trafos with this coordinate systems already exist and
       // are active/ used
-      for (int j = 0; j < this->job->getTransformationParametersList().size();
-           j++) {
-        if ((features.at(i)->getTrafoParam()->getStartSystem() ==
-                 this->job->getTransformationParametersList()
-                     .at(j)
-                     ->getStartSystem() &&
-             features.at(i)->getTrafoParam()->getDestinationSystem() ==
-                 this->job->getTransformationParametersList()
-                     .at(j)
-                     ->getDestinationSystem()) ||
-            (features.at(i)->getTrafoParam()->getStartSystem() ==
-                 this->job->getTransformationParametersList()
-                     .at(j)
-                     ->getDestinationSystem() &&
-             features.at(i)->getTrafoParam()->getDestinationSystem() ==
-                 this->job->getTransformationParametersList()
-                     .at(j)
-                     ->getStartSystem())) {
-          if (this->job->getTransformationParametersList()
-                  .at(j)
-                  ->getFeatureName()
-                  .compare(features.at(i)->getFeature()->getFeatureName()) !=
-              0) {
-            if (this->job->getTransformationParametersList()
-                    .at(j)
-                    ->getIsUsed()) {
-              features.at(i)->getTrafoParam()->setIsUsed(false);
+      for (const auto& j : this->job->getTransformationParametersList()) {
+        if ((feature->getTrafoParam()->getStartSystem() ==
+                 j->getStartSystem() &&
+             feature->getTrafoParam()->getDestinationSystem() ==
+                 j->getDestinationSystem()) ||
+            (feature->getTrafoParam()->getStartSystem() ==
+                 j->getDestinationSystem() &&
+             feature->getTrafoParam()->getDestinationSystem() ==
+                 j->getStartSystem())) {
+          if (j->getFeatureName().compare(
+                  feature->getFeature()->getFeatureName()) != 0) {
+            if (j->getIsUsed()) {
+              feature->getTrafoParam()->setIsUsed(false);
               emit this->requestMessageBoxTrafoParam();
               break;
             }
@@ -820,8 +806,8 @@ void Controller::updateBundleAdjustment(
   // update input stations
   QList<BundleStation> inputStations;
   params = param.value("inputStations").toArray();
-  for (int i = 0; i < params.size(); i++) {
-    QJsonObject station = params.at(i).toObject();
+  for (auto&& param : params) {
+    QJsonObject station = param.toObject();
     if (!station.contains("id") || !station.contains("used") ||
         !station.value("used").toBool()) {
       continue;

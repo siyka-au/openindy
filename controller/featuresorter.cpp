@@ -1,6 +1,6 @@
 #include "featuresorter.h"
 
-FeatureSorter::FeatureSorter() : mode(eSortStandard) {}
+FeatureSorter::FeatureSorter() {}
 
 /*!
  * \brief FeatureSorter::operator ()

@@ -9,7 +9,7 @@ class MultiSelectionModel : public QItemSelectionModel {
   Q_OBJECT
 
  public:
-  MultiSelectionModel(QAbstractItemModel* myModel);
+  explicit MultiSelectionModel(QAbstractItemModel* myModel);
   ~MultiSelectionModel() override;
 
  public slots:

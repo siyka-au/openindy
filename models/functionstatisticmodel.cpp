@@ -7,7 +7,7 @@
  */
 FunctionStatisticModel::FunctionStatisticModel(const QPointer<Feature>& feature,
                                                QObject* parent)
-    : feature(feature), functionIndex(-1) {}
+    : feature(feature) {}
 
 /*!
  * \brief FunctionStatisticModel::rowCount

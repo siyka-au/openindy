@@ -60,7 +60,7 @@ class OI_MAIN_EXPORT MeasureBehaviorLogic : public QObject {
   FeatureTableModel* sourceModel;
   QList<int> measureFeatures;
 
-  int activeFeatureId;
+  int activeFeatureId{-1};
   Decision decision;
 };
 

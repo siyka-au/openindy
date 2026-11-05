@@ -7,13 +7,14 @@
  * \param parent
  */
 MoveSensorDialog::MoveSensorDialog(QWidget* parent)
-    : QDialog(parent), ui(new Ui::MoveSensorDialog) {
+    : QDialog(parent),
+      doubleValidator(new QRegularExpressionValidator(this->validDouble)),
+      ui(new Ui::MoveSensorDialog) {
   ui->setupUi(this);
 
   // set up regular expressions
   this->validDouble =
       QRegularExpression("^-?(0|[1-9]{1}[0-9]{0,9})(\\.[0-9]+)?$");
-  this->doubleValidator = new QRegularExpressionValidator(this->validDouble);
 
   this->initModels();
   this->initGUI();

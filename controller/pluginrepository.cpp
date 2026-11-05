@@ -37,12 +37,12 @@ void PluginRepository::init() {
   QList<sys::Plugin> merged = systemPlugins;
   foreach (const sys::Plugin& userPlugin, userPlugins) {
     bool shadowed = false;
-    for (int i = 0; i < merged.size(); i++) {
-      if (merged.at(i).name().compare(userPlugin.name()) == 0) {
+    for (auto& i : merged) {
+      if (i.name().compare(userPlugin.name()) == 0) {
         qWarning() << "PluginRepository: user plugin" << userPlugin.filePath()
-                   << "shadows system plugin" << merged.at(i).filePath()
-                   << "(both named" << userPlugin.name() << ")";
-        merged[i] = userPlugin;
+                   << "shadows system plugin" << i.filePath() << "(both named"
+                   << userPlugin.name() << ")";
+        i = userPlugin;
         shadowed = true;
         break;
       }
@@ -202,8 +202,8 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
     // the derivation already lives in one place (SensorType::fromInterfaceId)
     const SensorType type = SensorType::fromInterfaceId(s->getMetaData().iid);
     QList<MeasurementConfig> configs = s->getSupportedMeasurementConfigs();
-    for (int i = 0; i < configs.size(); i++) {
-      configs[i].setSensorType(type);
+    for (auto& config : configs) {
+      config.setSensorType(type);
     }
 
     sensors.append(sys::Sensor(

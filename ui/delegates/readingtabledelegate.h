@@ -16,7 +16,7 @@ using namespace oi;
  */
 class ReadingTableDelegate : public QItemDelegate {
  public:
-  ReadingTableDelegate(QObject* parent = nullptr);
+  explicit ReadingTableDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

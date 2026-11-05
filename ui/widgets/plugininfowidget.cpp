@@ -1,12 +1,6 @@
 #include "plugininfowidget.h"
 
-PluginInfoWidget::PluginInfoWidget(QWidget* parent)
-    : QWidget(parent),
-      myLayout(nullptr),
-      label_description(nullptr),
-      txt_description(nullptr),
-      layout_applicableFor(nullptr),
-      layout_neededElements(nullptr) {
+PluginInfoWidget::PluginInfoWidget(QWidget* parent) : QWidget(parent) {
   this->initGUI();
 }
 

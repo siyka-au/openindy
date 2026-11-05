@@ -46,17 +46,17 @@ class PluginInfoWidget : public QWidget {
   // #################
 
   // layout for the widget
-  QVBoxLayout* myLayout;
+  QVBoxLayout* myLayout{nullptr};
 
   // general
-  QLabel* label_description;
-  QTextBrowser* txt_description;
+  QLabel* label_description{nullptr};
+  QTextBrowser* txt_description{nullptr};
 
   // function specific GUI elements
   QLabel* label_applicableFor;
-  QHBoxLayout* layout_applicableFor;
+  QHBoxLayout* layout_applicableFor{nullptr};
   QLabel* label_neededElements;
-  QHBoxLayout* layout_neededElements;
+  QHBoxLayout* layout_neededElements{nullptr};
   QMap<FeatureTypes, QLabel*> applicableFor;   // labels with icons of features
   QMap<ElementTypes, QLabel*> neededElements;  // labels with icons of elements
 

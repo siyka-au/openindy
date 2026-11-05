@@ -89,9 +89,9 @@ class NominalPropertiesDialog : public QDialog {
   // attributes that describe the current nominal feature
   // ####################################################
 
-  int id;
+  int id{-1};
   QString name;
-  FeatureTypes type;
+  FeatureTypes type{eUndefinedFeature};
   QMap<GeometryParameters, QString> parameters;
 };
 

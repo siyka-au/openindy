@@ -1,7 +1,6 @@
 #include "measurebehaviorlogic.h"
 
-MeasureBehaviorLogic::MeasureBehaviorLogic(QObject* parent)
-    : QObject(parent), activeFeatureId(-1) {
+MeasureBehaviorLogic::MeasureBehaviorLogic(QObject* parent) : QObject(parent) {
   QObject::connect(&this->measureBehaviorDialog,
                    &MeasureBehaviorDialog::setDecision, this,
                    &MeasureBehaviorLogic::setDecision);

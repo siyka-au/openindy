@@ -70,7 +70,7 @@ class FunctionStatisticModel : public QAbstractTableModel {
   // ##################################
 
   QPointer<Feature> feature;
-  int functionIndex;
+  int functionIndex{-1};
 
   // ##############
   // display config

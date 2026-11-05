@@ -5,9 +5,7 @@
  * \param parent
  */
 SensorConfigurationProxyModel::SensorConfigurationProxyModel(QObject* parent)
-    : QSortFilterProxyModel(parent) {
-  this->showAll = false;
-}
+    : QSortFilterProxyModel(parent), showAll(false) {}
 
 /*!
  * \brief SensorConfigurationProxyModel::setFilter

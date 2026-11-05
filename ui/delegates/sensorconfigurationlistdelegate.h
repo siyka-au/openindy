@@ -17,7 +17,7 @@ using namespace oi;
  */
 class SensorConfigurationListDelegate : public QItemDelegate {
  public:
-  SensorConfigurationListDelegate(QObject* parent = nullptr);
+  explicit SensorConfigurationListDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

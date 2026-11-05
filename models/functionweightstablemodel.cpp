@@ -6,8 +6,7 @@
  */
 FunctionWeightsTableModel::FunctionWeightsTableModel(QPointer<OiJob> job,
                                                      QObject* parent)
-    : QAbstractTableModel(parent) {
-  this->functionPosition = -1;
+    : QAbstractTableModel(parent), functionPosition(-1) {
   this->setCurrentJob(job);
 }
 
@@ -16,9 +15,7 @@ FunctionWeightsTableModel::FunctionWeightsTableModel(QPointer<OiJob> job,
  * \param parent
  */
 FunctionWeightsTableModel::FunctionWeightsTableModel(QObject* parent)
-    : QAbstractTableModel(parent) {
-  this->functionPosition = -1;
-}
+    : QAbstractTableModel(parent), functionPosition(-1) {}
 
 /*!
  * \brief FunctionWeightsTableModel::getCurrentJob
@@ -281,38 +278,35 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
                 .has_value()) {  // save the ignored parameters for actual
                                  // features
 
-          for (int i = 0; i < inputElem.size(); i++) {
+          for (auto& i : inputElem) {
             if (fw->getGeometry()->getId() ==
-                inputElem.at(i)
-                    .id) {  // check id of current feature and input element
+                i.id) {  // check id of current feature and input element
               if (useX) {
                 // remove from ignore list to use
-                if (inputElem.at(i).ignoredDestinationParams.contains(
+                if (i.ignoredDestinationParams.contains(
                         GeometryParameters::eUnknownX)) {
-                  inputElem[i].ignoredDestinationParams.removeOne(
+                  i.ignoredDestinationParams.removeOne(
                       GeometryParameters::eUnknownX);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
                     ->getFeature()
                     ->getFunctions()[this->functionPosition]
-                    ->replaceInputElement(inputElem.at(i),
-                                          this->functionPosition);
+                    ->replaceInputElement(i, this->functionPosition);
                 this->updateModel();
                 return true;
               } else {
                 // add to ignore list
-                if (!inputElem.at(i).ignoredDestinationParams.contains(
+                if (!i.ignoredDestinationParams.contains(
                         GeometryParameters::eUnknownX)) {
-                  inputElem[i].ignoredDestinationParams.append(
+                  i.ignoredDestinationParams.append(
                       GeometryParameters::eUnknownX);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
                     ->getFeature()
                     ->getFunctions()[this->functionPosition]
-                    ->replaceInputElement(inputElem.at(i),
-                                          this->functionPosition);
+                    ->replaceInputElement(i, this->functionPosition);
                 this->updateModel();
                 return true;
               }
@@ -329,34 +323,30 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
                 .has_value()) {  // save the ignored parameters for actual
                                  // features
 
-          for (int i = 0; i < inputElem.size(); i++) {
-            if (fw->getGeometry()->getId() == inputElem.at(i).id) {
+          for (auto& i : inputElem) {
+            if (fw->getGeometry()->getId() == i.id) {
               if (useY) {
                 // remove from ignore list to use
-                if (inputElem.at(i).ignoredDestinationParams.contains(
-                        eUnknownY)) {
-                  inputElem[i].ignoredDestinationParams.removeOne(eUnknownY);
+                if (i.ignoredDestinationParams.contains(eUnknownY)) {
+                  i.ignoredDestinationParams.removeOne(eUnknownY);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
                     ->getFeature()
                     ->getFunctions()[this->functionPosition]
-                    ->replaceInputElement(inputElem.at(i),
-                                          this->functionPosition);
+                    ->replaceInputElement(i, this->functionPosition);
                 this->updateModel();
                 return true;
               } else {
                 // add to ignore list
-                if (!inputElem.at(i).ignoredDestinationParams.contains(
-                        eUnknownY)) {
-                  inputElem[i].ignoredDestinationParams.append(eUnknownY);
+                if (!i.ignoredDestinationParams.contains(eUnknownY)) {
+                  i.ignoredDestinationParams.append(eUnknownY);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
                     ->getFeature()
                     ->getFunctions()[this->functionPosition]
-                    ->replaceInputElement(inputElem.at(i),
-                                          this->functionPosition);
+                    ->replaceInputElement(i, this->functionPosition);
                 this->updateModel();
                 return true;
               }
@@ -373,34 +363,30 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
                 .has_value()) {  // save the ignored parameters for actual
                                  // features
 
-          for (int i = 0; i < inputElem.size(); i++) {
-            if (fw->getGeometry()->getId() == inputElem.at(i).id) {
+          for (auto& i : inputElem) {
+            if (fw->getGeometry()->getId() == i.id) {
               if (useZ) {
                 // remove from ignore list to use
-                if (inputElem.at(i).ignoredDestinationParams.contains(
-                        eUnknownZ)) {
-                  inputElem[i].ignoredDestinationParams.removeOne(eUnknownZ);
+                if (i.ignoredDestinationParams.contains(eUnknownZ)) {
+                  i.ignoredDestinationParams.removeOne(eUnknownZ);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
                     ->getFeature()
                     ->getFunctions()[this->functionPosition]
-                    ->replaceInputElement(inputElem.at(i),
-                                          this->functionPosition);
+                    ->replaceInputElement(i, this->functionPosition);
                 this->updateModel();
                 return true;
               } else {
                 // add to ignore list
-                if (!inputElem.at(i).ignoredDestinationParams.contains(
-                        eUnknownZ)) {
-                  inputElem[i].ignoredDestinationParams.append(eUnknownZ);
+                if (!i.ignoredDestinationParams.contains(eUnknownZ)) {
+                  i.ignoredDestinationParams.append(eUnknownZ);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
                     ->getFeature()
                     ->getFunctions()[this->functionPosition]
-                    ->replaceInputElement(inputElem.at(i),
-                                          this->functionPosition);
+                    ->replaceInputElement(i, this->functionPosition);
                 this->updateModel();
                 return true;
               }

@@ -6,12 +6,11 @@
  * \param parentItem
  */
 BundleGeometryItem::BundleGeometryItem(const QString& key,
-                                       BundleGeometryItem* parentItem) {
+                                       BundleGeometryItem* parentItem)
+    : m_parentItem(parentItem), key(key) {
   // set parent
-  this->m_parentItem = parentItem;
 
   // set display values
-  this->key = key;
 }
 
 /*!

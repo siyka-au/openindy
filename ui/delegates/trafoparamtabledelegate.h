@@ -13,7 +13,7 @@ using namespace oi;
 
 class TrafoParamDelegate : public QItemDelegate {
  public:
-  TrafoParamDelegate(QObject* parent = nullptr);
+  explicit TrafoParamDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

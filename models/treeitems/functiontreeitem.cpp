@@ -6,13 +6,10 @@
  * \param parent
  */
 FunctionTreeItem::FunctionTreeItem(const QVariant& display, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), displayValue(display), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // set display value
-  this->displayValue = display;
 }
 
 /*!

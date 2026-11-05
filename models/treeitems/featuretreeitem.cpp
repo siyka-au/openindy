@@ -7,16 +7,13 @@
  * \param parent
  */
 FeatureTreeItem::FeatureTreeItem(const QVariant& display, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), displayValue(display), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsHeader();
 
   // set display value
-  this->displayValue = display;
 }
 
 /*!
@@ -27,10 +24,8 @@ FeatureTreeItem::FeatureTreeItem(const QVariant& display, QObject* parent)
  */
 FeatureTreeItem::FeatureTreeItem(const QPointer<FeatureWrapper>& feature,
                                  QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsFeature();
@@ -70,10 +65,8 @@ FeatureTreeItem::FeatureTreeItem(const QPointer<FeatureWrapper>& feature,
  */
 FeatureTreeItem::FeatureTreeItem(const QPointer<Observation>& observation,
                                  QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsObservation();
@@ -101,10 +94,8 @@ FeatureTreeItem::FeatureTreeItem(const QPointer<Observation>& observation,
  */
 FeatureTreeItem::FeatureTreeItem(const QPointer<Reading>& reading,
                                  QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsReading();

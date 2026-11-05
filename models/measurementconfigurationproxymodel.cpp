@@ -6,8 +6,7 @@
  */
 MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel(
     QObject* parent)
-    : QSortFilterProxyModel(parent),
-      filterType(eNo_MeasurementConfigurationFilter) {}
+    : QSortFilterProxyModel(parent) {}
 
 /*!
  * \brief MeasurementConfigurationProxyModel::setFilter

@@ -15,7 +15,7 @@ using namespace oi;
 
 class BundleOverviewDelegate : public QAbstractItemDelegate {
  public:
-  BundleOverviewDelegate(QObject* parent);
+  explicit BundleOverviewDelegate(QObject* parent);
   void paint(QPainter* painter, const QStyleOptionViewItem& option,
              const QModelIndex& index) const override;
   bool isBundleStationTrafo(const QPointer<TrafoParam>& param) const;

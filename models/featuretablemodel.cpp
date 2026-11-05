@@ -562,8 +562,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
                 }
                 while (iterator != inputElements.constEnd()) {
                   QList<InputElement> elements = iterator.value();
-                  for (int i = 0; i < elements.size(); ++i) {
-                    InputElement element = elements.at(i);
+                  for (auto element : elements) {
                     function->addInputElement(element, iterator.key());
                     if (!geometry.isNull() &&
                         !element.observation

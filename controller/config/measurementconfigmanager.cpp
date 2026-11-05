@@ -25,10 +25,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject* parent)
  * \param parent
  */
 MeasurementConfigManager::MeasurementConfigManager(
-    const MeasurementConfigManager& copy, QObject* parent) {
-  this->configs = copy.configs;
-  this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
-}
+    const MeasurementConfigManager& copy, QObject* parent)
+    : configs(copy.configs),
+      activeMeasurementConfigs(copy.activeMeasurementConfigs) {}
 
 /*!
  * \brief MeasurementConfigManager::operator =
@@ -375,9 +374,9 @@ void MeasurementConfigManager::loadFromConfigFolder() {
   QStringList mConfigNames;
 
   // load all files and create a MeasurementConfig object for each of them
-  for (int i = 0; i < fileNames.size(); i++) {
+  for (const auto& fileName : fileNames) {
     // create file from file name and check if it exists
-    QFile mConfigFile(mConfigFolder.absoluteFilePath(fileNames.at(i)));
+    QFile mConfigFile(mConfigFolder.absoluteFilePath(fileName));
     if (!mConfigFile.exists()) {
       continue;
     }

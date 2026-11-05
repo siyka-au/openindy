@@ -17,7 +17,7 @@ using namespace oi;
  */
 class MeasurementConfigurationListDelegate : public QItemDelegate {
  public:
-  MeasurementConfigurationListDelegate(QObject* parent = nullptr);
+  explicit MeasurementConfigurationListDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

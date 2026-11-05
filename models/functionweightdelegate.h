@@ -13,7 +13,7 @@
  */
 class FunctionWeightDelegate : public QItemDelegate {
  public:
-  FunctionWeightDelegate(QObject* parent = nullptr);
+  explicit FunctionWeightDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;

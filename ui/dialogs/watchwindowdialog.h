@@ -48,19 +48,18 @@ using namespace oi;
  */
 class WatchWindowSettings {
  public:
-  WatchWindowSettings()
-      : digits(2), readingType(eCartesianReading), showLastMeasurement(true) {}
+  WatchWindowSettings() {}
 
   // decimal digits for watch window values
-  int digits;
+  int digits{2};
 
   // reading type for the watch window values
-  ReadingTypes readingType;
+  ReadingTypes readingType{eCartesianReading};
 
   // display values and tolerance
   QMap<DisplayAttributes, double> displayValues;
 
-  bool showLastMeasurement;
+  bool showLastMeasurement{true};
 };
 
 namespace Ui {

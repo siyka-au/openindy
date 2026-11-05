@@ -14,7 +14,7 @@ using namespace oi;
  */
 class TrafoParamTableColumnConfig {
  public:
-  TrafoParamTableColumnConfig(bool initBundle = false);
+  explicit TrafoParamTableColumnConfig(bool initBundle = false);
 
   bool getColumnVisibility(const TrafoParamDisplayAttributes& column) const;
   void setColumnVisibility(const TrafoParamDisplayAttributes& column,

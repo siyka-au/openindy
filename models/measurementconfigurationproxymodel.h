@@ -87,7 +87,8 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
   // filter attribute
   // ################
 
-  MeasurementConfigurationFilterTypes filterType;
+  MeasurementConfigurationFilterTypes filterType{
+      eNo_MeasurementConfigurationFilter};
   QList<ElementTypes> neededElements;
   FeatureTypes typeOfFeature;
   QList<FeatureTypes> functionIsApplicableFor;

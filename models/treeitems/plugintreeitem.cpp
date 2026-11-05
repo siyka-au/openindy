@@ -133,16 +133,13 @@ void PluginTreeItem::setParent(PluginTreeItem *parent){
  * \param parent
  */
 PluginTreeItem::PluginTreeItem(const QVariant& display, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), displayValue(display), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsHeader();
 
   // set display value
-  this->displayValue = display;
 }
 
 /*!
@@ -151,16 +148,13 @@ PluginTreeItem::PluginTreeItem(const QVariant& display, QObject* parent)
  * \param parent
  */
 PluginTreeItem::PluginTreeItem(const sys::Plugin& plugin, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), index(-1), plugin(plugin) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsPlugin();
 
   // set plugin
-  this->plugin = plugin;
 
   // set display value
   this->displayValue = plugin.name();
@@ -175,16 +169,13 @@ PluginTreeItem::PluginTreeItem(const sys::Plugin& plugin, QObject* parent)
  * \param parent
  */
 PluginTreeItem::PluginTreeItem(const sys::Function& function, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), function(function), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsFunction();
 
   // set function
-  this->function = function;
 
   // set display value
   this->displayValue = function.name();
@@ -196,16 +187,13 @@ PluginTreeItem::PluginTreeItem(const sys::Function& function, QObject* parent)
  * \param parent
  */
 PluginTreeItem::PluginTreeItem(const sys::Sensor& sensor, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), index(-1), sensor(sensor) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsSensor();
 
   // set sensor
-  this->sensor = sensor;
 
   // set display value
   this->displayValue = sensor.name();
@@ -217,16 +205,13 @@ PluginTreeItem::PluginTreeItem(const sys::Sensor& sensor, QObject* parent)
  * \param parent
  */
 PluginTreeItem::PluginTreeItem(const sys::Tool& tool, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), index(-1), tool(tool) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsTool();
 
   // set tool
-  this->tool = tool;
 
   // set display value
   this->displayValue = tool.name();
@@ -239,16 +224,13 @@ PluginTreeItem::PluginTreeItem(const sys::Tool& tool, QObject* parent)
  */
 PluginTreeItem::PluginTreeItem(const sys::Simulation& simulation,
                                QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), index(-1), simulation(simulation) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsSimulation();
 
   // set simulation
-  this->simulation = simulation;
 
   // set display value
   this->displayValue = simulation.name();
@@ -260,16 +242,13 @@ PluginTreeItem::PluginTreeItem(const sys::Simulation& simulation,
  * \param parent
  */
 PluginTreeItem::PluginTreeItem(const sys::Exchange& exchange, QObject* parent)
-    : QObject(parent) {
+    : QObject(parent), childCount(0), exchange(exchange), index(-1) {
   // set general tree item attributes
-  this->childCount = 0;
-  this->index = -1;
 
   // define what kind of tree item this item is
   this->setIsExchange();
 
   // set exchange
-  this->exchange = exchange;
 
   // set display value
   this->displayValue = exchange.name();

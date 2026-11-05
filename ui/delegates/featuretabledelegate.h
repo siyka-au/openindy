@@ -18,7 +18,7 @@ using namespace oi;
  */
 class FeatureTableDelegate : public QItemDelegate {
  public:
-  FeatureTableDelegate(QObject* parent = nullptr);
+  explicit FeatureTableDelegate(QObject* parent = nullptr);
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override;
