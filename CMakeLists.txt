@@ -386,7 +386,7 @@ add_library(OpenIndyApp SHARED
 
 qt_add_translations(OpenIndyApp
     TS_FILES
-    i18n/OpenIndy_en_AU.ts
+    i18n/openindy_en_AU.ts
     RESOURCE_PREFIX "/i18n"
 )
 
