@@ -64,10 +64,10 @@ QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type,
 
   OiVec ijk = OiVec(3);
   switch (type) {
-    case eLineFeature:
-    case ePlaneFeature:
-    case eCircleFeature:
-    case eCylinderFeature:
+    case FeatureTypes::eLineFeature:
+    case FeatureTypes::ePlaneFeature:
+    case FeatureTypes::eCircleFeature:
+    case FeatureTypes::eCylinderFeature:
       ijk.setAt(0, i);
       ijk.setAt(1, j);
       ijk.setAt(2, k);
@@ -75,32 +75,32 @@ QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type,
   }
 
   switch (type) {
-    case ePointFeature: {
+    case FeatureTypes::ePointFeature: {
       QPointer<Point> point = new Point(Position(xyz));
       point->setIsSolved(true);
       featurewrapper->setPoint(point);
       break;
     }
-    case eLineFeature: {
+    case FeatureTypes::eLineFeature: {
       QPointer<Line> line = new Line(Position(xyz), Direction(ijk));
       line->setIsSolved(true);
       featurewrapper->setLine(line);
       break;
     }
-    case ePlaneFeature: {
+    case FeatureTypes::ePlaneFeature: {
       QPointer<Plane> plane = new Plane(Position(xyz), Direction(ijk));
       plane->setIsSolved(true);
       featurewrapper->setPlane(plane);
       break;
     }
-    case eCircleFeature: {
+    case FeatureTypes::eCircleFeature: {
       QPointer<Circle> circle =
           new Circle(Position(xyz), Direction(ijk), Radius(radius));
       circle->setIsSolved(true);
       featurewrapper->setCircle(circle);
       break;
     }
-    case eCylinderFeature: {
+    case FeatureTypes::eCylinderFeature: {
       QPointer<Cylinder> cylinder =
           new Cylinder(Position(xyz), Direction(ijk), Radius(radius));
       cylinder->setIsSolved(true);
@@ -140,13 +140,13 @@ void WatchwindowTest::verifyResult(Result result, double x, double y, double z,
 }
 
 void WatchwindowTest::testPoint1() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1.001, 1.002, 1.003);
-  QPointer<FeatureWrapper> featurewrapper =
-      createFeature(ePointFeature, 1.003, 1.005, 1.007, 0, 0, 0, 0);
+  QPointer<FeatureWrapper> featurewrapper = createFeature(
+      FeatureTypes::ePointFeature, 1.003, 1.005, 1.007, 0, 0, 0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);
@@ -156,13 +156,13 @@ void WatchwindowTest::testPoint1() {
 }
 
 void WatchwindowTest::testPoint2() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1000, 2000, 3000);
-  QPointer<FeatureWrapper> featurewrapper =
-      createFeature(ePointFeature, 999.99, 1999.99, 2999.98, 0, 0, 0, 0);
+  QPointer<FeatureWrapper> featurewrapper = createFeature(
+      FeatureTypes::ePointFeature, 999.99, 1999.99, 2999.98, 0, 0, 0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);
@@ -171,13 +171,14 @@ void WatchwindowTest::testPoint2() {
 }
 
 void WatchwindowTest::testLine1() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(2000.1, 2000.1, 1000.1);
-  QPointer<FeatureWrapper> featurewrapper = createFeature(
-      eLineFeature, 2979.99, 3019.99, 999.99, 0.699995, 0.714147, 0.000000, 0);
+  QPointer<FeatureWrapper> featurewrapper =
+      createFeature(FeatureTypes::eLineFeature, 2979.99, 3019.99, 999.99,
+                    0.699995, 0.714147, 0.000000, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);
@@ -187,14 +188,14 @@ void WatchwindowTest::testLine1() {
 }
 
 void WatchwindowTest::testPlane1() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1500.0, 1500.0, 1002.00);
   QPointer<FeatureWrapper> featurewrapper =
-      createFeature(ePlaneFeature, 1375.00, 1625.00, 1024.75, 0.100818,
-                    -0.097854, 0.990081, 0);
+      createFeature(FeatureTypes::ePlaneFeature, 1375.00, 1625.00, 1024.75,
+                    0.100818, -0.097854, 0.990081, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);
@@ -204,13 +205,13 @@ void WatchwindowTest::testPlane1() {
 }
 
 void WatchwindowTest::testPlane2() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1.0, 1.0, -1.00);
-  QPointer<FeatureWrapper> featurewrapper =
-      createFeature(ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
+  QPointer<FeatureWrapper> featurewrapper = createFeature(
+      FeatureTypes::ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);
@@ -219,13 +220,13 @@ void WatchwindowTest::testPlane2() {
 }
 
 void WatchwindowTest::testPlane3() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1.0, 1.0, 1.00);
-  QPointer<FeatureWrapper> featurewrapper =
-      createFeature(ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
+  QPointer<FeatureWrapper> featurewrapper = createFeature(
+      FeatureTypes::ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);
@@ -234,14 +235,14 @@ void WatchwindowTest::testPlane3() {
 }
 
 void WatchwindowTest::testCircle1() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(0., 1001., 1000.0);
   QPointer<FeatureWrapper> featurewrapper =
-      createFeature(eCircleFeature, 600.01, 500.00, 1000.00, 0.000010, 0.000007,
-                    -1.000000, 781.03);
+      createFeature(FeatureTypes::eCircleFeature, 600.01, 500.00, 1000.00,
+                    0.000010, 0.000007, -1.000000, 781.03);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);
@@ -251,14 +252,14 @@ void WatchwindowTest::testCircle1() {
 }
 
 void WatchwindowTest::testCylinder1() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(2, 1002, 1003);
   QPointer<FeatureWrapper> featurewrapper =
-      createFeature(eCylinderFeature, -25.00, -25.00, 1142.85, 0.000006,
-                    -0.000009, 1.000000, 1025.30);
+      createFeature(FeatureTypes::eCylinderFeature, -25.00, -25.00, 1142.85,
+                    0.000006, -0.000009, 1.000000, 1025.30);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
   DEBUG_RESULT(result);

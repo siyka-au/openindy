@@ -233,9 +233,9 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
 
   // add the input elements
   if (getIsFeature(neededElementType) ||
-      neededElementType == eDirectionElement ||
-      neededElementType == ePositionElement ||
-      neededElementType == eRadiusElement) {  // feature
+      neededElementType == ElementTypes::eDirectionElement ||
+      neededElementType == ElementTypes::ePositionElement ||
+      neededElementType == ElementTypes::eRadiusElement) {  // feature
 
     // temporary save all feature pointers
     QList<QPointer<FeatureWrapper> > features;
@@ -258,7 +258,8 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
     function->blockSignals(false);
     function->inputElementsChanged();
 
-  } else if (neededElementType == eObservationElement) {  // observation
+  } else if (neededElementType ==
+             ElementTypes::eObservationElement) {  // observation
 
     // temporary save all observation pointers
     QList<QPointer<Observation> > observations;
@@ -539,15 +540,17 @@ void AvailableElementsTreeViewProxyModel::addInputElement(
   // check if the type is one of direction, position or radius and the item is a
   // corresponding geometry
   bool elementCheck = false;
-  if (type == eDirectionElement && !item->getFeature().isNull() &&
+  if (type == ElementTypes::eDirectionElement && !item->getFeature().isNull() &&
       !item->getFeature()->getGeometry().isNull() &&
       item->getFeature()->getGeometry()->hasDirection()) {
     elementCheck = true;
-  } else if (type == ePositionElement && !item->getFeature().isNull() &&
+  } else if (type == ElementTypes::ePositionElement &&
+             !item->getFeature().isNull() &&
              !item->getFeature()->getGeometry().isNull() &&
              item->getFeature()->getGeometry()->hasPosition()) {
     elementCheck = true;
-  } else if (type == eRadiusElement && !item->getFeature().isNull() &&
+  } else if (type == ElementTypes::eRadiusElement &&
+             !item->getFeature().isNull() &&
              !item->getFeature()->getGeometry().isNull() &&
              item->getFeature()->getGeometry()->hasRadius()) {
     elementCheck = true;

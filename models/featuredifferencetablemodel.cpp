@@ -84,9 +84,9 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex& index,
           this->getDifferenceAsDisplayUnit(feature, index);
 
       if (result.first) {
-        return QString::number(
-            result.second, 'f',
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        return QString::number(result.second, 'f',
+                               this->parameterDisplayConfig.getDisplayDigits(
+                                   DimensionType::eMetric));
       } else {
         return "-/-";
       }
@@ -132,16 +132,16 @@ QVariant FeatureDifferenceTableModel::headerData(int section,
         return "feature name";
       case 1:
         return QString(
-            "dX" + getUnitTypeName(
-                       this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+            "dX" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                       DimensionType::eMetric)));
       case 2:
         return QString(
-            "dY" + getUnitTypeName(
-                       this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+            "dY" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                       DimensionType::eMetric)));
       case 3:
         return QString(
-            "dZ" + getUnitTypeName(
-                       this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+            "dZ" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                       DimensionType::eMetric)));
       default:
         break;
     }
@@ -320,13 +320,17 @@ QPair<bool, double> FeatureDifferenceTableModel::getDifferenceAsDisplayUnit(
             rnd(convertFromDefault(
                     feature->getGeometry()->getPosition().getVector().getAt(
                         index.column() - 1),
-                    this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-                this->parameterDisplayConfig.getDisplayDigits(eMetric)) -
+                    this->parameterDisplayConfig.getDisplayUnit(
+                        DimensionType::eMetric)),
+                this->parameterDisplayConfig.getDisplayDigits(
+                    DimensionType::eMetric)) -
                 rnd(convertFromDefault(
                         nominal->getPosition().getVector().getAt(
                             index.column() - 1),
-                        this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-                    this->parameterDisplayConfig.getDisplayDigits(eMetric)));
+                        this->parameterDisplayConfig.getDisplayUnit(
+                            DimensionType::eMetric)),
+                    this->parameterDisplayConfig.getDisplayDigits(
+                        DimensionType::eMetric)));
       }
     } else {
       return qMakePair(false, 0.0);

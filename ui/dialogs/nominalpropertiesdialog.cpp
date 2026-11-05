@@ -164,83 +164,83 @@ void NominalPropertiesDialog::initModels() {}
 void NominalPropertiesDialog::setVisibility(const GeometryParameters& param,
                                             const bool& visible) {
   switch (param) {
-    case eUnknownX:
+    case GeometryParameters::eUnknownX:
       this->ui->label_nominalX->setVisible(visible);
       this->ui->lineEdit_nominalX->setVisible(visible);
       break;
-    case eUnknownY:
+    case GeometryParameters::eUnknownY:
       this->ui->label_nominalY->setVisible(visible);
       this->ui->lineEdit_nominalY->setVisible(visible);
       break;
-    case eUnknownZ:
+    case GeometryParameters::eUnknownZ:
       this->ui->label_nominalZ->setVisible(visible);
       this->ui->lineEdit_nominalZ->setVisible(visible);
       break;
-    case eUnknownPrimaryI:
+    case GeometryParameters::eUnknownPrimaryI:
       this->ui->label_nominalI1->setVisible(visible);
       this->ui->lineEdit_nominalI1->setVisible(visible);
       break;
-    case eUnknownPrimaryJ:
+    case GeometryParameters::eUnknownPrimaryJ:
       this->ui->label_nominalJ1->setVisible(visible);
       this->ui->lineEdit_nominalJ1->setVisible(visible);
       break;
-    case eUnknownPrimaryK:
+    case GeometryParameters::eUnknownPrimaryK:
       this->ui->label_nominalK1->setVisible(visible);
       this->ui->lineEdit_nominalK1->setVisible(visible);
       break;
-    case eUnknownSecondaryI:
+    case GeometryParameters::eUnknownSecondaryI:
       this->ui->label_nominalI2->setVisible(visible);
       this->ui->lineEdit_nominalI2->setVisible(visible);
       break;
-    case eUnknownSecondaryJ:
+    case GeometryParameters::eUnknownSecondaryJ:
       this->ui->label_nominalJ2->setVisible(visible);
       this->ui->lineEdit_nominalJ2->setVisible(visible);
       break;
-    case eUnknownSecondaryK:
+    case GeometryParameters::eUnknownSecondaryK:
       this->ui->label_nominalK2->setVisible(visible);
       this->ui->lineEdit_nominalK2->setVisible(visible);
       break;
-    case eUnknownRadiusA:
+    case GeometryParameters::eUnknownRadiusA:
       this->ui->label_nominalR1->setVisible(visible);
       this->ui->lineEdit_nominalR1->setVisible(visible);
       break;
-    case eUnknownRadiusB:
+    case GeometryParameters::eUnknownRadiusB:
       this->ui->label_nominalR2->setVisible(visible);
       this->ui->lineEdit_nominalR2->setVisible(visible);
       break;
-    case eUnknownAperture:
+    case GeometryParameters::eUnknownAperture:
       this->ui->label_nominalAperture->setVisible(visible);
       this->ui->lineEdit_nominalAperture->setVisible(visible);
       break;
-    case eUnknownA:
+    case GeometryParameters::eUnknownA:
       this->ui->label_nominalA->setVisible(visible);
       this->ui->lineEdit_nominalA->setVisible(visible);
       break;
-    case eUnknownB:
+    case GeometryParameters::eUnknownB:
       this->ui->label_nominalB->setVisible(visible);
       this->ui->lineEdit_nominalB->setVisible(visible);
       break;
-    case eUnknownC:
+    case GeometryParameters::eUnknownC:
       this->ui->label_nominalC->setVisible(visible);
       this->ui->lineEdit_nominalC->setVisible(visible);
       break;
-    case eUnknownAngle:
+    case GeometryParameters::eUnknownAngle:
       this->ui->label_nominalAngle->setVisible(visible);
       this->ui->lineEdit_nominalAngle->setVisible(visible);
       break;
-    case eUnknownDistance:
+    case GeometryParameters::eUnknownDistance:
       this->ui->label_nominalDistance->setVisible(visible);
       this->ui->lineEdit_nominalDistance->setVisible(visible);
       break;
-    case eUnknownMeasurementSeries:
+    case GeometryParameters::eUnknownMeasurementSeries:
       this->ui->label_nominalMeasurementSeries->setVisible(visible);
       this->ui->lineEdit_nominalMeasurementSeries->setVisible(visible);
       break;
-    case eUnknownTemperature:
+    case GeometryParameters::eUnknownTemperature:
       this->ui->label_nominalTemperature->setVisible(visible);
       this->ui->lineEdit_nominalTemperature->setVisible(visible);
       break;
-    case eUnknownLength:
+    case GeometryParameters::eUnknownLength:
       this->ui->label_nominalLength->setVisible(visible);
       this->ui->lineEdit_nominalLength->setVisible(visible);
       break;
@@ -255,64 +255,64 @@ void NominalPropertiesDialog::setVisibility(const GeometryParameters& param,
 void NominalPropertiesDialog::setParametersToGUI(
     const GeometryParameters& param, const QString& value) {
   switch (param) {
-    case eUnknownX:
+    case GeometryParameters::eUnknownX:
       this->ui->lineEdit_nominalX->setText(value);
       break;
-    case eUnknownY:
+    case GeometryParameters::eUnknownY:
       this->ui->lineEdit_nominalY->setText(value);
       break;
-    case eUnknownZ:
+    case GeometryParameters::eUnknownZ:
       this->ui->lineEdit_nominalZ->setText(value);
       break;
-    case eUnknownPrimaryI:
+    case GeometryParameters::eUnknownPrimaryI:
       this->ui->lineEdit_nominalI1->setText(value);
       break;
-    case eUnknownPrimaryJ:
+    case GeometryParameters::eUnknownPrimaryJ:
       this->ui->lineEdit_nominalJ1->setText(value);
       break;
-    case eUnknownPrimaryK:
+    case GeometryParameters::eUnknownPrimaryK:
       this->ui->lineEdit_nominalK1->setText(value);
       break;
-    case eUnknownSecondaryI:
+    case GeometryParameters::eUnknownSecondaryI:
       this->ui->lineEdit_nominalI2->setText(value);
       break;
-    case eUnknownSecondaryJ:
+    case GeometryParameters::eUnknownSecondaryJ:
       this->ui->lineEdit_nominalJ2->setText(value);
       break;
-    case eUnknownSecondaryK:
+    case GeometryParameters::eUnknownSecondaryK:
       this->ui->lineEdit_nominalK2->setText(value);
       break;
-    case eUnknownRadiusA:
+    case GeometryParameters::eUnknownRadiusA:
       this->ui->lineEdit_nominalR1->setText(value);
       break;
-    case eUnknownRadiusB:
+    case GeometryParameters::eUnknownRadiusB:
       this->ui->lineEdit_nominalR2->setText(value);
       break;
-    case eUnknownAperture:
+    case GeometryParameters::eUnknownAperture:
       this->ui->lineEdit_nominalAperture->setText(value);
       break;
-    case eUnknownA:
+    case GeometryParameters::eUnknownA:
       this->ui->lineEdit_nominalA->setText(value);
       break;
-    case eUnknownB:
+    case GeometryParameters::eUnknownB:
       this->ui->lineEdit_nominalB->setText(value);
       break;
-    case eUnknownC:
+    case GeometryParameters::eUnknownC:
       this->ui->lineEdit_nominalC->setText(value);
       break;
-    case eUnknownAngle:
+    case GeometryParameters::eUnknownAngle:
       this->ui->lineEdit_nominalAngle->setText(value);
       break;
-    case eUnknownDistance:
+    case GeometryParameters::eUnknownDistance:
       this->ui->lineEdit_nominalDistance->setText(value);
       break;
-    case eUnknownMeasurementSeries:
+    case GeometryParameters::eUnknownMeasurementSeries:
       this->ui->lineEdit_nominalMeasurementSeries->setText(value);
       break;
-    case eUnknownTemperature:
+    case GeometryParameters::eUnknownTemperature:
       this->ui->lineEdit_nominalTemperature->setText(value);
       break;
-    case eUnknownLength:
+    case GeometryParameters::eUnknownLength:
       this->ui->lineEdit_nominalLength->setText(value);
       break;
   }
@@ -343,7 +343,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
     // get values from GUI elements (only use values that differ from the
     // initial input)
     switch (param) {
-      case eUnknownX:
+      case GeometryParameters::eUnknownX:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalX->text()) == 0) {
@@ -352,9 +352,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalX->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownY:
+      case GeometryParameters::eUnknownY:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalY->text()) == 0) {
@@ -363,9 +363,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalY->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownZ:
+      case GeometryParameters::eUnknownZ:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalZ->text()) == 0) {
@@ -374,9 +374,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalZ->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownPrimaryI:
+      case GeometryParameters::eUnknownPrimaryI:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalI1->text()) == 0) {
@@ -385,7 +385,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(param,
                           this->ui->lineEdit_nominalI1->text().toDouble());
         break;
-      case eUnknownPrimaryJ:
+      case GeometryParameters::eUnknownPrimaryJ:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalJ1->text()) == 0) {
@@ -394,7 +394,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(param,
                           this->ui->lineEdit_nominalJ1->text().toDouble());
         break;
-      case eUnknownPrimaryK:
+      case GeometryParameters::eUnknownPrimaryK:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalK1->text()) == 0) {
@@ -403,7 +403,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(param,
                           this->ui->lineEdit_nominalK1->text().toDouble());
         break;
-      case eUnknownSecondaryI:
+      case GeometryParameters::eUnknownSecondaryI:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalI2->text()) == 0) {
@@ -412,7 +412,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(param,
                           this->ui->lineEdit_nominalI2->text().toDouble());
         break;
-      case eUnknownSecondaryJ:
+      case GeometryParameters::eUnknownSecondaryJ:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalJ2->text()) == 0) {
@@ -421,7 +421,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(param,
                           this->ui->lineEdit_nominalJ2->text().toDouble());
         break;
-      case eUnknownSecondaryK:
+      case GeometryParameters::eUnknownSecondaryK:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalK2->text()) == 0) {
@@ -430,7 +430,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(param,
                           this->ui->lineEdit_nominalK2->text().toDouble());
         break;
-      case eUnknownRadiusA:
+      case GeometryParameters::eUnknownRadiusA:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalR1->text()) == 0) {
@@ -439,9 +439,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalR1->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownRadiusB:
+      case GeometryParameters::eUnknownRadiusB:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalR2->text()) == 0) {
@@ -450,9 +450,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalR2->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownAperture:
+      case GeometryParameters::eUnknownAperture:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalAperture->text()) == 0) {
@@ -461,9 +461,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param, convertToDefault(
                        this->ui->lineEdit_nominalAperture->text().toDouble(),
-                       dConfig.getDisplayUnit(eAngular)));
+                       dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
-      case eUnknownA:
+      case GeometryParameters::eUnknownA:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalA->text()) == 0) {
@@ -472,9 +472,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalA->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownB:
+      case GeometryParameters::eUnknownB:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalB->text()) == 0) {
@@ -483,9 +483,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalB->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownC:
+      case GeometryParameters::eUnknownC:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalC->text()) == 0) {
@@ -494,9 +494,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalC->text().toDouble(),
-                             dConfig.getDisplayUnit(eMetric)));
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownAngle:
+      case GeometryParameters::eUnknownAngle:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalAngle->text()) == 0) {
@@ -505,9 +505,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param,
             convertToDefault(this->ui->lineEdit_nominalAngle->text().toDouble(),
-                             dConfig.getDisplayUnit(eAngular)));
+                             dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
-      case eUnknownDistance:
+      case GeometryParameters::eUnknownDistance:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalDistance->text()) == 0) {
@@ -516,9 +516,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param, convertToDefault(
                        this->ui->lineEdit_nominalDistance->text().toDouble(),
-                       dConfig.getDisplayUnit(eMetric)));
+                       dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownMeasurementSeries:
+      case GeometryParameters::eUnknownMeasurementSeries:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalMeasurementSeries->text()) == 0) {
@@ -528,9 +528,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
             param,
             convertToDefault(
                 this->ui->lineEdit_nominalMeasurementSeries->text().toDouble(),
-                dConfig.getDisplayUnit(eMetric)));
+                dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownTemperature:
+      case GeometryParameters::eUnknownTemperature:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalTemperature->text()) == 0) {
@@ -539,9 +539,9 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param, convertToDefault(
                        this->ui->lineEdit_nominalTemperature->text().toDouble(),
-                       dConfig.getDisplayUnit(eTemperature)));
+                       dConfig.getDisplayUnit(DimensionType::eTemperature)));
         break;
-      case eUnknownLength:
+      case GeometryParameters::eUnknownLength:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_nominalLength->text()) == 0) {
@@ -550,7 +550,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
         parameters.insert(
             param, convertToDefault(
                        this->ui->lineEdit_nominalLength->text().toDouble(),
-                       dConfig.getDisplayUnit(eMetric)));
+                       dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
     }
   }

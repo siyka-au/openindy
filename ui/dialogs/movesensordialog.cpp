@@ -50,7 +50,7 @@ void MoveSensorDialog::initModels() {
 void MoveSensorDialog::showEvent(QShowEvent* event) {
   if (this->ui->comboBox_typeOfReading->currentIndex() < 0) {
     this->ui->comboBox_typeOfReading->setCurrentText(
-        getReadingTypeName(eCartesianReading));
+        getReadingTypeName(ReadingTypes::eCartesianReading));
   }
 
   event->accept();
@@ -63,10 +63,10 @@ void MoveSensorDialog::on_pushButton_move_clicked() {
   ReadingTypes readingType =
       getReadingTypeEnum(this->ui->comboBox_typeOfReading->currentText());
   switch (readingType) {
-    case eDistanceReading: {
+    case ReadingTypes::eDistanceReading: {
       break;
     }
-    case eCartesianReading: {
+    case ReadingTypes::eCartesianReading: {
       ReadingCartesian rCartesian;
       rCartesian.xyz.setAt(0, this->ui->lineEdit_x->text().toDouble());
       rCartesian.xyz.setAt(1, this->ui->lineEdit_y->text().toDouble());
@@ -78,7 +78,7 @@ void MoveSensorDialog::on_pushButton_move_clicked() {
 
       break;
     }
-    case ePolarReading: {
+    case ReadingTypes::ePolarReading: {
       ReadingPolar rPolar;
       rPolar.azimuth = this->ui->lineEdit_azimuth->text().toDouble();
       rPolar.zenith = this->ui->lineEdit_zenith->text().toDouble();
@@ -90,16 +90,16 @@ void MoveSensorDialog::on_pushButton_move_clicked() {
 
       break;
     }
-    case eDirectionReading: {
+    case ReadingTypes::eDirectionReading: {
       break;
     }
-    case eTemperatureReading: {
+    case ReadingTypes::eTemperatureReading: {
       break;
     }
-    case eLevelReading: {
+    case ReadingTypes::eLevelReading: {
       break;
     }
-    case eUndefinedReading: {
+    case ReadingTypes::eUndefinedReading: {
       break;
     }
   }
@@ -119,7 +119,7 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentTextChanged(
 
   // set visibility depending on reading type
   switch (readingType) {
-    case eDistanceReading:
+    case ReadingTypes::eDistanceReading:
 
       // set visibility
       this->ui->lineEdit_azimuth->setVisible(false);
@@ -139,7 +139,7 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentTextChanged(
 
       break;
 
-    case eCartesianReading:
+    case ReadingTypes::eCartesianReading:
 
       // set visibility
       this->ui->lineEdit_azimuth->setVisible(false);
@@ -159,7 +159,7 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentTextChanged(
 
       break;
 
-    case ePolarReading:
+    case ReadingTypes::ePolarReading:
 
       // set visibility
       this->ui->lineEdit_azimuth->setVisible(true);
@@ -179,12 +179,12 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentTextChanged(
 
       break;
 
-    case eDirectionReading:    // not implemented, fall through
-    case eTemperatureReading:  // not implemented, fall through
-    case eLevelReading:        // not implemented, fall through
-    case eCartesianReading6D:  // not implemented, fall through
-    case eUndefinedReading:    // fall through
-    default:                   // disable all
+    case ReadingTypes::eDirectionReading:    // not implemented, fall through
+    case ReadingTypes::eTemperatureReading:  // not implemented, fall through
+    case ReadingTypes::eLevelReading:        // not implemented, fall through
+    case ReadingTypes::eCartesianReading6D:  // not implemented, fall through
+    case ReadingTypes::eUndefinedReading:    // fall through
+    default:                                 // disable all
       // set visibility
       this->ui->lineEdit_azimuth->setVisible(false);
       this->ui->lineEdit_zenith->setVisible(false);

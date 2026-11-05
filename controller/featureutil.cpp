@@ -4,7 +4,7 @@
 // create intial bundle transformation (Bundle01_1) to STATION01
 bool FeatureUtil::createInitialBundleTransformation(QPointer<OiJob> job) {
   FeatureAttributes trafoAttr;
-  trafoAttr.typeOfFeature = eTrafoParamFeature;
+  trafoAttr.typeOfFeature = FeatureTypes::eTrafoParamFeature;
   trafoAttr.group = "";
   trafoAttr.count = 1;
   trafoAttr.startSystem = "Bundle01";
@@ -26,15 +26,15 @@ bool FeatureUtil::createInitialBundleTransformation(QPointer<OiJob> job) {
 
   // set up parameters
   QMap<TrafoParamParameters, double> parameters;
-  parameters.insert(eUnknownTX, 0.0);
-  parameters.insert(eUnknownTY, 0.0);
-  parameters.insert(eUnknownTZ, 0.0);
-  parameters.insert(eUnknownRX, 0.0);
-  parameters.insert(eUnknownRY, 0.0);
-  parameters.insert(eUnknownRZ, 0.0);
-  parameters.insert(eUnknownSX, 1.0);
-  parameters.insert(eUnknownSY, 1.0);
-  parameters.insert(eUnknownSZ, 1.0);
+  parameters.insert(TrafoParamParameters::eUnknownTX, 0.0);
+  parameters.insert(TrafoParamParameters::eUnknownTY, 0.0);
+  parameters.insert(TrafoParamParameters::eUnknownTZ, 0.0);
+  parameters.insert(TrafoParamParameters::eUnknownRX, 0.0);
+  parameters.insert(TrafoParamParameters::eUnknownRY, 0.0);
+  parameters.insert(TrafoParamParameters::eUnknownRZ, 0.0);
+  parameters.insert(TrafoParamParameters::eUnknownSX, 1.0);
+  parameters.insert(TrafoParamParameters::eUnknownSY, 1.0);
+  parameters.insert(TrafoParamParameters::eUnknownSZ, 1.0);
   trafo->setUnknownParameters(parameters);
   trafo->setIsUsed(true);
   trafo->setIsDatumTrafo(true);

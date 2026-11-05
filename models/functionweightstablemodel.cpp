@@ -137,21 +137,24 @@ QVariant FunctionWeightsTableModel::data(const QModelIndex& index,
     switch (index.column()) {
       case 1:
         if (inputElem.at(index.row())
-                .ignoredDestinationParams.contains(eUnknownX)) {
+                .ignoredDestinationParams.contains(
+                    GeometryParameters::eUnknownX)) {
           return Qt::Unchecked;
         } else {
           return Qt::Checked;
         }
       case 2:
         if (inputElem.at(index.row())
-                .ignoredDestinationParams.contains(eUnknownY)) {
+                .ignoredDestinationParams.contains(
+                    GeometryParameters::eUnknownY)) {
           return Qt::Unchecked;
         } else {
           return Qt::Checked;
         }
       case 3:
         if (inputElem.at(index.row())
-                .ignoredDestinationParams.contains(eUnknownZ)) {
+                .ignoredDestinationParams.contains(
+                    GeometryParameters::eUnknownZ)) {
           return Qt::Unchecked;
         } else {
           return Qt::Checked;
@@ -327,8 +330,10 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
             if (fw->getGeometry()->getId() == i.id) {
               if (useY) {
                 // remove from ignore list to use
-                if (i.ignoredDestinationParams.contains(eUnknownY)) {
-                  i.ignoredDestinationParams.removeOne(eUnknownY);
+                if (i.ignoredDestinationParams.contains(
+                        GeometryParameters::eUnknownY)) {
+                  i.ignoredDestinationParams.removeOne(
+                      GeometryParameters::eUnknownY);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
@@ -339,8 +344,10 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
                 return true;
               } else {
                 // add to ignore list
-                if (!i.ignoredDestinationParams.contains(eUnknownY)) {
-                  i.ignoredDestinationParams.append(eUnknownY);
+                if (!i.ignoredDestinationParams.contains(
+                        GeometryParameters::eUnknownY)) {
+                  i.ignoredDestinationParams.append(
+                      GeometryParameters::eUnknownY);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
@@ -367,8 +374,10 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
             if (fw->getGeometry()->getId() == i.id) {
               if (useZ) {
                 // remove from ignore list to use
-                if (i.ignoredDestinationParams.contains(eUnknownZ)) {
-                  i.ignoredDestinationParams.removeOne(eUnknownZ);
+                if (i.ignoredDestinationParams.contains(
+                        GeometryParameters::eUnknownZ)) {
+                  i.ignoredDestinationParams.removeOne(
+                      GeometryParameters::eUnknownZ);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()
@@ -379,8 +388,10 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
                 return true;
               } else {
                 // add to ignore list
-                if (!i.ignoredDestinationParams.contains(eUnknownZ)) {
-                  i.ignoredDestinationParams.append(eUnknownZ);
+                if (!i.ignoredDestinationParams.contains(
+                        GeometryParameters::eUnknownZ)) {
+                  i.ignoredDestinationParams.append(
+                      GeometryParameters::eUnknownZ);
                 }
                 // save in current feature function
                 this->currentJob->getActiveFeature()

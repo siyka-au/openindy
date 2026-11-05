@@ -151,10 +151,12 @@ bool FeatureTableProxyModel::filterAcceptsRow(
   }
 
   // filter by actual nominal
-  if ((source_model->getActualNominalFilter() == eFilterActual &&
+  if ((source_model->getActualNominalFilter() ==
+           ActualNominalFilter::eFilterActual &&
        !feature->getGeometry().isNull() &&
        !feature->getGeometry()->getOwnerDescription().has_value()) ||
-      (source_model->getActualNominalFilter() == eFilterNominal &&
+      (source_model->getActualNominalFilter() ==
+           ActualNominalFilter::eFilterNominal &&
        (feature->getGeometry().isNull() ||
         feature->getGeometry()->getOwnerDescription().has_value()))) {
     return false;

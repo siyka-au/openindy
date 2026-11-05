@@ -657,10 +657,10 @@ void FeatureFunctionsDialog::selectFunctionItem(Row row) {
   if (actFeatModel != nullptr) {
     QModelIndex index;
     switch (row) {
-      case Last:
+      case Row::Last:
         index = actFeatModel->index(actFeatModel->rowCount() - 1, 0);
         break;
-      case First:
+      case Row::First:
       default:
         index = actFeatModel->index(0, 0);
     }

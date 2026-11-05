@@ -691,15 +691,21 @@ bool ProjectConfig::saveprojectSettingsConfigFile() {
 // see SettingsDialog::updateDisplayConfigFromSelection()
 ParameterDisplayConfig ProjectConfig::getParameterDisplayConfig() {
   ParameterDisplayConfig config;
-  config.setDisplayDigits(eAngular, ProjectConfig::angularDigits);
-  config.setDisplayDigits(eMetric, ProjectConfig::distanceDigits);
-  config.setDisplayDigits(eTemperature, ProjectConfig::temperatureDigits);
+  config.setDisplayDigits(DimensionType::eAngular,
+                          ProjectConfig::angularDigits);
+  config.setDisplayDigits(DimensionType::eMetric,
+                          ProjectConfig::distanceDigits);
+  config.setDisplayDigits(DimensionType::eTemperature,
+                          ProjectConfig::temperatureDigits);
   config.setDisplayUnitType(
-      eAngular, static_cast<oi::UnitType>(ProjectConfig::angularUnit));
+      DimensionType::eAngular,
+      static_cast<oi::UnitType>(ProjectConfig::angularUnit));
   config.setDisplayUnitType(
-      eMetric, static_cast<oi::UnitType>(ProjectConfig::metricUnit));
+      DimensionType::eMetric,
+      static_cast<oi::UnitType>(ProjectConfig::metricUnit));
   config.setDisplayUnitType(
-      eTemperature, static_cast<oi::UnitType>(ProjectConfig::temperatureUnit));
+      DimensionType::eTemperature,
+      static_cast<oi::UnitType>(ProjectConfig::temperatureUnit));
   config.setUseSounds(ProjectConfig::useSounds);
 
   return config;

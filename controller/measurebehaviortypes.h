@@ -1,7 +1,7 @@
 #ifndef MEASUREBEHAVIORTYPES
 #define MEASUREBEHAVIORTYPES
 
-enum Decision {
+enum class Decision {
   eNotSet,
   eSearch,
   eTryAgain,

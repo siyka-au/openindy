@@ -53,15 +53,16 @@ void ObservationImporter::setFileName(const QString& filename) {
 bool ObservationImporter::importObservations() {
   // check job
   if (this->currentJob.isNull()) {
-    emit this->sendMessage("No active job", eErrorMessage, eMessageBoxMessage);
+    emit this->sendMessage("No active job", MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     emit this->importFinished(false);
     return false;
   }
 
   // check active station
   if (this->currentJob->getActiveStation().isNull()) {
-    emit this->sendMessage("No active station", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No active station", MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     emit this->importFinished(false);
     return false;
   }
@@ -75,15 +76,15 @@ bool ObservationImporter::importObservations() {
            .has_value()) {
     emit this->sendMessage(
         "You have to select an actual geometry before importing observations",
-        eErrorMessage, eMessageBoxMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     emit this->importFinished(false);
     return false;
   }
 
   // check filename
   if (this->filename.compare("") == 0) {
-    emit this->sendMessage("No file specified", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No file specified", MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     emit this->importFinished(false);
     return false;
   }
@@ -93,8 +94,8 @@ bool ObservationImporter::importObservations() {
   QFileInfo fileInfo(*device.data());
   if (!fileInfo.exists()) {
     emit this->sendMessage(
-        "The selected file cannot be found in the file system", eErrorMessage,
-        eMessageBoxMessage);
+        "The selected file cannot be found in the file system",
+        MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     emit this->importFinished(false);
     return false;
   }
@@ -158,7 +159,7 @@ bool ObservationImporter::importObservations() {
       rCartesian.xyz.setAt(2, xyz[2]);
       rCartesian.isValid = true;
       QPointer<Reading> reading = new Reading(rCartesian);
-      reading->setSensorFace(eUndefinedSide);
+      reading->setSensorFace(SensorFaces::eUndefinedSide);
       reading->setMeasuredAt(curDateTime);
       reading->setImported(true);
 
@@ -180,8 +181,9 @@ bool ObservationImporter::importObservations() {
     delete device;
 
   } catch (const exception& e) {
-    emit this->sendMessage("Error while opening file", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("Error while opening file",
+                           MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     emit this->importFinished(false);
     return false;
   }

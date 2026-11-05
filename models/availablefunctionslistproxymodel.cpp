@@ -63,7 +63,7 @@ bool AvailableFunctionsListProxyModel::filterAcceptsRow(
     return false;
   }
 
-  if (this->filter < 0) {
+  if (static_cast<int>(this->filter) < 0) {
     return false;
   }
 

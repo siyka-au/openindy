@@ -84,7 +84,8 @@ class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel {
   // #########################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
   // ########################################################
   // inform when the name of a measurement config has changed

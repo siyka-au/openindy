@@ -97,11 +97,11 @@ void SettingsDialog::initGUI() {
 void SettingsDialog::initModels() {
   // set unit type models
   this->ui->comboBox_angleType->setModel(
-      &ModelManager::getUnitTypesModel(eAngular));
+      &ModelManager::getUnitTypesModel(DimensionType::eAngular));
   this->ui->comboBox_distanceType->setModel(
-      &ModelManager::getUnitTypesModel(eMetric));
+      &ModelManager::getUnitTypesModel(DimensionType::eMetric));
   this->ui->comboBox_temperatureType->setModel(
-      &ModelManager::getUnitTypesModel(eTemperature));
+      &ModelManager::getUnitTypesModel(DimensionType::eTemperature));
 }
 
 /*!
@@ -109,18 +109,20 @@ void SettingsDialog::initModels() {
  */
 ParameterDisplayConfig SettingsDialog::updateDisplayConfigFromSelection() {
   ParameterDisplayConfig config;
-  config.setDisplayDigits(eAngular,
+  config.setDisplayDigits(DimensionType::eAngular,
                           this->ui->lineEdit_angleDigits->text().toInt());
-  config.setDisplayDigits(eMetric,
+  config.setDisplayDigits(DimensionType::eMetric,
                           this->ui->lineEdit_distanceDigits->text().toInt());
-  config.setDisplayDigits(eTemperature,
+  config.setDisplayDigits(DimensionType::eTemperature,
                           this->ui->lineEdit_temperatureDigits->text().toInt());
   config.setDisplayUnitType(
-      eAngular, getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
+      DimensionType::eAngular,
+      getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
   config.setDisplayUnitType(
-      eMetric, getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
+      DimensionType::eMetric,
+      getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
   config.setDisplayUnitType(
-      eTemperature,
+      DimensionType::eTemperature,
       getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
   config.setUseSounds(this->ui->checkBox_sounds->isChecked());
 
@@ -140,12 +142,12 @@ void SettingsDialog::on_pushButton_ok_clicked() {
       this->ui->lineEdit_distanceDigits->text().toInt());
   ProjectConfig::setTemperatureDigits(
       this->ui->lineEdit_temperatureDigits->text().toInt());
-  ProjectConfig::setAngularUnit(
-      getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
-  ProjectConfig::setMetricUnit(
-      getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
-  ProjectConfig::setTemperatureUnit(
-      getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
+  ProjectConfig::setAngularUnit(static_cast<int>(
+      getUnitTypeEnum(this->ui->comboBox_angleType->currentText())));
+  ProjectConfig::setMetricUnit(static_cast<int>(
+      getUnitTypeEnum(this->ui->comboBox_distanceType->currentText())));
+  ProjectConfig::setTemperatureUnit(static_cast<int>(
+      getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText())));
   ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
   ProjectConfig::setAutoSaveInterval(
       this->ui->lineEdit_autoSaveInterval->text().toInt());

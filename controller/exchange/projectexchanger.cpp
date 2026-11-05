@@ -18,7 +18,8 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob>& job) {
 
   // check job
   if (job.isNull()) {
-    Console::getInstance()->addLine("No project available", eErrorMessage);
+    Console::getInstance()->addLine("No project available",
+                                    MessageTypes::eErrorMessage);
     return project;
   }
 
@@ -117,7 +118,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob>& job) {
   // don't live in job->getGeometriesList() and need their own section)
   QDomElement groups = project.createElement("groups");
   foreach (const QPointer<FeatureWrapper>& g,
-           job->getFeaturesByType(eGroupFeature)) {
+           job->getFeaturesByType(FeatureTypes::eGroupFeature)) {
     if (!g.isNull() && !g->getGroup().isNull()) {
       QDomElement group = g->getGroup()->toOpenIndyXML(project);
       if (!group.isNull()) {
@@ -126,7 +127,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob>& job) {
     }
   }
   foreach (const QPointer<FeatureWrapper>& g,
-           job->getFeaturesByType(ePointGroupFeature)) {
+           job->getFeaturesByType(FeatureTypes::ePointGroupFeature)) {
     if (!g.isNull() && !g->getGroup().isNull()) {
       QDomElement group = g->getGroup()->toOpenIndyXML(project);
       if (!group.isNull()) {
@@ -549,7 +550,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
 
       // depending on the type of geometry call the right fromOpenIndyXML method
       switch (geomType) {
-        case eCircleFeature: {
+        case FeatureTypes::eCircleFeature: {
           QPointer<Circle> myCircle = new Circle();
           myFeatureWrapper->setCircle(myCircle);
           if (!myCircle->fromOpenIndyXML(geometry)) {
@@ -559,7 +560,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eConeFeature: {
+        case FeatureTypes::eConeFeature: {
           QPointer<Cone> myCone = new Cone();
           myFeatureWrapper->setCone(myCone);
           if (!myCone->fromOpenIndyXML(geometry)) {
@@ -569,7 +570,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eCylinderFeature: {
+        case FeatureTypes::eCylinderFeature: {
           QPointer<Cylinder> myCylinder = new Cylinder();
           myFeatureWrapper->setCylinder(myCylinder);
           if (!myCylinder->fromOpenIndyXML(geometry)) {
@@ -579,7 +580,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eEllipseFeature: {
+        case FeatureTypes::eEllipseFeature: {
           QPointer<Ellipse> myEllipse = new Ellipse();
           myFeatureWrapper->setEllipse(myEllipse);
           if (!myEllipse->fromOpenIndyXML(geometry)) {
@@ -589,7 +590,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eEllipsoidFeature: {
+        case FeatureTypes::eEllipsoidFeature: {
           QPointer<Ellipsoid> myEllipsoid = new Ellipsoid();
           myFeatureWrapper->setEllipsoid(myEllipsoid);
           if (!myEllipsoid->fromOpenIndyXML(geometry)) {
@@ -599,7 +600,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eHyperboloidFeature: {
+        case FeatureTypes::eHyperboloidFeature: {
           QPointer<Hyperboloid> myHyperboloid = new Hyperboloid();
           myFeatureWrapper->setHyperboloid(myHyperboloid);
           if (!myHyperboloid->fromOpenIndyXML(geometry)) {
@@ -609,7 +610,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eLineFeature: {
+        case FeatureTypes::eLineFeature: {
           QPointer<Line> myLine = new Line();
           myFeatureWrapper->setLine(myLine);
           if (!myLine->fromOpenIndyXML(geometry)) {
@@ -619,7 +620,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eNurbsFeature: {
+        case FeatureTypes::eNurbsFeature: {
           QPointer<Nurbs> myNurbs = new Nurbs();
           myFeatureWrapper->setNurbs(myNurbs);
           if (!myNurbs->fromOpenIndyXML(geometry)) {
@@ -629,7 +630,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eParaboloidFeature: {
+        case FeatureTypes::eParaboloidFeature: {
           QPointer<Paraboloid> myParaboloid = new Paraboloid();
           myFeatureWrapper->setParaboloid(myParaboloid);
           if (!myParaboloid->fromOpenIndyXML(geometry)) {
@@ -639,7 +640,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case ePlaneFeature: {
+        case FeatureTypes::ePlaneFeature: {
           QPointer<Plane> myPlane = new Plane();
           myFeatureWrapper->setPlane(myPlane);
           if (!myPlane->fromOpenIndyXML(geometry)) {
@@ -649,7 +650,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case ePointFeature: {
+        case FeatureTypes::ePointFeature: {
           QPointer<Point> myPoint = new Point();
           myFeatureWrapper->setPoint(myPoint);
           if (!myPoint->fromOpenIndyXML(geometry)) {
@@ -659,7 +660,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case ePointCloudFeature: {
+        case FeatureTypes::ePointCloudFeature: {
           QPointer<PointCloud> myPointCloud = new PointCloud();
           myFeatureWrapper->setPointCloud(myPointCloud);
           if (!myPointCloud->fromOpenIndyXML(geometry)) {
@@ -669,7 +670,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eScalarEntityAngleFeature: {
+        case FeatureTypes::eScalarEntityAngleFeature: {
           QPointer<ScalarEntityAngle> myAngle = new ScalarEntityAngle();
           myFeatureWrapper->setScalarEntityAngle(myAngle);
           if (!myAngle->fromOpenIndyXML(geometry)) {
@@ -679,7 +680,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eScalarEntityDistanceFeature: {
+        case FeatureTypes::eScalarEntityDistanceFeature: {
           QPointer<ScalarEntityDistance> myDistance =
               new ScalarEntityDistance();
           myFeatureWrapper->setScalarEntityDistance(myDistance);
@@ -690,7 +691,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eScalarEntityMeasurementSeriesFeature: {
+        case FeatureTypes::eScalarEntityMeasurementSeriesFeature: {
           QPointer<ScalarEntityMeasurementSeries> myMeasurementSeries =
               new ScalarEntityMeasurementSeries();
           myFeatureWrapper->setScalarEntityMeasurementSeries(
@@ -702,7 +703,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eScalarEntityTemperatureFeature: {
+        case FeatureTypes::eScalarEntityTemperatureFeature: {
           QPointer<ScalarEntityTemperature> myTemperature =
               new ScalarEntityTemperature();
           myFeatureWrapper->setScalarEntityTemperature(myTemperature);
@@ -713,7 +714,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eSlottedHoleFeature: {
+        case FeatureTypes::eSlottedHoleFeature: {
           QPointer<SlottedHole> mySlottedHole = new SlottedHole();
           myFeatureWrapper->setSlottedHole(mySlottedHole);
           if (!mySlottedHole->fromOpenIndyXML(geometry)) {
@@ -723,7 +724,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eSphereFeature: {
+        case FeatureTypes::eSphereFeature: {
           QPointer<Sphere> mySphere = new Sphere();
           myFeatureWrapper->setSphere(mySphere);
           if (!mySphere->fromOpenIndyXML(geometry)) {
@@ -733,7 +734,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument& project) {
           }
           break;
         }
-        case eTorusFeature: {
+        case FeatureTypes::eTorusFeature: {
           QPointer<Torus> myTorus = new Torus();
           myFeatureWrapper->setTorus(myTorus);
           if (!myTorus->fromOpenIndyXML(geometry)) {
@@ -786,7 +787,7 @@ bool ProjectExchanger::loadGroups(const QDomDocument& project) {
       QPointer<FeatureWrapper> myFeatureWrapper = new FeatureWrapper();
 
       switch (groupType) {
-        case eGroupFeature: {
+        case FeatureTypes::eGroupFeature: {
           QPointer<Group> myGroup = new Group();
           myFeatureWrapper->setGroup(myGroup);
           if (!myGroup->fromOpenIndyXML(group)) {
@@ -796,7 +797,7 @@ bool ProjectExchanger::loadGroups(const QDomDocument& project) {
           }
           break;
         }
-        case ePointGroupFeature: {
+        case FeatureTypes::ePointGroupFeature: {
           QPointer<PointGroup> myPointGroup = new PointGroup();
           myFeatureWrapper->setPointGroup(myPointGroup);
           if (!myPointGroup->fromOpenIndyXML(group)) {
@@ -1470,10 +1471,10 @@ bool ProjectExchanger::restoreGeometryDependencies(
                 ? SensorType(mConfigElement.attribute("sensorType"), QString())
                 : SensorType();
 
-        const MeasurementConfigKey standardKey(name.toString(), eStandardConfig,
-                                               sensorType);
-        const MeasurementConfigKey projectKey(name.toString(), eProjectConfig,
-                                              sensorType);
+        const MeasurementConfigKey standardKey(
+            name.toString(), ConfigTypes::eStandardConfig, sensorType);
+        const MeasurementConfigKey projectKey(
+            name.toString(), ConfigTypes::eProjectConfig, sensorType);
 
         MeasurementConfig standardConfig =
             this->mConfigManager->getConfig(standardKey);
@@ -1536,11 +1537,14 @@ bool ProjectExchanger::restoreGroupDependencies(const QDomDocument& project) {
 }
 
 bool ProjectExchanger::isScalar(QPointer<FeatureWrapper> geometry) {
-  return geometry->getFeatureTypeEnum() == eScalarEntityAngleFeature ||
-         geometry->getFeatureTypeEnum() == eScalarEntityDistanceFeature ||
-         geometry->getFeatureTypeEnum() == eScalarEntityTemperatureFeature ||
+  return geometry->getFeatureTypeEnum() ==
+             FeatureTypes::eScalarEntityAngleFeature ||
          geometry->getFeatureTypeEnum() ==
-             eScalarEntityMeasurementSeriesFeature;
+             FeatureTypes::eScalarEntityDistanceFeature ||
+         geometry->getFeatureTypeEnum() ==
+             FeatureTypes::eScalarEntityTemperatureFeature ||
+         geometry->getFeatureTypeEnum() ==
+             FeatureTypes::eScalarEntityMeasurementSeriesFeature;
 }
 
 /*!
@@ -1585,27 +1589,27 @@ bool ProjectExchanger::restoreObservationDependencies(
 
         // assign the observation's reading to the station
         switch (myObservation->getReading()->getTypeOfReading()) {
-          case eCartesianReading:
+          case ReadingTypes::eCartesianReading:
             myStation->getStation()->cartesianReadings.append(
                 myObservation->getReading());
             break;
-          case ePolarReading:
+          case ReadingTypes::ePolarReading:
             myStation->getStation()->polarReadings.append(
                 myObservation->getReading());
             break;
-          case eDirectionReading:
+          case ReadingTypes::eDirectionReading:
             myStation->getStation()->directionReadings.append(
                 myObservation->getReading());
             break;
-          case eDistanceReading:
+          case ReadingTypes::eDistanceReading:
             myStation->getStation()->distanceReadings.append(
                 myObservation->getReading());
             break;
-          case eLevelReading:
+          case ReadingTypes::eLevelReading:
             myStation->getStation()->levelReadings.append(
                 myObservation->getReading());
             break;
-          case eTemperatureReading:
+          case ReadingTypes::eTemperatureReading:
             myStation->getStation()->temperatureRadings.append(
                 myObservation->getReading());
             break;
@@ -1721,7 +1725,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(
               InputElement element;
               element.station = station;
               element.id = station->getId();
-              element.typeOfElement = eStationElement;
+              element.typeOfElement = ElementTypes::eStationElement;
               element.shouldBeUsed = shouldBeUsed;
               element.ignoredDestinationParams = restoreIgnoredParameter;
               myFunction->addInputElement(
@@ -1735,7 +1739,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(
               InputElement element;
               element.coordSystem = coordinateSystem;
               element.id = coordinateSystem->getId();
-              element.typeOfElement = eCoordinateSystemElement;
+              element.typeOfElement = ElementTypes::eCoordinateSystemElement;
               element.shouldBeUsed = shouldBeUsed;
               element.ignoredDestinationParams = restoreIgnoredParameter;
               myFunction->addInputElement(
@@ -1749,7 +1753,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(
               InputElement element;
               element.trafoParam = trafoParam;
               element.id = trafoParam->getId();
-              element.typeOfElement = eTrafoParamElement;
+              element.typeOfElement = ElementTypes::eTrafoParamElement;
               element.shouldBeUsed = shouldBeUsed;
               element.ignoredDestinationParams = restoreIgnoredParameter;
               myFunction->addInputElement(
@@ -1764,84 +1768,88 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(
               element.shouldBeUsed = shouldBeUsed;
               element.ignoredDestinationParams = restoreIgnoredParameter;
               switch (geometry->getFeatureTypeEnum()) {
-                case eCircleFeature:
+                case FeatureTypes::eCircleFeature:
                   element.circle = geometry->getCircle();
-                  element.typeOfElement = eCircleElement;
+                  element.typeOfElement = ElementTypes::eCircleElement;
                   break;
-                case eConeFeature:
+                case FeatureTypes::eConeFeature:
                   element.cone = geometry->getCone();
-                  element.typeOfElement = eConeElement;
+                  element.typeOfElement = ElementTypes::eConeElement;
                   break;
-                case eCylinderFeature:
+                case FeatureTypes::eCylinderFeature:
                   element.cylinder = geometry->getCylinder();
-                  element.typeOfElement = eCylinderElement;
+                  element.typeOfElement = ElementTypes::eCylinderElement;
                   break;
-                case eEllipseFeature:
+                case FeatureTypes::eEllipseFeature:
                   element.ellipse = geometry->getEllipse();
-                  element.typeOfElement = eEllipseElement;
+                  element.typeOfElement = ElementTypes::eEllipseElement;
                   break;
-                case eEllipsoidFeature:
+                case FeatureTypes::eEllipsoidFeature:
                   element.ellipsoid = geometry->getEllipsoid();
-                  element.typeOfElement = eEllipsoidElement;
+                  element.typeOfElement = ElementTypes::eEllipsoidElement;
                   break;
-                case eHyperboloidFeature:
+                case FeatureTypes::eHyperboloidFeature:
                   element.hyperboloid = geometry->getHyperboloid();
-                  element.typeOfElement = eHyperboloidElement;
+                  element.typeOfElement = ElementTypes::eHyperboloidElement;
                   break;
-                case eLineFeature:
+                case FeatureTypes::eLineFeature:
                   element.line = geometry->getLine();
-                  element.typeOfElement = eLineElement;
+                  element.typeOfElement = ElementTypes::eLineElement;
                   break;
-                case eNurbsFeature:
+                case FeatureTypes::eNurbsFeature:
                   element.nurbs = geometry->getNurbs();
-                  element.typeOfElement = eNurbsElement;
+                  element.typeOfElement = ElementTypes::eNurbsElement;
                   break;
-                case eParaboloidFeature:
+                case FeatureTypes::eParaboloidFeature:
                   element.paraboloid = geometry->getParaboloid();
-                  element.typeOfElement = eParaboloidElement;
+                  element.typeOfElement = ElementTypes::eParaboloidElement;
                   break;
-                case ePlaneFeature:
+                case FeatureTypes::ePlaneFeature:
                   element.plane = geometry->getPlane();
-                  element.typeOfElement = ePlaneElement;
+                  element.typeOfElement = ElementTypes::ePlaneElement;
                   break;
-                case ePointFeature:
+                case FeatureTypes::ePointFeature:
                   element.point = geometry->getPoint();
-                  element.typeOfElement = ePointElement;
+                  element.typeOfElement = ElementTypes::ePointElement;
                   break;
-                case ePointCloudFeature:
+                case FeatureTypes::ePointCloudFeature:
                   element.pointCloud = geometry->getPointCloud();
-                  element.typeOfElement = ePointCloudElement;
+                  element.typeOfElement = ElementTypes::ePointCloudElement;
                   break;
-                case eScalarEntityAngleFeature:
+                case FeatureTypes::eScalarEntityAngleFeature:
                   element.scalarEntityAngle = geometry->getScalarEntityAngle();
-                  element.typeOfElement = eScalarEntityAngleElement;
+                  element.typeOfElement =
+                      ElementTypes::eScalarEntityAngleElement;
                   break;
-                case eScalarEntityDistanceFeature:
+                case FeatureTypes::eScalarEntityDistanceFeature:
                   element.scalarEntityDistance =
                       geometry->getScalarEntityDistance();
-                  element.typeOfElement = eScalarEntityDistanceElement;
+                  element.typeOfElement =
+                      ElementTypes::eScalarEntityDistanceElement;
                   break;
-                case eScalarEntityMeasurementSeriesFeature:
+                case FeatureTypes::eScalarEntityMeasurementSeriesFeature:
                   element.scalarEntityMeasurementSeries =
                       geometry->getScalarEntityMeasurementSeries();
-                  element.typeOfElement = eScalarEntityMeasurementSeriesElement;
+                  element.typeOfElement =
+                      ElementTypes::eScalarEntityMeasurementSeriesElement;
                   break;
-                case eScalarEntityTemperatureFeature:
+                case FeatureTypes::eScalarEntityTemperatureFeature:
                   element.scalarEntityTemperature =
                       geometry->getScalarEntityTemperature();
-                  element.typeOfElement = eScalarEntityTemperatureElement;
+                  element.typeOfElement =
+                      ElementTypes::eScalarEntityTemperatureElement;
                   break;
-                case eSlottedHoleFeature:
+                case FeatureTypes::eSlottedHoleFeature:
                   element.slottedHole = geometry->getSlottedHole();
-                  element.typeOfElement = eSlottedHoleElement;
+                  element.typeOfElement = ElementTypes::eSlottedHoleElement;
                   break;
-                case eSphereFeature:
+                case FeatureTypes::eSphereFeature:
                   element.sphere = geometry->getSphere();
-                  element.typeOfElement = eSphereElement;
+                  element.typeOfElement = ElementTypes::eSphereElement;
                   break;
-                case eTorusFeature:
+                case FeatureTypes::eTorusFeature:
                   element.torus = geometry->getTorus();
-                  element.typeOfElement = eTorusElement;
+                  element.typeOfElement = ElementTypes::eTorusElement;
                   break;
               }
               myFunction->addInputElement(
@@ -1853,7 +1861,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(
               InputElement element;
               element.observation = observation;
               element.id = observation->getId();
-              element.typeOfElement = eObservationElement;
+              element.typeOfElement = ElementTypes::eObservationElement;
               element.shouldBeUsed = shouldBeUsed;
               element.ignoredDestinationParams = restoreIgnoredParameter;
               myFunction->addInputElement(
@@ -1866,29 +1874,32 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(
               element.shouldBeUsed = shouldBeUsed;
               element.ignoredDestinationParams = restoreIgnoredParameter;
               switch (reading->getTypeOfReading()) {
-                case eDistanceReading:
+                case ReadingTypes::eDistanceReading:
                   element.distanceReading = reading;
-                  element.typeOfElement = eReadingDistanceElement;
+                  element.typeOfElement = ElementTypes::eReadingDistanceElement;
                   break;
-                case eCartesianReading:
+                case ReadingTypes::eCartesianReading:
                   element.cartesianReading = reading;
-                  element.typeOfElement = eReadingCartesianElement;
+                  element.typeOfElement =
+                      ElementTypes::eReadingCartesianElement;
                   break;
-                case ePolarReading:
+                case ReadingTypes::ePolarReading:
                   element.polarReading = reading;
-                  element.typeOfElement = eReadingPolarElement;
+                  element.typeOfElement = ElementTypes::eReadingPolarElement;
                   break;
-                case eDirectionReading:
+                case ReadingTypes::eDirectionReading:
                   element.directionReading = reading;
-                  element.typeOfElement = eReadingDirectionElement;
+                  element.typeOfElement =
+                      ElementTypes::eReadingDirectionElement;
                   break;
-                case eTemperatureReading:
+                case ReadingTypes::eTemperatureReading:
                   element.temperatureReading = reading;
-                  element.typeOfElement = eReadingTemperatureElement;
+                  element.typeOfElement =
+                      ElementTypes::eReadingTemperatureElement;
                   break;
-                case eLevelReading:
+                case ReadingTypes::eLevelReading:
                   element.levelReading = reading;
-                  element.typeOfElement = eReadingLevelElement;
+                  element.typeOfElement = ElementTypes::eReadingLevelElement;
                   break;
               }
               element.id = reading->getId();

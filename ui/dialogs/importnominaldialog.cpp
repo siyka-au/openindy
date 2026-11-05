@@ -107,18 +107,19 @@ void ImportNominalDialog::showEvent(QShowEvent* event) {
 void ImportNominalDialog::initModels() {
   // assign unit types models
   this->ui->comboBox_distance_sa->setModel(
-      &ModelManager::getUnitTypesModel(eMetric));
+      &ModelManager::getUnitTypesModel(DimensionType::eMetric));
   this->ui->comboBox_angle_sa->setModel(
-      &ModelManager::getUnitTypesModel(eAngular));
+      &ModelManager::getUnitTypesModel(DimensionType::eAngular));
   this->ui->comboBox_temperature_sa->setModel(
-      &ModelManager::getUnitTypesModel(eTemperature));
+      &ModelManager::getUnitTypesModel(DimensionType::eTemperature));
 
   // set unit type defaults
   this->ui->comboBox_distance_sa->setCurrentText(
-      getUnitTypeName(eUnitMilliMeter));
+      getUnitTypeName(UnitType::eUnitMilliMeter));
   this->ui->comboBox_angle_sa->setCurrentText(
-      getUnitTypeName(eUnitDecimalDegree));
-  this->ui->comboBox_temperature_sa->setCurrentText(getUnitTypeName(eUnitGrad));
+      getUnitTypeName(UnitType::eUnitDecimalDegree));
+  this->ui->comboBox_temperature_sa->setCurrentText(
+      getUnitTypeName(UnitType::eUnitGrad));
 
   // assign plugin model
   this->ui->comboBox_plugin_sa->setModel(&ModelManager::getPluginNamesModel());
@@ -182,11 +183,13 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked() {
   params.typeOfGeometry = static_cast<GeometryTypes>(
       this->ui->comboBox_geometry_sa->currentData(Qt::UserRole).toInt());
   params.units.insert(
-      eMetric, getUnitTypeEnum(this->ui->comboBox_distance_sa->currentText()));
+      DimensionType::eMetric,
+      getUnitTypeEnum(this->ui->comboBox_distance_sa->currentText()));
   params.units.insert(
-      eAngular, getUnitTypeEnum(this->ui->comboBox_angle_sa->currentText()));
+      DimensionType::eAngular,
+      getUnitTypeEnum(this->ui->comboBox_angle_sa->currentText()));
   params.units.insert(
-      eTemperature,
+      DimensionType::eTemperature,
       getUnitTypeEnum(this->ui->comboBox_temperature_sa->currentText()));
   params.createActual = this->ui->checkBox_createActual->isChecked();
   params.overwrite = this->ui->checkBox_overwriteExisting->isChecked();

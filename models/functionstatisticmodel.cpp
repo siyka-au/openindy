@@ -102,10 +102,11 @@ QVariant FunctionStatisticModel::data(const QModelIndex& index,
     return residual.elementId;
   } else {
     return QString::number(
-        convertFromDefault(
-            residual.corrections.values()[index.column() - 1],
-            this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-        'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        convertFromDefault(residual.corrections.values()[index.column() - 1],
+                           this->parameterDisplayConfig.getDisplayUnit(
+                               DimensionType::eMetric)),
+        'f',
+        this->parameterDisplayConfig.getDisplayDigits(DimensionType::eMetric));
   }
 }
 

@@ -40,13 +40,13 @@ FeatureTreeItem::FeatureTreeItem(const QPointer<FeatureWrapper>& feature,
       getElementTypeEnum(feature->getFeatureTypeEnum()));
   if (!feature->getGeometry().isNull()) {
     if (feature->getGeometry()->hasDirection()) {
-      this->containedElementTypes.append(eDirectionElement);
+      this->containedElementTypes.append(ElementTypes::eDirectionElement);
     }
     if (feature->getGeometry()->hasPosition()) {
-      this->containedElementTypes.append(ePositionElement);
+      this->containedElementTypes.append(ElementTypes::ePositionElement);
     }
     if (feature->getGeometry()->hasRadius()) {
-      this->containedElementTypes.append(eRadiusElement);
+      this->containedElementTypes.append(ElementTypes::eRadiusElement);
     }
   }
 
@@ -77,7 +77,7 @@ FeatureTreeItem::FeatureTreeItem(const QPointer<Observation>& observation,
   }
 
   // set information about child items
-  this->containedElementTypes.append(eObservationElement);
+  this->containedElementTypes.append(ElementTypes::eObservationElement);
 
   // set observation
   this->observation = observation;
@@ -180,74 +180,74 @@ const QPointer<Reading>& FeatureTreeItem::getReading() const {
  */
 ElementTypes FeatureTreeItem::getElementType() const {
   if (this->getIsObservation()) {
-    return eObservationElement;
+    return ElementTypes::eObservationElement;
 
   } else if (this->getIsReading() && !this->reading.isNull()) {
     switch (this->reading->getTypeOfReading()) {
-      case eDistanceReading:
-        return eReadingDistanceElement;
-      case eDirectionReading:
-        return eReadingDirectionElement;
-      case ePolarReading:
-        return eReadingPolarElement;
-      case eCartesianReading:
-        return eReadingCartesianElement;
-      case eTemperatureReading:
-        return eReadingTemperatureElement;
-      case eLevelReading:
-        return eReadingLevelElement;
+      case ReadingTypes::eDistanceReading:
+        return ElementTypes::eReadingDistanceElement;
+      case ReadingTypes::eDirectionReading:
+        return ElementTypes::eReadingDirectionElement;
+      case ReadingTypes::ePolarReading:
+        return ElementTypes::eReadingPolarElement;
+      case ReadingTypes::eCartesianReading:
+        return ElementTypes::eReadingCartesianElement;
+      case ReadingTypes::eTemperatureReading:
+        return ElementTypes::eReadingTemperatureElement;
+      case ReadingTypes::eLevelReading:
+        return ElementTypes::eReadingLevelElement;
     }
 
   } else if (this->getIsFeature() && !this->feature.isNull()) {
     switch (this->feature->getFeatureTypeEnum()) {
-      case ePointFeature:
-        return ePointElement;
-      case eLineFeature:
-        return eLineElement;
-      case ePlaneFeature:
-        return ePlaneElement;
-      case eSphereFeature:
-        return eSphereElement;
-      case eCircleFeature:
-        return eCircleElement;
-      case eConeFeature:
-        return eConeElement;
-      case eCylinderFeature:
-        return eCylinderElement;
-      case eEllipsoidFeature:
-        return eEllipsoidElement;
-      case eHyperboloidFeature:
-        return eHyperboloidElement;
-      case eParaboloidFeature:
-        return eParaboloidElement;
-      case ePointCloudFeature:
-        return ePointCloudElement;
-      case eScalarEntityMeasurementSeriesFeature:
-        return eScalarEntityMeasurementSeriesElement;
-      case eScalarEntityAngleFeature:
-        return eScalarEntityAngleElement;
-      case eScalarEntityDistanceFeature:
-        return eScalarEntityDistanceElement;
-      case eCoordinateSystemFeature:
-        return eCoordinateSystemElement;
-      case eStationFeature:
-        return eStationElement;
-      case eTrafoParamFeature:
-        return eTrafoParamElement;
-      case eScalarEntityTemperatureFeature:
-        return eScalarEntityTemperatureElement;
-      case eEllipseFeature:
-        return eEllipseElement;
-      case eNurbsFeature:
-        return eNurbsElement;
-      case eSlottedHoleFeature:
-        return eSlottedHoleElement;
-      case eTorusFeature:
-        return eTorusElement;
+      case FeatureTypes::ePointFeature:
+        return ElementTypes::ePointElement;
+      case FeatureTypes::eLineFeature:
+        return ElementTypes::eLineElement;
+      case FeatureTypes::ePlaneFeature:
+        return ElementTypes::ePlaneElement;
+      case FeatureTypes::eSphereFeature:
+        return ElementTypes::eSphereElement;
+      case FeatureTypes::eCircleFeature:
+        return ElementTypes::eCircleElement;
+      case FeatureTypes::eConeFeature:
+        return ElementTypes::eConeElement;
+      case FeatureTypes::eCylinderFeature:
+        return ElementTypes::eCylinderElement;
+      case FeatureTypes::eEllipsoidFeature:
+        return ElementTypes::eEllipsoidElement;
+      case FeatureTypes::eHyperboloidFeature:
+        return ElementTypes::eHyperboloidElement;
+      case FeatureTypes::eParaboloidFeature:
+        return ElementTypes::eParaboloidElement;
+      case FeatureTypes::ePointCloudFeature:
+        return ElementTypes::ePointCloudElement;
+      case FeatureTypes::eScalarEntityMeasurementSeriesFeature:
+        return ElementTypes::eScalarEntityMeasurementSeriesElement;
+      case FeatureTypes::eScalarEntityAngleFeature:
+        return ElementTypes::eScalarEntityAngleElement;
+      case FeatureTypes::eScalarEntityDistanceFeature:
+        return ElementTypes::eScalarEntityDistanceElement;
+      case FeatureTypes::eCoordinateSystemFeature:
+        return ElementTypes::eCoordinateSystemElement;
+      case FeatureTypes::eStationFeature:
+        return ElementTypes::eStationElement;
+      case FeatureTypes::eTrafoParamFeature:
+        return ElementTypes::eTrafoParamElement;
+      case FeatureTypes::eScalarEntityTemperatureFeature:
+        return ElementTypes::eScalarEntityTemperatureElement;
+      case FeatureTypes::eEllipseFeature:
+        return ElementTypes::eEllipseElement;
+      case FeatureTypes::eNurbsFeature:
+        return ElementTypes::eNurbsElement;
+      case FeatureTypes::eSlottedHoleFeature:
+        return ElementTypes::eSlottedHoleElement;
+      case FeatureTypes::eTorusFeature:
+        return ElementTypes::eTorusElement;
     }
   }
 
-  return eUndefinedElement;
+  return ElementTypes::eUndefinedElement;
 }
 
 /*!
@@ -423,7 +423,7 @@ void FeatureTreeItem::setHasElement(const bool& hasElement,
  * Set up children for the tree item
  */
 void FeatureTreeItem::setUpFeature() {
-  if (this->feature->getFeatureTypeEnum() == eStationFeature) {
+  if (this->feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature) {
     // check station
     if (this->feature->getStation().isNull() ||
         this->feature->getStation()->getCoordinateSystem().isNull()) {
@@ -449,7 +449,8 @@ void FeatureTreeItem::setUpFeature() {
     this->appendChild(itemObservations);
     this->appendChild(itemReadings);
 
-  } else if (this->feature->getFeatureTypeEnum() == eCoordinateSystemFeature) {
+  } else if (this->feature->getFeatureTypeEnum() ==
+             FeatureTypes::eCoordinateSystemFeature) {
     // check coordinate system
     if (this->feature->getCoordinateSystem().isNull() ||
         this->feature->getCoordinateSystem()->getIsStationSystem()) {
@@ -469,7 +470,8 @@ void FeatureTreeItem::setUpFeature() {
     }
     this->appendChild(itemNominals);*/
 
-  } else if (this->feature->getFeatureTypeEnum() == eTrafoParamFeature) {
+  } else if (this->feature->getFeatureTypeEnum() ==
+             FeatureTypes::eTrafoParamFeature) {
     // check trafo param
     if (this->feature->getTrafoParam().isNull()) {
       return;

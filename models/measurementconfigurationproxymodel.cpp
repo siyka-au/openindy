@@ -15,8 +15,10 @@ MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel(
 void MeasurementConfigurationProxyModel::setFilter(const bool& showAll) {
   this->resetFilter();
 
-  this->filterType = showAll ? eAll_MeasurementConfigurationFilter
-                             : eNo_MeasurementConfigurationFilter;
+  this->filterType = showAll ? MeasurementConfigurationFilterTypes::
+                                   eAll_MeasurementConfigurationFilter
+                             : MeasurementConfigurationFilterTypes::
+                                   eNo_MeasurementConfigurationFilter;
 
   this->invalidateFilter();
   this->sort(0);
@@ -26,7 +28,8 @@ void MeasurementConfigurationProxyModel::setFilter(
     QList<FeatureTypes> applicableFor, const SensorType& activeSensorType) {
   this->resetFilter();
 
-  this->filterType = eCreateFeature_MeasurementConfigurationFilter;
+  this->filterType = MeasurementConfigurationFilterTypes::
+      eCreateFeature_MeasurementConfigurationFilter;
   this->neededElements = neededElements;
   this->typeOfFeature = typeOfFeature;
   this->functionIsApplicableFor = applicableFor;
@@ -38,7 +41,8 @@ void MeasurementConfigurationProxyModel::setFilter(
 void MeasurementConfigurationProxyModel::setFilterProjectConfig() {
   this->resetFilter();
 
-  this->filterType = eProject_MeasurementConfigurationFilter;
+  this->filterType = MeasurementConfigurationFilterTypes::
+      eProject_MeasurementConfigurationFilter;
 
   this->invalidateFilter();
   this->sort(0);
@@ -46,14 +50,16 @@ void MeasurementConfigurationProxyModel::setFilterProjectConfig() {
 void MeasurementConfigurationProxyModel::setFilterUserConfig() {
   this->resetFilter();
 
-  this->filterType = eUser_MeasurementConfigurationFilter;
+  this->filterType =
+      MeasurementConfigurationFilterTypes::eUser_MeasurementConfigurationFilter;
 
   this->invalidateFilter();
   this->sort(0);
 }
 
 void MeasurementConfigurationProxyModel::resetFilter() {
-  this->filterType = eNo_MeasurementConfigurationFilter;
+  this->filterType =
+      MeasurementConfigurationFilterTypes::eNo_MeasurementConfigurationFilter;
 
   this->neededElements.clear();
   this->typeOfFeature = FeatureTypes::eUndefinedFeature;
@@ -113,11 +119,14 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(
   }
 
   switch (this->filterType) {
-    case eProject_MeasurementConfigurationFilter:
+    case MeasurementConfigurationFilterTypes::
+        eProject_MeasurementConfigurationFilter:
       return isProject;
-    case eUser_MeasurementConfigurationFilter:
+    case MeasurementConfigurationFilterTypes::
+        eUser_MeasurementConfigurationFilter:
       return isUser;
-    case eCreateFeature_MeasurementConfigurationFilter:
+    case MeasurementConfigurationFilterTypes::
+        eCreateFeature_MeasurementConfigurationFilter:
       if (isUser) {
         int i = 0;
         foreach (const MeasurementConfig& c, configs) {
@@ -132,8 +141,10 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(
       // *********************
       // fall through intended
       // *********************
-    case eNo_MeasurementConfigurationFilter:
-    case eAll_MeasurementConfigurationFilter:
+    case MeasurementConfigurationFilterTypes::
+        eNo_MeasurementConfigurationFilter:
+    case MeasurementConfigurationFilterTypes::
+        eAll_MeasurementConfigurationFilter:
     default:
       if (isUser || isProject) {
         if (this->neededElements.isEmpty()) {
@@ -190,7 +201,8 @@ QVariant MeasurementConfigurationProxyModel::data(const QModelIndex& index,
     return data;
   }
 
-  if (this->filterType == eCreateFeature_MeasurementConfigurationFilter &&
+  if (this->filterType == MeasurementConfigurationFilterTypes::
+                              eCreateFeature_MeasurementConfigurationFilter &&
       sourceModel->isUserConfig(this->mapToSource(index))) {
     return QString("%1 [user]").arg(data.toString());
   }

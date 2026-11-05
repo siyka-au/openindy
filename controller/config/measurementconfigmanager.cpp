@@ -67,19 +67,19 @@ void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob>& job) {
 
 MeasurementConfig MeasurementConfigManager::getUserConfig(
     const QString& name) const {
-  return configs.value(MeasurementConfigKey(name, eUserConfig),
+  return configs.value(MeasurementConfigKey(name, ConfigTypes::eUserConfig),
                        MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getProjectConfig(
     const QString& name) const {
-  return configs.value(MeasurementConfigKey(name, eProjectConfig),
+  return configs.value(MeasurementConfigKey(name, ConfigTypes::eProjectConfig),
                        MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getStandardConfig(
     const QString& name) const {
-  return configs.value(MeasurementConfigKey(name, eStandardConfig),
+  return configs.value(MeasurementConfigKey(name, ConfigTypes::eStandardConfig),
                        MeasurementConfig());
 }
 
@@ -178,14 +178,14 @@ void MeasurementConfigManager::saveUserConfig(
   if (!mConfig.isValid()) {
     emit this->sendMessage(
         "Cannot add a user measurement configuration with an empty name",
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
   if (!mConfig.isUserConfig()) {
     emit this->sendMessage(QString("Is not a user measurement configuration %1")
                                .arg(mConfig.getName()),
-                           eErrorMessage);
+                           MessageTypes::eErrorMessage);
     return;
   }
 
@@ -195,7 +195,7 @@ void MeasurementConfigManager::saveUserConfig(
         QString(
             "A user measurement configuration with the name %1 already exists")
             .arg(mConfig.getName()),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -215,7 +215,7 @@ void MeasurementConfigManager::addProjectConfig(
   if (!mConfig.isValid()) {
     emit this->sendMessage(
         "Cannot add a project measurement configuration with an empty name",
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -223,7 +223,7 @@ void MeasurementConfigManager::addProjectConfig(
     emit this->sendMessage(
         QString("Is not a project measurement configuration %1")
             .arg(mConfig.getName()),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -232,16 +232,16 @@ void MeasurementConfigManager::addProjectConfig(
     emit this->sendMessage(QString("A project measurement configuration with "
                                    "the name %1 already exists")
                                .arg(mConfig.getName()),
-                           eErrorMessage);
+                           MessageTypes::eErrorMessage);
     return;
   }
 
-  MeasurementConfigKey key(mConfig.getName(), eStandardConfig);
+  MeasurementConfigKey key(mConfig.getName(), ConfigTypes::eStandardConfig);
   if (this->configs.contains(key)) {
     emit this->sendMessage(QString("A standard measurement configuration with "
                                    "the name %1 already exists")
                                .arg(mConfig.getName()),
-                           eErrorMessage);
+                           MessageTypes::eErrorMessage);
     return;
   }
 
@@ -261,7 +261,7 @@ void MeasurementConfigManager::removeUserConfig(const QString& name) {
   if (name.compare("") == 0) {
     emit this->sendMessage(
         "Cannot remove a measurement configuration with an empty name",
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -270,7 +270,7 @@ void MeasurementConfigManager::removeUserConfig(const QString& name) {
     emit this->sendMessage(
         QString("A measurement configuration with the name %1 does not exist")
             .arg(name),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -283,7 +283,7 @@ void MeasurementConfigManager::removeUserConfig(const QString& name) {
  * \param name
  */
 void MeasurementConfigManager::removeProjectConfig(const QString& name) {
-  MeasurementConfigKey key(name, eProjectConfig);
+  MeasurementConfigKey key(name, ConfigTypes::eProjectConfig);
   if (this->configs.contains(key)) {
     this->configs.remove(key);
 
@@ -566,7 +566,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString& name) {
   // remove mConfig from the list of saved configs
   // #############################################
 
-  MeasurementConfigKey key(name, eUserConfig);
+  MeasurementConfigKey key(name, ConfigTypes::eUserConfig);
   this->configs.remove(key);
 
   emit this->measurementConfigurationsChanged();

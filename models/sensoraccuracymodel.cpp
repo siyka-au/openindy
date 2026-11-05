@@ -67,40 +67,52 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
     switch (rowIndex) {
       case 1:
         return QString::number(
-            convertFromDefault(
-                this->sConfig.getAccuracy().sigmaAzimuth,
-                this->parameterDisplayConfig.getDisplayUnit(eAngular)),
-            'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            convertFromDefault(this->sConfig.getAccuracy().sigmaAzimuth,
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eAngular)),
+            'f',
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case 2:
         return QString::number(
-            convertFromDefault(
-                this->sConfig.getAccuracy().sigmaZenith,
-                this->parameterDisplayConfig.getDisplayUnit(eAngular)),
-            'f', this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            convertFromDefault(this->sConfig.getAccuracy().sigmaZenith,
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eAngular)),
+            'f',
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case 3:
         return QString::number(
-            convertFromDefault(
-                this->sConfig.getAccuracy().sigmaDistance,
-                this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-            'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            convertFromDefault(this->sConfig.getAccuracy().sigmaDistance,
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eMetric)),
+            'f',
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case 5:
         return QString::number(
-            convertFromDefault(
-                this->sConfig.getAccuracy().sigmaXyz.getAt(0),
-                this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-            'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            convertFromDefault(this->sConfig.getAccuracy().sigmaXyz.getAt(0),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eMetric)),
+            'f',
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case 6:
         return QString::number(
-            convertFromDefault(
-                this->sConfig.getAccuracy().sigmaXyz.getAt(1),
-                this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-            'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            convertFromDefault(this->sConfig.getAccuracy().sigmaXyz.getAt(1),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eMetric)),
+            'f',
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case 7:
         return QString::number(
-            convertFromDefault(
-                this->sConfig.getAccuracy().sigmaXyz.getAt(2),
-                this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-            'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            convertFromDefault(this->sConfig.getAccuracy().sigmaXyz.getAt(2),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eMetric)),
+            'f',
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case 9:
         return QString::number(this->sConfig.getAccuracy().sigmaI, 'f', 6);
       case 10:
@@ -109,10 +121,12 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
         return QString::number(this->sConfig.getAccuracy().sigmaK, 'f', 6);
       case 13:
         return QString::number(
-            convertFromDefault(
-                this->sConfig.getAccuracy().sigmaTemp,
-                this->parameterDisplayConfig.getDisplayUnit(eTemperature)),
-            'f', this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+            convertFromDefault(this->sConfig.getAccuracy().sigmaTemp,
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eTemperature)),
+            'f',
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eTemperature));
       default:
         int index = rowIndex - 15;
         if (index >= 0 &&
@@ -188,12 +202,12 @@ QVariant SensorAccuracyModel::headerData(int section,
     switch (section) {
       case 0:
         return QString("sigma - %1 %2 %3")
-            .arg(getUnitTypeName(
-                this->parameterDisplayConfig.getDisplayUnit(eMetric)))
-            .arg(getUnitTypeName(
-                this->parameterDisplayConfig.getDisplayUnit(eAngular)))
-            .arg(getUnitTypeName(
-                this->parameterDisplayConfig.getDisplayUnit(eTemperature)));
+            .arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eMetric)))
+            .arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular)))
+            .arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eTemperature)));
     }
   }
 
@@ -270,36 +284,36 @@ bool SensorAccuracyModel::setData(const QModelIndex& index,
     switch (rowIndex) {
       case 1:
         accuracy.sigmaAzimuth = convertToDefault(
-            value.toDouble(),
-            this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
+                                  DimensionType::eAngular));
         break;
       case 2:
         accuracy.sigmaZenith = convertToDefault(
-            value.toDouble(),
-            this->parameterDisplayConfig.getDisplayUnit(eAngular));
+            value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
+                                  DimensionType::eAngular));
         break;
       case 3:
         accuracy.sigmaDistance = convertToDefault(
-            value.toDouble(),
-            this->parameterDisplayConfig.getDisplayUnit(eMetric));
+            value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
+                                  DimensionType::eMetric));
         break;
       case 5:
         accuracy.sigmaXyz.setAt(
-            0, convertToDefault(
-                   value.toDouble(),
-                   this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+            0, convertToDefault(value.toDouble(),
+                                this->parameterDisplayConfig.getDisplayUnit(
+                                    DimensionType::eMetric)));
         break;
       case 6:
         accuracy.sigmaXyz.setAt(
-            1, convertToDefault(
-                   value.toDouble(),
-                   this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+            1, convertToDefault(value.toDouble(),
+                                this->parameterDisplayConfig.getDisplayUnit(
+                                    DimensionType::eMetric)));
         break;
       case 7:
         accuracy.sigmaXyz.setAt(
-            2, convertToDefault(
-                   value.toDouble(),
-                   this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+            2, convertToDefault(value.toDouble(),
+                                this->parameterDisplayConfig.getDisplayUnit(
+                                    DimensionType::eMetric)));
         break;
       case 9:
         accuracy.sigmaI = value.toDouble();
@@ -312,8 +326,8 @@ bool SensorAccuracyModel::setData(const QModelIndex& index,
         break;
       case 13:
         accuracy.sigmaTemp = convertToDefault(
-            value.toDouble(),
-            this->parameterDisplayConfig.getDisplayUnit(eTemperature));
+            value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
+                                  DimensionType::eTemperature));
         break;
       default:
         int index = rowIndex - 15;

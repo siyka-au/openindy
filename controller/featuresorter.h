@@ -36,7 +36,7 @@ class OI_MAIN_EXPORT FeatureSorter {
   // sorting modes
   // #############
 
-  enum SortingMode {
+  enum class SortingMode {
     eSortStandard,              // sort by: id, isNominal
     eSortBy_Name_ActNom,        // sort by: featureName, isNominal
     eSortBy_Group_Name_ActNom,  // sort by: groupName, featureName, isNominal
@@ -75,7 +75,7 @@ class OI_MAIN_EXPORT FeatureSorter {
   QPointer<OiJob> job;
 
   // sorting mode and config
-  SortingMode mode{eSortStandard};
+  SortingMode mode{SortingMode::eSortStandard};
   FeatureTableSortingConfig config;
 
   // ##############

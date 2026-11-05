@@ -178,7 +178,7 @@ void WatchWindowDialog::realTimeReading(const QVariantMap& reading) {
   }
 
   // set up watch winddow values
-  if (this->settings.readingType == eCartesianReading) {
+  if (this->settings.readingType == ReadingTypes::eCartesianReading) {
     this->setUpCartesianWatchWindow(reading);
   }
 }
@@ -443,7 +443,8 @@ void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name,
                                         std::function<double()> v) {
   if (this->settings.displayValues.contains(attr)) {
     double value = convertFromDefault(
-        v(), ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
+        v(), ModelManager::getParameterDisplayConfig().getDisplayUnit(
+                 DimensionType::eMetric));
     // set color depending on tolerance
     QString color =
         (qFabs(value) >= qFabs(this->settings.displayValues.value(attr))
@@ -619,17 +620,17 @@ void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked() {
 
 QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ) {
   switch (this->behavior) {
-    case eShowAlwaysActiveFeature:
+    case WatchWindowBehavior::eShowAlwaysActiveFeature:
       if (!this->currentJob.isNull()) {
         return this->currentJob->getActiveFeature();
       }
       break;
-    case eShowCurrentSelectedFeature:
+    case WatchWindowBehavior::eShowCurrentSelectedFeature:
       if (!this->features.isEmpty()) {
         return this->features[0];
       }
       break;
-    case eShowNearestNominal:
+    case WatchWindowBehavior::eShowNearestNominal:
       if (!this->currentJob.isNull()) {
         double dd = -1.0;
         QPointer<FeatureWrapper> nearestFeature;

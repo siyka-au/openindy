@@ -13,13 +13,14 @@ void Controller::init() {
 
   // load and restore project unit settings
   if (!ProjectConfig::loadProjectPathConfigFile()) {
-    this->log("Could not load project path", eErrorMessage, eMessageBoxMessage);
+    this->log("Could not load project path", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
   }
 
   // load config from file
   if (!ProjectConfig::loadProjectSettingsConfigFile()) {
-    this->log("Could not load project settings", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Could not load project settings", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
   }
 
   // initialize and connect model manager
@@ -111,7 +112,8 @@ const QList<QPointer<Tool> >& Controller::getAvailableTools() const {
 void Controller::addFeatures(const FeatureAttributes& attributes) {
   // check job
   if (this->job.isNull()) {
-    this->log("No active job", eErrorMessage, eMessageBoxMessage);
+    this->log("No active job", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -119,7 +121,8 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
       this->job->addFeatures(attributes);
   if (features.size() == 0) {
     this->log("No feature were created - See console output for details",
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     emit this->featureCreated(false);
     return;
   }
@@ -180,14 +183,15 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
 void Controller::removeFeatures(const QSet<int>& featureIds) {
   // check job
   if (this->job.isNull()) {
-    this->log("No active job", eErrorMessage, eMessageBoxMessage);
+    this->log("No active job", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // remove features
   if (!this->job->removeFeatures(featureIds)) {
-    this->log("Error while removeing features", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Error while removeing features", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
   }
 }
 
@@ -200,7 +204,8 @@ void Controller::setNominalParameters(
     const int& featureId, const QMap<GeometryParameters, double>& parameters) {
   // check job
   if (this->job.isNull()) {
-    this->log("No active job", eErrorMessage, eMessageBoxMessage);
+    this->log("No active job", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -208,7 +213,8 @@ void Controller::setNominalParameters(
   QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
   if (feature.isNull() || feature->getGeometry().isNull()) {
     this->log(QString("No geometry with the id %1").arg(featureId),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -228,7 +234,8 @@ void Controller::setTrafoParamParameters(
     const QMap<TrafoParamParameters, double>& parameters) {
   // check job
   if (this->job.isNull()) {
-    this->log("No active job", eErrorMessage, eMessageBoxMessage);
+    this->log("No active job", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -236,7 +243,8 @@ void Controller::setTrafoParamParameters(
   QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
   if (feature.isNull() || feature->getTrafoParam().isNull()) {
     this->log(QString("No trafo param with the id %1").arg(featureId),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -275,8 +283,8 @@ void Controller::recalcActiveFeature() {
  * on the active feature - same convention as recalcActiveFeature()/startAim().
  */
 void Controller::generateOwnedNormalLine() {
-  this->generateOwnedSubGeometry(eLineFeature, "LineFromPlaneNormal",
-                                 "NormalLine");
+  this->generateOwnedSubGeometry(FeatureTypes::eLineFeature,
+                                 "LineFromPlaneNormal", "NormalLine");
 }
 
 /*!
@@ -284,8 +292,8 @@ void Controller::generateOwnedNormalLine() {
  * See generateOwnedNormalLine() - same mechanism, PointFromPlaneOrigin.
  */
 void Controller::generateOwnedOriginPoint() {
-  this->generateOwnedSubGeometry(ePointFeature, "PointFromPlaneOrigin",
-                                 "OriginPoint");
+  this->generateOwnedSubGeometry(FeatureTypes::ePointFeature,
+                                 "PointFromPlaneOrigin", "OriginPoint");
 }
 
 /*!
@@ -372,14 +380,16 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
-    this->log("No active station", eErrorMessage, eMessageBoxMessage);
+    this->log("No active station", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // get and check the specified sensor config
   if (!sConfig.getIsValid()) {
-    this->log("Invalid sensor configuration selected", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Invalid sensor configuration selected",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -389,7 +399,8 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
   if (!plugin.has_value()) {
     this->log(QString("No plugin available with the name %1")
                   .arg(sConfig.getPluginName()),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -399,7 +410,8 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
   if (sensor.isNull()) {
     this->log(QString("No sensor available with the name %1")
                   .arg(sConfig.getSensorName()),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
   QObject::connect(sensor, &Sensor::sensorStatus, this,
@@ -476,7 +488,8 @@ void Controller::sensorConfigurationUpdated(
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
-    this->log("No active station", eErrorMessage, eMessageBoxMessage);
+    this->log("No active station", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -498,14 +511,16 @@ void Controller::measurementConfigurationChanged(
   // get and check active feature
   QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
-    this->log("No active geometry selected", eErrorMessage, eMessageBoxMessage);
+    this->log("No active geometry selected", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // get and check the specified measurement config
   if (!mConfig.isValid()) {
-    this->log("No measurement configuration selected", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("No measurement configuration selected",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -520,7 +535,8 @@ void Controller::saveUserConfig(const MeasurementConfig& mConfig) {
     this->log(QString("Cannot save a measurement configuration \"%1\" because "
                       "is it not vaild user config")
                   .arg(mConfig.getName()),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
   }
 }
 /*!
@@ -585,7 +601,8 @@ void Controller::importObservations(const QString& filename) {
 void Controller::removeObservations(const int& featureId) {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -595,7 +612,8 @@ void Controller::removeObservations(const int& featureId) {
 void Controller::enableObservations(const int& featureId) {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -604,7 +622,8 @@ void Controller::enableObservations(const int& featureId) {
 void Controller::disableObservations(const int& featureId) {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -614,7 +633,8 @@ void Controller::disableObservations(const int& featureId) {
 void Controller::removeObservationsById(const QList<int> selectedIds) {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -628,7 +648,8 @@ void Controller::removeObservationsById(const QList<int> selectedIds) {
 void Controller::removeAllObservations() {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -689,7 +710,8 @@ void Controller::addBundleSystem() {  // TODO OI-932 remove method / OI-1009
 
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -699,7 +721,7 @@ void Controller::addBundleSystem() {  // TODO OI-932 remove method / OI-1009
   // create feature attributes
   FeatureAttributes bundleAttr;
   bundleAttr.count = 1;
-  bundleAttr.typeOfFeature = eCoordinateSystemFeature;
+  bundleAttr.typeOfFeature = FeatureTypes::eCoordinateSystemFeature;
   bundleAttr.name = bundleName;
   bundleAttr.isBundleSystem = true;
 
@@ -708,7 +730,8 @@ void Controller::addBundleSystem() {  // TODO OI-932 remove method / OI-1009
 
   FeatureUtil util;
   if (!util.createInitialBundleTransformation(job)) {
-    this->log("initial bundle not created", eWarningMessage, eConsoleMessage);
+    this->log("initial bundle not created", MessageTypes::eWarningMessage,
+              MessageDestinations::eConsoleMessage);
   }
 }
 
@@ -719,7 +742,8 @@ void Controller::addBundleSystem() {  // TODO OI-932 remove method / OI-1009
 void Controller::removeBundleSystem(const int& id) {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -734,7 +758,8 @@ void Controller::removeBundleSystem(const int& id) {
 QJsonObject Controller::getBundleTemplate() {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return QJsonObject();
   }
   return this->job->getActiveBundleTemplate();
@@ -748,7 +773,8 @@ QJsonObject Controller::getBundleTemplate() {
 QPointer<oi::BundleAdjustment> Controller::getBundleAdjustment() {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return QPointer<oi::BundleAdjustment>(nullptr);
   }
   return this->job->getActiveBundleAdjustment();
@@ -764,7 +790,8 @@ void Controller::updateBundleAdjustment(
 
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -836,15 +863,17 @@ void Controller::updateBundleAdjustment(
 void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // get bundle system
   QPointer<CoordinateSystem> bundleSystem = this->job->getActiveBundleSystem();
   if (bundleSystem.isNull()) {
-    this->log(QString("No bundle system available"), eErrorMessage,
-              eMessageBoxMessage);
+    this->log(QString("No bundle system available"),
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -859,7 +888,8 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
   std::optional<sys::Plugin> plugin = PluginRepository::getByName(pluginName);
   if (!plugin.has_value()) {
     this->log(QString("No plugin available with the name %1").arg(pluginName),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -869,7 +899,8 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
   if (bundlePlugin.isNull()) {
     this->log(QString("Cannot load bundle template %1")
                   .arg(bundleTemplate.value("name").toString()),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -879,7 +910,8 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
 
   this->log(QString("Bundle template %1 loaded successfully")
                 .arg(bundleTemplate.value("name").toString()),
-            eInformationMessage, eConsoleMessage);
+            MessageTypes::eInformationMessage,
+            MessageDestinations::eConsoleMessage);
 }
 
 /*!
@@ -888,14 +920,15 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
 void Controller::runBundle() {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   QPointer<oi::BundleAdjustment> bundleAdjustment = this->getBundleAdjustment();
   if (bundleAdjustment.isNull()) {
-    this->log("No bundle adjustment available", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("No bundle adjustment available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -905,7 +938,8 @@ void Controller::runBundle() {
   if (bundleSystem->getBundlePlugin().isNull()) {
     this->log(QString("No bundle plugin loaded for bundle %1")
                   .arg(bundleSystem->getFeatureName()),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -916,11 +950,13 @@ void Controller::runBundle() {
 
       this->log(QString("Error when calculating bundle %1")
                     .arg(bundleSystem->getFeatureName()),
-                eErrorMessage, eMessageBoxMessage);
+                MessageTypes::eErrorMessage,
+                MessageDestinations::eMessageBoxMessage);
     } else {
       this->log(QString("Bundle %1 successfully calculated")
                     .arg(bundleSystem->getFeatureName()),
-                eInformationMessage, eMessageBoxMessage);
+                MessageTypes::eInformationMessage,
+                MessageDestinations::eMessageBoxMessage);
     }
   } catch (BundleException& e) {
     this->featureUpdater.switchCoordinateSystem();
@@ -974,7 +1010,8 @@ bool Controller::hasProjectDigestChanged() {
 void Controller::saveProject() {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -985,7 +1022,8 @@ void Controller::saveProject() {
     if (!tool->saveProjectEnabled()) {
       this->log(QString("Saving project denied by tool: %1")
                     .arg(tool->getMetaData().name),
-                eErrorMessage, eMessageBoxMessage);
+                MessageTypes::eErrorMessage,
+                MessageDestinations::eMessageBoxMessage);
       return;
     }
   }
@@ -1004,8 +1042,8 @@ void Controller::saveProject() {
   QDomDocument project = projectExchanger.saveProject(this->job);
 
   if (project.isNull()) {
-    this->log("Error while creating project XML", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Error while creating project XML", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1019,10 +1057,12 @@ void Controller::saveProject() {
 
     this->log(QString("OpenIndy project \"%1\" successfully stored.")
                   .arg(fileDevice->fileName()),
-              eInformationMessage, eStatusBarMessage);
+              MessageTypes::eInformationMessage,
+              MessageDestinations::eStatusBarMessage);
   } else {
     this->log(QString("Cannot open file  \"%1\"").arg(fileDevice->fileName()),
-              eInformationMessage, eStatusBarMessage);
+              MessageTypes::eInformationMessage,
+              MessageDestinations::eStatusBarMessage);
     QMessageBox msgBox;
     msgBox.setText("data source could not be found.");
     msgBox.setInformativeText(
@@ -1041,14 +1081,16 @@ void Controller::saveProject() {
 void Controller::saveProject(const QString& fileName) {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // set name
   QFileInfo info(fileName);
   if (!info.absoluteDir().exists()) {
-    this->log("Directory not exists", eErrorMessage, eMessageBoxMessage);
+    this->log("Directory not exists", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
   this->job->setJobName(fileName);
@@ -1071,7 +1113,8 @@ void Controller::loadProject(const QString& projectName,
                              const QPointer<QFileDevice>& device) {
   // check device
   if (device.isNull()) {
-    this->log("No device", eErrorMessage, eMessageBoxMessage);
+    this->log("No device", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1085,8 +1128,9 @@ void Controller::loadProject(const QString& projectName,
     project.setContent(device);
     device->close();
   } catch (const exception& e) {
-    this->log("Error while opening OpenIndy xml file.", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Error while opening OpenIndy xml file.",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1095,35 +1139,36 @@ void Controller::loadProject(const QString& projectName,
 
   // check job
   if (newJob.isNull()) {
-    this->log("Error while parsing OpenIndy xml file.", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Error while parsing OpenIndy xml file.",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   bool compatible = false;
   QString msg;
   switch (newJob->checkCompatibilty()) {
-    case eCheckResult_match:
-    case eCheckResult_oi_gt_job:
+    case CompatibilyCheckResult::eCheckResult_match:
+    case CompatibilyCheckResult::eCheckResult_oi_gt_job:
       compatible = true;
       break;
-    case eCheckResult_job_wo_valid_version:
+    case CompatibilyCheckResult::eCheckResult_job_wo_valid_version:
       compatible = false;
       msg =
           "This OpenIndy project has no vaild version. Continue opening "
           "project?";
       break;
-    case eCheckResult_oi_wo_valid_version:
+    case CompatibilyCheckResult::eCheckResult_oi_wo_valid_version:
       compatible = false;
       msg = "This OpenIndy has no vaild version. Continue opening project?";
       break;
-    case eCheckResult_oi_lt_job:
+    case CompatibilyCheckResult::eCheckResult_oi_lt_job:
       compatible = false;
       msg =
           "This OpenIndy version is older than OpenIndy project version. "
           "Please use newer OpenIndy version. Continue opening project?";
       break;
-    case eCheckResult_job_lt_oi_22_1:
+    case CompatibilyCheckResult::eCheckResult_job_lt_oi_22_1:
       compatible = false;
       msg =
           "This OpenIndy version is newer than OpenIndy project version. "
@@ -1140,7 +1185,8 @@ void Controller::loadProject(const QString& projectName,
   }
 
   if (compatible ||
-      (emit this->showMessageBox(msg, eQuestionMessage) == QMessageBox::Yes)) {
+      (emit this->showMessageBox(msg, MessageTypes::eQuestionMessage) ==
+       QMessageBox::Yes)) {
     // set project meta data
     newJob->setJobDevice(device);
     newJob->setJobName(projectName);
@@ -1190,7 +1236,8 @@ void Controller::loadProject(const QString& projectName,
           if (!plugin.has_value()) {
             this->log(
                 QString("No plugin available with the name %1").arg(pluginName),
-                eErrorMessage, eMessageBoxMessage);
+                MessageTypes::eErrorMessage,
+                MessageDestinations::eMessageBoxMessage);
             return;
           }
 
@@ -1201,14 +1248,16 @@ void Controller::loadProject(const QString& projectName,
           if (bundlePlugin.isNull()) {
             this->log(QString("Cannot load bundle template %1")
                           .arg(bundleTemplate.value("name").toString()),
-                      eErrorMessage, eMessageBoxMessage);
+                      MessageTypes::eErrorMessage,
+                      MessageDestinations::eMessageBoxMessage);
             return;
           }
 
           // get bundle system
           if (bundleSystem.isNull()) {
-            this->log(QString("No bundle system available"), eErrorMessage,
-                      eMessageBoxMessage);
+            this->log(QString("No bundle system available"),
+                      MessageTypes::eErrorMessage,
+                      MessageDestinations::eMessageBoxMessage);
             return;
           }
           // set up bundle plugin
@@ -1247,11 +1296,13 @@ void Controller::loadProject(const QString& projectName,
 
     this->log(QString("OpenIndy project \"%1\" successfully loaded.")
                   .arg(device->fileName()),
-              eInformationMessage, eConsoleMessage);
+              MessageTypes::eInformationMessage,
+              MessageDestinations::eConsoleMessage);
   } else {
     this->log(QString("OpenIndy project \"%1\" was not loaded.")
                   .arg(device->fileName()),
-              eInformationMessage, eConsoleMessage);
+              MessageTypes::eInformationMessage,
+              MessageDestinations::eConsoleMessage);
   }
 }
 
@@ -1299,7 +1350,8 @@ void Controller::startConnect() {
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
-    this->log("No active station", eErrorMessage, eMessageBoxMessage);
+    this->log("No active station", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1322,7 +1374,8 @@ void Controller::startDisconnect() {
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
-    this->log("No active station", eErrorMessage, eMessageBoxMessage);
+    this->log("No active station", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1347,7 +1400,8 @@ void Controller::_startMeasurement(bool dummyPoint) {
   // get and check active feature
   QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
-    this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+    this->log("No active feature", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1358,8 +1412,8 @@ void Controller::_startMeasurement(bool dummyPoint) {
     QPointer<FeatureWrapper> actual =
         this->createActualForNominal(activeFeature->getGeometry());
     if (actual.isNull() || actual->getGeometry().isNull()) {
-      this->log("Cannot create actual for nominal", eErrorMessage,
-                eMessageBoxMessage);
+      this->log("Cannot create actual for nominal", MessageTypes::eErrorMessage,
+                MessageDestinations::eMessageBoxMessage);
       return;
     }
     activeFeature = actual;
@@ -1387,7 +1441,8 @@ void Controller::_startMeasurement(bool dummyPoint) {
     this->log(QString("Measurement config \"%1\" is not compatible with the "
                       "connected sensor")
                   .arg(mConfig.getName()),
-              eErrorMessage, eMessageBoxMessage);
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1410,7 +1465,8 @@ void Controller::startMove(const Reading& reading) {
   // get and check active feature
   QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
-    this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+    this->log("No active feature", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1419,12 +1475,12 @@ void Controller::startMove(const Reading& reading) {
                                  SensorAction::eSensorActionMove);
 
   // move sensor
-  if (reading.getTypeOfReading() == eCartesianReading) {
+  if (reading.getTypeOfReading() == ReadingTypes::eCartesianReading) {
     activeStation->move(reading.getCartesianReading().xyz.getAt(0),
                         reading.getCartesianReading().xyz.getAt(1),
                         reading.getCartesianReading().xyz.getAt(2), false);
     return;
-  } else if (reading.getTypeOfReading() == ePolarReading) {
+  } else if (reading.getTypeOfReading() == ReadingTypes::ePolarReading) {
     activeStation->move(reading.getPolarReading().azimuth,
                         reading.getPolarReading().zenith,
                         reading.getPolarReading().distance, false, false);
@@ -1447,7 +1503,8 @@ void Controller::startAim() {
   // get and check active feature
   QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
-    this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+    this->log("No active feature", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1455,28 +1512,32 @@ void Controller::startAim() {
   QPointer<CoordinateSystem> activeCoordinateSystem =
       this->job->getActiveCoordinateSystem();
   if (activeCoordinateSystem.isNull()) {
-    this->log("No active coordinate system", eErrorMessage, eMessageBoxMessage);
+    this->log("No active coordinate system", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull() || activeStation->getCoordinateSystem().isNull()) {
-    this->log("No active station", eErrorMessage, eMessageBoxMessage);
+    this->log("No active station", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // check sensor
   if (!activeStation->getIsSensorConnected()) {
-    this->log("No sensor connected to the active station", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("No sensor connected to the active station",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // transform position of the active feature into the station coordinate system
   if (!activeFeature->getGeometry()->hasPosition()) {
-    this->log("Active feature has no position to aim", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Active feature has no position to aim",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1546,7 +1607,8 @@ void Controller::startAimAndMeasure() {
   // get and check active feature
   QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
-    this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+    this->log("No active feature", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1554,28 +1616,32 @@ void Controller::startAimAndMeasure() {
   QPointer<CoordinateSystem> activeCoordinateSystem =
       this->job->getActiveCoordinateSystem();
   if (activeCoordinateSystem.isNull()) {
-    this->log("No active coordinate system", eErrorMessage, eMessageBoxMessage);
+    this->log("No active coordinate system", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull() || activeStation->getCoordinateSystem().isNull()) {
-    this->log("No active station", eErrorMessage, eMessageBoxMessage);
+    this->log("No active station", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // check sensor
   if (!activeStation->getIsSensorConnected()) {
-    this->log("No sensor connected to the active station", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("No sensor connected to the active station",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   // transform position of the active feature into the station coordinate system
   if (!activeFeature->getGeometry()->hasPosition()) {
-    this->log("Active feature has no position to aim", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("Active feature has no position to aim",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1741,14 +1807,16 @@ QPointer<Station> Controller::getConnectedActiveStation() {
   // get and check active station
   QPointer<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
-    this->log("No active station", eErrorMessage, eMessageBoxMessage);
+    this->log("No active station", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return nullptr;
   }
 
   // check sensor
   if (!activeStation->getIsSensorConnected()) {
-    this->log("No sensor connected to the active station", eErrorMessage,
-              eMessageBoxMessage);
+    this->log("No sensor connected to the active station",
+              MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return nullptr;
   }
 
@@ -1812,14 +1880,14 @@ void Controller::finishMeasurement() {
 void Controller::log(const QString& msg, const MessageTypes& msgType,
                      const MessageDestinations& msgDest) {
   switch (msgDest) {
-    case eConsoleMessage:
+    case MessageDestinations::eConsoleMessage:
       Console::getInstance()->addLine(msg, msgType);
       break;
-    case eMessageBoxMessage:
+    case MessageDestinations::eMessageBoxMessage:
       Console::getInstance()->addLine(msg, msgType);
       emit this->showMessageBox(msg, msgType);
       break;
-    case eStatusBarMessage:
+    case MessageDestinations::eStatusBarMessage:
       Console::getInstance()->addLine(msg, msgType);
       emit this->showStatusMessage(msg, msgType);
       break;
@@ -2531,7 +2599,8 @@ void Controller::startSearch() {
 void Controller::createTemplateFromJob() {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -2541,14 +2610,15 @@ void Controller::createTemplateFromJob() {
 void Controller::createNewStation() {
   // check job
   if (this->job.isNull()) {
-    this->log("No job available", eErrorMessage, eMessageBoxMessage);
+    this->log("No job available", MessageTypes::eErrorMessage,
+              MessageDestinations::eMessageBoxMessage);
     return;
   }
 
   const int count = this->job->getStationsList().size();
 
   FeatureAttributes attributes;
-  attributes.typeOfFeature = eStationFeature;
+  attributes.typeOfFeature = FeatureTypes::eStationFeature;
   attributes.name =
       QStringLiteral("STATION%1").arg(count + 1, 2, 10, QLatin1Char('0'));
   attributes.group = "00_Stations";

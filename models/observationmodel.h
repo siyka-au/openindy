@@ -65,7 +65,8 @@ class ObservationModel : public QAbstractTableModel {
   // #########################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
   // #########################
   // use or unuse observations

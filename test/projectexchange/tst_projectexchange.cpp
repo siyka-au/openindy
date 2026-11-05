@@ -55,7 +55,7 @@ QPointer<OiJob> makeJobWithStationAndSystem() {
 
   FeatureAttributes bundleAttr;
   bundleAttr.count = 1;
-  bundleAttr.typeOfFeature = eCoordinateSystemFeature;
+  bundleAttr.typeOfFeature = FeatureTypes::eCoordinateSystemFeature;
   bundleAttr.name = "Bundle01";
   bundleAttr.isBundleSystem = true;
   job->addFeatures(bundleAttr);
@@ -117,7 +117,7 @@ class ProjectExchangeTest : public QObject {
 };
 
 void ProjectExchangeTest::initTestCase() {
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 }
 
 /*!
@@ -152,7 +152,7 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   QVERIFY2(!reloaded.isNull(), "the project should reload without error");
 
   const QList<QPointer<FeatureWrapper> > reloadedGroups =
-      reloaded->getFeaturesByType(eGroupFeature);
+      reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
   QCOMPARE(reloadedGroups.size(), 1);
 
   QPointer<Group> reloadedGroup = reloadedGroups.first()->getGroup();
@@ -204,9 +204,9 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
   QVERIFY(!reloaded.isNull());
 
   // must come back as a PointGroup, not a plain Group
-  QCOMPARE(reloaded->getFeaturesByType(eGroupFeature).size(), 0);
+  QCOMPARE(reloaded->getFeaturesByType(FeatureTypes::eGroupFeature).size(), 0);
   const QList<QPointer<FeatureWrapper> > reloadedPointGroups =
-      reloaded->getFeaturesByType(ePointGroupFeature);
+      reloaded->getFeaturesByType(FeatureTypes::ePointGroupFeature);
   QCOMPARE(reloadedPointGroups.size(), 1);
 
   QPointer<PointGroup> reloadedGroup =
@@ -234,7 +234,7 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   QPointer<FeatureWrapper> sphere = addSphere(job, "Sphere01");
 
   QPointer<FeatureWrapper> groupWrapper = new FeatureWrapper();
-  QPointer<Group> group = new Group("Planes", ePlaneFeature);
+  QPointer<Group> group = new Group("Planes", FeatureTypes::ePlaneFeature);
   groupWrapper->setGroup(group);
   QVERIFY2(group->addMember(plane),
            "plane should be accepted by a plane-constrained group");
@@ -249,14 +249,14 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   QVERIFY(!reloaded.isNull());
 
   const QList<QPointer<FeatureWrapper> > reloadedGroups =
-      reloaded->getFeaturesByType(eGroupFeature);
+      reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
   QCOMPARE(reloadedGroups.size(), 1);
 
   QPointer<Group> reloadedGroup = reloadedGroups.first()->getGroup();
   QVERIFY(!reloadedGroup.isNull());
   QVERIFY2(reloadedGroup->getConstraint().has_value(),
            "the constraint itself must survive reload");
-  QCOMPARE(reloadedGroup->getConstraint().value(), ePlaneFeature);
+  QCOMPARE(reloadedGroup->getConstraint().value(), FeatureTypes::ePlaneFeature);
   QCOMPARE(reloadedGroup->memberCount(), 1);
 
   // find the reloaded sphere by name - a fresh, unconstrained wrapper
@@ -266,7 +266,7 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   foreach (const QPointer<FeatureWrapper>& candidate,
            reloaded->getGeometriesList()) {
     if (!candidate.isNull() &&
-        candidate->getFeatureTypeEnum() == eSphereFeature) {
+        candidate->getFeatureTypeEnum() == FeatureTypes::eSphereFeature) {
       reloadedSphere = candidate;
     }
   }

@@ -54,7 +54,8 @@ class StationPropertiesDialog : public QDialog {
   void sensorConfigurationChanged(const SensorConfiguration& sConfig);
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage) const;
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage) const;
 
  private slots:
 

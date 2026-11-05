@@ -369,11 +369,11 @@ QStringListModel& ModelManager::getActualNominalFilterModel() {
 QStringListModel& ModelManager::getUnitTypesModel(
     const DimensionType& dimension) {
   switch (dimension) {
-    case eMetric:
+    case DimensionType::eMetric:
       return ModelManager::metricUnitTypesModel;
-    case eAngular:
+    case DimensionType::eAngular:
       return ModelManager::angularUnitTypesModel;
-    case eTemperature:
+    case DimensionType::eTemperature:
       return ModelManager::temperatureUnitTypesModel;
     default:
       return ModelManager::dummyStringListModel;
@@ -1391,23 +1391,23 @@ void ModelManager::initSensorConnectionModels() {
  */
 void ModelManager::initUnitTypesModels() {
   QStringList metricUnitTypes;
-  metricUnitTypes.append(getUnitTypeName(eUnitInch));
-  metricUnitTypes.append(getUnitTypeName(eUnitMeter));
-  metricUnitTypes.append(getUnitTypeName(eUnitMilliMeter));
+  metricUnitTypes.append(getUnitTypeName(UnitType::eUnitInch));
+  metricUnitTypes.append(getUnitTypeName(UnitType::eUnitMeter));
+  metricUnitTypes.append(getUnitTypeName(UnitType::eUnitMilliMeter));
   ModelManager::metricUnitTypesModel.setStringList(metricUnitTypes);
 
   QStringList angularUnitTypes;
-  angularUnitTypes.append(getUnitTypeName(eUnitArcSeconds));
-  angularUnitTypes.append(getUnitTypeName(eUnitDecimalDegree));
-  angularUnitTypes.append(getUnitTypeName(eUnitGon));
-  angularUnitTypes.append(getUnitTypeName(eUnitMilliRadians));
-  angularUnitTypes.append(getUnitTypeName(eUnitRadiant));
+  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitArcSeconds));
+  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitDecimalDegree));
+  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitGon));
+  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitMilliRadians));
+  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitRadiant));
   ModelManager::angularUnitTypesModel.setStringList(angularUnitTypes);
 
   QStringList temperatureUnitTypes;
-  temperatureUnitTypes.append(getUnitTypeName(eUnitFahrenheit));
-  temperatureUnitTypes.append(getUnitTypeName(eUnitGrad));
-  temperatureUnitTypes.append(getUnitTypeName(eUnitKelvin));
+  temperatureUnitTypes.append(getUnitTypeName(UnitType::eUnitFahrenheit));
+  temperatureUnitTypes.append(getUnitTypeName(UnitType::eUnitGrad));
+  temperatureUnitTypes.append(getUnitTypeName(UnitType::eUnitKelvin));
   ModelManager::temperatureUnitTypesModel.setStringList(temperatureUnitTypes);
 }
 
@@ -1416,13 +1416,13 @@ void ModelManager::initUnitTypesModels() {
  */
 void ModelManager::initReadingTypesModels() {
   QStringList readingTypes;
-  readingTypes.append(getReadingTypeName(eCartesianReading));
-  readingTypes.append(getReadingTypeName(eCartesianReading6D));
-  readingTypes.append(getReadingTypeName(eDistanceReading));
-  readingTypes.append(getReadingTypeName(ePolarReading));
-  readingTypes.append(getReadingTypeName(eDirectionReading));
-  readingTypes.append(getReadingTypeName(eTemperatureReading));
-  readingTypes.append(getReadingTypeName(eLevelReading));
+  readingTypes.append(getReadingTypeName(ReadingTypes::eCartesianReading));
+  readingTypes.append(getReadingTypeName(ReadingTypes::eCartesianReading6D));
+  readingTypes.append(getReadingTypeName(ReadingTypes::eDistanceReading));
+  readingTypes.append(getReadingTypeName(ReadingTypes::ePolarReading));
+  readingTypes.append(getReadingTypeName(ReadingTypes::eDirectionReading));
+  readingTypes.append(getReadingTypeName(ReadingTypes::eTemperatureReading));
+  readingTypes.append(getReadingTypeName(ReadingTypes::eLevelReading));
   ModelManager::readingTypeNamesModel.setStringList(readingTypes);
 }
 
@@ -1433,9 +1433,10 @@ void ModelManager::initScalarEntityTypesModels() {
   ModelManager::fillFeatureTypeModel(
       ModelManager::scalarEntityTypeNamesModel,
       QList<FeatureTypes>()
-          << eScalarEntityAngleFeature << eScalarEntityDistanceFeature
-          << eScalarEntityMeasurementSeriesFeature
-          << eScalarEntityTemperatureFeature);
+          << FeatureTypes::eScalarEntityAngleFeature
+          << FeatureTypes::eScalarEntityDistanceFeature
+          << FeatureTypes::eScalarEntityMeasurementSeriesFeature
+          << FeatureTypes::eScalarEntityTemperatureFeature);
 }
 
 /*!

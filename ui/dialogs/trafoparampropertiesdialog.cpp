@@ -141,31 +141,31 @@ void TrafoParamPropertiesDialog::initModels() {}
 void TrafoParamPropertiesDialog::setParametersToGUI(
     const TrafoParamParameters& param, const QString& value) {
   switch (param) {
-    case eUnknownTX:
+    case TrafoParamParameters::eUnknownTX:
       this->ui->lineEdit_tx->setText(value);
       break;
-    case eUnknownTY:
+    case TrafoParamParameters::eUnknownTY:
       this->ui->lineEdit_ty->setText(value);
       break;
-    case eUnknownTZ:
+    case TrafoParamParameters::eUnknownTZ:
       this->ui->lineEdit_tz->setText(value);
       break;
-    case eUnknownRX:
+    case TrafoParamParameters::eUnknownRX:
       this->ui->lineEdit_rx->setText(value);
       break;
-    case eUnknownRY:
+    case TrafoParamParameters::eUnknownRY:
       this->ui->lineEdit_ry->setText(value);
       break;
-    case eUnknownRZ:
+    case TrafoParamParameters::eUnknownRZ:
       this->ui->lineEdit_rz->setText(value);
       break;
-    case eUnknownSX:
+    case TrafoParamParameters::eUnknownSX:
       this->ui->lineEdit_sx->setText(value);
       break;
-    case eUnknownSY:
+    case TrafoParamParameters::eUnknownSY:
       this->ui->lineEdit_sy->setText(value);
       break;
-    case eUnknownSZ:
+    case TrafoParamParameters::eUnknownSZ:
       this->ui->lineEdit_sz->setText(value);
       break;
   }
@@ -189,67 +189,73 @@ void TrafoParamPropertiesDialog::getParametersFromGUI(
     // get values from GUI elements (only use values that differ from the
     // initial input)
     switch (param) {
-      case eUnknownTX:
+      case TrafoParamParameters::eUnknownTX:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_tx->text()) == 0) {
           break;
         }
         parameters.insert(
-            param, convertToDefault(this->ui->lineEdit_tx->text().toDouble(),
-                                    dConfig.getDisplayUnit(eMetric)));
+            param,
+            convertToDefault(this->ui->lineEdit_tx->text().toDouble(),
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownTY:
+      case TrafoParamParameters::eUnknownTY:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_ty->text()) == 0) {
           break;
         }
         parameters.insert(
-            param, convertToDefault(this->ui->lineEdit_ty->text().toDouble(),
-                                    dConfig.getDisplayUnit(eMetric)));
+            param,
+            convertToDefault(this->ui->lineEdit_ty->text().toDouble(),
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownTZ:
+      case TrafoParamParameters::eUnknownTZ:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_tz->text()) == 0) {
           break;
         }
         parameters.insert(
-            param, convertToDefault(this->ui->lineEdit_tz->text().toDouble(),
-                                    dConfig.getDisplayUnit(eMetric)));
+            param,
+            convertToDefault(this->ui->lineEdit_tz->text().toDouble(),
+                             dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
-      case eUnknownRX:
+      case TrafoParamParameters::eUnknownRX:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_rx->text()) == 0) {
           break;
         }
         parameters.insert(
-            param, convertToDefault(this->ui->lineEdit_rx->text().toDouble(),
-                                    dConfig.getDisplayUnit(eAngular)));
+            param,
+            convertToDefault(this->ui->lineEdit_rx->text().toDouble(),
+                             dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
-      case eUnknownRY:
+      case TrafoParamParameters::eUnknownRY:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_ry->text()) == 0) {
           break;
         }
         parameters.insert(
-            param, convertToDefault(this->ui->lineEdit_ry->text().toDouble(),
-                                    dConfig.getDisplayUnit(eAngular)));
+            param,
+            convertToDefault(this->ui->lineEdit_ry->text().toDouble(),
+                             dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
-      case eUnknownRZ:
+      case TrafoParamParameters::eUnknownRZ:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_rz->text()) == 0) {
           break;
         }
         parameters.insert(
-            param, convertToDefault(this->ui->lineEdit_rz->text().toDouble(),
-                                    dConfig.getDisplayUnit(eAngular)));
+            param,
+            convertToDefault(this->ui->lineEdit_rz->text().toDouble(),
+                             dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
-      case eUnknownSX:
+      case TrafoParamParameters::eUnknownSX:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_sx->text()) == 0) {
@@ -257,7 +263,7 @@ void TrafoParamPropertiesDialog::getParametersFromGUI(
         }
         parameters.insert(param, this->ui->lineEdit_sx->text().toDouble());
         break;
-      case eUnknownSY:
+      case TrafoParamParameters::eUnknownSY:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_sy->text()) == 0) {
@@ -265,7 +271,7 @@ void TrafoParamPropertiesDialog::getParametersFromGUI(
         }
         parameters.insert(param, this->ui->lineEdit_sy->text().toDouble());
         break;
-      case eUnknownSZ:
+      case TrafoParamParameters::eUnknownSZ:
         if (this->parameters.contains(param) &&
             this->parameters.value(param).compare(
                 this->ui->lineEdit_sz->text()) == 0) {

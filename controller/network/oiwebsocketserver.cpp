@@ -37,9 +37,11 @@ int OiWebSocketServer::generateUniqueId() {
  */
 void OiWebSocketServer::startServer() {
   if (!this->listen(QHostAddress::Any, 1235)) {
-    emit this->sendMessage("Cannot start local server", eErrorMessage);
+    emit this->sendMessage("Cannot start local server",
+                           MessageTypes::eErrorMessage);
   } else {
-    emit this->sendMessage("Local server ready ...", eInformationMessage);
+    emit this->sendMessage("Local server ready ...",
+                           MessageTypes::eInformationMessage);
   }
 }
 
@@ -76,7 +78,7 @@ void OiWebSocketServer::incomingConnection() {
   emit this->sendMessage(
       QString("Connecting to client %1 ...")
           .arg(QString::number(myConnection->getInternalRef())),
-      eInformationMessage);
+      MessageTypes::eInformationMessage);
 
   // connect web socket
   QObject::connect(myConnection, &OiWebSocket::disconnected, myConnection,

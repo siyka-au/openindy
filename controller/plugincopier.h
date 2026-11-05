@@ -43,7 +43,8 @@ class PluginCopier : public QObject {
 
   void updateProgress(const int& progress);
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
   void importFinished(const bool& success);
   void deletionFinished(const bool& success);
 

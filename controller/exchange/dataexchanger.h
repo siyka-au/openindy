@@ -77,7 +77,8 @@ class DataExchanger : public QObject {
 
   // print messages
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
  private slots:
 

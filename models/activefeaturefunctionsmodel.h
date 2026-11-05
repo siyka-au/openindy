@@ -100,7 +100,8 @@ class ActiveFeatureFunctionsModel : public QAbstractItemModel {
   // #########################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
  private slots:
 

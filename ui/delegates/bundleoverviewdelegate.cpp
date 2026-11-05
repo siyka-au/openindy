@@ -114,9 +114,9 @@ void BundleOverviewDelegate::paint(QPainter* painter,
       }
   */
 
-  isOk = convertFromDefault(maxError, eUnitMilliMeter) <=
+  isOk = convertFromDefault(maxError, UnitType::eUnitMilliMeter) <=
                      this->maxError  // convert from [m] to [mm]
-                 && convertFromDefault(stdDev, eUnitMilliMeter) <=
+                 && convertFromDefault(stdDev, UnitType::eUnitMilliMeter) <=
                         this->maxStdDev  // convert from [m] to [mm]
                  && abs(1. - scale) <= this->maxScaleDev &&
                  numberOfCommonGeometries >= this->minCommonPoints
@@ -133,15 +133,17 @@ void BundleOverviewDelegate::paint(QPainter* painter,
     painter->drawText(
         option.rect.topLeft() += QPoint(5, 40),
         QString("Max. Error:\t\t%1 [mm]\t%2")
-            .arg(QString::number(convertFromDefault(maxError, eUnitMilliMeter),
-                                 'f', 3))
+            .arg(QString::number(
+                convertFromDefault(maxError, UnitType::eUnitMilliMeter), 'f',
+                3))
             .arg(maxErrorGeometry));
 
     painter->drawText(
         option.rect.topLeft() += QPoint(5, 60),
         QString("StdDev:\t\t%1 [mm]")
-            .arg(QString::number(convertFromDefault(stdDev, eUnitMilliMeter),
-                                 'f', 3)));
+            .arg(QString::number(
+                convertFromDefault(stdDev, UnitType::eUnitMilliMeter), 'f',
+                3)));
 
     /* TODO later
     QString temperature;

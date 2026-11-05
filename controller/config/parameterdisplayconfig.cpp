@@ -16,14 +16,14 @@ ParameterDisplayConfig::ParameterDisplayConfig() {
 UnitType ParameterDisplayConfig::getDisplayUnit(
     const DimensionType& dimension) const {
   switch (dimension) {
-    case eMetric:
+    case DimensionType::eMetric:
       return this->metricDisplayUnit;
-    case eAngular:
+    case DimensionType::eAngular:
       return this->angularDisplayUnit;
-    case eTemperature:
+    case DimensionType::eTemperature:
       return this->temperatureDisplayUnit;
-    case eDimensionless:
-      return eNoUnit;
+    case DimensionType::eDimensionless:
+      return UnitType::eNoUnit;
   }
 }
 
@@ -35,24 +35,27 @@ UnitType ParameterDisplayConfig::getDisplayUnit(
 void ParameterDisplayConfig::setDisplayUnitType(const DimensionType& dimension,
                                                 const UnitType& unit) {
   switch (dimension) {
-    case eMetric:
-      if (unit == eUnitMeter || unit == eUnitMilliMeter || unit == eUnitInch) {
+    case DimensionType::eMetric:
+      if (unit == UnitType::eUnitMeter || unit == UnitType::eUnitMilliMeter ||
+          unit == UnitType::eUnitInch) {
         this->metricDisplayUnit = unit;
       }
       break;
-    case eAngular:
-      if (unit == eUnitRadiant || unit == eUnitMilliRadians ||
-          unit == eUnitGon || unit == eUnitDecimalDegree ||
-          unit == eUnitArcSeconds) {
+    case DimensionType::eAngular:
+      if (unit == UnitType::eUnitRadiant ||
+          unit == UnitType::eUnitMilliRadians || unit == UnitType::eUnitGon ||
+          unit == UnitType::eUnitDecimalDegree ||
+          unit == UnitType::eUnitArcSeconds) {
         this->angularDisplayUnit = unit;
       }
       break;
-    case eTemperature:
-      if (unit == eUnitGrad || unit == eUnitKelvin || unit == eUnitFahrenheit) {
+    case DimensionType::eTemperature:
+      if (unit == UnitType::eUnitGrad || unit == UnitType::eUnitKelvin ||
+          unit == UnitType::eUnitFahrenheit) {
         this->temperatureDisplayUnit = unit;
       }
       break;
-    case eDimensionless:
+    case DimensionType::eDimensionless:
       break;
   }
 }
@@ -65,13 +68,13 @@ void ParameterDisplayConfig::setDisplayUnitType(const DimensionType& dimension,
 int ParameterDisplayConfig::getDisplayDigits(
     const DimensionType& dimension) const {
   switch (dimension) {
-    case eMetric:
+    case DimensionType::eMetric:
       return this->metricDisplayDigits;
-    case eAngular:
+    case DimensionType::eAngular:
       return this->angularDisplayDigits;
-    case eTemperature:
+    case DimensionType::eTemperature:
       return this->temperatureDisplayDigits;
-    case eDimensionless:
+    case DimensionType::eDimensionless:
       return this->dimensionlessDisplayDigits;
   }
 }
@@ -90,16 +93,16 @@ void ParameterDisplayConfig::setDisplayDigits(const DimensionType& dimension,
 
   // set digits
   switch (dimension) {
-    case eMetric:
+    case DimensionType::eMetric:
       this->metricDisplayDigits = digits;
       break;
-    case eAngular:
+    case DimensionType::eAngular:
       this->angularDisplayDigits = digits;
       break;
-    case eTemperature:
+    case DimensionType::eTemperature:
       this->temperatureDisplayDigits = digits;
       break;
-    case eDimensionless:
+    case DimensionType::eDimensionless:
       this->dimensionlessDisplayDigits = digits;
       break;
   }
@@ -112,9 +115,10 @@ void ParameterDisplayConfig::setDisplayDigits(const DimensionType& dimension,
 QMap<DimensionType, UnitType> ParameterDisplayConfig::getDisplayUnits() const {
   QMap<DimensionType, UnitType> displayUnits;
 
-  displayUnits.insert(eMetric, this->metricDisplayUnit);
-  displayUnits.insert(eAngular, this->angularDisplayUnit);
-  displayUnits.insert(eTemperature, this->temperatureDisplayUnit);
+  displayUnits.insert(DimensionType::eMetric, this->metricDisplayUnit);
+  displayUnits.insert(DimensionType::eAngular, this->angularDisplayUnit);
+  displayUnits.insert(DimensionType::eTemperature,
+                      this->temperatureDisplayUnit);
 
   return displayUnits;
 }
@@ -126,10 +130,12 @@ QMap<DimensionType, UnitType> ParameterDisplayConfig::getDisplayUnits() const {
 QMap<DimensionType, int> ParameterDisplayConfig::getDisplayDigits() const {
   QMap<DimensionType, int> displayDigits;
 
-  displayDigits.insert(eMetric, this->metricDisplayDigits);
-  displayDigits.insert(eAngular, this->angularDisplayDigits);
-  displayDigits.insert(eTemperature, this->temperatureDisplayDigits);
-  displayDigits.insert(eDimensionless, this->dimensionlessDisplayDigits);
+  displayDigits.insert(DimensionType::eMetric, this->metricDisplayDigits);
+  displayDigits.insert(DimensionType::eAngular, this->angularDisplayDigits);
+  displayDigits.insert(DimensionType::eTemperature,
+                       this->temperatureDisplayDigits);
+  displayDigits.insert(DimensionType::eDimensionless,
+                       this->dimensionlessDisplayDigits);
 
   return displayDigits;
 }
@@ -154,9 +160,9 @@ void ParameterDisplayConfig::setUseSounds(const bool use) {
  */
 void ParameterDisplayConfig::init() {
   // default units
-  this->metricDisplayUnit = eUnitMilliMeter;
-  this->angularDisplayUnit = eUnitDecimalDegree;
-  this->temperatureDisplayUnit = eUnitGrad;
+  this->metricDisplayUnit = UnitType::eUnitMilliMeter;
+  this->angularDisplayUnit = UnitType::eUnitDecimalDegree;
+  this->temperatureDisplayUnit = UnitType::eUnitGrad;
 
   // default digits
   this->metricDisplayDigits = 2;

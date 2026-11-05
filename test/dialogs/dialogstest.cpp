@@ -59,7 +59,8 @@ class DialogsTest : public QObject {
 
  private:
   void printMessage(const QString& msg, const MessageTypes& msgType,
-                    const MessageDestinations& msgDest = eConsoleMessage);
+                    const MessageDestinations& msgDest =
+                        MessageDestinations::eConsoleMessage);
   QStringList getNames(QSortFilterProxyModel* model);
   QStringList getNames(QAbstractListModel* model);
   QStringList getNames(QAbstractItemModel* model);
@@ -78,13 +79,13 @@ void DialogsTest::initTestCase() {
   // the math library has no default backend; without this every OiMat
   // operation dereferences a null linear-algebra pointer (main.cpp does
   // the same at startup)
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   // the enum values themselves, not their names - the combo carries the type
   // in Qt::UserRole so its visible text is a display name and can be reworded
   QList<FeatureTypes> entityTypes;
-  entityTypes << ePointFeature << eCircleFeature
-              << ePlaneFeature;  // comboBox_entityType order
+  entityTypes << FeatureTypes::ePointFeature << FeatureTypes::eCircleFeature
+              << FeatureTypes::ePlaneFeature;  // comboBox_entityType order
 
   QPointer<MeasurementConfigManager> measurementConfigManager =
       new MeasurementConfigManager();
@@ -591,13 +592,13 @@ QStringList DialogsTest::getKeys(QList<MeasurementConfig> list) {
     MeasurementConfigKey key = mc.getKey();
     QString t;
     switch (key.getConfigType()) {
-      case eUserConfig:
+      case ConfigTypes::eUserConfig:
         t = "user";
         break;
-      case eProjectConfig:
+      case ConfigTypes::eProjectConfig:
         t = "project";
         break;
-      case eStandardConfig:
+      case ConfigTypes::eStandardConfig:
         t = "standard";
         break;
     }
@@ -839,7 +840,7 @@ void DialogsTest::projectSaveLoad() {
   // create feature attributes
   FeatureAttributes attr;
   attr.count = 1;
-  attr.typeOfFeature = eCoordinateSystemFeature;
+  attr.typeOfFeature = FeatureTypes::eCoordinateSystemFeature;
   attr.name = "Bundle01";
   attr.isBundleSystem = true;
 
@@ -848,7 +849,7 @@ void DialogsTest::projectSaveLoad() {
 
   FeatureAttributes point1;
   point1.count = 1;
-  point1.typeOfFeature = ePointFeature;
+  point1.typeOfFeature = FeatureTypes::ePointFeature;
   point1.name = "Point01";
   point1.measurementConfig =
       ModelManager::getMeasurementConfigManager()->getProjectConfig(
@@ -933,13 +934,13 @@ void DialogsTest::setDefaultFunctionAndConfig() {
 
   QList<FeatureTypes> featureTypes = getAvailableFeatureTypes();
   foreach (FeatureTypes featureType, featureTypes) {
-    qDebug() << "featureType: " << featureType
+    qDebug() << "featureType: " << static_cast<int>(featureType)
              << getFeatureTypeName(featureType);
   }
 
   QList<ElementTypes> elementTypes = getAvailableElementTypes();
   foreach (ElementTypes elementType, elementTypes) {
-    qDebug() << "elementType: " << elementType
+    qDebug() << "elementType: " << static_cast<int>(elementType)
              << getElementTypeName(elementType);
   }
 
@@ -996,8 +997,9 @@ void DialogsTest::entityTypeComboResolvesByDataNotByVisibleText() {
   QStandardItemModel& model = ModelManager::getScalarEntityTypeNamesModel();
   QCOMPARE(model.rowCount(), 3);  // seeded by testInit: point, circle, plane
 
-  const QList<FeatureTypes> expected = {ePointFeature, eCircleFeature,
-                                        ePlaneFeature};
+  const QList<FeatureTypes> expected = {FeatureTypes::ePointFeature,
+                                        FeatureTypes::eCircleFeature,
+                                        FeatureTypes::ePlaneFeature};
 
   for (int row = 0; row < model.rowCount(); row++) {
     QStandardItem* item = model.item(row);

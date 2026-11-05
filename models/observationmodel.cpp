@@ -27,7 +27,7 @@ int ObservationModel::rowCount(const QModelIndex& parent) const {
   QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
-  } else if (feature->getFeatureTypeEnum() == eStationFeature &&
+  } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
              !feature->getStation().isNull()) {
     geometry = feature->getStation()->getPosition();
   }
@@ -75,7 +75,7 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
   QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
-  } else if (feature->getFeatureTypeEnum() == eStationFeature &&
+  } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
              !feature->getStation().isNull()) {
     geometry = feature->getStation()->getPosition();
   }
@@ -107,16 +107,19 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
         return observation->getDisplayTargetGeometries();
       case eObservationDisplayX:
         return observation->getDisplayX(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eObservationDisplayY:
         return observation->getDisplayY(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eObservationDisplayZ:
         return observation->getDisplayZ(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eObservationDisplayI:
         return observation->getDisplayI(6);
       case eObservationDisplayJ:
@@ -125,16 +128,19 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
         return observation->getDisplayK(6);
       case eObservationDisplaySigmaX:
         return observation->getDisplaySigmaX(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eObservationDisplaySigmaY:
         return observation->getDisplaySigmaY(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eObservationDisplaySigmaZ:
         return observation->getDisplaySigmaZ(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eObservationDisplaySigmaI:
         return observation->getDisplaySigmaI(6);
       case eObservationDisplaySigmaJ:
@@ -162,10 +168,12 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
           if (residual.elementId == observation->getId() &&
               residual.corrections.contains(attr)) {
             return QString::number(
-                convertFromDefault(
-                    residual.corrections[attr],
-                    this->parameterDisplayConfig.getDisplayUnit(eMetric)),
-                'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                convertFromDefault(residual.corrections[attr],
+                                   this->parameterDisplayConfig.getDisplayUnit(
+                                       DimensionType::eMetric)),
+                'f',
+                this->parameterDisplayConfig.getDisplayDigits(
+                    DimensionType::eMetric));
           }
         }
         break;
@@ -303,7 +311,7 @@ bool ObservationModel::setData(const QModelIndex& index, const QVariant& value,
   QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
-  } else if (feature->getFeatureTypeEnum() == eStationFeature &&
+  } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
              !feature->getStation().isNull()) {
     geometry = feature->getStation()->getPosition();
   }
@@ -407,7 +415,7 @@ QPointer<Observation> ObservationModel::getObservation(
   QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
-  } else if (feature->getFeatureTypeEnum() == eStationFeature &&
+  } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
              !feature->getStation().isNull()) {
     geometry = feature->getStation()->getPosition();
   }

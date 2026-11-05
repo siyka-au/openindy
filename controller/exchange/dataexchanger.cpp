@@ -73,8 +73,8 @@ bool DataExchanger::importData(const ExchangeParams& params) {
 
   // check current job
   if (this->currentJob.isNull()) {
-    emit this->sendMessage("No job specified", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No job specified", MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -84,8 +84,9 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   if (features.size() != 1 || features.at(0).isNull() ||
       features.at(0)->getCoordinateSystem().isNull() ||
       features.at(0)->getCoordinateSystem()->getIsStationSystem()) {
-    emit this->sendMessage("No valid nominal system", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No valid nominal system",
+                           MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -96,7 +97,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
         QString("No exchange available with the name %1 in the plugin %2")
             .arg(params.exchangeName)
             .arg(params.pluginName),
-        eErrorMessage, eMessageBoxMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -104,8 +105,9 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   std::optional<sys::Plugin> plugin =
       PluginRepository::getByName(params.pluginName);
   if (!plugin.has_value()) {
-    emit this->sendMessage("No valid plugin specified", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No valid plugin specified",
+                           MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -125,7 +127,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
                                                     params.exchangeName);
     if (!simpleAscii.isNull()) {
       switch (params.typeOfGeometry) {
-        case ePointGeometry: {
+        case GeometryTypes::ePointGeometry: {
           simpleAscii->setGeometryType(params.typeOfGeometry);
           simpleAscii->setSkipFirstLine(params.skipFirstLine);
           simpleAscii->setDelimiter(params.delimiter);
@@ -146,8 +148,8 @@ bool DataExchanger::importData(const ExchangeParams& params) {
           // simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
           break;
         }
-        case ePlaneGeometry:
-        case ePlaneLevelGeometry: {
+        case GeometryTypes::ePlaneGeometry:
+        case GeometryTypes::ePlaneLevelGeometry: {
           simpleAscii->setGeometryType(params.typeOfGeometry);
           simpleAscii->setSkipFirstLine(params.skipFirstLine);
           simpleAscii->setDelimiter(params.delimiter);
@@ -179,7 +181,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
         QString("No exchange available with the name %1 in the plugin %2")
             .arg(params.exchangeName)
             .arg(params.pluginName),
-        eErrorMessage, eMessageBoxMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     return false;
   }
   this->exchange = exchange;
@@ -236,8 +238,8 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
 
   // check current job
   if (this->currentJob.isNull()) {
-    emit this->sendMessage("No job specified", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No job specified", MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -248,7 +250,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
         QString("No exchange available with the name %1 in the plugin %2")
             .arg(params.exchangeName)
             .arg(params.pluginName),
-        eErrorMessage, eMessageBoxMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -256,8 +258,9 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   std::optional<sys::Plugin> plugin =
       PluginRepository::getByName(params.pluginName);
   if (!plugin.has_value()) {
-    emit this->sendMessage("No valid plugin specified", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No valid plugin specified",
+                           MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -317,7 +320,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
         QString("No exchange available with the name %1 in the plugin %2")
             .arg(params.exchangeName)
             .arg(params.pluginName),
-        eErrorMessage, eMessageBoxMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     return false;
   }
   this->exchange = exchange;
@@ -361,8 +364,8 @@ bool DataExchanger::importObservations(const QString& filename) {
 
   // check current job and pass it to observation importer
   if (this->currentJob.isNull()) {
-    emit this->sendMessage("No job specified", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No job specified", MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     return false;
   }
 
@@ -418,7 +421,7 @@ void DataExchanger::importMeasurements(
       QPointer<Reading> reading = nullptr;
 
       switch (jobFeature->getFeatureTypeEnum()) {
-        case ePointFeature: {
+        case FeatureTypes::ePointFeature: {
           // Points / Cartesian
           OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
@@ -431,7 +434,7 @@ void DataExchanger::importMeasurements(
 
           break;
         }
-        case ePlaneFeature: {
+        case FeatureTypes::ePlaneFeature: {
           if (importedFeature->getFeature()
                   ->property("OI_FEATURE_PLANE_LEVEL")
                   .toBool()) {
@@ -461,7 +464,7 @@ void DataExchanger::importMeasurements(
         }
       }
 
-      reading->setSensorFace(eUndefinedSide);
+      reading->setSensorFace(SensorFaces::eUndefinedSide);
       reading->setMeasuredAt(curDateTime);
       reading->setImported(true);
 
@@ -472,7 +475,8 @@ void DataExchanger::importMeasurements(
       emit this->sendMessage(
           QString("import reading to feature: \"%1\"")
               .arg(jobFeature->getFeature()->getFeatureName()),
-          eInformationMessage, eConsoleMessage);
+          MessageTypes::eInformationMessage,
+          MessageDestinations::eConsoleMessage);
     }
   }
 }
@@ -480,8 +484,8 @@ void DataExchanger::importMeasurements(
 void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
   foreach (QPointer<FeatureWrapper> fw, features) {
     switch (fw->getFeatureTypeEnum()) {
-      case ePlaneFeature:
-      case ePointFeature: {
+      case FeatureTypes::ePlaneFeature:
+      case FeatureTypes::ePointFeature: {
         FeatureAttributes fAttr;
         fAttr.count = 1;
         fAttr.typeOfFeature = fw->getFeatureTypeEnum();
@@ -619,10 +623,12 @@ void DataExchanger::exportFeatures(const bool& success) {
 
   if (success) {
     emit this->sendMessage("Features successfully exported",
-                           eInformationMessage, eMessageBoxMessage);
+                           MessageTypes::eInformationMessage,
+                           MessageDestinations::eMessageBoxMessage);
   } else {
-    emit this->sendMessage("Features not exported successfully", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("Features not exported successfully",
+                           MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
   }
 }
 

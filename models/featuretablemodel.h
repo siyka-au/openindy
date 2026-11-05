@@ -31,11 +31,12 @@ class FeatureTableModel : public QAbstractTableModel {
                              QObject* parent = nullptr);
   explicit FeatureTableModel(QObject* parent = nullptr);
 
-  enum EditMode {  // bit flags
-    eDefault = 0,  // do nothing
+  enum class EditMode {  // bit flags
+    eDefault = 0,        // do nothing
     eFunctionCopyScalarInputParams = 1 << 0,
     eFunctionCopyUsedElements = 1 << 1,
   };
+  Q_DECLARE_FLAGS(EditModes, EditMode)
 
   // ########################################
   // override methods of abstract table model
@@ -56,7 +57,7 @@ class FeatureTableModel : public QAbstractTableModel {
                int role = Qt::EditRole) override;
   // extra parameter
   bool setData(const QModelIndex& index, const QVariant& value, int role,
-               int editMode);
+               EditModes editMode);
 
   // ##############################
   // get id of the feature at index
@@ -122,7 +123,8 @@ class FeatureTableModel : public QAbstractTableModel {
   // #########################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
   void recalcActiveFeature();
 
@@ -179,5 +181,7 @@ class FeatureTableModel : public QAbstractTableModel {
 
   std::atomic<bool> updateRequested;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(FeatureTableModel::EditModes)
 
 #endif  // FEATURETABLEMODEL_H

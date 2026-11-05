@@ -32,7 +32,7 @@ void PluginCopier::importPlugin(const QString& path) {
   if (QFile::exists(pluginDir.absoluteFilePath(pluginFileInfo.fileName()))) {
     emit this->sendMessage(
         QString("Plugin %1 already exists").arg(pluginFileInfo.fileName()),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     emit this->importFinished(false);
     return;
   }
@@ -45,7 +45,7 @@ void PluginCopier::importPlugin(const QString& path) {
       emit this->sendMessage(
           QString("Not all specified dependencies could be found for plugin %1")
               .arg(pluginFileInfo.fileName()),
-          eCriticalMessage);
+          MessageTypes::eCriticalMessage);
       emit this->importFinished(false);
       return;
     }
@@ -96,7 +96,7 @@ void PluginCopier::importPlugin(const QString& path) {
         emit this->sendMessage(
             QString("Copy failed for file %1 (unknown file format)")
                 .arg(sourcePathInfo.fileName()),
-            eCriticalMessage);
+            MessageTypes::eCriticalMessage);
       }
 
       emit this->updateProgress((i * 100) / metaData.dependenciesPath.size());
@@ -108,7 +108,7 @@ void PluginCopier::importPlugin(const QString& path) {
                    pluginDir.absoluteFilePath(pluginFileInfo.fileName()))) {
     emit this->sendMessage(
         QString("Copy failed for plugin %1").arg(pluginFileInfo.fileName()),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     emit this->importFinished(false);
     return;
   }
@@ -234,7 +234,7 @@ bool PluginCopier::checkDependencies(const QString& sourcePath,
     if (!fileInfo.exists()) {
       emit this->sendMessage(
           QString("dependency %1 does not exist").arg(fileInfo.fileName()),
-          eCriticalMessage);
+          MessageTypes::eCriticalMessage);
       return false;
     }
   }

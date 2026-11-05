@@ -173,18 +173,18 @@ QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString& path,
         sensor->init();
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load selected sensor: %1: %2")
-                             .arg(name)
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load selected sensor: %1: %2")
+              .arg(name)
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load selected sensor: %1: %2")
-                           .arg(name)
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load selected sensor: %1: %2")
+            .arg(name)
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return sensor;
@@ -210,18 +210,18 @@ QPointer<Function> PluginLoader::loadFunctionPlugin(const QString& path,
         function->init();
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load selected function: %1: %2")
-                             .arg(name)
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load selected function: %1: %2")
+              .arg(name)
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load selected function: %1: %2")
-                           .arg(name)
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load selected function: %1: %2")
+            .arg(name)
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return function;
@@ -247,18 +247,18 @@ QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(
         simulation->init();
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load selected simulation: %1: %2")
-                             .arg(name)
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load selected simulation: %1: %2")
+              .arg(name)
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load selected simulation: %1: %2")
-                           .arg(name)
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load selected simulation: %1: %2")
+            .arg(name)
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return simulation;
@@ -285,7 +285,7 @@ QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(
             QString("Cannot load selected bundle adjustment: %1: %2")
                 .arg(name)
                 .arg(pluginLoader.errorString()),
-            eErrorMessage, eConsoleMessage);
+            MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
       } else {
         bundleAdjustment->init();
       }
@@ -294,14 +294,14 @@ QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(
           QString("Cannot load selected bundle adjustment: %1: %2")
               .arg(name)
               .arg(pluginLoader.errorString()),
-          eErrorMessage, eConsoleMessage);
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load selected bundle adjustment: %1: %2")
-                           .arg(name)
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load selected bundle adjustment: %1: %2")
+            .arg(name)
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return bundleAdjustment;
@@ -327,18 +327,18 @@ QPointer<Tool> PluginLoader::loadToolPlugin(const QString& path,
         tool->init();
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load selected tool: %1: %2")
-                             .arg(name)
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load selected tool: %1: %2")
+              .arg(name)
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load selected tool: %1: %2")
-                           .arg(name)
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load selected tool: %1: %2")
+            .arg(name)
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return tool;
@@ -368,14 +368,14 @@ QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(
           QString("Cannot load selected simple ascii exchange: %1: %2")
               .arg(name)
               .arg(pluginLoader.errorString()),
-          eErrorMessage, eConsoleMessage);
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
     emit PluginLoader::getInstance() -> sendMessage(
         QString("Cannot load selected simple ascii exchange: %1: %2")
             .arg(name)
             .arg(pluginLoader.errorString()),
-        eErrorMessage, eConsoleMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return exchange;
@@ -405,14 +405,14 @@ QPointer<ExchangeDefinedFormat> PluginLoader::loadExchangeDefinedFormatPlugin(
           QString("Cannot load selected defined format exchange: %1: %2")
               .arg(name)
               .arg(pluginLoader.errorString()),
-          eErrorMessage, eConsoleMessage);
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
     emit PluginLoader::getInstance() -> sendMessage(
         QString("Cannot load selected defined format exchange: %1: %2")
             .arg(name)
             .arg(pluginLoader.errorString()),
-        eErrorMessage, eConsoleMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return exchange;
@@ -440,12 +440,12 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString& path) {
     } else {
       emit PluginLoader::getInstance() -> sendMessage(
           QString("Cannot load sensors: %1").arg(pluginLoader.errorString()),
-          eErrorMessage, eConsoleMessage);
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
     emit PluginLoader::getInstance() -> sendMessage(
         QString("Cannot load sensors: %1").arg(pluginLoader.errorString()),
-        eErrorMessage, eConsoleMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return sensorList;
@@ -474,12 +474,12 @@ QList<QPointer<Function> > PluginLoader::loadFunctionPlugins(
     } else {
       emit PluginLoader::getInstance() -> sendMessage(
           QString("Cannot load functions: %1").arg(pluginLoader.errorString()),
-          eErrorMessage, eConsoleMessage);
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
     emit PluginLoader::getInstance() -> sendMessage(
         QString("Cannot load functions: %1").arg(pluginLoader.errorString()),
-        eErrorMessage, eConsoleMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return functionList;
@@ -506,15 +506,15 @@ QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(
         }
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load simulations: %1")
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load simulations: %1")
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
     emit PluginLoader::getInstance() -> sendMessage(
         QString("Cannot load simulations: %1").arg(pluginLoader.errorString()),
-        eErrorMessage, eConsoleMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return simulationList;
@@ -541,16 +541,16 @@ QList<QPointer<BundleAdjustment> > PluginLoader::loadBundleAdjustmentPlugins(
         }
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load bundle adjustments: %1")
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load bundle adjustments: %1")
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load bundle adjustments: %1")
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load bundle adjustments: %1")
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return bundleAdjustmentList;
@@ -578,12 +578,12 @@ QList<QPointer<Tool> > PluginLoader::loadToolPlugins(const QString& path) {
     } else {
       emit PluginLoader::getInstance() -> sendMessage(
           QString("Cannot load tools: %1").arg(pluginLoader.errorString()),
-          eErrorMessage, eConsoleMessage);
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
     emit PluginLoader::getInstance() -> sendMessage(
         QString("Cannot load tools: %1").arg(pluginLoader.errorString()),
-        eErrorMessage, eConsoleMessage);
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return toolList;
@@ -610,16 +610,16 @@ PluginLoader::loadExchangeSimpleAsciiPlugins(const QString& path) {
         }
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load simple ascii exchanges: %1")
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load simple ascii exchanges: %1")
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load simple ascii exchanges: %1")
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load simple ascii exchanges: %1")
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return exchangeList;
@@ -646,16 +646,16 @@ PluginLoader::loadExchangeDefinedFormatPlugins(const QString& path) {
         }
       }
     } else {
-      emit PluginLoader::getInstance()
-          -> sendMessage(QString("Cannot load defined format exchanges: %1")
-                             .arg(pluginLoader.errorString()),
-                         eErrorMessage, eConsoleMessage);
+      emit PluginLoader::getInstance() -> sendMessage(
+          QString("Cannot load defined format exchanges: %1")
+              .arg(pluginLoader.errorString()),
+          MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
     }
   } else {
-    emit PluginLoader::getInstance()
-        -> sendMessage(QString("Cannot load defined format exchanges: %1")
-                           .arg(pluginLoader.errorString()),
-                       eErrorMessage, eConsoleMessage);
+    emit PluginLoader::getInstance() -> sendMessage(
+        QString("Cannot load defined format exchanges: %1")
+            .arg(pluginLoader.errorString()),
+        MessageTypes::eErrorMessage, MessageDestinations::eConsoleMessage);
   }
 
   return exchangeList;

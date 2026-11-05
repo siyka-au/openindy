@@ -22,10 +22,10 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
              feature->getGeometry()->getIsSolved()) {
     // get radius
     switch (feature->getFeatureTypeEnum()) {
-      case eCircleFeature:
+      case FeatureTypes::eCircleFeature:
         result.radius = feature->getCircle()->getRadius();
         break;
-      case eCylinderFeature:
+      case FeatureTypes::eCylinderFeature:
         result.radius = feature->getCylinder()->getRadius();
         break;
       default:
@@ -35,7 +35,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
     // get position
     QPointer<Geometry> geometry = feature->getGeometry();
     switch (feature->getFeatureTypeEnum()) {
-      case ePlaneFeature: {
+      case FeatureTypes::ePlaneFeature: {
         double dot = NAN;
         OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(),
                    geometry->getDirection().getVectorH());
@@ -44,9 +44,9 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
             Position(point.getAt(0), point.getAt(1), point.getAt(2));
         break;
       }
-      case eCircleFeature:
-      case eCylinderFeature:
-      case eLineFeature: {
+      case FeatureTypes::eCircleFeature:
+      case FeatureTypes::eCylinderFeature:
+      case FeatureTypes::eLineFeature: {
         // projection on axis
         double dot = NAN;
         OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(),
@@ -77,7 +77,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
                        result.delta.getAt(2) * result.delta.getAt(2)) -
                  result.radius.getRadius();
 
-    if (feature->getFeatureTypeEnum() == ePlaneElement) {
+    if (feature->getFeatureTypeEnum() == FeatureTypes::ePlaneFeature) {
       double dot = NAN;
       OiVec d = OiVec(result.delta.getSize());
       d = result.delta;

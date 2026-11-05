@@ -90,11 +90,13 @@ void MainWindow::importNominalsStarted() { showCentered(this->loadingDialog); }
 void MainWindow::importNominalsFinished(const bool& success) {
   // print import success to console
   if (success) {
-    emit this->log("Nominals successfully imported", eInformationMessage,
-                   eMessageBoxMessage);
+    emit this->log("Nominals successfully imported",
+                   MessageTypes::eInformationMessage,
+                   MessageDestinations::eMessageBoxMessage);
   } else {
-    emit this->log("Nominals not imported successfully", eErrorMessage,
-                   eMessageBoxMessage);
+    emit this->log("Nominals not imported successfully",
+                   MessageTypes::eErrorMessage,
+                   MessageDestinations::eMessageBoxMessage);
   }
   this->resizeTableView();
   this->loadingDialog.close();
@@ -114,11 +116,13 @@ void MainWindow::importObservationsStarted() {
 void MainWindow::importObservationsFinished(const bool& success) {
   // print import success to console
   if (success) {
-    emit this->log("Observations successfully imported", eInformationMessage,
-                   eMessageBoxMessage);
+    emit this->log("Observations successfully imported",
+                   MessageTypes::eInformationMessage,
+                   MessageDestinations::eMessageBoxMessage);
   } else {
-    emit this->log("Observations not imported successfully", eErrorMessage,
-                   eMessageBoxMessage);
+    emit this->log("Observations not imported successfully",
+                   MessageTypes::eErrorMessage,
+                   MessageDestinations::eMessageBoxMessage);
   }
 
   this->loadingDialog.close();
@@ -267,8 +271,8 @@ void MainWindow::featureNameChanged(const int& featureId,
     return;
   }
 
-  if (feature->getFeatureTypeEnum() == eStationFeature ||
-      feature->getFeatureTypeEnum() == eCoordinateSystemFeature) {
+  if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature ||
+      feature->getFeatureTypeEnum() == FeatureTypes::eCoordinateSystemFeature) {
     this->updateSystemFilterSize();
   }
 }
@@ -393,8 +397,11 @@ void MainWindow::sensorActionFinished(const bool& success, const QString& msg,
     sensorTaskInfoDialog->close();
     // reuse dialog delete sensorTaskInfoDialog.data();
 
-    emit this->log(msg, success ? eInformationMessage : eErrorMessage,
-                   success ? eConsoleMessage : eMessageBoxMessage);
+    emit this->log(msg,
+                   success ? MessageTypes::eInformationMessage
+                           : MessageTypes::eErrorMessage,
+                   success ? MessageDestinations::eConsoleMessage
+                           : MessageDestinations::eMessageBoxMessage);
   }
 }
 
@@ -448,19 +455,19 @@ int MainWindow::showMessageBox(const QString& msg,
   commonMessageBox.setText(msg);
 
   switch (msgType) {
-    case eInformationMessage:
+    case MessageTypes::eInformationMessage:
       commonMessageBox.setIcon(QMessageBox::Information);
       break;
-    case eWarningMessage:
+    case MessageTypes::eWarningMessage:
       commonMessageBox.setIcon(QMessageBox::Warning);
       break;
-    case eErrorMessage:
+    case MessageTypes::eErrorMessage:
       commonMessageBox.setIcon(QMessageBox::Critical);
       break;
-    case eCriticalMessage:
+    case MessageTypes::eCriticalMessage:
       commonMessageBox.setIcon(QMessageBox::Critical);
       break;
-    case eQuestionMessage:
+    case MessageTypes::eQuestionMessage:
       commonMessageBox.setIcon(QMessageBox::Question);
       commonMessageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
       commonMessageBox.setDefaultButton(QMessageBox::No);
@@ -565,7 +572,7 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
  * \brief MainWindow::on_actionCreate_point_triggered
  */
 void MainWindow::on_actionCreate_point_triggered() {
-  this->createFeatureDialog.setFeatureType(ePointFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::ePointFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -573,7 +580,7 @@ void MainWindow::on_actionCreate_point_triggered() {
  * \brief MainWindow::on_actionCreate_line_triggered
  */
 void MainWindow::on_actionCreate_line_triggered() {
-  this->createFeatureDialog.setFeatureType(eLineFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::eLineFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -581,7 +588,7 @@ void MainWindow::on_actionCreate_line_triggered() {
  * \brief MainWindow::on_actionCreate_plane_triggered
  */
 void MainWindow::on_actionCreate_plane_triggered() {
-  this->createFeatureDialog.setFeatureType(ePlaneFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::ePlaneFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -589,7 +596,7 @@ void MainWindow::on_actionCreate_plane_triggered() {
  * \brief MainWindow::on_actionCreate_sphere_triggered
  */
 void MainWindow::on_actionCreate_sphere_triggered() {
-  this->createFeatureDialog.setFeatureType(eSphereFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::eSphereFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -597,7 +604,7 @@ void MainWindow::on_actionCreate_sphere_triggered() {
  * \brief MainWindow::on_actionCreate_station_triggered
  */
 void MainWindow::on_actionCreate_station_triggered() {
-  this->createFeatureDialog.setFeatureType(eStationFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::eStationFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -605,7 +612,8 @@ void MainWindow::on_actionCreate_station_triggered() {
  * \brief MainWindow::on_actionCreate_coordinatesystem_triggered
  */
 void MainWindow::on_actionCreate_coordinatesystem_triggered() {
-  this->createFeatureDialog.setFeatureType(eCoordinateSystemFeature);
+  this->createFeatureDialog.setFeatureType(
+      FeatureTypes::eCoordinateSystemFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -613,7 +621,8 @@ void MainWindow::on_actionCreate_coordinatesystem_triggered() {
  * \brief MainWindow::on_actionCreate_scalar_entity_triggered
  */
 void MainWindow::on_actionCreate_scalar_entity_triggered() {
-  this->createFeatureDialog.setFeatureType(eScalarEntityAngleFeature);
+  this->createFeatureDialog.setFeatureType(
+      FeatureTypes::eScalarEntityAngleFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -621,7 +630,7 @@ void MainWindow::on_actionCreate_scalar_entity_triggered() {
  * \brief MainWindow::on_actionCreate_trafoParam_triggered
  */
 void MainWindow::on_actionCreate_trafoParam_triggered() {
-  this->createFeatureDialog.setFeatureType(eTrafoParamFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::eTrafoParamFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -629,7 +638,7 @@ void MainWindow::on_actionCreate_trafoParam_triggered() {
  * \brief MainWindow::on_actionCreate_cylinder_triggered
  */
 void MainWindow::on_actionCreate_cylinder_triggered() {
-  this->createFeatureDialog.setFeatureType(eCylinderFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::eCylinderFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -645,7 +654,7 @@ void MainWindow::on_actionCreate_cylinder_triggered() {
  * \brief MainWindow::on_actionCreate_circle_triggered
  */
 void MainWindow::on_actionCreate_circle_triggered() {
-  this->createFeatureDialog.setFeatureType(eCircleFeature);
+  this->createFeatureDialog.setFeatureType(FeatureTypes::eCircleFeature);
   showCentered(this->createFeatureDialog);
 }
 
@@ -1099,8 +1108,8 @@ void MainWindow::on_actionSet_sensor_triggered() {
 void MainWindow::setSensorConfiguration(const SensorConfiguration& sConfig) {
   // check name
   if (!sConfig.getIsValid()) {
-    emit this->log("Invalid configuration name", eErrorMessage,
-                   eMessageBoxMessage);
+    emit this->log("Invalid configuration name", MessageTypes::eErrorMessage,
+                   MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1426,7 +1435,8 @@ void MainWindow::on_actionActivate_station_triggered() {
   QModelIndexList selection =
       this->ui->tableView_features->selectionModel()->selectedIndexes();
   if (selection.size() != 1) {
-    emit this->log("No station selected", eErrorMessage, eMessageBoxMessage);
+    emit this->log("No station selected", MessageTypes::eErrorMessage,
+                   MessageDestinations::eMessageBoxMessage);
     return;
   }
   QModelIndex index = selection.at(0);
@@ -1591,7 +1601,8 @@ void MainWindow::showFeatureProperties(bool checked) {
     emit this->log(
         QString("Switch to the nominal system of %1 to edit its properties")
             .arg(feature->getGeometry()->getFeatureName()),
-        eInformationMessage, eMessageBoxMessage);
+        MessageTypes::eInformationMessage,
+        MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1725,7 +1736,8 @@ void MainWindow::deleteFeatures(bool checked) {
   // get selected indexes
   selection = selectionModel->selectedIndexes();
   if (selection.size() <= 0) {
-    emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
+    emit this->log("No features selected", MessageTypes::eErrorMessage,
+                   MessageDestinations::eMessageBoxMessage);
     return;
   }
   std::sort(selection.begin(), selection.end());
@@ -1845,7 +1857,7 @@ void MainWindow::copyDifferencesToClipboard() {
  * \brief MainWindow::pasteFromClipboard
  */
 void MainWindow::pasteFromClipboard() {
-  enum ProxyModelType {
+  enum class ProxyModelType {
     eFeatureTable,
     eTrafoParamTable,
     eBundleParameterTable
@@ -1895,7 +1907,8 @@ void MainWindow::pasteFromClipboard() {
   // get selected indexes
   QModelIndexList selection = selectionModel->selectedIndexes();
   if (selection.size() <= 0) {
-    emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
+    emit this->log("No features selected", MessageTypes::eErrorMessage,
+                   MessageDestinations::eMessageBoxMessage);
     return;
   }
 
@@ -1947,9 +1960,12 @@ void MainWindow::pasteFromClipboard() {
       featureTabelModel->setData(
           model->mapToSource(currentIndex), rows.at(0), Qt::EditRole,
           isFunctionColumnSelected
-              ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams |
-                    FeatureTableModel::EditMode::eFunctionCopyUsedElements
-              : FeatureTableModel::EditMode::eDefault);
+              ? FeatureTableModel::EditModes(
+                    FeatureTableModel::EditMode::
+                        eFunctionCopyScalarInputParams |
+                    FeatureTableModel::EditMode::eFunctionCopyUsedElements)
+              : FeatureTableModel::EditModes(
+                    FeatureTableModel::EditMode::eDefault));
       this->control.recalcActiveFeature();
     }
   } else {
@@ -1971,11 +1987,11 @@ void MainWindow::updateStatusBar() {
 
   // update units
   this->label_statusUnitMetric->setText(
-      getUnitTypeName(pConfig.getDisplayUnit(eMetric)));
+      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eMetric)));
   this->label_statusUnitAngular->setText(
-      getUnitTypeName(pConfig.getDisplayUnit(eAngular)));
+      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eAngular)));
   this->label_statusUnitTemperature->setText(
-      getUnitTypeName(pConfig.getDisplayUnit(eTemperature)));
+      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eTemperature)));
 
   // update sensor status
 }
@@ -2591,10 +2607,10 @@ void MainWindow::initToolMenus() {
     action->setPluginName(tool->getMetaData().pluginName);
     action->setText(tool->getMetaData().name);
     switch (tool->getToolType()) {
-      case eReportTool:
+      case ToolTypes::eReportTool:
         this->ui->menuReport->addAction(action);
         break;
-      case eUnknownTool:
+      case ToolTypes::eUnknownTool:
         this->ui->menuTools->addAction(action);
         break;
     }
@@ -2975,8 +2991,8 @@ void MainWindow::saveProjectAs(bool asTemplate) {
          QMessageBox::Yes)) {
       emit this->saveProject();
     } else {
-      this->log("save as template: aborted", eInformationMessage,
-                eConsoleMessage);
+      this->log("save as template: aborted", MessageTypes::eInformationMessage,
+                MessageDestinations::eConsoleMessage);
       return;
     }
   } else {
@@ -3168,8 +3184,9 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
     QString windowTitleSuffix;
 
     switch (behavior) {
-      case eShowCurrentSelectedFeature:  // open new watch window for current
-                                         // selected feature
+      case WatchWindowBehavior::
+          eShowCurrentSelectedFeature:  // open new watch window for current
+                                        // selected feature
       {
         QPointer<FeatureWrapper> feature = job->getActiveFeature();
         if (feature.isNull()) {
@@ -3188,7 +3205,8 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
         windowTitleSuffix = QString("[%1]").arg(watchWindowKey.toString());
         break;
       }
-      case eShowNearestNominal:  // find nearest nominal feature
+      case WatchWindowBehavior::eShowNearestNominal:  // find nearest nominal
+                                                      // feature
       {
         QSortFilterProxyModel* model = static_cast<FeatureTableProxyModel*>(
             this->ui->tableView_features->model());
@@ -3221,7 +3239,8 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
         }
         break;
       }
-      case eShowAlwaysActiveFeature:  // show always the active feature
+      case WatchWindowBehavior::eShowAlwaysActiveFeature:  // show always the
+                                                           // active feature
       {
         watchWindowKey = QVariant(-1);  // key for active feature
         windowTitleSuffix = " [active]";
@@ -3247,7 +3266,8 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
     }
 
     qDebug() << "openWatchWindow"
-             << ", key=" << watchWindowKey << ", behavior=" << behavior;
+             << ", key=" << watchWindowKey
+             << ", behavior=" << static_cast<int>(behavior);
 
     watchWindowDialogs[watchWindowKey]->show();
     watchWindowDialogs[watchWindowKey]->activateWindow();
@@ -3434,7 +3454,7 @@ void MainWindow::on_actionStation_create_triggered() {
 
 void MainWindow::showStatusStation(const StationStatusData& data) {
   if (!data.id.isValid()) {
-    this->log("cannot set station status", eWarningMessage);
+    this->log("cannot set station status", MessageTypes::eWarningMessage);
     this->stationStatus->reset();
     return;
   }

@@ -37,8 +37,8 @@ void PluginLoaderDialog::on_toolButton_Path_clicked() {
   PluginMetaData metaData = PluginLoader::getPluginMetaData(pluginDir);
   if (metaData.iid.compare("") == 0) {
     Console::getInstance()->addLine(
-        QString("No plugin found at path: %1").arg(pluginDir), eErrorMessage,
-        eMessageBoxMessage);
+        QString("No plugin found at path: %1").arg(pluginDir),
+        MessageTypes::eErrorMessage);
     return;
   }
 

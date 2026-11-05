@@ -41,7 +41,8 @@ class SensorConfigurationProxyModel : public QSortFilterProxyModel {
   // #########################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
  protected:
   bool filterAcceptsRow(int source_row,

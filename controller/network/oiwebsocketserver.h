@@ -30,7 +30,8 @@ class OiWebSocketServer : public QWebSocketServer {
   // #########################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
   // ##########################
   // send a request to OpenIndy

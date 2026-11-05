@@ -150,7 +150,8 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
 
   // log messages
   void log(const QString& msg, const MessageTypes& msgType,
-           const MessageDestinations& msgDest = eConsoleMessage);
+           const MessageDestinations& msgDest =
+               MessageDestinations::eConsoleMessage);
 
   void createTemplateFromJob();
 

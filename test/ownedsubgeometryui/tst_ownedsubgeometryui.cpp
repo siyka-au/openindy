@@ -29,7 +29,7 @@ class SetPlaneFunction : public ConstructFunction, public Producer<Plane> {
   explicit SetPlaneFunction(QObject* parent = nullptr)
       : ConstructFunction(parent) {
     this->metaData.name = "SetPlaneFunction";
-    this->applicableFor.append(ePlaneFeature);
+    this->applicableFor.append(FeatureTypes::ePlaneFeature);
   }
   Position position;
   Direction direction;
@@ -89,7 +89,7 @@ class OwnedSubGeometryUiTest : public QObject {
 void OwnedSubGeometryUiTest::initTestCase() {
   // without this every OiMat operation dereferences a null linear-algebra
   // pointer - same requirement as every other suite in this project
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   // real scan against build/bin/plugins/ (deployed there by CMakeLists.txt's
   // post-build copy step, same directory layout the real app uses) - not
@@ -178,7 +178,7 @@ void OwnedSubGeometryUiTest::
 
   // read-only enforcement: an edit attempt must not take effect
   QMap<GeometryParameters, double> edit;
-  edit.insert(eUnknownX, 99.0);
+  edit.insert(GeometryParameters::eUnknownX, 99.0);
   line->setUnknownParameters(edit);
   QCOMPARE(line->getPosition().getVector().getAt(0), 1.0);
 }

@@ -27,7 +27,7 @@ int ReadingModel::rowCount(const QModelIndex& parent) const {
   QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
-  } else if (feature->getFeatureTypeEnum() == eStationFeature &&
+  } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
              !feature->getStation().isNull()) {
     geometry = feature->getStation()->getPosition();
   }
@@ -74,7 +74,7 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
   QPointer<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
-  } else if (feature->getFeatureTypeEnum() == eStationFeature &&
+  } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
              !feature->getStation().isNull()) {
     geometry = feature->getStation()->getPosition();
   }
@@ -112,28 +112,36 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
         return reading->getDisplaySide();
       case eReadingDisplayAzimuth:
         return reading->getDisplayAzimuth(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eReadingDisplayZenith:
         return reading->getDisplayZenith(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eReadingDisplayDistance:
         return reading->getDisplayDistance(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplayX:
         return reading->getDisplayX(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplayY:
         return reading->getDisplayY(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplayZ:
         return reading->getDisplayZ(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplayI:
         return reading->getDisplayI(6);
       case eReadingDisplayJ:
@@ -142,34 +150,44 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
         return reading->getDisplayK(6);
       case eReadingDisplayTemperature:
         return reading->getDisplayTemperature(
-            this->parameterDisplayConfig.getDisplayUnit(eTemperature),
-            this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eTemperature),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eTemperature));
       case eReadingDisplayImported:
         return reading->isImported() ? "imported" : "";
       case eReadingDisplaySigmaAzimuth:
         return reading->getDisplaySigmaAzimuth(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eReadingDisplaySigmaZenith:
         return reading->getDisplaySigmaZenith(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eReadingDisplaySigmaDistance:
         return reading->getDisplaySigmaDistance(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplaySigmaX:
         return reading->getDisplaySigmaX(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplaySigmaY:
         return reading->getDisplaySigmaY(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplaySigmaZ:
         return reading->getDisplaySigmaZ(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eReadingDisplaySigmaI:
         return reading->getDisplaySigmaI(6);
       case eReadingDisplaySigmaJ:
@@ -178,8 +196,10 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
         return reading->getDisplaySigmaK(6);
       case eReadingDisplaySigmaTemperature:
         return reading->getDisplaySigmaTemperature(
-            this->parameterDisplayConfig.getDisplayUnit(eTemperature),
-            this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eTemperature),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eTemperature));
     }
 
   } else if (role == Qt::TextAlignmentRole) {

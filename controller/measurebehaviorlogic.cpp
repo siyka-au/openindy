@@ -77,7 +77,7 @@ void MeasureBehaviorLogic::sensorActionFinished(
              (SensorWorkerMessage::FAILED_TO_MEASURE == msg  // sync sensor
               || SensorWorkerMessage::MEASUREMENT_DIT_NOT_DELIVER_ANY_RESULTS ==
                      msg  // async sensor
-              || eSensorActionAll ==
+              || SensorAction::eSensorActionAll ==
                      sensorAction  // error / exception from lmf service
               )) {
     // close / supress all unwanted dialogs

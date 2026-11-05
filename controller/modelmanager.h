@@ -77,7 +77,8 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   // ############
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage) const;
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage) const;
 
   // #######################
   // display configs changed

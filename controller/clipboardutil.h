@@ -28,7 +28,8 @@ class ClipBoardUtil : public QObject {
 
  signals:
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage) const;
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage) const;
 };
 
 #endif  // CLIPBOARDUTIL_H

@@ -22,7 +22,7 @@ using namespace oi;
 // #include "customparameterwidget.h"
 // #include "oimultiselectionmodel.h"
 
-enum Row { First = 0, Last };
+enum class Row { First = 0, Last };
 
 namespace Ui {
 

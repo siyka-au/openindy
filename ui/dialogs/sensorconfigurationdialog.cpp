@@ -48,8 +48,9 @@ void SensorConfigurationDialog::on_pushButton_setAndConnect_clicked() {
 
   // check active sensor config
   if (!this->sensorConfigModel->getActiveSensorConfig().getIsValid()) {
-    emit this->sendMessage("No sensor configuration selected", eErrorMessage,
-                           eMessageBoxMessage);
+    emit this->sendMessage("No sensor configuration selected",
+                           MessageTypes::eErrorMessage,
+                           MessageDestinations::eMessageBoxMessage);
     return;
   }
 

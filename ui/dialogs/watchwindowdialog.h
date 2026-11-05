@@ -34,7 +34,7 @@ enum DisplayAttributes {
   eNotDeclared  // should be the last element!
 };
 
-enum WatchWindowBehavior {
+enum class WatchWindowBehavior {
   eShowAlwaysActiveFeature = 0,  // show always the active feature
   eShowCurrentSelectedFeature,   // open new watch window for current selected
                                  // feature
@@ -54,7 +54,7 @@ class WatchWindowSettings {
   int digits{2};
 
   // reading type for the watch window values
-  ReadingTypes readingType{eCartesianReading};
+  ReadingTypes readingType{ReadingTypes::eCartesianReading};
 
   // display values and tolerance
   QMap<DisplayAttributes, double> displayValues;

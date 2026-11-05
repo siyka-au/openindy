@@ -91,7 +91,7 @@ class NominalPropertiesDialog : public QDialog {
 
   int id{-1};
   QString name;
-  FeatureTypes type{eUndefinedFeature};
+  FeatureTypes type{FeatureTypes::eUndefinedFeature};
   QMap<GeometryParameters, QString> parameters;
 };
 

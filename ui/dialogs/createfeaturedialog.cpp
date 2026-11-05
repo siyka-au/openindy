@@ -140,7 +140,7 @@ void CreateFeatureDialog::initGUI() {
   }
 
   // GUI inits based on type of feature
-  if (this->typeOfFeature == eTrafoParamFeature) {
+  if (this->typeOfFeature == FeatureTypes::eTrafoParamFeature) {
     // set visibility
     this->ui->label_startSystem->setVisible(true);
     this->ui->comboBox_startSystem->setVisible(true);
@@ -156,11 +156,11 @@ void CreateFeatureDialog::initGUI() {
     this->ui->label_mConfig->setVisible(false);
     this->ui->comboBox_mConfig->setVisible(false);
 
-  } else if (this->typeOfFeature == eStationFeature ||
-             this->typeOfFeature == eCoordinateSystemFeature) {
+  } else if (this->typeOfFeature == FeatureTypes::eStationFeature ||
+             this->typeOfFeature == FeatureTypes::eCoordinateSystemFeature) {
     if (!this->currentJob.isNull()) {
       // predefined Stationname depending on existing stations
-      if (this->typeOfFeature == eStationFeature) {
+      if (this->typeOfFeature == FeatureTypes::eStationFeature) {
         int count = this->currentJob->getStationsList().size();
         QString stationName = "";
         if (count < 9) {
@@ -340,7 +340,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(
   }
 
   // fill feature type specific attributes
-  if (this->typeOfFeature == eTrafoParamFeature) {
+  if (this->typeOfFeature == FeatureTypes::eTrafoParamFeature) {
     attributes.startSystem = this->ui->comboBox_startSystem->currentText();
     attributes.destinationSystem =
         this->ui->comboBox_destinationSystem->currentText();
@@ -354,8 +354,8 @@ void CreateFeatureDialog::featureAttributesFromGUI(
           this->ui->comboBox_nominalSystem->currentText();
     }
 
-  } else if (this->typeOfFeature != eCoordinateSystemFeature &&
-             this->typeOfFeature != eStationFeature) {
+  } else if (this->typeOfFeature != FeatureTypes::eCoordinateSystemFeature &&
+             this->typeOfFeature != FeatureTypes::eStationFeature) {
     attributes.isCommon = this->ui->checkBox_common->isChecked();
     if (this->ui->comboBox_nominalSystem->isVisible()) {
       attributes.nominalSystem =

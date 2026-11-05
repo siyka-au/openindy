@@ -80,7 +80,7 @@ void FeatureUpdater::recalcFeatureSet() {
 
     // recalc the feature if it was not recalced yet and is no trafo param
     if (!feature->getFeature()->getIsUpdated() &&
-        feature->getFeatureTypeEnum() != eTrafoParamFeature) {
+        feature->getFeatureTypeEnum() != FeatureTypes::eTrafoParamFeature) {
       // this->recalcFeature(feature->getFeature());
       this->recursiveFeatureRecalculation(feature->getFeature());
     }
@@ -138,7 +138,7 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature>& feature) {
     emit this->featureRecalculated(feature->getId());
 
   } catch (const exception& e) {
-    emit this->currentJob->sendMessage(e.what(), eErrorMessage);
+    emit this->currentJob->sendMessage(e.what(), MessageTypes::eErrorMessage);
   }
 }
 
@@ -265,11 +265,11 @@ bool FeatureUpdater::recalcBundle(
       if (!geom.isNull() && geom->getIsCommon() && geom->getIsSolved()) {
         BundleGeometry inputGeometry;
         inputGeometry.id = geom->getId();
-        inputGeometry.parameters[eUnknownX] =
+        inputGeometry.parameters[GeometryParameters::eUnknownX] =
             geom->getPosition().getVector().getAt(0);
-        inputGeometry.parameters[eUnknownY] =
+        inputGeometry.parameters[GeometryParameters::eUnknownY] =
             geom->getPosition().getVector().getAt(1);
-        inputGeometry.parameters[eUnknownZ] =
+        inputGeometry.parameters[GeometryParameters::eUnknownZ] =
             geom->getPosition().getVector().getAt(2);
         inputStation.geometries.append(inputGeometry);
         qDebug() << "FeatureUpdater::recalcBundle inputGeometry:"
@@ -353,7 +353,7 @@ void FeatureUpdater::switchCoordinateSystem() {
     this->recalcFeatureSet();
 
   } catch (const exception& e) {
-    emit this->currentJob->sendMessage(e.what(), eErrorMessage);
+    emit this->currentJob->sendMessage(e.what(), MessageTypes::eErrorMessage);
   }
 }
 
@@ -552,7 +552,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if (element.point->getOwnerDescription().has_value() &&
             element.point->getIsSolved()) {
           Point p;
@@ -615,7 +616,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if (element.point->getOwnerDescription().has_value() &&
             element.point->getIsSolved()) {
           Point p;
@@ -741,7 +743,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if ((!trafoParam->getStartSystem()->getIsStationSystem() &&
              !element.point->getOwnerDescription().has_value()) ||
             element.point->getIsSolved()) {
@@ -835,7 +838,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if ((!trafoParam->getDestinationSystem()->getIsStationSystem() &&
              !element.point->getOwnerDescription().has_value()) ||
             element.point->getIsSolved()) {
@@ -954,7 +958,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if (!element.point->getOwnerDescription().has_value() &&
             element.point->getNominalSystem() == trafoParam->getStartSystem()) {
           Point p;
@@ -981,7 +986,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if (!element.point->getOwnerDescription().has_value() &&
             element.point->getNominalSystem() ==
                 trafoParam->getDestinationSystem()) {
@@ -1122,7 +1128,8 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if (!trafoParam->getStartSystem()->getIsStationSystem() &&
             element.point->getIsSolved()) {
           Point p;
@@ -1215,7 +1222,8 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
         systemTransformation->getInputElements().value(0);
     foreach (const InputElement& element, inputElements) {
       // add all points
-      if (element.typeOfElement == ePointElement && !element.point.isNull()) {
+      if (element.typeOfElement == ElementTypes::ePointElement &&
+          !element.point.isNull()) {
         if (!trafoParam->getDestinationSystem()->getIsStationSystem() &&
             element.point->getIsSolved()) {
           Point p;
@@ -1405,7 +1413,7 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation() {
 
     // recalc the feature if it was not recalced yet and is no trafo param
     if (!feature->getFeature()->getIsUpdated() &&
-        feature->getFeatureTypeEnum() != eTrafoParamFeature) {
+        feature->getFeatureTypeEnum() != FeatureTypes::eTrafoParamFeature) {
       this->recalcFeatureWithoutTransformation(feature->getFeature());
     }
   }
@@ -1530,141 +1538,141 @@ void FeatureUpdater::copyGeometry(InputElement& newElement,
                                   const ElementTypes& type) {
   // add all elements
   switch (type) {
-    case eCircleElement: {
+    case ElementTypes::eCircleElement: {
       if (!oldElement.isNull() && !oldElement->getCircle().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.circle = new Circle(*oldElement->getCircle().data());
         newElement.geometry = newElement.circle.data();
-        newElement.typeOfElement = eCircleElement;
+        newElement.typeOfElement = ElementTypes::eCircleElement;
       }
       return;
     }
-    case eConeElement: {
+    case ElementTypes::eConeElement: {
       if (!oldElement.isNull() && !oldElement->getCone().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.cone = new Cone(*oldElement->getCone().data());
         newElement.geometry = newElement.cone.data();
-        newElement.typeOfElement = eConeElement;
+        newElement.typeOfElement = ElementTypes::eConeElement;
       }
       return;
     }
-    case eCylinderElement: {
+    case ElementTypes::eCylinderElement: {
       if (!oldElement.isNull() && !oldElement->getCylinder().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.cylinder = new Cylinder(*oldElement->getCylinder().data());
         newElement.geometry = newElement.cylinder.data();
-        newElement.typeOfElement = eCylinderElement;
+        newElement.typeOfElement = ElementTypes::eCylinderElement;
       }
       return;
     }
-    case eEllipseElement: {
+    case ElementTypes::eEllipseElement: {
       if (!oldElement.isNull() && !oldElement->getEllipse().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.ellipse = new Ellipse(*oldElement->getEllipse().data());
         newElement.geometry = newElement.ellipse.data();
-        newElement.typeOfElement = eEllipseElement;
+        newElement.typeOfElement = ElementTypes::eEllipseElement;
       }
       return;
     }
-    case eEllipsoidElement: {
+    case ElementTypes::eEllipsoidElement: {
       if (!oldElement.isNull() && !oldElement->getEllipsoid().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.ellipsoid =
             new Ellipsoid(*oldElement->getEllipsoid().data());
         newElement.geometry = newElement.ellipsoid.data();
-        newElement.typeOfElement = eEllipsoidElement;
+        newElement.typeOfElement = ElementTypes::eEllipsoidElement;
       }
       return;
     }
-    case eHyperboloidElement: {
+    case ElementTypes::eHyperboloidElement: {
       if (!oldElement.isNull() && !oldElement->getHyperboloid().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.hyperboloid =
             new Hyperboloid(*oldElement->getHyperboloid().data());
         newElement.geometry = newElement.hyperboloid.data();
-        newElement.typeOfElement = eHyperboloidElement;
+        newElement.typeOfElement = ElementTypes::eHyperboloidElement;
       }
       return;
     }
-    case eLineElement: {
+    case ElementTypes::eLineElement: {
       if (!oldElement.isNull() && !oldElement->getLine().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.line = new Line(*oldElement->getLine().data());
         newElement.geometry = newElement.line.data();
-        newElement.typeOfElement = eLineElement;
+        newElement.typeOfElement = ElementTypes::eLineElement;
       }
       return;
     }
-    case eNurbsElement: {
+    case ElementTypes::eNurbsElement: {
       if (!oldElement.isNull() && !oldElement->getNurbs().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.nurbs = new Nurbs(*oldElement->getNurbs().data());
         newElement.geometry = newElement.nurbs.data();
-        newElement.typeOfElement = eNurbsElement;
+        newElement.typeOfElement = ElementTypes::eNurbsElement;
       }
       return;
     }
-    case eParaboloidElement: {
+    case ElementTypes::eParaboloidElement: {
       if (!oldElement.isNull() && !oldElement->getParaboloid().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.paraboloid =
             new Paraboloid(*oldElement->getParaboloid().data());
         newElement.geometry = newElement.paraboloid.data();
-        newElement.typeOfElement = eParaboloidElement;
+        newElement.typeOfElement = ElementTypes::eParaboloidElement;
       }
       return;
     }
-    case ePlaneElement: {
+    case ElementTypes::ePlaneElement: {
       if (!oldElement.isNull() && !oldElement->getPlane().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.plane = new Plane(*oldElement->getPlane().data());
         newElement.geometry = newElement.plane.data();
-        newElement.typeOfElement = ePlaneElement;
+        newElement.typeOfElement = ElementTypes::ePlaneElement;
       }
       return;
     }
-    case ePointElement: {
+    case ElementTypes::ePointElement: {
       if (!oldElement.isNull() && !oldElement->getPoint().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.point = new Point(*oldElement->getPoint().data());
         newElement.geometry = newElement.point.data();
-        newElement.typeOfElement = ePointElement;
+        newElement.typeOfElement = ElementTypes::ePointElement;
       }
       return;
     }
-    case ePointCloudElement: {
+    case ElementTypes::ePointCloudElement: {
       if (!oldElement.isNull() && !oldElement->getPointCloud().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.pointCloud =
             new PointCloud(*oldElement->getPointCloud().data());
         newElement.geometry = newElement.pointCloud.data();
-        newElement.typeOfElement = ePointCloudElement;
+        newElement.typeOfElement = ElementTypes::ePointCloudElement;
       }
       return;
     }
-    case eScalarEntityAngleElement: {
+    case ElementTypes::eScalarEntityAngleElement: {
       if (!oldElement.isNull() &&
           !oldElement->getScalarEntityAngle().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.scalarEntityAngle =
             new ScalarEntityAngle(*oldElement->getScalarEntityAngle().data());
         newElement.geometry = newElement.scalarEntityAngle.data();
-        newElement.typeOfElement = eScalarEntityAngleElement;
+        newElement.typeOfElement = ElementTypes::eScalarEntityAngleElement;
       }
       return;
     }
-    case eScalarEntityDistanceElement: {
+    case ElementTypes::eScalarEntityDistanceElement: {
       if (!oldElement.isNull() &&
           !oldElement->getScalarEntityDistance().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.scalarEntityDistance = new ScalarEntityDistance(
             *oldElement->getScalarEntityDistance().data());
         newElement.geometry = newElement.scalarEntityDistance.data();
-        newElement.typeOfElement = eScalarEntityDistanceElement;
+        newElement.typeOfElement = ElementTypes::eScalarEntityDistanceElement;
       }
       return;
     }
-    case eScalarEntityMeasurementSeriesElement: {
+    case ElementTypes::eScalarEntityMeasurementSeriesElement: {
       if (!oldElement.isNull() &&
           !oldElement->getScalarEntityMeasurementSeries().isNull() &&
           !oldElement->getGeometry().isNull()) {
@@ -1672,50 +1680,52 @@ void FeatureUpdater::copyGeometry(InputElement& newElement,
             new ScalarEntityMeasurementSeries(
                 *oldElement->getScalarEntityMeasurementSeries().data());
         newElement.geometry = newElement.scalarEntityMeasurementSeries.data();
-        newElement.typeOfElement = eScalarEntityMeasurementSeriesElement;
+        newElement.typeOfElement =
+            ElementTypes::eScalarEntityMeasurementSeriesElement;
       }
       return;
     }
-    case eScalarEntityTemperatureElement: {
+    case ElementTypes::eScalarEntityTemperatureElement: {
       if (!oldElement.isNull() &&
           !oldElement->getScalarEntityTemperature().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.scalarEntityTemperature = new ScalarEntityTemperature(
             *oldElement->getScalarEntityTemperature().data());
         newElement.geometry = newElement.scalarEntityTemperature.data();
-        newElement.typeOfElement = eScalarEntityTemperatureElement;
+        newElement.typeOfElement =
+            ElementTypes::eScalarEntityTemperatureElement;
       }
       return;
     }
-    case eSlottedHoleElement: {
+    case ElementTypes::eSlottedHoleElement: {
       if (!oldElement.isNull() && !oldElement->getSlottedHole().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.slottedHole =
             new SlottedHole(*oldElement->getSlottedHole().data());
         newElement.geometry = newElement.slottedHole.data();
-        newElement.typeOfElement = eSlottedHoleElement;
+        newElement.typeOfElement = ElementTypes::eSlottedHoleElement;
       }
       return;
     }
-    case eSphereElement: {
+    case ElementTypes::eSphereElement: {
       if (!oldElement.isNull() && !oldElement->getSphere().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.sphere = new Sphere(*oldElement->getSphere().data());
         newElement.geometry = newElement.sphere.data();
-        newElement.typeOfElement = eSphereElement;
+        newElement.typeOfElement = ElementTypes::eSphereElement;
       }
       return;
     }
-    case eTorusElement: {
+    case ElementTypes::eTorusElement: {
       if (!oldElement.isNull() && !oldElement->getTorus().isNull() &&
           !oldElement->getGeometry().isNull()) {
         newElement.torus = new Torus(*oldElement->getTorus().data());
         newElement.geometry = newElement.torus.data();
-        newElement.typeOfElement = eTorusElement;
+        newElement.typeOfElement = ElementTypes::eTorusElement;
       }
       return;
     }
-    case eDirectionElement: {
+    case ElementTypes::eDirectionElement: {
       if (!oldElement.isNull() && !oldElement->getGeometry().isNull()) {
         this->copyGeometry(
             newElement, oldElement,
@@ -1723,7 +1733,7 @@ void FeatureUpdater::copyGeometry(InputElement& newElement,
       }
       return;
     }
-    case ePositionElement: {
+    case ElementTypes::ePositionElement: {
       if (!oldElement.isNull() && !oldElement->getGeometry().isNull()) {
         this->copyGeometry(
             newElement, oldElement,
@@ -1731,7 +1741,7 @@ void FeatureUpdater::copyGeometry(InputElement& newElement,
       }
       return;
     }
-    case eRadiusElement: {
+    case ElementTypes::eRadiusElement: {
       if (!oldElement.isNull() && !oldElement->getGeometry().isNull()) {
         this->copyGeometry(
             newElement, oldElement,
@@ -1872,7 +1882,7 @@ void FeatureUpdater::createBundleTransformations(
     const QPointer<CoordinateSystem>& bundleSystem) {
   // create transformations
   FeatureAttributes fAttr;
-  fAttr.typeOfFeature = eTrafoParamFeature;
+  fAttr.typeOfFeature = FeatureTypes::eTrafoParamFeature;
   fAttr.group = bundleSystem->getGroupName();
   fAttr.count = 1;
   fAttr.startSystem = bundleSystem->getFeatureName();

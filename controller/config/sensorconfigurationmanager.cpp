@@ -166,7 +166,8 @@ void SensorConfigurationManager::addSavedSensorConfig(
   // check if sConfig is valid
   if (!sConfig.getIsValid()) {
     emit this->sendMessage(
-        "Cannot add a sensor configuration with an empty name", eErrorMessage);
+        "Cannot add a sensor configuration with an empty name",
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -175,7 +176,7 @@ void SensorConfigurationManager::addSavedSensorConfig(
     emit this->sendMessage(
         QString("A sensor configuration with the name %1 already exists")
             .arg(sConfig.getName()),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -192,7 +193,8 @@ void SensorConfigurationManager::addProjectSensorConfig(
   // check if sConfig is valid
   if (!sConfig.getIsValid()) {
     emit this->sendMessage(
-        "Cannot add a sensor configuration with an empty name", eErrorMessage);
+        "Cannot add a sensor configuration with an empty name",
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -201,7 +203,7 @@ void SensorConfigurationManager::addProjectSensorConfig(
     emit this->sendMessage(
         QString("A sensor configuration with the name %1 already exists")
             .arg(sConfig.getName()),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -221,7 +223,7 @@ void SensorConfigurationManager::removeSavedSensorConfig(const QString& name,
   if (name.compare("") == 0) {
     emit this->sendMessage(
         "Cannot remove a sensor configuration with an empty name",
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -230,7 +232,7 @@ void SensorConfigurationManager::removeSavedSensorConfig(const QString& name,
     emit this->sendMessage(
         QString("A sensor configuration with the name %1 does not exist")
             .arg(name),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 
@@ -249,7 +251,7 @@ void SensorConfigurationManager::removeProjectSensorConfig(
     emit this->sendMessage(
         QString("A sensor configuration with the name %1 does not exist")
             .arg(name),
-        eErrorMessage);
+        MessageTypes::eErrorMessage);
     return;
   }
 

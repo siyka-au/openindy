@@ -17,7 +17,7 @@
 
 using namespace oi;
 
-enum MeasurementConfigurationFilterTypes {
+enum class MeasurementConfigurationFilterTypes {
   eNo_MeasurementConfigurationFilter = 0,
   eAll_MeasurementConfigurationFilter,
   eProject_MeasurementConfigurationFilter,
@@ -70,7 +70,8 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
   // #########################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
  protected:
   bool filterAcceptsRow(int source_row,
@@ -88,7 +89,7 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
   // ################
 
   MeasurementConfigurationFilterTypes filterType{
-      eNo_MeasurementConfigurationFilter};
+      MeasurementConfigurationFilterTypes::eNo_MeasurementConfigurationFilter};
   QList<ElementTypes> neededElements;
   FeatureTypes typeOfFeature;
   QList<FeatureTypes> functionIsApplicableFor;

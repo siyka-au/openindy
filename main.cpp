@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
   qSetGlobalQHashSeed(0);  // ensures that xml is written the same way
 #endif
 
-  ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
 
   a.setOrganizationName(Company);
   a.setOrganizationDomain(Company);

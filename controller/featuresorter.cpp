@@ -108,11 +108,11 @@ bool FeatureSorter::lessThan(const QPointer<FeatureWrapper>& left,
 
   // call the sorting method specified by mode
   switch (this->mode) {
-    case eSortStandard:
+    case SortingMode::eSortStandard:
       return this->sortStandard(left, right);
-    case eSortBy_Name_ActNom:
+    case SortingMode::eSortBy_Name_ActNom:
       return this->sortBy_Name_ActNom(left, right);
-    case eSortBy_Group_Name_ActNom:
+    case SortingMode::eSortBy_Group_Name_ActNom:
       return this->sortBy_Group_Name(left, right);
   }
 

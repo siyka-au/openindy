@@ -48,7 +48,8 @@ class ObservationImporter : public QObject {
   // ##############################################
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
   void updateProgress(const int& progress,
                       const QString& msg);  // 0 <= progress <= 100
   void importFinished(const bool& success);

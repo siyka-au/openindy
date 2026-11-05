@@ -193,76 +193,94 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
       switch (
           (FeatureDisplayAttributes)getFeatureDisplayAttributes().at(section)) {
         case eFeatureDisplayStDev:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayX:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayY:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayZ:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayRadiusA:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayRadiusB:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayAperture:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eAngular))));
           break;
         case eFeatureDisplayA:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayB:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayC:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayAngle:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eAngular))));
           break;
         case eFeatureDisplayDistance:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayTemperature:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eTemperature))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eTemperature))));
           break;
         case eFeatureDisplayLength:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayExpansionOriginX:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayExpansionOriginY:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayExpansionOriginZ:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eFeatureDisplayFormError:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
       }
 
@@ -271,32 +289,39 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
       switch ((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(
           section)) {
         case eTrafoParamDisplayStDev:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eTrafoParamDisplayTranslationX:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eTrafoParamDisplayTranslationY:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eTrafoParamDisplayTranslationZ:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eMetric))));
           break;
         case eTrafoParamDisplayRotationX:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eAngular))));
           break;
         case eTrafoParamDisplayRotationY:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eAngular))));
           break;
         case eTrafoParamDisplayRotationZ:
-          header.append(QString(" %1").arg(getUnitTypeName(
-              this->parameterDisplayConfig.getDisplayUnit(eAngular))));
+          header.append(QString(" %1").arg(
+              getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
+                  DimensionType::eAngular))));
           break;
       }
     }
@@ -390,7 +415,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
 }
 
 bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
-                                int role, int editMode) {
+                                int role, EditModes editMode) {
   // check current job and model index
   if (this->currentJob.isNull() || !index.isValid()) {
     return false;
@@ -540,14 +565,14 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
               // functions
 
               // 3.3.1 copy scalar input params
-              if (editMode & EditMode::eFunctionCopyScalarInputParams) {
+              if (editMode.testFlag(EditMode::eFunctionCopyScalarInputParams)) {
                 function->setScalarInputParams(
                     copyFunction->getScalarInputParams());
               }  // <- copy scalar input params
 
               QPointer<Geometry> geometry = feature->getGeometry();
               // 3.3.2 copy used elements
-              if (editMode & EditMode::eFunctionCopyUsedElements) {
+              if (editMode.testFlag(EditMode::eFunctionCopyUsedElements)) {
                 QMap<int, QList<InputElement> > inputElements =
                     copyFunction->getInputElements();
                 QMap<int, QList<InputElement> >::const_iterator iterator =
@@ -585,10 +610,10 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
             !feature->getGeometry()->getOwnerDescription().has_value()) {
           QMap<GeometryParameters, double> parameters;
           parameters.insert(
-              eUnknownX,
-              convertToDefault(
-                  value.toDouble(),
-                  this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+              GeometryParameters::eUnknownX,
+              convertToDefault(value.toDouble(),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eMetric)));
           feature->getGeometry()->setUnknownParameters(parameters);
           emit recalcActiveFeature();
           return true;
@@ -599,10 +624,10 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
             !feature->getGeometry()->getOwnerDescription().has_value()) {
           QMap<GeometryParameters, double> parameters;
           parameters.insert(
-              eUnknownY,
-              convertToDefault(
-                  value.toDouble(),
-                  this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+              GeometryParameters::eUnknownY,
+              convertToDefault(value.toDouble(),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eMetric)));
           feature->getGeometry()->setUnknownParameters(parameters);
           emit recalcActiveFeature();
           return true;
@@ -613,10 +638,10 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
             !feature->getGeometry()->getOwnerDescription().has_value()) {
           QMap<GeometryParameters, double> parameters;
           parameters.insert(
-              eUnknownZ,
-              convertToDefault(
-                  value.toDouble(),
-                  this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+              GeometryParameters::eUnknownZ,
+              convertToDefault(value.toDouble(),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eMetric)));
           feature->getGeometry()->setUnknownParameters(parameters);
           emit recalcActiveFeature();
           return true;
@@ -627,10 +652,10 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
             !feature->getGeometry()->getOwnerDescription().has_value()) {
           QMap<GeometryParameters, double> parameters;
           parameters.insert(
-              eUnknownPrimaryI,
-              convertToDefault(
-                  value.toDouble(),
-                  this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+              GeometryParameters::eUnknownPrimaryI,
+              convertToDefault(value.toDouble(),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eAngular)));
           feature->getGeometry()->setUnknownParameters(parameters);
           emit recalcActiveFeature();
           return true;
@@ -641,10 +666,10 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
             !feature->getGeometry()->getOwnerDescription().has_value()) {
           QMap<GeometryParameters, double> parameters;
           parameters.insert(
-              eUnknownPrimaryJ,
-              convertToDefault(
-                  value.toDouble(),
-                  this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+              GeometryParameters::eUnknownPrimaryJ,
+              convertToDefault(value.toDouble(),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eAngular)));
           feature->getGeometry()->setUnknownParameters(parameters);
           emit recalcActiveFeature();
           return true;
@@ -655,10 +680,10 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
             !feature->getGeometry()->getOwnerDescription().has_value()) {
           QMap<GeometryParameters, double> parameters;
           parameters.insert(
-              eUnknownPrimaryK,
-              convertToDefault(
-                  value.toDouble(),
-                  this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+              GeometryParameters::eUnknownPrimaryK,
+              convertToDefault(value.toDouble(),
+                               this->parameterDisplayConfig.getDisplayUnit(
+                                   DimensionType::eAngular)));
           feature->getGeometry()->setUnknownParameters(parameters);
           emit recalcActiveFeature();
           return true;
@@ -706,8 +731,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
         QPointer<TrafoParam> curTrafoParam = feature->getTrafoParam();
 
         if (isUsed) {  // first uncheck other
-          for (QPointer<FeatureWrapper> f :
-               this->currentJob->getFeaturesByType(eTrafoParamFeature)) {
+          for (QPointer<FeatureWrapper> f : this->currentJob->getFeaturesByType(
+                   FeatureTypes::eTrafoParamFeature)) {
             QPointer<TrafoParam> trafoParam = f->getTrafoParam();
             if (trafoParam.isNull() ||
                 !trafoParam->getIsUsed()  // is already false
@@ -905,7 +930,8 @@ void FeatureTableModel::setActiveStation(const QModelIndex& index) {
   QPointer<FeatureWrapper> feature =
       this->currentJob->getFeaturesList().at(index.row());
   if (feature.isNull() || feature->getStation().isNull()) {
-    emit this->sendMessage("No station selected", eWarningMessage);
+    emit this->sendMessage("No station selected",
+                           MessageTypes::eWarningMessage);
     return;
   }
 
@@ -926,7 +952,8 @@ void FeatureTableModel::setActiveStation(const int& id) {
   // get and check feature with the given id
   QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
   if (feature.isNull() || feature->getStation().isNull()) {
-    emit this->sendMessage("No station selected", eWarningMessage);
+    emit this->sendMessage("No station selected",
+                           MessageTypes::eWarningMessage);
     return;
   }
 
@@ -1104,8 +1131,9 @@ void FeatureTableModel::updateModelIfRequested() {
 void FeatureTableModel::updateModel() {
   emit this->layoutAboutToBeChanged();
   emit this->layoutChanged();
-  emit this->sendMessage("Feature table updated", eInformationMessage,
-                         eStatusBarMessage);
+  emit this->sendMessage("Feature table updated",
+                         MessageTypes::eInformationMessage,
+                         MessageDestinations::eStatusBarMessage);
 }
 
 /*!
@@ -1151,102 +1179,131 @@ QVariant FeatureTableModel::getDisplayValue(
         return feature->getFeature()->getDisplayPreviouslyNeeded();
       case eFeatureDisplayStDev:
         return feature->getFeature()->getDisplayStDev(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayMeasurementConfig:
         return feature->getFeature()->getDisplayMeasurementConfig();
       case eFeatureDisplayObservations:
         return feature->getFeature()->getDisplayObservations();
       case eFeatureDisplayX:
         return feature->getFeature()->getDisplayX(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayY:
         return feature->getFeature()->getDisplayY(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayZ:
         return feature->getFeature()->getDisplayZ(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayPrimaryI:
         return feature->getFeature()->getDisplayPrimaryI(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eFeatureDisplayPrimaryJ:
         return feature->getFeature()->getDisplayPrimaryJ(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eFeatureDisplayPrimaryK:
         return feature->getFeature()->getDisplayPrimaryK(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eFeatureDisplayRadiusA:
         return feature->getFeature()->getDisplayRadiusA(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayRadiusB:
         return feature->getFeature()->getDisplayRadiusB(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplaySecondaryI:
         return feature->getFeature()->getDisplaySecondaryI(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eFeatureDisplaySecondaryJ:
         return feature->getFeature()->getDisplaySecondaryJ(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eFeatureDisplaySecondaryK:
         return feature->getFeature()->getDisplaySecondaryK(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eFeatureDisplayAperture:
         return feature->getFeature()->getDisplayAperture(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eFeatureDisplayA:
         return feature->getFeature()->getDisplayA(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayB:
         return feature->getFeature()->getDisplayB(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayC:
         return feature->getFeature()->getDisplayC(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayAngle:
         return feature->getFeature()->getDisplayAngle(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eFeatureDisplayDistance:
         return feature->getFeature()->getDisplayDistance(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayMeasurementSeries:
         return feature->getFeature()->getDisplayMeasurementSeries(
-            this->parameterDisplayConfig.getDisplayUnit(eDimensionless),
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eDimensionless),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eFeatureDisplayTemperature:
         return feature->getFeature()->getDisplayTemperature(
-            this->parameterDisplayConfig.getDisplayUnit(eTemperature),
-            this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eTemperature),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eTemperature));
       case eFeatureDisplayLength:
         return feature->getFeature()->getDisplayLength(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayExpansionOriginX:
         return feature->getFeature()->getDisplayExpansionOriginX(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayExpansionOriginY:
         return feature->getFeature()->getDisplayExpansionOriginY(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayExpansionOriginZ:
         return feature->getFeature()->getDisplayExpansionOriginZ(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eFeatureDisplayFormError:
         return feature->getFeature()->getDisplayFormError(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
     }
 
   } else if (getIsTrafoParamDisplayAttribute(attr)) {  // trafo param attributes
@@ -1258,37 +1315,49 @@ QVariant FeatureTableModel::getDisplayValue(
         return feature->getFeature()->getDisplayDestinationSystem();
       case eTrafoParamDisplayTranslationX:
         return feature->getFeature()->getDisplayTranslationX(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eTrafoParamDisplayTranslationY:
         return feature->getFeature()->getDisplayTranslationY(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eTrafoParamDisplayTranslationZ:
         return feature->getFeature()->getDisplayTranslationZ(
-            this->parameterDisplayConfig.getDisplayUnit(eMetric),
-            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eMetric));
       case eTrafoParamDisplayRotationX:
         return feature->getFeature()->getDisplayRotationX(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eTrafoParamDisplayRotationY:
         return feature->getFeature()->getDisplayRotationY(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eTrafoParamDisplayRotationZ:
         return feature->getFeature()->getDisplayRotationZ(
-            this->parameterDisplayConfig.getDisplayUnit(eAngular),
-            this->parameterDisplayConfig.getDisplayDigits(eAngular));
+            this->parameterDisplayConfig.getDisplayUnit(
+                DimensionType::eAngular),
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eAngular));
       case eTrafoParamDisplayScaleX:
         return feature->getFeature()->getDisplayScaleX(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eTrafoParamDisplayScaleY:
         return feature->getFeature()->getDisplayScaleY(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eTrafoParamDisplayScaleZ:
         return feature->getFeature()->getDisplayScaleZ(
-            this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+            this->parameterDisplayConfig.getDisplayDigits(
+                DimensionType::eDimensionless));
       case eTrafoParamDisplayIsUsed:
         return QVariant();
       case eTrafoParamDisplayValidTime:

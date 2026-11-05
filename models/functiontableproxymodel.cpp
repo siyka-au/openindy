@@ -167,7 +167,7 @@ bool FunctionTableProxyModel::filterAcceptsRow(
           }
 
         } else if (this->currentJob->getActiveFeature()->getFeatureTypeEnum() ==
-                   eTrafoParamFeature) {  // trafo param
+                   FeatureTypes::eTrafoParamFeature) {  // trafo param
 
           if (this->currentJob->getActiveFeature()
                   ->getFeature()

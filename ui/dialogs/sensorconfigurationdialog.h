@@ -46,7 +46,8 @@ class SensorConfigurationDialog : public QDialog {
   // #########
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
-                   const MessageDestinations& msgDest = eConsoleMessage);
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
 
   // #############################################
   // signals to inform about sensor config changes
