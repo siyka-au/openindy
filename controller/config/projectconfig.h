@@ -1,78 +1,75 @@
 #ifndef PROJECTCONFIG_H
 #define PROJECTCONFIG_H
 
+#include <QCoreApplication>
 #include <QList>
 #include <QString>
-#include <QCoreApplication>
-#include "types.h"
+
 #include "parameterdisplayconfig.h"
+#include "types.h"
 
-class ProjectConfig
-{
-public:
+class ProjectConfig {
+ public:
+  static QString getImportNominalPath();
+  static void setImportNominalPath(const QString& value);
 
-    static QString getImportNominalPath();
-    static void setImportNominalPath(const QString &value);
+  static QString getProjectPath();
+  static void setProjectPath(const QString& value);
 
-    static QString getProjectPath();
-    static void setProjectPath(const QString &value);
+  static int getMetricUnit();
+  static void setMetricUnit(int value);
 
-    static int getMetricUnit();
-    static void setMetricUnit(int value);
+  static int getAngularUnit();
+  static void setAngularUnit(int value);
 
-    static int getAngularUnit();
-    static void setAngularUnit(int value);
+  static int getTemperatureUnit();
+  static void setTemperatureUnit(int value);
 
-    static int getTemperatureUnit();
-    static void setTemperatureUnit(int value);
+  static int getDistanceDigits();
+  static void setDistanceDigits(int value);
 
-    static int getDistanceDigits();
-    static void setDistanceDigits(int value);
+  static int getAngularDigits();
+  static void setAngularDigits(int value);
 
-    static int getAngularDigits();
-    static void setAngularDigits(int value);
+  static int getTemperatureDigits();
+  static void setTemperatureDigits(int value);
 
-    static int getTemperatureDigits();
-    static void setTemperatureDigits(int value);
+  static bool getUseSounds();
+  static void setUseSounds(bool value);
 
-    static bool getUseSounds();
-    static void setUseSounds(bool value);
+  static int getAutoSaveInterval();
+  static void setAutoSaveInterval(int value);
 
-    static int getAutoSaveInterval();
-    static void setAutoSaveInterval(int value);
+  static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
+  static ParameterDisplayConfig getParameterDisplayConfig();
 
-    static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
-    static ParameterDisplayConfig getParameterDisplayConfig();
+  //********************************************
+  // save and load functions for all config files
+  //********************************************
 
-    //********************************************
-    //save and load functions for all config files
-    //********************************************
+  static bool loadProjectPathConfigFile();
+  static bool saveProjectPathConfigFile();
 
-    static bool loadProjectPathConfigFile();
-    static bool saveProjectPathConfigFile();
+  static bool loadProjectSettingsConfigFile();
+  static bool saveprojectSettingsConfigFile();
 
-    static bool loadProjectSettingsConfigFile();
-    static bool saveprojectSettingsConfigFile();
+ private:
+  static QString importNominalPath;
+  static QString projectPath;
 
-private:
+  static int metricUnit;
+  static int angularUnit;
+  static int temperatureUnit;
 
-    static QString importNominalPath;
-    static QString projectPath;
+  static int distanceDigits;
+  static int angularDigits;
+  static int temperatureDigits;
 
-    static int metricUnit;
-    static int angularUnit;
-    static int temperatureUnit;
+  static bool useSounds;
 
-    static int distanceDigits;
-    static int angularDigits;
-    static int temperatureDigits;
+  static int autoSaveInterval;
 
-    static bool useSounds;
-
-    static int autoSaveInterval;
-
-    static QList<oi::FeatureDisplayAttributes> displayColumns;
-
+  static QList<oi::FeatureDisplayAttributes> displayColumns;
 };
 
-#endif // PROJECTCONFIG_H
+#endif  // PROJECTCONFIG_H

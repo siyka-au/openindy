@@ -1,13 +1,13 @@
 #ifndef OBSERVATIONIMPORTER_H
 #define OBSERVATIONIMPORTER_H
 
+#include <QApplication>
+#include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QObject>
-#include <QApplication>
 
-#include "oijob.h"
 #include "console.h"
+#include "oijob.h"
 
 using namespace oi;
 
@@ -15,53 +15,52 @@ using namespace oi;
  * \brief The ObservationImporter class
  * Imports observations into the active actual geometry
  */
-class ObservationImporter : public QObject
-{
-    Q_OBJECT
+class ObservationImporter : public QObject {
+  Q_OBJECT
 
-public:
-    explicit ObservationImporter(QObject *parent = 0);
+ public:
+  explicit ObservationImporter(QObject* parent = 0);
 
-    ~ObservationImporter();
+  ~ObservationImporter();
 
-    //#############################
-    //get or set general attributes
-    //#############################
+  // #############################
+  // get or set general attributes
+  // #############################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    const QString &getFileName() const;
-    void setFileName(const QString &filename);
+  const QString& getFileName() const;
+  void setFileName(const QString& filename);
 
-public slots:
+ public slots:
 
-    //######################
-    //start import or export
-    //######################
+  // ######################
+  // start import or export
+  // ######################
 
-    bool importObservations();
+  bool importObservations();
 
-signals:
+ signals:
 
-    //##############################################
-    //signals to inform OpenIndy about import issues
-    //##############################################
+  // ##############################################
+  // signals to inform OpenIndy about import issues
+  // ##############################################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
-    void updateProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
-    void importFinished(const bool &success);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
+  void updateProgress(const int& progress,
+                      const QString& msg);  // 0 <= progress <= 100
+  void importFinished(const bool& success);
 
-private:
+ private:
+  // ##################
+  // general attributes
+  // ##################
 
-    //##################
-    //general attributes
-    //##################
+  QPointer<OiJob> currentJob;
 
-    QPointer<OiJob> currentJob;
-
-    QString filename;
-
+  QString filename;
 };
 
-#endif // OBSERVATIONIMPORTER_H
+#endif  // OBSERVATIONIMPORTER_H

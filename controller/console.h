@@ -1,78 +1,78 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <atomic>
+#include <QDateTime>
+#include <QFile>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QObject>
 #include <QPointer>
 #include <QString>
 #include <QStringList>
 #include <QStringListModel>
-#include <QDateTime>
 #include <QTextStream>
-#include <QFile>
-#include <QMutex>
-#include <QMutexLocker>
 #include <QTimer>
+#include <atomic>
 
 #include "types.h"
 #include "util.h"
 
 using namespace oi;
 
-class Console : public QObject
-{
-    Q_OBJECT
+class Console : public QObject {
+  Q_OBJECT
 
-private:
-    explicit Console(QObject *parent = 0);
+ private:
+  explicit Console(QObject* parent = 0);
 
-public:
-    ~Console();
+ public:
+  ~Console();
 
-    static const QPointer<Console> &getInstance();
+  static const QPointer<Console>& getInstance();
 
-signals:
+ signals:
 
-    void appendMessageToConsole(QString text);
+  void appendMessageToConsole(QString text);
 
-public slots:
+ public slots:
 
-    //#########################
-    //write messages to console
-    //#########################
+  // #########################
+  // write messages to console
+  // #########################
 
-    void addLine(const QString &msg, const MessageTypes &msgType);
-    void addLine(const QString &msg, const MessageTypes &msgType, const bool &value);
-    void addLine(const QString &msg, const MessageTypes &msgType, const double &value);
-    void addLine(const QString &msg, const MessageTypes &msgType, const int &value);
+  void addLine(const QString& msg, const MessageTypes& msgType);
+  void addLine(const QString& msg, const MessageTypes& msgType,
+               const bool& value);
+  void addLine(const QString& msg, const MessageTypes& msgType,
+               const double& value);
+  void addLine(const QString& msg, const MessageTypes& msgType,
+               const int& value);
 
-private slots:
-    void flushToConsoleView();
+ private slots:
+  void flushToConsoleView();
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void add(const QString& msg, const MessageTypes& msgType,
+           const QString& value = "");
+  void writeToLogFile(const QString& msg);
 
+ private:
+  static QPointer<Console> myInstance;
 
-    void add(const QString &msg, const MessageTypes &msgType, const QString &value = "");
-    void writeToLogFile(const QString &msg);
+  // ################
+  // console contents
+  // ################
 
-private:
+  QFile outFile;
 
-    static QPointer<Console> myInstance;
-
-    //################
-    //console contents
-    //################
-
-    QFile outFile;
-
-    std::atomic<bool> flushToConsoleViewRequested;
-    // synchronize add call & buffer access
-    QMutex addMessageBufferMutex;
-    QStringList messageBuffer;
+  std::atomic<bool> flushToConsoleViewRequested;
+  // synchronize add call & buffer access
+  QMutex addMessageBufferMutex;
+  QStringList messageBuffer;
 };
 
-#endif // CONSOLE_H
+#endif  // CONSOLE_H

@@ -2,18 +2,16 @@
 #define EXPORTDIALOG_H
 
 #include <QDialog>
-#include <QPointer>
-#include <QDialog>
-#include <QStringListModel>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QPointer>
 #include <QShowEvent>
 #include <QStringListModel>
-#include <QMessageBox>
 
+#include "exchangeParams.h"
+#include "modelmanager.h"
 #include "types.h"
 #include "util.h"
-#include "modelmanager.h"
-#include "exchangeParams.h"
 
 using namespace oi;
 
@@ -24,36 +22,34 @@ class ExportDialog;
 /*!
  * \brief The ExportDialog class
  */
-class ExportDialog : public QDialog
-{
-    Q_OBJECT
+class ExportDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit ExportDialog(QWidget *parent = 0);
-    ~ExportDialog();
+ public:
+  explicit ExportDialog(QWidget* parent = 0);
+  ~ExportDialog();
 
-signals:
+ signals:
 
-    void startExport(const ExchangeParams &params);
+  void startExport(const ExchangeParams& params);
 
-private slots:
-    void on_pushButton_export_clicked();
+ private slots:
+  void on_pushButton_export_clicked();
 
-    void on_pushButton_Path_clicked();
+  void on_pushButton_Path_clicked();
 
-    void on_comboBox_plugin_currentTextChanged(const QString &arg1);
+  void on_comboBox_plugin_currentTextChanged(const QString& arg1);
 
-private:
+ private:
+  // ##################################
+  // methods to initialize GUI elements
+  // ##################################
 
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
+  void showEvent(QShowEvent* event);
 
-    void showEvent(QShowEvent *event);
+  void initModels();
 
-    void initModels();
-
-    Ui::ExportDialog *ui;
+  Ui::ExportDialog* ui;
 };
 
-#endif // EXPORTDIALOG_H
+#endif  // EXPORTDIALOG_H

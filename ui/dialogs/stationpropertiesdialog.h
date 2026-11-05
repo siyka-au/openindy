@@ -1,20 +1,19 @@
 #ifndef STATIONPROPERTIESDIALOG_H
 #define STATIONPROPERTIESDIALOG_H
 
-#include <QDialog>
-#include <QShowEvent>
-#include <QCloseEvent>
-#include <QPointer>
 #include <QAbstractButton>
 #include <QAbstractItemView>
 #include <QClipboard>
+#include <QCloseEvent>
+#include <QDialog>
+#include <QPointer>
+#include <QShowEvent>
 
+#include "clipboardutil.h"
 #include "modelmanager.h"
 #include "sensoraccuracydelegate.h"
-#include "sensorparametersdelegate.h"
-
 #include "sensorconfiguration.h"
-#include "clipboardutil.h"
+#include "sensorparametersdelegate.h"
 
 namespace Ui {
 class StationPropertiesDialog;
@@ -23,95 +22,94 @@ class StationPropertiesDialog;
 /*!
  * \brief The StationPropertiesDialog class
  */
-class StationPropertiesDialog : public QDialog
-{
-    Q_OBJECT
+class StationPropertiesDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit StationPropertiesDialog(QWidget *parent = 0);
-    ~StationPropertiesDialog();
+ public:
+  explicit StationPropertiesDialog(QWidget* parent = 0);
+  ~StationPropertiesDialog();
 
-    //##############################
-    //get or set station information
-    //##############################
+  // ##############################
+  // get or set station information
+  // ##############################
 
-    //sensor config
-    const SensorConfiguration &getSensorConfiguration() const;
-    void setSensorConfiguration(const SensorConfiguration &sConfig);
+  // sensor config
+  const SensorConfiguration& getSensorConfiguration() const;
+  void setSensorConfiguration(const SensorConfiguration& sConfig);
 
-    //active station state
-    bool getIsActiveStation() const;
-    void setIsActiveStation(bool isActiveStation);
+  // active station state
+  bool getIsActiveStation() const;
+  void setIsActiveStation(bool isActiveStation);
 
-signals:
+ signals:
 
-    //##########################
-    //signals to trigger actions
-    //##########################
+  // ##########################
+  // signals to trigger actions
+  // ##########################
 
-    //select another sensor config for the active station
-    void openSensorConfigurationDialog();
+  // select another sensor config for the active station
+  void openSensorConfigurationDialog();
 
-    //save changes made to the sensor config
-    void sensorConfigurationChanged(const SensorConfiguration &sConfig);
+  // save changes made to the sensor config
+  void sensorConfigurationChanged(const SensorConfiguration& sConfig);
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage) const;
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    //ok or cancel
-    void on_buttonBox_clicked(QAbstractButton *button);
+  // ok or cancel
+  void on_buttonBox_clicked(QAbstractButton* button);
 
-    //open sensor config dialog
-    void on_pushButton_sensorConfig1_clicked();
+  // open sensor config dialog
+  void on_pushButton_sensorConfig1_clicked();
 
-    //key pressed
-    void keyPressEvent(QKeyEvent * e);
+  // key pressed
+  void keyPressEvent(QKeyEvent* e);
 
-    //sensor config changed
-    void updateSensorAccuracy(const SensorConfiguration &sConfig);
-    void updateSensorParameters(const SensorConfiguration &sConfig);
+  // sensor config changed
+  void updateSensorAccuracy(const SensorConfiguration& sConfig);
+  void updateSensorParameters(const SensorConfiguration& sConfig);
 
-private:
-    Ui::StationPropertiesDialog *ui;
+ private:
+  Ui::StationPropertiesDialog* ui;
 
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
+  // ##################################
+  // methods to initialize GUI elements
+  // ##################################
 
-    void showEvent(QShowEvent *event);
+  void showEvent(QShowEvent* event);
 
-    void initGUI();
-    void initModels();
+  void initGUI();
+  void initModels();
 
-    //##############
-    //helper methods
-    //##############
+  // ##############
+  // helper methods
+  // ##############
 
-    //copy values from and to clipboard
-    void copyToClipboard();
-    void pasteFromClipboard();
+  // copy values from and to clipboard
+  void copyToClipboard();
+  void pasteFromClipboard();
 
-    //######
-    //models
-    //######
+  // ######
+  // models
+  // ######
 
-    QPointer<SensorAccuracyModel> accuracyModel;
-    QPointer<SensorParametersModel> sensorParametersModel;
+  QPointer<SensorAccuracyModel> accuracyModel;
+  QPointer<SensorParametersModel> sensorParametersModel;
 
-    //#################
-    //helper attributes
-    //#################
+  // #################
+  // helper attributes
+  // #################
 
-    SensorConfiguration sConfig;
-    bool isActiveStation;
+  SensorConfiguration sConfig;
+  bool isActiveStation;
 
-    ClipBoardUtil clipBoardUtil;
-
+  ClipBoardUtil clipBoardUtil;
 };
 
-#endif // STATIONPROPERTIESDIALOG_H
+#endif  // STATIONPROPERTIESDIALOG_H

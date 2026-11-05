@@ -6,10 +6,10 @@
 
 #include "feature.h"
 #include "function.h"
+#include "parameterdisplayconfig.h"
 #include "statistic.h"
 #include "types.h"
 #include "util.h"
-#include "parameterdisplayconfig.h"
 
 using namespace oi;
 
@@ -17,67 +17,65 @@ using namespace oi;
  * \brief The FunctionStatisticModel class
  * Model that holds the statistic of a specific function of a feature
  */
-class FunctionStatisticModel : public QAbstractTableModel
-{
+class FunctionStatisticModel : public QAbstractTableModel {
+ public:
+  explicit FunctionStatisticModel(const QPointer<Feature>& feature,
+                                  QObject* parent = 0);
 
-public:
-    explicit FunctionStatisticModel(const QPointer<Feature> &feature, QObject *parent = 0);
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
 
-    //########################################
-    //override methods of abstract table model
-    //########################################
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  // ##############################
+  // get or set the current feature
+  // ##############################
 
-    //##############################
-    //get or set the current feature
-    //##############################
+  const QPointer<Feature>& getFeature() const;
+  void setFeature(const QPointer<Feature>& feature);
 
-    const QPointer<Feature> &getFeature() const;
-    void setFeature(const QPointer<Feature> &feature);
+  // #####################################
+  // get or set the current function index
+  // #####################################
 
-    //#####################################
-    //get or set the current function index
-    //#####################################
+  const int& getFunctionIndex() const;
+  void setFunctionIndex(const int& index);
 
-    const int &getFunctionIndex() const;
-    void setFunctionIndex(const int &index);
+  // #########################
+  // get or set display config
+  // #########################
 
-    //#########################
-    //get or set display config
-    //#########################
+  const ParameterDisplayConfig& getParameterDisplayConfig() const;
+  void setParameterDisplayConfig(const ParameterDisplayConfig& config);
 
-    const ParameterDisplayConfig &getParameterDisplayConfig() const;
-    void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+ private slots:
 
-private slots:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void updateModel();
 
-    void updateModel();
+ private:
+  // ##################################
+  // current feature and function index
+  // ##################################
 
-private:
+  QPointer<Feature> feature;
+  int functionIndex;
 
-    //##################################
-    //current feature and function index
-    //##################################
+  // ##############
+  // display config
+  // ##############
 
-    QPointer<Feature> feature;
-    int functionIndex;
-
-    //##############
-    //display config
-    //##############
-
-    ParameterDisplayConfig parameterDisplayConfig;
-
+  ParameterDisplayConfig parameterDisplayConfig;
 };
 
-#endif // FUNCTIONSTATISTICMODEL_H
+#endif  // FUNCTIONSTATISTICMODEL_H

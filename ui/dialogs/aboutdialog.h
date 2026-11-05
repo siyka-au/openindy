@@ -16,16 +16,15 @@ class AboutDialog;
  * \brief The AboutDialog class
  * Dialog that shows version information about OpenIndy
  */
-class AboutDialog : public QDialog
-{
-    Q_OBJECT
+class AboutDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit AboutDialog(QWidget *parent = 0);
-    ~AboutDialog();
+ public:
+  explicit AboutDialog(QWidget* parent = 0);
+  ~AboutDialog();
 
-private:
-    Ui::AboutDialog *ui;
+ private:
+  Ui::AboutDialog* ui;
 };
 
-#endif // ABOUTDIALOG_H
+#endif  // ABOUTDIALOG_H

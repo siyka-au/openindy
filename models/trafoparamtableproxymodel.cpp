@@ -4,17 +4,16 @@
  * \brief TrafoParamTableProxyModel::TrafoParamTableProxyModel
  * \param parent
  */
-TrafoParamTableProxyModel::TrafoParamTableProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent)
-{
-}
+TrafoParamTableProxyModel::TrafoParamTableProxyModel(QObject* parent)
+    : QSortFilterProxyModel(parent) {}
 
 /*!
  * \brief TrafoParamTableProxyModel::getTrafoParamTableColumnConfig
  * \return
  */
-const TrafoParamTableColumnConfig &TrafoParamTableProxyModel::getTrafoParamTableColumnConfig() const{
-    return this->trafoParamTableColumnConfig;
+const TrafoParamTableColumnConfig&
+TrafoParamTableProxyModel::getTrafoParamTableColumnConfig() const {
+  return this->trafoParamTableColumnConfig;
 }
 
 /*!
@@ -22,18 +21,20 @@ const TrafoParamTableColumnConfig &TrafoParamTableProxyModel::getTrafoParamTable
  * \param sourceIndex
  * \return
  */
-QModelIndex TrafoParamTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
-{
-    //get and check proxyIndex
-    QModelIndex proxyIndex = QSortFilterProxyModel::mapFromSource(sourceIndex);
-    if(!proxyIndex.isValid()){
-        return proxyIndex;
-    }
+QModelIndex TrafoParamTableProxyModel::mapFromSource(
+    const QModelIndex& sourceIndex) const {
+  // get and check proxyIndex
+  QModelIndex proxyIndex = QSortFilterProxyModel::mapFromSource(sourceIndex);
+  if (!proxyIndex.isValid()) {
+    return proxyIndex;
+  }
 
-    //set up new column position (column sorting)
-    int columnIndex = sourceIndex.column();
-    int columnPosition = this->trafoParamTableColumnConfig.getColumnPosition((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
-    return this->index(proxyIndex.row(), columnPosition);
+  // set up new column position (column sorting)
+  int columnIndex = sourceIndex.column();
+  int columnPosition = this->trafoParamTableColumnConfig.getColumnPosition(
+      (TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(
+          columnIndex));
+  return this->index(proxyIndex.row(), columnPosition);
 }
 
 /*!
@@ -41,30 +42,33 @@ QModelIndex TrafoParamTableProxyModel::mapFromSource(const QModelIndex &sourceIn
  * \param proxyIndex
  * \return
  */
-QModelIndex TrafoParamTableProxyModel::mapToSource(const QModelIndex &proxyIndex) const
-{
-    //get and check sourceIndex
-    QModelIndex sourceIndex = QSortFilterProxyModel::mapToSource(proxyIndex);
-    if(!sourceIndex.isValid()){
-        return sourceIndex;
-    }
+QModelIndex TrafoParamTableProxyModel::mapToSource(
+    const QModelIndex& proxyIndex) const {
+  // get and check sourceIndex
+  QModelIndex sourceIndex = QSortFilterProxyModel::mapToSource(proxyIndex);
+  if (!sourceIndex.isValid()) {
+    return sourceIndex;
+  }
 
-    //get and cast source model
-    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
-    if(source_model == NULL){
-        return QModelIndex();
-    }
+  // get and cast source model
+  FeatureTableModel* source_model =
+      dynamic_cast<FeatureTableModel*>(this->sourceModel());
+  if (source_model == NULL) {
+    return QModelIndex();
+  }
 
-    //get display attribute at column position
-    TrafoParamDisplayAttributes attr = this->trafoParamTableColumnConfig.getDisplayAttributeAt(proxyIndex.column());
+  // get display attribute at column position
+  TrafoParamDisplayAttributes attr =
+      this->trafoParamTableColumnConfig.getDisplayAttributeAt(
+          proxyIndex.column());
 
-    //get the index of the attribute in the list of all available attributes
-    int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
+  // get the index of the attribute in the list of all available attributes
+  int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
 
-    //set up correct column position for the source index
-    sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
+  // set up correct column position for the source index
+  sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
 
-    return source_model->index(sourceIndex.row(), sourceColumn);
+  return source_model->index(sourceIndex.row(), sourceColumn);
 }
 
 /*!
@@ -73,42 +77,43 @@ QModelIndex TrafoParamTableProxyModel::mapToSource(const QModelIndex &proxyIndex
  * \param source_parent
  * \return
  */
-bool TrafoParamTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+bool TrafoParamTableProxyModel::filterAcceptsRow(
+    int source_row, const QModelIndex& source_parent) const {
+  // get and cast source model
+  FeatureTableModel* source_model =
+      dynamic_cast<FeatureTableModel*>(this->sourceModel());
+  if (source_model == NULL) {
+    return false;
+  }
 
-    //get and cast source model
-    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
-    if(source_model == NULL){
-        return false;
-    }
+  // check if job is set
+  if (source_model->getCurrentJob().isNull()) {
+    return false;
+  }
 
-    //check if job is set
-    if(source_model->getCurrentJob().isNull()){
-        return false;
-    }
+  // check if the feature at index source_row exists
+  if (source_model->getCurrentJob()->getFeatureCount() <= source_row) {
+    return false;
+  }
 
-    //check if the feature at index source_row exists
-    if(source_model->getCurrentJob()->getFeatureCount() <= source_row){
-        return false;
-    }
+  // get and check the feature
+  QPointer<FeatureWrapper> feature =
+      source_model->getCurrentJob()->getFeaturesList().at(source_row);
+  if (feature.isNull() || feature->getFeature().isNull()) {
+    return false;
+  }
 
-    //get and check the feature
-    QPointer<FeatureWrapper> feature = source_model->getCurrentJob()->getFeaturesList().at(source_row);
-    if(feature.isNull() || feature->getFeature().isNull()){
-        return false;
-    }
+  // if the feature is no trafo param reject it
+  if (feature->getTrafoParam().isNull()) {
+    return false;
+  }
 
-    //if the feature is no trafo param reject it
-    if(feature->getTrafoParam().isNull()){
-        return false;
-    }
+  // check if trafo param is bundle trafo param
+  if (this->isBundleStationTrafo(feature->getTrafoParam())) {
+    return false;
+  }
 
-    //check if trafo param is bundle trafo param
-    if(this->isBundleStationTrafo(feature->getTrafoParam())){
-        return false;
-    }
-
-    return true;
-
+  return true;
 }
 
 /*!
@@ -117,22 +122,22 @@ bool TrafoParamTableProxyModel::filterAcceptsRow(int source_row, const QModelInd
  * \param source_parent
  * \return
  */
-bool TrafoParamTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
+bool TrafoParamTableProxyModel::filterAcceptsColumn(
+    int source_column, const QModelIndex& source_parent) const {
+  // get and check display attribute
+  if (getFeatureDisplayAttributes().size() < source_column) {
+    return false;
+  }
+  int attr = getFeatureDisplayAttributes().at(source_column);
 
-    //get and check display attribute
-    if(getFeatureDisplayAttributes().size() < source_column){
-        return false;
-    }
-    int attr = getFeatureDisplayAttributes().at(source_column);
+  // check if the attribute belongs to a trafo param feature
+  if (!getIsTrafoParamDisplayAttribute(attr)) {
+    return false;
+  }
 
-    //check if the attribute belongs to a trafo param feature
-    if(!getIsTrafoParamDisplayAttribute(attr)){
-        return false;
-    }
-
-    //check visibility of the attribute
-    return this->trafoParamTableColumnConfig.getColumnVisibility((TrafoParamDisplayAttributes)attr);
-
+  // check visibility of the attribute
+  return this->trafoParamTableColumnConfig.getColumnVisibility(
+      (TrafoParamDisplayAttributes)attr);
 }
 
 /*!
@@ -140,11 +145,13 @@ bool TrafoParamTableProxyModel::filterAcceptsColumn(int source_column, const QMo
  * \param param
  * \return
  */
-bool TrafoParamTableProxyModel::isBundleStationTrafo(const QPointer<TrafoParam> &param) const
-{
-    if((param->getStartSystem()->getIsStationSystem() && param->getDestinationSystem()->getIsBundleSystem()) ||
-            (param->getStartSystem()->getIsBundleSystem() && param->getDestinationSystem()->getIsStationSystem())){
-        return true;
-    }
-    return false;
+bool TrafoParamTableProxyModel::isBundleStationTrafo(
+    const QPointer<TrafoParam>& param) const {
+  if ((param->getStartSystem()->getIsStationSystem() &&
+       param->getDestinationSystem()->getIsBundleSystem()) ||
+      (param->getStartSystem()->getIsBundleSystem() &&
+       param->getDestinationSystem()->getIsStationSystem())) {
+    return true;
+  }
+  return false;
 }

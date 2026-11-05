@@ -2,8 +2,8 @@
 #define SENSORACCURACYMODEL_H
 
 #include <QAbstractTableModel>
-#include <QObject>
 #include <QColor>
+#include <QObject>
 
 #include "parameterdisplayconfig.h"
 #include "sensorconfiguration.h"
@@ -14,80 +14,79 @@
  * \brief The SensorAccuracyModel class
  * Model with accuracy information of a sensor configuration
  */
-class SensorAccuracyModel : public QAbstractTableModel
-{
-    Q_OBJECT
+class SensorAccuracyModel : public QAbstractTableModel {
+  Q_OBJECT
 
-public:
-    explicit SensorAccuracyModel(QObject *parent = 0);
+ public:
+  explicit SensorAccuracyModel(QObject* parent = 0);
 
-    //########################################
-    //override methods of abstract table model
-    //########################################
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole);
 
-    //#########################
-    //get or set display config
-    //#########################
+  // #########################
+  // get or set display config
+  // #########################
 
-    const ParameterDisplayConfig &getParameterDisplayConfig() const;
-    void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+  const ParameterDisplayConfig& getParameterDisplayConfig() const;
+  void setParameterDisplayConfig(const ParameterDisplayConfig& config);
 
-    //########################
-    //get or set sensor config
-    //########################
+  // ########################
+  // get or set sensor config
+  // ########################
 
-    const oi::SensorConfiguration &getSensorConfiguration() const;
-    void setSensorConfiguration(const oi::SensorConfiguration &sConfig);
+  const oi::SensorConfiguration& getSensorConfiguration() const;
+  void setSensorConfiguration(const oi::SensorConfiguration& sConfig);
 
-    //#########################
-    //get or set readonly state
-    //#########################
+  // #########################
+  // get or set readonly state
+  // #########################
 
-    bool getIsReadOnly() const;
-    void setIsReadOnly(bool isReadOnly);
+  bool getIsReadOnly() const;
+  void setIsReadOnly(bool isReadOnly);
 
-signals:
+ signals:
 
-    //##################################
-    //inform about sensor config changes
-    //##################################
+  // ##################################
+  // inform about sensor config changes
+  // ##################################
 
-    void sensorConfigurationChanged(const SensorConfiguration &sConfig);
+  void sensorConfigurationChanged(const SensorConfiguration& sConfig);
 
-private slots:
+ private slots:
 
-    //###################################################
-    //update the model when the sensor config has changed
-    //###################################################
+  // ###################################################
+  // update the model when the sensor config has changed
+  // ###################################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  oi::SensorConfiguration sConfig;
+  bool isReadOnly;
 
-    oi::SensorConfiguration sConfig;
-    bool isReadOnly;
+  // ##############
+  // display config
+  // ##############
 
-    //##############
-    //display config
-    //##############
-
-    ParameterDisplayConfig parameterDisplayConfig;
-    
+  ParameterDisplayConfig parameterDisplayConfig;
 };
 
-#endif // SENSORACCURACYMODEL_H
+#endif  // SENSORACCURACYMODEL_H

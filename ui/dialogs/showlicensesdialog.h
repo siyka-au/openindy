@@ -1,33 +1,31 @@
 #ifndef SHOWLICENSESDIALOG_H
 #define SHOWLICENSESDIALOG_H
 
-#include <QWidget>
+#include <QDebug>
 #include <QDialog>
 #include <QDir>
-#include <QDebug>
 #include <QStandardItem>
 #include <QStandardItemModel>
-
+#include <QWidget>
 
 namespace Ui {
 class ShowLicensesDialog;
 }
 
-class ShowLicensesDialog : public QDialog
-{
-    Q_OBJECT
+class ShowLicensesDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit ShowLicensesDialog(QWidget *parent = 0);
-    ~ShowLicensesDialog();
+ public:
+  explicit ShowLicensesDialog(QWidget* parent = 0);
+  ~ShowLicensesDialog();
 
-public slots:
-    void onClick(const QModelIndex&);
+ public slots:
+  void onClick(const QModelIndex&);
 
-private:
-    Ui::ShowLicensesDialog *ui;
+ private:
+  Ui::ShowLicensesDialog* ui;
 
-    QStandardItemModel model;
+  QStandardItemModel model;
 };
 
-#endif // SHOWLICENSESDIALOG_H
+#endif  // SHOWLICENSESDIALOG_H

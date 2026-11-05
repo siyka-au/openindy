@@ -1,13 +1,13 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QString>
 #include <QMap>
+#include <QString>
 
 #if defined(OI_MAIN_LIB)
-#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#define OI_MAIN_EXPORT Q_DECL_EXPORT
 #else
-#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#define OI_MAIN_EXPORT Q_DECL_IMPORT
 #endif
 
 /*!
@@ -24,36 +24,32 @@
  * Project layer: read-write, scoped to whichever project is open; in-memory
  * only for now (no project-file persistence hook exists yet for this).
  */
-class OI_MAIN_EXPORT Settings
-{
-public:
+class OI_MAIN_EXPORT Settings {
+ public:
+  static void init();
 
-    static void init();
+  static QString get(const QString& key);
 
-    static QString get(const QString &key);
+  static void setUserValue(const QString& key, const QString& value);
+  static void setProjectValue(const QString& key, const QString& value);
+  static void clearProjectValues();
 
-    static void setUserValue(const QString &key, const QString &value);
-    static void setProjectValue(const QString &key, const QString &value);
-    static void clearProjectValues();
+  // loads the System layer from an explicit defaults.json path instead of
+  // the production <appDir>/config/defaults.json - exposed for tests
+  static void loadSystemLayerFromFile(const QString& path);
 
-    //loads the System layer from an explicit defaults.json path instead of
-    //the production <appDir>/config/defaults.json - exposed for tests
-    static void loadSystemLayerFromFile(const QString &path);
+ private:
+  static bool isInit;
 
-private:
+  static QMap<QString, QString> systemLayer;
+  static QMap<QString, QString> userLayer;
+  static QMap<QString, QString> projectLayer;
 
-    static bool isInit;
+  static void loadSystemLayer();
+  static void loadUserLayer();
+  static void saveUserLayer();
 
-    static QMap<QString, QString> systemLayer;
-    static QMap<QString, QString> userLayer;
-    static QMap<QString, QString> projectLayer;
-
-    static void loadSystemLayer();
-    static void loadUserLayer();
-    static void saveUserLayer();
-
-    static QString userSettingsFilePath();
-
+  static QString userSettingsFilePath();
 };
 
-#endif // SETTINGS_H
+#endif  // SETTINGS_H

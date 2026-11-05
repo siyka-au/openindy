@@ -2,91 +2,94 @@
 #define AVAILABLEFUNCTIONSLISTMODEL_H
 
 #include <QAbstractListModel>
-#include <QPointer>
-#include <QModelIndex>
-#include <QPixmap>
 #include <QList>
+#include <QModelIndex>
 #include <QPair>
+#include <QPixmap>
+#include <QPointer>
 
-#include "types.h"
-#include "util.h"
+#include "function.h"
 #include "pluginrepository.h"
 #include "settings.h"
-#include "function.h"
+#include "types.h"
+#include "util.h"
 
 using namespace oi;
 
 /*!
  * \brief The AvailableFunctionsListModel class
- * Model that holds all available create functions (possible first functions of a feature)
+ * Model that holds all available create functions (possible first functions of
+ * a feature)
  */
-class AvailableFunctionsListModel : public QAbstractListModel
-{
-    Q_OBJECT
+class AvailableFunctionsListModel : public QAbstractListModel {
+  Q_OBJECT
 
-public:
-    explicit AvailableFunctionsListModel(QObject *parent = 0);
+ public:
+  explicit AvailableFunctionsListModel(QObject* parent = 0);
 
-    //#######################################
-    //override methods of abstract item model
-    //#######################################
+  // #######################################
+  // override methods of abstract item model
+  // #######################################
 
-    int	rowCount(const QModelIndex & parent = QModelIndex()) const;
-    int	columnCount(const QModelIndex & parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const;
 
-    //#########################
-    //get the function at index
-    //#########################
+  // #########################
+  // get the function at index
+  // #########################
 
-    sys::Function getFunctionAtIndex(const QModelIndex &index) const;
+  sys::Function getFunctionAtIndex(const QModelIndex& index) const;
 
-    //############################
-    //get or set default functions
-    //############################
+  // ############################
+  // get or set default functions
+  // ############################
 
-    QPair<QString, QString> getDefaultFunction(const FeatureTypes &type) const;
+  QPair<QString, QString> getDefaultFunction(const FeatureTypes& type) const;
 
-    //############################
-    //get or set available plugins
-    //############################
+  // ############################
+  // get or set available plugins
+  // ############################
 
-    const QList<sys::Plugin> &getPlugins() const;
-    void setPlugins(const QList<sys::Plugin> &plugins);
+  const QList<sys::Plugin>& getPlugins() const;
+  void setPlugins(const QList<sys::Plugin>& plugins);
 
-signals:
+ signals:
 
-    //###########################
-    //signals to change job state
-    //###########################
+  // ###########################
+  // signals to change job state
+  // ###########################
 
-    void startRemoveUsedElements(const QPointer<FeatureWrapper> &target, const int &functionPosition, const int &neededElementsIndex, const int &elementId);
+  void startRemoveUsedElements(const QPointer<FeatureWrapper>& target,
+                               const int& functionPosition,
+                               const int& neededElementsIndex,
+                               const int& elementId);
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private slots:
+ private slots:
 
-    //###########################################
-    //update the model when job state has changed
-    //###########################################
+  // ###########################################
+  // update the model when job state has changed
+  // ###########################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // #################
+  // available plugins
+  // #################
 
-    //#################
-    //available plugins
-    //#################
-
-    QList<sys::Plugin> plugins;
-
+  QList<sys::Plugin> plugins;
 };
 
-#endif // AVAILABLEFUNCTIONSLISTMODEL_H
+#endif  // AVAILABLEFUNCTIONSLISTMODEL_H

@@ -1,28 +1,28 @@
 #ifndef ACTUALPROPERTIESDIALOG_H
 #define ACTUALPROPERTIESDIALOG_H
 
-#include <QDialog>
+#include <QClipboard>
 #include <QCloseEvent>
-#include <QMap>
+#include <QComboBox>
+#include <QDialog>
+#include <QFileDialog>
+#include <QKeyEvent>
+#include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
-#include <QComboBox>
-#include <QLabel>
+#include <QMap>
+#include <QMenu>
+#include <QPointer>
+#include <QShowEvent>
+#include <QtNetwork/QNetworkInterface>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
-#include <QtNetwork/QNetworkInterface>
-#include <QShowEvent>
-#include <QKeyEvent>
-#include <QClipboard>
-#include <QPointer>
-#include <QMenu>
-#include <QFileDialog>
 
+#include "clipboardutil.h"
+#include "functionstatisticmodel.h"
 #include "modelmanager.h"
 #include "observationtabledelegate.h"
 #include "readingtabledelegate.h"
-#include "functionstatisticmodel.h"
-#include "clipboardutil.h"
 
 using namespace oi;
 
@@ -33,83 +33,83 @@ class ActualPropertiesDialog;
 /*!
  * \brief The ActualPropertiesDialog class
  */
-class ActualPropertiesDialog : public QDialog
-{
-    Q_OBJECT
+class ActualPropertiesDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit ActualPropertiesDialog(QWidget *parent = 0);
-    ~ActualPropertiesDialog();
+ public:
+  explicit ActualPropertiesDialog(QWidget* parent = 0);
+  ~ActualPropertiesDialog();
 
-signals:
+ signals:
 
-    //###################
-    //import observations
-    //###################
+  // ###################
+  // import observations
+  // ###################
 
-    void importObservations(const QString &filename);
+  void importObservations(const QString& filename);
 
-    void useObservation(bool use, const QModelIndex &index);
-    void unUseObservation(bool use, const QModelIndex &index);
-    void removeObservationsById(const QList<int> selectedIds);
+  void useObservation(bool use, const QModelIndex& index);
+  void unUseObservation(bool use, const QModelIndex& index);
+  void removeObservationsById(const QList<int> selectedIds);
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage) const;
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    //key pressed
-    void keyPressEvent(QKeyEvent * e);
+  // key pressed
+  void keyPressEvent(QKeyEvent* e);
 
-    //import observations
-    void on_tableView_observation_customContextMenuRequested(const QPoint &pos);
-    void importObservationsMenuClicked(bool checked);
+  // import observations
+  void on_tableView_observation_customContextMenuRequested(const QPoint& pos);
+  void importObservationsMenuClicked(bool checked);
 
-    //resize table views
-    void resizeTableView();
+  // resize table views
+  void resizeTableView();
 
-    //function statistic
-    void on_comboBox_displayedFunction_currentIndexChanged(int index);
+  // function statistic
+  void on_comboBox_displayedFunction_currentIndexChanged(int index);
 
-    //##############
-    //helper methods
-    //##############
+  // ##############
+  // helper methods
+  // ##############
 
-    //copy values from and to clipboard
-    void copyToClipboard();
+  // copy values from and to clipboard
+  void copyToClipboard();
 
-    void on_tabWidget_selectedFeature_customContextMenuRequested(const QPoint &pos);
+  void on_tabWidget_selectedFeature_customContextMenuRequested(
+      const QPoint& pos);
 
-    void useObservations();
-    void unUseObservations();
-    void deleteObservations();
+  void useObservations();
+  void unUseObservations();
+  void deleteObservations();
 
-private:
+ private:
+  // ##################################
+  // methods to initialize GUI elements
+  // ##################################
 
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
+  void showEvent(QShowEvent* event);
 
-    void showEvent(QShowEvent *event);
+  void initGUI();
+  void initModels();
+  QModelIndexList getSelection();
+  void useObservations(bool use);
 
-    void initGUI();
-    void initModels();
-    QModelIndexList getSelection();
-    void useObservations(bool use);
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  QPointer<FunctionStatisticModel> functionStatisticModel;
 
-    QPointer<FunctionStatisticModel> functionStatisticModel;
+  ClipBoardUtil clipBoardUtil;
 
-    ClipBoardUtil clipBoardUtil;
-
-private:
-    Ui::ActualPropertiesDialog *ui;
+ private:
+  Ui::ActualPropertiesDialog* ui;
 };
 
-#endif // ACTUALPROPERTIESDIALOG_H
+#endif  // ACTUALPROPERTIESDIALOG_H

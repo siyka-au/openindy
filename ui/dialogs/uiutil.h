@@ -1,18 +1,19 @@
 #ifndef UIUTIL_H
 #define UIUTIL_H
 
-#include <QString>
-#include <QStringList>
-#include <QMap>
 #include <QFont>
 #include <QFontMetrics>
+#include <QMap>
+#include <QString>
+#include <QStringList>
 
 #include "types.h"
 
-namespace oi{
+namespace oi {
 
-const int Q_DECL_EXPORT getDropDownMenuSize(QStringList list, const int menuSize);
+const int Q_DECL_EXPORT getDropDownMenuSize(QStringList list,
+                                            const int menuSize);
 
 }
 
-#endif // UIUTIL_H
+#endif  // UIUTIL_H

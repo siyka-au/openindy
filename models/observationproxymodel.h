@@ -1,58 +1,58 @@
 #ifndef OBSERVATIONPROXYMODEL_H
 #define OBSERVATIONPROXYMODEL_H
 
-#include <QSortFilterProxyModel>
 #include <QPointer>
+#include <QSortFilterProxyModel>
 
-#include "oijob.h"
 #include "observationmodel.h"
 #include "observationtablecolumnconfig.h"
+#include "oijob.h"
 
 using namespace oi;
 
 /*!
  * \brief The ObservationProxyModel class
  */
-class ObservationProxyModel : public QSortFilterProxyModel
-{
-    Q_OBJECT
+class ObservationProxyModel : public QSortFilterProxyModel {
+  Q_OBJECT
 
-public:
-    explicit ObservationProxyModel(QObject *parent = 0);
+ public:
+  explicit ObservationProxyModel(QObject* parent = 0);
 
-    //#########################
-    //get or set display config
-    //#########################
+  // #########################
+  // get or set display config
+  // #########################
 
-    const ObservationTableColumnConfig &getObservationTableColumnConfig() const;
-    void setObservationTableColumnConfig(const ObservationTableColumnConfig &config);
+  const ObservationTableColumnConfig& getObservationTableColumnConfig() const;
+  void setObservationTableColumnConfig(
+      const ObservationTableColumnConfig& config);
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-protected:
+ protected:
+  // ###########################################
+  // override methods of sort filter proxy model
+  // ###########################################
 
-    //###########################################
-    //override methods of sort filter proxy model
-    //###########################################
+  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsColumn(int source_column,
+                           const QModelIndex& source_parent) const;
+  bool lessThan(const QModelIndex& source_left,
+                const QModelIndex& source_right) const;
 
-    bool filterAcceptsRow (int source_row, const QModelIndex &source_parent ) const;
-    bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent ) const;
-    bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const;
+ private:
+  // ##############
+  // display config
+  // ##############
 
-private:
-
-    //##############
-    //display config
-    //##############
-
-    ObservationTableColumnConfig observationTableColumnConfig;
-
+  ObservationTableColumnConfig observationTableColumnConfig;
 };
 
-#endif // OBSERVATIONPROXYMODEL_H
+#endif  // OBSERVATIONPROXYMODEL_H

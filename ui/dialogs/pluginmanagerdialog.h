@@ -1,15 +1,15 @@
 #ifndef PLUGINMANAGERDIALOG_H
 #define PLUGINMANAGERDIALOG_H
 
-#include <QDialog>
-#include <QShowEvent>
-#include <QCloseEvent>
-#include <QLayout>
 #include <QCheckBox>
+#include <QCloseEvent>
+#include <QDialog>
+#include <QLayout>
+#include <QShowEvent>
 #include <QStringListModel>
 
-#include "plugininfowidget.h"
 #include "modelmanager.h"
+#include "plugininfowidget.h"
 
 using namespace oi;
 
@@ -21,104 +21,102 @@ class PluginManagerDialog;
  * \brief The PluginManagerDialog class
  * Dialog to get an overview of all loaded plugins and to add or remove them
  */
-class PluginManagerDialog : public QDialog
-{
-    Q_OBJECT
+class PluginManagerDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit PluginManagerDialog(QWidget *parent = 0);
-    ~PluginManagerDialog();
+ public:
+  explicit PluginManagerDialog(QWidget* parent = 0);
+  ~PluginManagerDialog();
 
-signals:
+ signals:
 
-    //load new plugins
-    void loadPlugins();
+  // load new plugins
+  void loadPlugins();
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    //add or remove plugins
-    void on_pushButton_add_clicked();
-    void on_pushButton_remove_clicked();
+  // add or remove plugins
+  void on_pushButton_add_clicked();
+  void on_pushButton_remove_clicked();
 
-    //plugin selected
-    void on_treeView_plugins_clicked(const QModelIndex &index);
+  // plugin selected
+  void on_treeView_plugins_clicked(const QModelIndex& index);
 
-private:
+ private:
+  // ##################################
+  // methods to initialize GUI elements
+  // ##################################
 
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
+  void initGUI();
+  void initModels();
 
-    void initGUI();
-    void initModels();
+ private:
+  Ui::PluginManagerDialog* ui;
 
-private:
-    Ui::PluginManagerDialog *ui;
+  PluginInfoWidget* pluginInformation;
 
-    PluginInfoWidget *pluginInformation;
+  /*
+  QStringList allFeatureAttributes;
+  QStringList displayedFeatureAttributes;
+  QStringListModel *m_featureAttributes;
+  QStringListModel *m_displayedFeatureAttributes;
 
-    /*
-    QStringList allFeatureAttributes;
-    QStringList displayedFeatureAttributes;
-    QStringListModel *m_featureAttributes;
-    QStringListModel *m_displayedFeatureAttributes;
+  QStringList allTrafoParamAttributes;
+  QStringList displayedTrafoParamAttributes;
+  QStringListModel *m_TrafoParamAttributes;
+  QStringListModel *m_displayedTrafoParamAttributes;
 
-    QStringList allTrafoParamAttributes;
-    QStringList displayedTrafoParamAttributes;
-    QStringListModel *m_TrafoParamAttributes;
-    QStringListModel *m_displayedTrafoParamAttributes;
-
-    void setPluginsModel(PluginTreeViewModel *model);
+  void setPluginsModel(PluginTreeViewModel *model);
 
 signals:
-    void modelChanged();
+  void modelChanged();
 
-    void changedColumnOrder();
+  void changedColumnOrder();
 
 private slots:
-    void on_pushButton_ok_clicked();
+  void on_pushButton_ok_clicked();
 
-    void on_pushButton_cancel_clicked();
+  void on_pushButton_cancel_clicked();
 
-    void initGUI();
+  void initGUI();
 
-    void showEvent(QShowEvent *event);
+  void showEvent(QShowEvent *event);
 
-    void closeEvent(QCloseEvent *event);
+  void closeEvent(QCloseEvent *event);
 
-    void saveSettings();
+  void saveSettings();
 
-    void displayFeatureColumns();
+  void displayFeatureColumns();
 
-    void displayTrafoParamColumns();
+  void displayTrafoParamColumns();
 
-    void getFeatureColumns();
+  void getFeatureColumns();
 
-    void getTrafoParamColumns();
+  void getTrafoParamColumns();
 
-    void on_toolButton_addFeatureAttribute_clicked();
+  void on_toolButton_addFeatureAttribute_clicked();
 
-    void on_toolButton_removeFeatureAttribute_clicked();
+  void on_toolButton_removeFeatureAttribute_clicked();
 
-    void on_toolButton_addTrafoParamAttribute_clicked();
+  void on_toolButton_addTrafoParamAttribute_clicked();
 
-    void on_toolButton_removeTrafoParamAttribute_clicked();
+  void on_toolButton_removeTrafoParamAttribute_clicked();
 
-    void on_treeView_plugins_clicked(const QModelIndex &index);
+  void on_treeView_plugins_clicked(const QModelIndex &index);
 
-    void on_toolButton_up_clicked();
+  void on_toolButton_up_clicked();
 
-    void on_toolButton_down_clicked();
+  void on_toolButton_down_clicked();
 
 private:
 
-    Ui::SettingsDialog *ui;
+  Ui::SettingsDialog *ui;
 
-    PluginInfoWidget *myPluginInformation;*/
+  PluginInfoWidget *myPluginInformation;*/
 };
 
-#endif // PLUGINMANAGERDIALOG_H
+#endif  // PLUGINMANAGERDIALOG_H

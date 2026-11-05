@@ -2,36 +2,32 @@
 #define MEASUREBEHAVIORDIALOG_H
 
 #include <QDialog>
+
 #include "measurebehaviortypes.h"
 
 namespace Ui {
 class MeasureBehaviorDialog;
 }
 
+class MeasureBehaviorDialog : public QDialog {
+  Q_OBJECT
 
-class MeasureBehaviorDialog : public QDialog
-{
-    Q_OBJECT
+ public:
+  explicit MeasureBehaviorDialog(QWidget* parent = 0);
+  ~MeasureBehaviorDialog();
 
-public:
+ private slots:
+  void on_pushButton_searchSMR_clicked();
+  void on_pushButton_tryAgain_clicked();
+  void on_pushButton_skip_clicked();
 
-    explicit MeasureBehaviorDialog(QWidget *parent = 0);
-    ~MeasureBehaviorDialog();
+ signals:
+  void setDecision(Decision decision);
 
-private slots:
-    void on_pushButton_searchSMR_clicked();
-    void on_pushButton_tryAgain_clicked();
-    void on_pushButton_skip_clicked();
+ private:
+  Ui::MeasureBehaviorDialog* ui;
 
-signals:
-    void setDecision(Decision decision);
-
-private:
-    Ui::MeasureBehaviorDialog *ui;
-
-    void clicked(Decision decision);
-
+  void clicked(Decision decision);
 };
 
-
-#endif // MEASUREBEHAVIORDIALOG_H
+#endif  // MEASUREBEHAVIORDIALOG_H

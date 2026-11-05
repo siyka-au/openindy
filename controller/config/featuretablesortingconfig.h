@@ -11,14 +11,12 @@ using namespace oi;
  * \brief The FeatureTableSortingConfig class
  * Used to specify the sorting of features
  */
-class FeatureTableSortingConfig
-{
-public:
-    FeatureTableSortingConfig();
+class FeatureTableSortingConfig {
+ public:
+  FeatureTableSortingConfig();
 
-private:
-    void init();
-
+ private:
+  void init();
 };
 
-#endif // FEATURETABLESORTINGCONFIG_H
+#endif  // FEATURETABLESORTINGCONFIG_H

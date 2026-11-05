@@ -2,12 +2,12 @@
 #define FUNCTIONWEIGHTSTABLEMODEL_H
 
 #include <QAbstractTableModel>
+#include <QList>
 #include <QObject>
 #include <QPointer>
-#include <QList>
 
-#include "oijob.h"
 #include "feature.h"
+#include "oijob.h"
 
 using namespace oi;
 
@@ -15,51 +15,51 @@ using namespace oi;
  * \brief The FunctionWeightsTableModel class
  * model the weights of function input elements
  */
-class FunctionWeightsTableModel : public QAbstractTableModel
-{
-    Q_OBJECT
-public:
-    explicit FunctionWeightsTableModel(QPointer<OiJob> job, QObject *parent = 0);
-    explicit FunctionWeightsTableModel(QObject *parent = 0);
+class FunctionWeightsTableModel : public QAbstractTableModel {
+  Q_OBJECT
+ public:
+  explicit FunctionWeightsTableModel(QPointer<OiJob> job, QObject* parent = 0);
+  explicit FunctionWeightsTableModel(QObject* parent = 0);
 
-    //###############################
-    //get or set current OpenIndy job
-    //###############################
+  // ###############################
+  // get or set current OpenIndy job
+  // ###############################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  virtual QVariant headerData(int section, Qt::Orientation orientation,
+                              int role = Qt::DisplayRole) const;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole);
 
-public slots:
+ public slots:
 
-    void setFunctionPosition(int pos);
+  void setFunctionPosition(int pos);
 
-    //##############################################
-    //update the model when changes
-    //##############################################
+  // ##############################################
+  // update the model when changes
+  // ##############################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  QPointer<OiJob> currentJob;
 
-    QPointer<OiJob> currentJob;
+  int functionPosition;
 
-    int functionPosition;
+  void connectJob();
+  void disconnectJob();
 
-    void connectJob();
-    void disconnectJob();
-
-    void featureFunctionChanged();
+  void featureFunctionChanged();
 };
 
-#endif // FUNCTIONWEIGHTSTABLEMODEL_H
+#endif  // FUNCTIONWEIGHTSTABLEMODEL_H

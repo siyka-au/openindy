@@ -1,4 +1,5 @@
 #include "measurementconfigurationdialog.h"
+
 #include "ui_measurementconfigurationdialog.h"
 
 #define MIN_TIME_INTERVAL 0.005
@@ -8,631 +9,697 @@
  * \brief MeasurementConfigurationDialog::MeasurementConfigurationDialog
  * \param parent
  */
-MeasurementConfigurationDialog::MeasurementConfigurationDialog(QWidget *parent) : QDialog(parent),
-    ui(new Ui::MeasurementConfigurationDialog)
-{
-    ui->setupUi(this);
+MeasurementConfigurationDialog::MeasurementConfigurationDialog(QWidget* parent)
+    : QDialog(parent), ui(new Ui::MeasurementConfigurationDialog) {
+  ui->setupUi(this);
 
-    this->ui->lineEdit_timeInterval->setValidator(new QDoubleValidator(MIN_TIME_INTERVAL, DBL_MAX, 3, this));
-    this->ui->lineEdit_distancInterval->setValidator(new QDoubleValidator(MIN_DISTANCE_INTERVAL, DBL_MAX, 4, this));
+  this->ui->lineEdit_timeInterval->setValidator(
+      new QDoubleValidator(MIN_TIME_INTERVAL, DBL_MAX, 3, this));
+  this->ui->lineEdit_distancInterval->setValidator(
+      new QDoubleValidator(MIN_DISTANCE_INTERVAL, DBL_MAX, 4, this));
 
-    //init models
-    this->initModels();
+  // init models
+  this->initModels();
 
-    //init GUI elements
-    this->initGUI();
-
+  // init GUI elements
+  this->initGUI();
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::~MeasurementConfigurationDialog
  */
-MeasurementConfigurationDialog::~MeasurementConfigurationDialog(){
-    delete this->ui;
+MeasurementConfigurationDialog::~MeasurementConfigurationDialog() {
+  delete this->ui;
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::setMeasurementConfiguration
  * \param mConfig
  */
-void MeasurementConfigurationDialog::setMeasurementConfiguration(const MeasurementConfig &mConfig){
+void MeasurementConfigurationDialog::setMeasurementConfiguration(
+    const MeasurementConfig& mConfig) {
+  // check if name is empty
+  if (!mConfig.isValid()) {
+    currentListView()->selectionModel()->clearSelection();
+    this->updateGuiFromMeasurementConfig(MeasurementConfig());
+    this->ui->widget_measurementConfigValues->setEnabled(false);
+  }
 
-    //check if name is empty
-    if(!mConfig.isValid()){
-        currentListView()->selectionModel()->clearSelection();
-        this->updateGuiFromMeasurementConfig(MeasurementConfig());
-        this->ui->widget_measurementConfigValues->setEnabled(false);
-    }
+  // get measurement config model
+  const MeasurementConfigurationModel& model =
+      ModelManager::getMeasurementConfigurationModel();
 
-    //get measurement config model
-    const MeasurementConfigurationModel &model = ModelManager::getMeasurementConfigurationModel();
+  // get model index of mConfig
+  QModelIndex index = model.getIndex(mConfig);
+  if (!index.isValid()) {
+    return;
+  }
 
-    //get model index of mConfig
-    QModelIndex index = model.getIndex(mConfig);
-    if(!index.isValid()){
-        return;
-    }
-
-    //update selected measurement config
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
-    this->updateGuiFromMeasurementConfig(mConfig);
-    this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
-                                                         ? !mConfig.isStandardConfig()
-                                                         : false);
-    this->selectedMeasurementConfig = mConfig;
-
+  // update selected measurement config
+  currentListView()->selectionModel()->select(
+      index, QItemSelectionModel::ClearAndSelect);
+  this->updateGuiFromMeasurementConfig(mConfig);
+  this->ui->widget_measurementConfigValues->setEnabled(
+      mConfig.isUserConfig() ? !mConfig.isStandardConfig() : false);
+  this->selectedMeasurementConfig = mConfig;
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::on_listView_userConfigs_clicked
  * \param index
  */
-void MeasurementConfigurationDialog::on_listView_userConfigs_clicked(const QModelIndex &index){
-    on_listView_configs_clicked(index);
+void MeasurementConfigurationDialog::on_listView_userConfigs_clicked(
+    const QModelIndex& index) {
+  on_listView_configs_clicked(index);
 }
-void MeasurementConfigurationDialog::on_listView_projectConfigs_clicked(const QModelIndex &index){
-    on_listView_configs_clicked(index);
+void MeasurementConfigurationDialog::on_listView_projectConfigs_clicked(
+    const QModelIndex& index) {
+  on_listView_configs_clicked(index);
 }
-void MeasurementConfigurationDialog::on_listView_configs_clicked(const QModelIndex &index) {
-    //check index
-    if(!index.isValid()){
-        return;
-    }
+void MeasurementConfigurationDialog::on_listView_configs_clicked(
+    const QModelIndex& index) {
+  // check index
+  if (!index.isValid()) {
+    return;
+  }
 
-    //get and check model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
-    if(mConfigProxyModel == NULL){
-        return;
-    }
+  // get and check model
+  MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          currentListView()->model());
+  if (mConfigProxyModel == NULL) {
+    return;
+  }
 
-    //get and check source model
-    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
-    if(mConfigModel == NULL){
-        return;
-    }
+  // get and check source model
+  MeasurementConfigurationModel* mConfigModel =
+      static_cast<MeasurementConfigurationModel*>(
+          mConfigProxyModel->sourceModel());
+  if (mConfigModel == NULL) {
+    return;
+  }
 
-    //get selected measurement config
-    MeasurementConfig mConfig = mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
+  // get selected measurement config
+  MeasurementConfig mConfig =
+      mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
-    //update GUI from selected measurement config
-    this->updateGuiFromMeasurementConfig(mConfig);
+  // update GUI from selected measurement config
+  this->updateGuiFromMeasurementConfig(mConfig);
 
-    this->ui->widget_measurementConfigValues->setEnabled(mConfig.isEditable());
-    this->enableUIElements(mConfig.getMeasurementType());
+  this->ui->widget_measurementConfigValues->setEnabled(mConfig.isEditable());
+  this->enableUIElements(mConfig.getMeasurementType());
 
-    this->selectedMeasurementConfig = mConfig;
-
+  this->selectedMeasurementConfig = mConfig;
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::measurementConfigContextMenuRequested
  * \param point
  */
-void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const QPoint &point){
+void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(
+    const QPoint& point) {
+  // get and check index
+  QModelIndex index = currentListView()->indexAt(point);
+  if (!index.isValid() || index.parent().isValid()) {
+    return;
+  }
 
-    //get and check index
-    QModelIndex index = currentListView()->indexAt(point);
-    if(!index.isValid() || index.parent().isValid()){
-        return;
-    }
+  // get and check measurement config proxy model
+  MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          currentListView()->model());
+  if (mConfigProxyModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
-    if(mConfigProxyModel == NULL){
-        return;
-    }
+  // get and check measurement config model
+  MeasurementConfigurationModel* mConfigModel =
+      static_cast<MeasurementConfigurationModel*>(
+          mConfigProxyModel->sourceModel());
+  if (mConfigModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config model
-    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
-    if(mConfigModel == NULL){
-        return;
-    }
+  // set selected index
+  currentListView()->selectionModel()->select(index,
+                                              QItemSelectionModel::Select);
+  this->selectedMeasurementConfig =
+      mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
-    //set selected index
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
-    this->selectedMeasurementConfig = mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
+  this->updateGuiFromMeasurementConfig(mConfigModel->getMeasurementConfig(
+      mConfigProxyModel->mapToSource(index)));
+  if (this->selectedMeasurementConfig.isUserConfig()) {
+    this->ui->widget_measurementConfigValues->setEnabled(true);
+  } else {
+    this->ui->widget_measurementConfigValues->setEnabled(false);
+  }
 
-    this->updateGuiFromMeasurementConfig(mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index)));
-    if(this->selectedMeasurementConfig.isUserConfig()){
-        this->ui->widget_measurementConfigValues->setEnabled(true);
-    }else{
-        this->ui->widget_measurementConfigValues->setEnabled(false);
-    }
-
-    if(this->selectedMeasurementConfig.isUserConfig() && this->selectedMeasurementConfig.isEditable()) {
-        QMenu *menu = new QMenu();
-        menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
-        menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
-        menu->exec(ui->listView_userConfigs->mapToGlobal(point));
-    }else if(this->selectedMeasurementConfig.isProjectConfig()){
-        QMenu *menu = new QMenu();
-        menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
-        menu->exec(ui->listView_projectConfigs->mapToGlobal(point));
-    }
-
+  if (this->selectedMeasurementConfig.isUserConfig() &&
+      this->selectedMeasurementConfig.isEditable()) {
+    QMenu* menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_add.png"),
+                    QString("clone config"), this,
+                    SLOT(cloneSelectedMeasurementConfig()));
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"),
+                    QString("delete config"), this,
+                    SLOT(removeSelectedMeasurementConfig()));
+    menu->exec(ui->listView_userConfigs->mapToGlobal(point));
+  } else if (this->selectedMeasurementConfig.isProjectConfig()) {
+    QMenu* menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_add.png"),
+                    QString("clone config"), this,
+                    SLOT(cloneSelectedMeasurementConfig()));
+    menu->exec(ui->listView_projectConfigs->mapToGlobal(point));
+  }
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::removeSelectedMeasurementConfig
  */
-void MeasurementConfigurationDialog::removeSelectedMeasurementConfig(){
+void MeasurementConfigurationDialog::removeSelectedMeasurementConfig() {
+  // get and check index
+  QModelIndexList selection =
+      currentListView()->selectionModel()->selectedIndexes();
+  if (selection.size() != 1) {
+    return;
+  }
+  QModelIndex index = selection.at(0);
+  if (!index.isValid() || index.parent().isValid()) {
+    return;
+  }
 
-    //get and check index
-    QModelIndexList selection = currentListView()->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        return;
-    }
-    QModelIndex index = selection.at(0);
-    if(!index.isValid() || index.parent().isValid()){
-        return;
-    }
+  // get and check measurement config proxy model
+  MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          currentListView()->model());
+  if (mConfigProxyModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
-    if(mConfigProxyModel == NULL){
-        return;
-    }
+  // get and check measurement config model
+  MeasurementConfigurationModel* mConfigModel =
+      static_cast<MeasurementConfigurationModel*>(
+          mConfigProxyModel->sourceModel());
+  if (mConfigModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config model
-    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
-    if(mConfigModel == NULL){
-        return;
-    }
+  QMessageBox msgBox;
+  msgBox.setText(
+      "Please check if the deleted measurement config is still in use and "
+      "replace it by an existing measurement config.");
+  msgBox.setInformativeText("");
+  msgBox.setStandardButtons(QMessageBox::Ok);
+  msgBox.setDefaultButton(QMessageBox::Ok);
+  int ret = msgBox.exec();
 
-    QMessageBox msgBox;
-    msgBox.setText("Please check if the deleted measurement config is still in use and replace it by an existing measurement config.");
-    msgBox.setInformativeText("");
-    msgBox.setStandardButtons(QMessageBox::Ok);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    int ret = msgBox.exec();
+  mConfigModel->removeMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
-    mConfigModel->removeMeasurementConfig(mConfigProxyModel->mapToSource(index));
-
-    //deselect measurement configs and disable widget
-    currentListView()->selectionModel()->clearSelection();
-    this->updateGuiFromMeasurementConfig(MeasurementConfig());
-    this->ui->widget_measurementConfigValues->setEnabled(false);
-    this->selectedMeasurementConfig = MeasurementConfig();
-
+  // deselect measurement configs and disable widget
+  currentListView()->selectionModel()->clearSelection();
+  this->updateGuiFromMeasurementConfig(MeasurementConfig());
+  this->ui->widget_measurementConfigValues->setEnabled(false);
+  this->selectedMeasurementConfig = MeasurementConfig();
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::cloneSelectedMeasurementConfig
  */
-void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
+void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig() {
+  // get selected measurement config
+  MeasurementConfig mConfig = this->selectedMeasurementConfig;
 
-    //get selected measurement config
-    MeasurementConfig mConfig = this->selectedMeasurementConfig;
+  // get and check measurement config proxy model
+  MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          currentListView()->model());
+  if (mConfigProxyModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
-    if(mConfigProxyModel == NULL){
-        return;
-    }
+  // get and check measurement config model
+  MeasurementConfigurationModel* mConfigModel =
+      static_cast<MeasurementConfigurationModel*>(
+          mConfigProxyModel->sourceModel());
+  if (mConfigModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config model
-    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
-    if(mConfigModel == NULL){
-        return;
-    }
-
-    const MeasurementConfig clone = mConfigModel->cloneMeasurementConfig(mConfig);
-    if(clone.isValid()) {
-        //select the new item
-        QModelIndex index = mConfigModel->getIndex(clone);
-        this->ui->tabWidget->setCurrentIndex(1);
-        currentListView()->selectionModel()->select(mConfigProxyModel->mapFromSource(index), QItemSelectionModel::ClearAndSelect);
-        this->on_listView_configs_clicked(mConfigProxyModel->mapFromSource(index));
-    }
+  const MeasurementConfig clone = mConfigModel->cloneMeasurementConfig(mConfig);
+  if (clone.isValid()) {
+    // select the new item
+    QModelIndex index = mConfigModel->getIndex(clone);
+    this->ui->tabWidget->setCurrentIndex(1);
+    currentListView()->selectionModel()->select(
+        mConfigProxyModel->mapFromSource(index),
+        QItemSelectionModel::ClearAndSelect);
+    this->on_listView_configs_clicked(mConfigProxyModel->mapFromSource(index));
+  }
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::on_pushButton_add_clicked
  */
-void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
+void MeasurementConfigurationDialog::on_pushButton_add_clicked() {
+  this->ui->tabWidget->setCurrentIndex(1);
 
-    this->ui->tabWidget->setCurrentIndex(1);
+  // get and check measurement config proxy model
+  MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          currentListView()->model());
+  if (mConfigProxyModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
-    if(mConfigProxyModel == NULL){
-        return;
-    }
+  // get and check measurement config model
+  MeasurementConfigurationModel* mConfigModel =
+      static_cast<MeasurementConfigurationModel*>(
+          mConfigProxyModel->sourceModel());
+  if (mConfigModel == NULL) {
+    return;
+  }
 
-    //get and check measurement config model
-    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
-    if(mConfigModel == NULL){
-        return;
-    }
+  // find usable name
+  QString name = "new config";
+  MeasurementConfig mc;
+  while (mConfigModel->getMeasurementConfigurationManager()
+             ->findConfig(name)
+             .isValid()) {
+    name += ".";
+  }
 
-    // find usable name
-    QString name = "new config";
-    MeasurementConfig mc;
-    while(mConfigModel->getMeasurementConfigurationManager()->findConfig(name).isValid()) {
-        name += ".";
-    }
+  MeasurementConfig mConfig;
+  mConfig.setName(name);
+  mConfig.makeUserConfig();
 
-    MeasurementConfig mConfig;
-    mConfig.setName(name);
-    mConfig.makeUserConfig();
+  // add new measurement config
+  QModelIndex index = mConfigModel->addMeasurementConfig(mConfig);
 
-    //add new measurement config
-    QModelIndex index = mConfigModel->addMeasurementConfig(mConfig);
+  // check index
+  if (!index.isValid() ||
+      !mConfigModel->hasIndex(index.row(), index.column())) {
+    return;
+  }
 
-    //check index
-    if(!index.isValid() || !mConfigModel->hasIndex(index.row(), index.column())){
-        return;
-    }
+  // select the new item
+  this->updateGuiFromMeasurementConfig(mConfig);
+  this->enableUIElements(mConfig.getMeasurementType());
 
-    //select the new item
-    this->updateGuiFromMeasurementConfig(mConfig);
-    this->enableUIElements(mConfig.getMeasurementType());
-
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
-    currentListView()->edit(mConfigProxyModel->mapFromSource(index));
-
+  currentListView()->selectionModel()->select(
+      index, QItemSelectionModel::ClearAndSelect);
+  currentListView()->edit(mConfigProxyModel->mapFromSource(index));
 }
 
 /*!
- * \brief MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged
+ * \brief
+ * MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
+void MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged(
+    const QString& arg1) {
+  this->updateMeasurementConfigFromSelection();
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::on_checkBox_twoFace_clicked
  */
-void MeasurementConfigurationDialog::on_checkBox_twoFace_clicked(){
-    this->updateMeasurementConfigFromSelection();
+void MeasurementConfigurationDialog::on_checkBox_twoFace_clicked() {
+  this->updateMeasurementConfigFromSelection();
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &text){
-    bool isValid = text.toDouble() >= MIN_TIME_INTERVAL;
+void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(
+    const QString& text) {
+  bool isValid = text.toDouble() >= MIN_TIME_INTERVAL;
 
-    this->ui->pushButton_save_user_config->setEnabled(isValid);
-    this->ui->pushButton_set_to_feature->setEnabled(isValid);
+  this->ui->pushButton_save_user_config->setEnabled(isValid);
+  this->ui->pushButton_set_to_feature->setEnabled(isValid);
 
-    if(isValid) {
-        this->updateMeasurementConfigFromSelection();
-    }
+  if (isValid) {
+    this->updateMeasurementConfigFromSelection();
+  }
 }
 
 /*!
- * \brief MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged
+ * \brief
+ * MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(const QString &text){
-    bool isValid = text.toDouble() >= MIN_DISTANCE_INTERVAL;
+void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(
+    const QString& text) {
+  bool isValid = text.toDouble() >= MIN_DISTANCE_INTERVAL;
 
-    this->ui->pushButton_save_user_config->setEnabled(isValid);
-    this->ui->pushButton_set_to_feature->setEnabled(isValid);
+  this->ui->pushButton_save_user_config->setEnabled(isValid);
+  this->ui->pushButton_set_to_feature->setEnabled(isValid);
 
-    if(isValid) {
-        this->updateMeasurementConfigFromSelection();
-    }
+  if (isValid) {
+    this->updateMeasurementConfigFromSelection();
+  }
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::on_pushButton_set_clicked
  */
-void MeasurementConfigurationDialog::on_pushButton_set_to_feature_clicked(){
+void MeasurementConfigurationDialog::on_pushButton_set_to_feature_clicked() {
+  // get selected measurement config
+  MeasurementConfig mConfig = this->selectedMeasurementConfig;
 
-    //get selected measurement config
-    MeasurementConfig mConfig = this->selectedMeasurementConfig;
+  // set the selected measurement config for the active feature
+  emit this->measurementConfigurationChanged(mConfig);
 
-    //set the selected measurement config for the active feature
-    emit this->measurementConfigurationChanged(mConfig);
-
-    this->close();
-
+  this->close();
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::measurementConfigNameChanged
  * \param mConfig
  */
-void MeasurementConfigurationDialog::measurementConfigNameChanged(const MeasurementConfig &mConfig){
-    this->updateGuiFromMeasurementConfig(mConfig);
+void MeasurementConfigurationDialog::measurementConfigNameChanged(
+    const MeasurementConfig& mConfig) {
+  this->updateGuiFromMeasurementConfig(mConfig);
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::updateGuiFromMeasurementConfig
  * \param mConfig
  */
-void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const MeasurementConfig &mConfig){
+void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(
+    const MeasurementConfig& mConfig) {
+  // update selected measurement config
+  this->selectedMeasurementConfig = mConfig;
 
-    //update selected measurement config
-    this->selectedMeasurementConfig = mConfig;
+  // do not trigger edits while setting up measurement config
+  this->ui->lineEdit_distancInterval->blockSignals(true);
+  this->ui->lineEdit_maxObservations->blockSignals(true);
+  this->ui->lineEdit_timeInterval->blockSignals(true);
+  this->ui->checkBox_twoFace->blockSignals(true);
+  this->ui->comboBox_MeasurementMode->blockSignals(true);
+  this->ui->comboBox_MeasurementType->blockSignals(true);
 
-    //do not trigger edits while setting up measurement config
-    this->ui->lineEdit_distancInterval->blockSignals(true);
-    this->ui->lineEdit_maxObservations->blockSignals(true);
-    this->ui->lineEdit_timeInterval->blockSignals(true);
-    this->ui->checkBox_twoFace->blockSignals(true);
-    this->ui->comboBox_MeasurementMode->blockSignals(true);
-    this->ui->comboBox_MeasurementType->blockSignals(true);
+  // set up GUI elements
+  this->ui->label_configName->setText(
+      QString("%1%2")
+          .arg(mConfig.getName())
+          .arg((!mConfig.isValid() || mConfig.isUserConfig()) ? " [user]"
+                                                              : ""));
 
-    //set up GUI elements
-    this->ui->label_configName->setText(QString("%1%2")
-                                        .arg(mConfig.getName())
-                                        .arg((!mConfig.isValid() || mConfig.isUserConfig())?" [user]":"")
-                                        );
+  this->ui->comboBox_MeasurementType->setCurrentIndex(
+      mConfig.getMeasurementType());
+  this->ui->comboBox_MeasurementMode->setCurrentIndex(
+      mConfig.getMeasurementMode());
+  this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
 
-    this->ui->comboBox_MeasurementType->setCurrentIndex(mConfig.getMeasurementType());
-    this->ui->comboBox_MeasurementMode->setCurrentIndex(mConfig.getMeasurementMode());
-    this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
+  this->ui->lineEdit_maxObservations->setText(
+      QString::number(mConfig.getMaxObservations()));
+  this->ui->lineEdit_distancInterval->setText(
+      QString::number(mConfig.getDistanceInterval(), 'f', 4));
+  this->ui->lineEdit_timeInterval->setText(
+      QString::number(mConfig.getTimeInterval(), 'f', 3));
 
-    this->ui->lineEdit_maxObservations->setText(QString::number(mConfig.getMaxObservations()));
-    this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
-    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval(), 'f', 3));
+  this->enableUIElements(this->selectedMeasurementConfig.isEditable()
+                             ? mConfig.getMeasurementType()
+                             : eUnknown_MeasurementType);
 
-    this->enableUIElements(this->selectedMeasurementConfig.isEditable()
-                           ? mConfig.getMeasurementType() : eUnknown_MeasurementType);
+  // from now on trigger edits
+  this->ui->lineEdit_distancInterval->blockSignals(false);
+  this->ui->lineEdit_maxObservations->blockSignals(false);
+  this->ui->lineEdit_timeInterval->blockSignals(false);
+  this->ui->checkBox_twoFace->blockSignals(false);
+  this->ui->comboBox_MeasurementMode->blockSignals(false);
+  this->ui->comboBox_MeasurementType->blockSignals(false);
 
-    //from now on trigger edits
-    this->ui->lineEdit_distancInterval->blockSignals(false);
-    this->ui->lineEdit_maxObservations->blockSignals(false);
-    this->ui->lineEdit_timeInterval->blockSignals(false);
-    this->ui->checkBox_twoFace->blockSignals(false);
-    this->ui->comboBox_MeasurementMode->blockSignals(false);
-    this->ui->comboBox_MeasurementType->blockSignals(false);
-
-   this->enableUIElements(mConfig);
-
+  this->enableUIElements(mConfig);
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::updateMeasurementConfigFromSelection
  */
-void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
+void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection() {
+  // get and check model
+  MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          currentListView()->model());
+  if (mConfigProxyModel == NULL) {
+    return;
+  }
 
-    //get and check model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
-    if(mConfigProxyModel == NULL){
-        return;
-    }
+  // get and check source model
+  MeasurementConfigurationModel* mConfigModel =
+      static_cast<MeasurementConfigurationModel*>(
+          mConfigProxyModel->sourceModel());
+  if (mConfigModel == NULL) {
+    return;
+  }
 
-    //get and check source model
-    MeasurementConfigurationModel *mConfigModel = static_cast<MeasurementConfigurationModel *>(mConfigProxyModel->sourceModel());
-    if(mConfigModel == NULL){
-        return;
-    }
+  // get selected measurement config name
+  QModelIndexList selection =
+      currentListView()->selectionModel()->selectedIndexes();
+  if (selection.size() != 1) {
+    return;
+  }
+  QString name = selection.at(0).data().toString();
 
-    //get selected measurement config name
-    QModelIndexList selection = currentListView()->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        return;
-    }
-    QString name = selection.at(0).data().toString();
+  // get measurement config from GUI selection
+  MeasurementConfig mConfig;
+  mConfig.setName(name);
 
-    //get measurement config from GUI selection
-    MeasurementConfig mConfig;
-    mConfig.setName(name);
+  // set measurement type
+  mConfig.setMeasurementType(
+      (MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
 
-    // set measurement type
-    mConfig.setMeasurementType((MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
+  // single point
+  mConfig.setMeasurementMode(
+      (MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
+  mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
 
-    // single point
-    mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
-    mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
+  // scan
+  mConfig.setMaxObservations(
+      this->ui->lineEdit_maxObservations->text().toInt());
+  mConfig.setDistanceInterval(
+      this->ui->lineEdit_distancInterval->text().toDouble());  // [mm]
+  mConfig.setTimeInterval(
+      this->ui->lineEdit_timeInterval->text().toDouble());  // [s]
 
-    // scan
-    mConfig.setMaxObservations(this->ui->lineEdit_maxObservations->text().toInt());
-    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
-    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toDouble()); // [s]
+  if (this->selectedMeasurementConfig.isUserConfig()) {
+    mConfig.makeUserConfig();
+  } else if (this->selectedMeasurementConfig.isProjectConfig() &&
+             !this->selectedMeasurementConfig.isStandardConfig()) {
+    mConfig.makeProjectConfig();
+  }
 
-    if(this->selectedMeasurementConfig.isUserConfig()) {
-        mConfig.makeUserConfig();
-    } else if(this->selectedMeasurementConfig.isProjectConfig() && !this->selectedMeasurementConfig.isStandardConfig()) {
-        mConfig.makeProjectConfig();
-    }
-
-
-    //replace the selected measurement config
-    mConfigModel->replaceMeasurementConfig(selectedMeasurementConfig.getKey(), mConfig);
-    this->selectedMeasurementConfig = mConfig;
-
+  // replace the selected measurement config
+  mConfigModel->replaceMeasurementConfig(selectedMeasurementConfig.getKey(),
+                                         mConfig);
+  this->selectedMeasurementConfig = mConfig;
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::showEvent
  * \param event
  */
-void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
+void MeasurementConfigurationDialog::showEvent(QShowEvent* event) {
+  QObject::connect(
+      &ModelManager::getMeasurementConfigurationModel(),
+      &MeasurementConfigurationModel::measurementConfigNameChanged, this,
+      &MeasurementConfigurationDialog::measurementConfigNameChanged,
+      Qt::AutoConnection);
 
-    QObject::connect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
-                        this, &MeasurementConfigurationDialog::measurementConfigNameChanged, Qt::AutoConnection);
+  MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          currentListView()->model());
+  if (mConfigProxyModel != NULL) {
+    mConfigProxyModel->resetFilter();
+  }
 
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
-    if(mConfigProxyModel != NULL){
-        mConfigProxyModel->resetFilter();
-    }
+  emit initialized();
 
-    emit initialized();
-
-    event->accept();
-
+  event->accept();
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::closeEvent
  * \param event
  */
-void MeasurementConfigurationDialog::closeEvent(QCloseEvent *event){
+void MeasurementConfigurationDialog::closeEvent(QCloseEvent* event) {
+  QObject::disconnect(
+      &ModelManager::getMeasurementConfigurationModel(),
+      &MeasurementConfigurationModel::measurementConfigNameChanged, this,
+      &MeasurementConfigurationDialog::measurementConfigNameChanged);
 
-    QObject::disconnect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
-                        this, &MeasurementConfigurationDialog::measurementConfigNameChanged);
-
-    event->accept();
-
+  event->accept();
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::initGUI
  */
-void MeasurementConfigurationDialog::initGUI(){
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+void MeasurementConfigurationDialog::initGUI() {
+  this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    //set visibility
-    this->ui->widget_measurementConfigValues->setEnabled(false);
+  // set visibility
+  this->ui->widget_measurementConfigValues->setEnabled(false);
 
-    MeasurementConfigurationListDelegate *delegate = new MeasurementConfigurationListDelegate();
+  MeasurementConfigurationListDelegate* delegate =
+      new MeasurementConfigurationListDelegate();
 
-    //allow context menu for measurement config model
-    this->ui->listView_userConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(this->ui->listView_userConfigs, &QListView::customContextMenuRequested, this, &MeasurementConfigurationDialog::measurementConfigContextMenuRequested, Qt::AutoConnection);
-    //assign delegate to measurement configs list view
-    this->ui->listView_userConfigs->setItemDelegate(delegate);
+  // allow context menu for measurement config model
+  this->ui->listView_userConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
+  QObject::connect(
+      this->ui->listView_userConfigs, &QListView::customContextMenuRequested,
+      this,
+      &MeasurementConfigurationDialog::measurementConfigContextMenuRequested,
+      Qt::AutoConnection);
+  // assign delegate to measurement configs list view
+  this->ui->listView_userConfigs->setItemDelegate(delegate);
 
-    this->ui->listView_projectConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(this->ui->listView_projectConfigs, &QListView::customContextMenuRequested, this, &MeasurementConfigurationDialog::measurementConfigContextMenuRequested, Qt::AutoConnection);
-    //assign delegate to measurement configs list view
-    this->ui->listView_projectConfigs->setItemDelegate(delegate);
-
-
+  this->ui->listView_projectConfigs->setContextMenuPolicy(
+      Qt::CustomContextMenu);
+  QObject::connect(
+      this->ui->listView_projectConfigs, &QListView::customContextMenuRequested,
+      this,
+      &MeasurementConfigurationDialog::measurementConfigContextMenuRequested,
+      Qt::AutoConnection);
+  // assign delegate to measurement configs list view
+  this->ui->listView_projectConfigs->setItemDelegate(delegate);
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::initModels
  */
-void MeasurementConfigurationDialog::initModels(){
+void MeasurementConfigurationDialog::initModels() {
+  MeasurementConfigurationProxyModel* model =
+      &ModelManager::getMeasurementConfigurationProxyModel();
 
-    MeasurementConfigurationProxyModel *model = &ModelManager::getMeasurementConfigurationProxyModel();
+  // init measurement config model
+  this->ui->listView_projectConfigs->setModel(model);
+  this->ui->listView_userConfigs->setModel(model);
 
-    //init measurement config model
-    this->ui->listView_projectConfigs->setModel(model);
-    this->ui->listView_userConfigs->setModel(model);
+  this->ui->tabWidget->setCurrentIndex(0);
 
-    this->ui->tabWidget->setCurrentIndex(0);
-
-    model->setFilterProjectConfig();
-    this->ui->pushButton_save_user_config->setEnabled(false);
-
+  model->setFilterProjectConfig();
+  this->ui->pushButton_save_user_config->setEnabled(false);
 }
 
-void MeasurementConfigurationDialog::on_comboBox_MeasurementMode_currentIndexChanged(int index)
-{
-    this->updateMeasurementConfigFromSelection();
+void MeasurementConfigurationDialog::
+    on_comboBox_MeasurementMode_currentIndexChanged(int index) {
+  this->updateMeasurementConfigFromSelection();
 }
 
-void MeasurementConfigurationDialog::on_comboBox_MeasurementType_currentIndexChanged(int index)
-{
-    this->enableUIElements((MeasurementTypes)index);
+void MeasurementConfigurationDialog::
+    on_comboBox_MeasurementType_currentIndexChanged(int index) {
+  this->enableUIElements((MeasurementTypes)index);
 
-    this->updateMeasurementConfigFromSelection();
+  this->updateMeasurementConfigFromSelection();
 }
 
 void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
-    // enable all
-    this->ui->groupBox_Single_Point->setEnabled(true);
-    this->ui->groupBox_Scan->setEnabled(true);
-    this->ui->checkBox_twoFace->setEnabled(true);
-    this->ui->lineEdit_timeInterval->setEnabled(true);
-    this->ui->lineEdit_distancInterval->setEnabled(true);
-    this->ui->lineEdit_maxObservations->setEnabled(true);
-    this->ui->label_timeInterval->setEnabled(true);
-    this->ui->label_distanceInterval->setEnabled(true);
+  // enable all
+  this->ui->groupBox_Single_Point->setEnabled(true);
+  this->ui->groupBox_Scan->setEnabled(true);
+  this->ui->checkBox_twoFace->setEnabled(true);
+  this->ui->lineEdit_timeInterval->setEnabled(true);
+  this->ui->lineEdit_distancInterval->setEnabled(true);
+  this->ui->lineEdit_maxObservations->setEnabled(true);
+  this->ui->label_timeInterval->setEnabled(true);
+  this->ui->label_distanceInterval->setEnabled(true);
 
-    switch(type) {
+  switch (type) {
     case eSinglePoint_MeasurementType:
-        this->ui->groupBox_Scan->setEnabled(false);
-        break;
+      this->ui->groupBox_Scan->setEnabled(false);
+      break;
     case eScanTimeDependent_MeasurementType:
-        this->ui->groupBox_Single_Point->setEnabled(false);
-        this->ui->lineEdit_distancInterval->setEnabled(false);
-        this->ui->label_distanceInterval->setEnabled(false);
-        if(this->ui->lineEdit_timeInterval->text().isEmpty()
-                || this->ui->lineEdit_timeInterval->text().toDouble() < MIN_TIME_INTERVAL) {
-            this->ui->lineEdit_timeInterval->blockSignals(true);
-            this->ui->lineEdit_distancInterval->blockSignals(true);
+      this->ui->groupBox_Single_Point->setEnabled(false);
+      this->ui->lineEdit_distancInterval->setEnabled(false);
+      this->ui->label_distanceInterval->setEnabled(false);
+      if (this->ui->lineEdit_timeInterval->text().isEmpty() ||
+          this->ui->lineEdit_timeInterval->text().toDouble() <
+              MIN_TIME_INTERVAL) {
+        this->ui->lineEdit_timeInterval->blockSignals(true);
+        this->ui->lineEdit_distancInterval->blockSignals(true);
 
-            this->ui->lineEdit_timeInterval->setText("1.000"); // set default values to satisfy the valiator
-            this->ui->lineEdit_distancInterval->setText("");
+        this->ui->lineEdit_timeInterval->setText(
+            "1.000");  // set default values to satisfy the valiator
+        this->ui->lineEdit_distancInterval->setText("");
 
-            this->ui->lineEdit_timeInterval->blockSignals(false);
-            this->ui->lineEdit_distancInterval->blockSignals(false);
-        }
-        break;
+        this->ui->lineEdit_timeInterval->blockSignals(false);
+        this->ui->lineEdit_distancInterval->blockSignals(false);
+      }
+      break;
     case eScanDistanceDependent_MeasurementType:
-        this->ui->groupBox_Single_Point->setEnabled(false);
-        this->ui->lineEdit_timeInterval->setEnabled(false);
-        this->ui->label_timeInterval->setEnabled(false);
-        if(this->ui->lineEdit_distancInterval->text().isEmpty()
-                || this->ui->lineEdit_distancInterval->text().toDouble() < MIN_DISTANCE_INTERVAL) {
-            this->ui->lineEdit_timeInterval->blockSignals(true);
-            this->ui->lineEdit_distancInterval->blockSignals(true);
+      this->ui->groupBox_Single_Point->setEnabled(false);
+      this->ui->lineEdit_timeInterval->setEnabled(false);
+      this->ui->label_timeInterval->setEnabled(false);
+      if (this->ui->lineEdit_distancInterval->text().isEmpty() ||
+          this->ui->lineEdit_distancInterval->text().toDouble() <
+              MIN_DISTANCE_INTERVAL) {
+        this->ui->lineEdit_timeInterval->blockSignals(true);
+        this->ui->lineEdit_distancInterval->blockSignals(true);
 
-            this->ui->lineEdit_timeInterval->setText("");
-            this->ui->lineEdit_distancInterval->setText("20.0000"); // set 0default values to satisfy the valiator
+        this->ui->lineEdit_timeInterval->setText("");
+        this->ui->lineEdit_distancInterval->setText(
+            "20.0000");  // set 0default values to satisfy the valiator
 
-            this->ui->lineEdit_timeInterval->blockSignals(false);
-            this->ui->lineEdit_distancInterval->blockSignals(false);
-
-        }
-        break;
+        this->ui->lineEdit_timeInterval->blockSignals(false);
+        this->ui->lineEdit_distancInterval->blockSignals(false);
+      }
+      break;
     case eLevel_MeasurementType:
     case eDistance_MeasurementType:
     case eDirection_MeasurementType:
     case eTemperature_MeasurementType:
-        this->ui->groupBox_Scan->setEnabled(false);
-        this->ui->groupBox_Single_Point->setEnabled(false);
-        break;
-    case eUnknown_MeasurementType: // disable all
-        this->ui->groupBox_Single_Point->setEnabled(false);
-        this->ui->groupBox_Scan->setEnabled(false);
-        this->ui->checkBox_twoFace->setEnabled(false);
-        this->ui->lineEdit_timeInterval->setEnabled(false);
-        this->ui->lineEdit_distancInterval->setEnabled(false);
-        this->ui->lineEdit_maxObservations->setEnabled(false);
-        break;
-    }
-
+      this->ui->groupBox_Scan->setEnabled(false);
+      this->ui->groupBox_Single_Point->setEnabled(false);
+      break;
+    case eUnknown_MeasurementType:  // disable all
+      this->ui->groupBox_Single_Point->setEnabled(false);
+      this->ui->groupBox_Scan->setEnabled(false);
+      this->ui->checkBox_twoFace->setEnabled(false);
+      this->ui->lineEdit_timeInterval->setEnabled(false);
+      this->ui->lineEdit_distancInterval->setEnabled(false);
+      this->ui->lineEdit_maxObservations->setEnabled(false);
+      break;
+  }
 }
 
-void MeasurementConfigurationDialog::enableUIElements(const MeasurementConfig &mConfig) {
-    this->ui->pushButton_save_user_config->setEnabled(
-            mConfig.isUserConfig()
-            && !mConfig.isStandardConfig()
-        );
+void MeasurementConfigurationDialog::enableUIElements(
+    const MeasurementConfig& mConfig) {
+  this->ui->pushButton_save_user_config->setEnabled(
+      mConfig.isUserConfig() && !mConfig.isStandardConfig());
 }
 
 QPointer<QListView> MeasurementConfigurationDialog::currentListView() {
+  MeasurementConfigurationProxyModel* model =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          this->ui->listView_projectConfigs->model());
 
-    MeasurementConfigurationProxyModel *model = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_projectConfigs->model());
-
-    if(this->ui->tabWidget->currentIndex() == 0) {
-        model->setFilterProjectConfig(); // TODO wird zu häufig aufgerufen
-        return this->ui->listView_projectConfigs;
-    } else {
-        model->setFilterUserConfig(); // TODO wird zu häufig aufgerufen
-        return this->ui->listView_userConfigs;
-    }
+  if (this->ui->tabWidget->currentIndex() == 0) {
+    model->setFilterProjectConfig();  // TODO wird zu häufig aufgerufen
+    return this->ui->listView_projectConfigs;
+  } else {
+    model->setFilterUserConfig();  // TODO wird zu häufig aufgerufen
+    return this->ui->listView_userConfigs;
+  }
 }
 
-void MeasurementConfigurationDialog::on_tabWidget_currentChanged(int index)
-{
-    MeasurementConfigurationProxyModel *model = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_projectConfigs->model());
+void MeasurementConfigurationDialog::on_tabWidget_currentChanged(int index) {
+  MeasurementConfigurationProxyModel* model =
+      static_cast<MeasurementConfigurationProxyModel*>(
+          this->ui->listView_projectConfigs->model());
 
-    if(index == 0) {    // project
-        model->setFilterProjectConfig();
-    } else {            // user
-        model->setFilterUserConfig();
-    }
+  if (index == 0) {  // project
+    model->setFilterProjectConfig();
+  } else {  // user
+    model->setFilterUserConfig();
+  }
 
-    this->ui->pushButton_save_user_config->setEnabled( index != 0);
+  this->ui->pushButton_save_user_config->setEnabled(index != 0);
 }
 
-void MeasurementConfigurationDialog::on_pushButton_save_user_config_clicked()
-{
-    //get selected measurement config
-    MeasurementConfig mConfig = this->selectedMeasurementConfig;
+void MeasurementConfigurationDialog::on_pushButton_save_user_config_clicked() {
+  // get selected measurement config
+  MeasurementConfig mConfig = this->selectedMeasurementConfig;
 
-    emit this->saveUserConfig(mConfig);
-
+  emit this->saveUserConfig(mConfig);
 }

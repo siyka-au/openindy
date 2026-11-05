@@ -2,95 +2,97 @@
 #define FEATUREDIFFERENCETABLEMODEL_H
 
 #include <QAbstractTableModel>
+#include <QColor>
 #include <QObject>
 #include <QPointer>
-#include <QColor>
 
 #include "oijob.h"
+#include "parameterdisplayconfig.h"
 #include "types.h"
 #include "util.h"
-#include "parameterdisplayconfig.h"
 
 using namespace oi;
 
 /*!
  * \brief The FeatureDifferenceTableModel class
  */
-class FeatureDifferenceTableModel : public QAbstractTableModel
-{
-    Q_OBJECT
+class FeatureDifferenceTableModel : public QAbstractTableModel {
+  Q_OBJECT
 
-public:
-    explicit FeatureDifferenceTableModel(const QPointer<OiJob> &job, QObject *parent = 0);
-    explicit FeatureDifferenceTableModel(QObject *parent = 0);
+ public:
+  explicit FeatureDifferenceTableModel(const QPointer<OiJob>& job,
+                                       QObject* parent = 0);
+  explicit FeatureDifferenceTableModel(QObject* parent = 0);
 
-    //########################################
-    //override methods of abstract table model
-    //########################################
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
 
-    //###############################
-    //get or set current OpenIndy job
-    //###############################
+  // ###############################
+  // get or set current OpenIndy job
+  // ###############################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    //#########################
-    //get or set display config
-    //#########################
+  // #########################
+  // get or set display config
+  // #########################
 
-    const ParameterDisplayConfig &getParameterDisplayConfig() const;
-    void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+  const ParameterDisplayConfig& getParameterDisplayConfig() const;
+  void setParameterDisplayConfig(const ParameterDisplayConfig& config);
 
-    //######################
-    //set tolerance for view
-    //######################
-    void setTolerance(double tolerance);
+  // ######################
+  // set tolerance for view
+  // ######################
+  void setTolerance(double tolerance);
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private slots:
+ private slots:
 
-    //##############################################################
-    //update the model when job state or display config have changed
-    //##############################################################
+  // ##############################################################
+  // update the model when job state or display config have changed
+  // ##############################################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // ###########
+  // current job
+  // ###########
+  void connectJob();
+  void disconnectJob();
 
-    //###########
-    //current job
-    //###########
-    void connectJob();
-    void disconnectJob();
+  QPair<bool, double> getDifferenceAsDisplayUnit(
+      QPointer<FeatureWrapper> feature, const QModelIndex index) const;
 
-    QPair<bool, double> getDifferenceAsDisplayUnit(QPointer<FeatureWrapper> feature, const QModelIndex index) const;
+  QPointer<OiJob> currentJob;
 
-    QPointer<OiJob> currentJob;
+  // ##############
+  // display config
+  // ##############
 
-    //##############
-    //display config
-    //##############
+  ParameterDisplayConfig parameterDisplayConfig;
 
-    ParameterDisplayConfig parameterDisplayConfig;
-
-    double tolerance;
+  double tolerance;
 };
 
-#endif // FEATUREDIFFERENCETABLEMODEL_H
+#endif  // FEATUREDIFFERENCETABLEMODEL_H

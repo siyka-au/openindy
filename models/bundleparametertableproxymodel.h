@@ -1,11 +1,11 @@
 #ifndef BUNDLEPARAMETERTABLEPROXYMODEL_H
 #define BUNDLEPARAMETERTABLEPROXYMODEL_H
 
-#include <QSortFilterProxyModel>
 #include <QPointer>
+#include <QSortFilterProxyModel>
 
-#include "oijob.h"
 #include "featuretablemodel.h"
+#include "oijob.h"
 #include "trafoparamtablecolumnconfig.h"
 
 using namespace oi;
@@ -13,50 +13,49 @@ using namespace oi;
 /*!
  * \brief The BundleParameterTableProxyModel class
  */
-class BundleParameterTableProxyModel : public QSortFilterProxyModel
-{
-    Q_OBJECT
+class BundleParameterTableProxyModel : public QSortFilterProxyModel {
+  Q_OBJECT
 
-public:
-    explicit BundleParameterTableProxyModel(QObject *parent = 0);
+ public:
+  explicit BundleParameterTableProxyModel(QObject* parent = 0);
 
-    //###########################################
-    //override methods of sort filter proxy model
-    //###########################################
+  // ###########################################
+  // override methods of sort filter proxy model
+  // ###########################################
 
-    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
-    QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
+  QModelIndex mapFromSource(const QModelIndex& sourceIndex) const;
+  QModelIndex mapToSource(const QModelIndex& proxyIndex) const;
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
-    
-protected:
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage) const;
 
-    //###########################################
-    //override methods of sort filter proxy model
-    //###########################################
+ protected:
+  // ###########################################
+  // override methods of sort filter proxy model
+  // ###########################################
 
-    bool filterAcceptsRow (int source_row, const QModelIndex &source_parent ) const;
-    bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent ) const;
+  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsColumn(int source_column,
+                           const QModelIndex& source_parent) const;
 
-private:
+ private:
+  // ##############
+  // display config
+  // ##############
 
-    //##############
-    //display config
-    //##############
+  TrafoParamTableColumnConfig trafoParamTableColumnConfig;
 
-    TrafoParamTableColumnConfig trafoParamTableColumnConfig;
+  // #############
+  // helper method
+  // #############
 
-    //#############
-    //helper method
-    //#############
-
-    bool isBundleStationTrafo(const QPointer<TrafoParam> &param) const;
+  bool isBundleStationTrafo(const QPointer<TrafoParam>& param) const;
 };
 
-#endif // BUNDLEPARAMETERTABLEPROXYMODEL_H
+#endif  // BUNDLEPARAMETERTABLEPROXYMODEL_H

@@ -17,78 +17,77 @@ using namespace oi;
  * \brief The FeatureTreeViewModel class
  * Model that holds all features of an OpenIndy job in a tree structure
  */
-class FeatureTreeViewModel : public QAbstractItemModel
-{
-    Q_OBJECT
+class FeatureTreeViewModel : public QAbstractItemModel {
+  Q_OBJECT
 
-public:
-    explicit FeatureTreeViewModel(QPointer<OiJob> job, QObject *parent = 0);
-    explicit FeatureTreeViewModel(QObject *parent = 0);
+ public:
+  explicit FeatureTreeViewModel(QPointer<OiJob> job, QObject* parent = 0);
+  explicit FeatureTreeViewModel(QObject* parent = 0);
 
-    //#######################################
-    //override methods of abstract item model
-    //#######################################
+  // #######################################
+  // override methods of abstract item model
+  // #######################################
 
-    int	rowCount(const QModelIndex & parent = QModelIndex()) const;
-    int	columnCount(const QModelIndex & parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QModelIndex	index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
-    QModelIndex	parent(const QModelIndex & index) const;
+  QModelIndex index(int row, int column,
+                    const QModelIndex& parent = QModelIndex()) const;
+  QModelIndex parent(const QModelIndex& index) const;
 
-    //###############################
-    //get or set current OpenIndy job
-    //###############################
+  // ###############################
+  // get or set current OpenIndy job
+  // ###############################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    //#############
-    //get root item
-    //#############
+  // #############
+  // get root item
+  // #############
 
-    const QPointer<FeatureTreeItem> &getRootItem() const;
+  const QPointer<FeatureTreeItem>& getRootItem() const;
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private slots:
+ private slots:
 
-    //###########################################
-    //update the model when job state has changed
-    //###########################################
+  // ###########################################
+  // update the model when job state has changed
+  // ###########################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void connectJob();
+  void disconnectJob();
 
-    void connectJob();
-    void disconnectJob();
+  void addGeometries();
 
-    void addGeometries();
+  // ###########
+  // current job
+  // ###########
 
-    //###########
-    //current job
-    //###########
+  QPointer<OiJob> currentJob;
 
-    QPointer<OiJob> currentJob;
+  // ##############
+  // root tree item
+  // ##############
 
-    //##############
-    //root tree item
-    //##############
-
-    QPointer<FeatureTreeItem> rootItem;
-
+  QPointer<FeatureTreeItem> rootItem;
 };
 
-#endif // FEATURETREEVIEWMODEL_H
+#endif  // FEATURETREEVIEWMODEL_H

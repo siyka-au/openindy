@@ -1,33 +1,31 @@
 #include "createfeaturedialog.h"
-#include "ui_createfeaturedialog.h"
 
 #include <QAbstractItemView>
+
+#include "ui_createfeaturedialog.h"
 
 /*!
  * \brief CreateFeatureDialog::CreateFeatureDialog
  * \param parent
  */
-CreateFeatureDialog::CreateFeatureDialog(QWidget *parent) :
-    QDialog(parent), ui(new Ui::CreateFeatureDialog)
-{
-    this->ui->setupUi(this);
+CreateFeatureDialog::CreateFeatureDialog(QWidget* parent)
+    : QDialog(parent), ui(new Ui::CreateFeatureDialog) {
+  this->ui->setupUi(this);
 
-    initModels();
+  initModels();
 }
 
 /*!
  * \brief CreateFeatureDialog::~CreateFeatureDialog
  */
-CreateFeatureDialog::~CreateFeatureDialog(){
-    delete this->ui;
-}
+CreateFeatureDialog::~CreateFeatureDialog() { delete this->ui; }
 
 /*!
  * \brief CreateFeatureDialog::setFeatureType
  * \param type
  */
-void CreateFeatureDialog::setFeatureType(const FeatureTypes &type){
-    this->typeOfFeature = type;
+void CreateFeatureDialog::setFeatureType(const FeatureTypes& type) {
+  this->typeOfFeature = type;
 }
 
 /*!
@@ -35,410 +33,425 @@ void CreateFeatureDialog::setFeatureType(const FeatureTypes &type){
  * \param created
  * \return
  */
-bool CreateFeatureDialog::featureCreated(bool created)
-{
-    this->created = created;
-    return created;
+bool CreateFeatureDialog::featureCreated(bool created) {
+  this->created = created;
+  return created;
 }
 
 /*!
  * \brief CreateFeatureDialog::setCurrentJob
  * \param job
  */
-void CreateFeatureDialog::setCurrentJob(const QPointer<OiJob> &job)
-{
-    this->currentJob = job;
+void CreateFeatureDialog::setCurrentJob(const QPointer<OiJob>& job) {
+  this->currentJob = job;
 }
 
 /*!
  * \brief CreateFeatureDialog::on_toolButton_ok_clicked
  */
-void CreateFeatureDialog::on_toolButton_ok_clicked(){
+void CreateFeatureDialog::on_toolButton_ok_clicked() {
+  this->created = false;
 
-    this->created = false;
+  // get feature attributes from GUI elements and emit add features signal.
+  // D17: there is no separate nominal/actual creation path any more -
+  // featureAttributesFromGUI always attaches whichever function is
+  // selected, and whether that makes the result a nominal or an actual
+  // falls out of the function's own shape (D19), not a checkbox here.
+  FeatureAttributes attributes;
+  this->featureAttributesFromGUI(attributes);
+  emit this->addFeatures(attributes);
 
-    //get feature attributes from GUI elements and emit add features signal.
-    //D17: there is no separate nominal/actual creation path any more -
-    //featureAttributesFromGUI always attaches whichever function is
-    //selected, and whether that makes the result a nominal or an actual
-    //falls out of the function's own shape (D19), not a checkbox here.
-    FeatureAttributes attributes;
-    this->featureAttributesFromGUI(attributes);
-    emit this->addFeatures(attributes);
-
-    if(this->created){
-        this->close();
-    }
+  if (this->created) {
+    this->close();
+  }
 }
 
 /*!
  * \brief CreateFeatureDialog::on_toolButton_cancel_clicked
  */
-void CreateFeatureDialog::on_toolButton_cancel_clicked(){
-    this->close();
-}
+void CreateFeatureDialog::on_toolButton_cancel_clicked() { this->close(); }
 
 /*!
  * \brief CreateFeatureDialog::showEvent
  * \param event
  */
-void CreateFeatureDialog::showEvent(QShowEvent *event){
+void CreateFeatureDialog::showEvent(QShowEvent* event) {
+  this->setDialogName();
 
-    this->setDialogName();
+  // select by the type carried in Qt::UserRole, not by matching visible
+  // text - the text is a display name now and free to be reworded
+  const int entityIndex = this->ui->comboBox_entityType->findData(
+      static_cast<int>(this->typeOfFeature), Qt::UserRole);
+  if (entityIndex >= 0) {
+    this->ui->comboBox_entityType->setCurrentIndex(entityIndex);
+  }
 
-    //select by the type carried in Qt::UserRole, not by matching visible
-    //text - the text is a display name now and free to be reworded
-    const int entityIndex = this->ui->comboBox_entityType->findData(static_cast<int>(this->typeOfFeature), Qt::UserRole);
-    if(entityIndex >= 0){
-        this->ui->comboBox_entityType->setCurrentIndex(entityIndex);
-    }
+  // init function models based on the current feature type
+  this->initFunctionsModel();
 
-    // init function models based on the current feature type
-    this->initFunctionsModel();
+  // init initial GUI elements based on the current function, may changed by
+  // initGUI() !
+  this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
 
-    // init initial GUI elements based on the current function, may changed by initGUI() !
-    this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
+  // init GUI elements based on the current feature type
+  this->initGUI();
 
-    // init GUI elements based on the current feature type
-    this->initGUI();
+  this->initMeasurementConfigModel();
 
-    this->initMeasurementConfigModel();
+  // get default mConfig in combobox
+  QString elementConfigName = Settings::get(
+      QString("defaultMeasurementConfig.%1")
+          .arg(getElementTypeName(getElementTypeEnum(this->typeOfFeature))));
+  if (!elementConfigName.isEmpty()) {
+    this->ui->comboBox_mConfig->setCurrentText(elementConfigName);
+  }
 
-    // get default mConfig in combobox
-    QString elementConfigName = Settings::get(QString("defaultMeasurementConfig.%1").arg(getElementTypeName(getElementTypeEnum(this->typeOfFeature))));
-    if(!elementConfigName.isEmpty()){
-        this->ui->comboBox_mConfig->setCurrentText(elementConfigName);
-    }
+  emit initialized();
 
-    emit initialized();
-
-    event->accept();
+  event->accept();
 }
 
 /*!
  * \brief CreateFeatureDialog::initGUI
  * Set up GUI based on the selected type of feature
  */
-void CreateFeatureDialog::initGUI(){
+void CreateFeatureDialog::initGUI() {
+  // general defaults
+  this->ui->lineEdit_name->setText("");
+  this->ui->comboBox_group->setCurrentIndex(0);
+  this->ui->spinBox_count->setValue(1);
+  this->ui->checkBox_common->setChecked(false);
 
-    //general defaults
+  this->ui->lineEdit_name->setFocus();
+
+  if (!this->currentJob.isNull()) {
+    // set default feature name depending on existing features
+    int featureCount = this->currentJob->getFeatureCount();
+    QString featureName = "";
+    if (featureCount < 9) {
+      featureName.append("Feature").append("0").append(
+          QString::number(featureCount + 1));
+    } else {
+      featureName.append("Feature").append(QString::number(featureCount + 1));
+    }
+    this->ui->lineEdit_name->setText(featureName);
+  } else {
     this->ui->lineEdit_name->setText("");
-    this->ui->comboBox_group->setCurrentIndex(0);
-    this->ui->spinBox_count->setValue(1);
+  }
+
+  // GUI inits based on type of feature
+  if (this->typeOfFeature == eTrafoParamFeature) {
+    // set visibility
+    this->ui->label_startSystem->setVisible(true);
+    this->ui->comboBox_startSystem->setVisible(true);
+    this->ui->label_destinationSystem->setVisible(true);
+    this->ui->comboBox_destinationSystem->setVisible(true);
+    this->ui->label_function->setVisible(false);
+    this->ui->comboBox_function->setVisible(false);
+    this->ui->label_nominalSystem->setVisible(false);
+    this->ui->comboBox_nominalSystem->setVisible(false);
+    this->ui->checkBox_common->setVisible(false);
+    this->ui->label_entityType->setVisible(false);
+    this->ui->comboBox_entityType->setVisible(false);
+    this->ui->label_mConfig->setVisible(false);
+    this->ui->comboBox_mConfig->setVisible(false);
+
+  } else if (this->typeOfFeature == eStationFeature ||
+             this->typeOfFeature == eCoordinateSystemFeature) {
+    if (!this->currentJob.isNull()) {
+      // predefined Stationname depending on existing stations
+      if (this->typeOfFeature == eStationFeature) {
+        int count = this->currentJob->getStationsList().size();
+        QString stationName = "";
+        if (count < 9) {
+          stationName.append("STATION").append("0").append(
+              QString::number(count + 1));
+        } else {
+          stationName.append("STATION").append(QString::number(count + 1));
+        }
+        this->ui->lineEdit_name->setText(stationName);
+      }
+    } else {
+      this->ui->lineEdit_name->setText("");
+    }
+
+    // set visibility
+    this->ui->label_startSystem->setVisible(false);
+    this->ui->comboBox_startSystem->setVisible(false);
+    this->ui->label_destinationSystem->setVisible(false);
+    this->ui->comboBox_destinationSystem->setVisible(false);
+    this->ui->label_function->setVisible(false);
+    this->ui->comboBox_function->setVisible(false);
+    this->ui->label_nominalSystem->setVisible(false);
+    this->ui->comboBox_nominalSystem->setVisible(false);
+    this->ui->checkBox_common->setVisible(false);
+    this->ui->label_entityType->setVisible(false);
+    this->ui->comboBox_entityType->setVisible(false);
+    this->ui->label_mConfig->setVisible(false);
+    this->ui->comboBox_mConfig->setVisible(false);
+
+  } else if (getIsScalarEntity(this->typeOfFeature)) {
+    // set visibility. D17: there is no actual/nominal checkbox any
+    // more - the function combo is always shown, and whether the
+    // nominal-system picker or the measurement-config picker is
+    // relevant is decided by the selected function's own shape
+    //(initMeasurementConfigUI, called for the current selection
+    // right after this).
+    this->ui->label_startSystem->setVisible(false);
+    this->ui->comboBox_startSystem->setVisible(false);
+    this->ui->label_destinationSystem->setVisible(false);
+    this->ui->comboBox_destinationSystem->setVisible(false);
+    this->ui->label_function->setVisible(true);
+    this->ui->comboBox_function->setVisible(true);
+    this->ui->checkBox_common->setVisible(true);
+    this->ui->label_entityType->setVisible(true);
+    this->ui->comboBox_entityType->setVisible(true);
+
+    // set checked state
     this->ui->checkBox_common->setChecked(false);
 
-    this->ui->lineEdit_name->setFocus();
+    // D17: refresh nominal-system/measurement-config visibility for
+    // whichever function is currently selected, since it is no
+    // longer set from a checkbox
+    this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
 
-    if(!this->currentJob.isNull()){
-        //set default feature name depending on existing features
-        int featureCount = this->currentJob->getFeatureCount();
-        QString featureName = "";
-        if(featureCount < 9){
-            featureName.append("Feature").append("0").append(QString::number(featureCount+1));
-        }else{
-            featureName.append("Feature").append(QString::number(featureCount+1));
-        }
-        this->ui->lineEdit_name->setText(featureName);
-    }else{
-        this->ui->lineEdit_name->setText("");
-    }
+  } else {  // geometry
 
-    //GUI inits based on type of feature
-    if(this->typeOfFeature == eTrafoParamFeature){
+    // set visibility - see the comment in the scalar-entity branch above
+    this->ui->label_startSystem->setVisible(false);
+    this->ui->comboBox_startSystem->setVisible(false);
+    this->ui->label_destinationSystem->setVisible(false);
+    this->ui->comboBox_destinationSystem->setVisible(false);
+    this->ui->label_function->setVisible(true);
+    this->ui->comboBox_function->setVisible(true);
+    this->ui->checkBox_common->setVisible(true);
+    this->ui->label_entityType->setVisible(false);
+    this->ui->comboBox_entityType->setVisible(false);
 
-        //set visibility
-        this->ui->label_startSystem->setVisible(true);
-        this->ui->comboBox_startSystem->setVisible(true);
-        this->ui->label_destinationSystem->setVisible(true);
-        this->ui->comboBox_destinationSystem->setVisible(true);
-        this->ui->label_function->setVisible(false);
-        this->ui->comboBox_function->setVisible(false);
-        this->ui->label_nominalSystem->setVisible(false);
-        this->ui->comboBox_nominalSystem->setVisible(false);
-        this->ui->checkBox_common->setVisible(false);
-        this->ui->label_entityType->setVisible(false);
-        this->ui->comboBox_entityType->setVisible(false);
-        this->ui->label_mConfig->setVisible(false);
-        this->ui->comboBox_mConfig->setVisible(false);
+    // set checked state
+    this->ui->checkBox_common->setChecked(false);
 
-    }else if(this->typeOfFeature == eStationFeature ||
-             this->typeOfFeature == eCoordinateSystemFeature){
-
-        if(!this->currentJob.isNull()){
-            //predefined Stationname depending on existing stations
-            if(this->typeOfFeature == eStationFeature){
-                int count = this->currentJob->getStationsList().size();
-                QString stationName = "";
-                if(count < 9){
-                    stationName.append("STATION").append("0").append(QString::number(count+1));
-                }else{
-                    stationName.append("STATION").append(QString::number(count+1));
-                }
-                this->ui->lineEdit_name->setText(stationName);
-            }
-        }else{
-            this->ui->lineEdit_name->setText("");
-        }
-
-        //set visibility
-        this->ui->label_startSystem->setVisible(false);
-        this->ui->comboBox_startSystem->setVisible(false);
-        this->ui->label_destinationSystem->setVisible(false);
-        this->ui->comboBox_destinationSystem->setVisible(false);
-        this->ui->label_function->setVisible(false);
-        this->ui->comboBox_function->setVisible(false);
-        this->ui->label_nominalSystem->setVisible(false);
-        this->ui->comboBox_nominalSystem->setVisible(false);
-        this->ui->checkBox_common->setVisible(false);
-        this->ui->label_entityType->setVisible(false);
-        this->ui->comboBox_entityType->setVisible(false);
-        this->ui->label_mConfig->setVisible(false);
-        this->ui->comboBox_mConfig->setVisible(false);
-
-    }else if(getIsScalarEntity(this->typeOfFeature)){
-
-        //set visibility. D17: there is no actual/nominal checkbox any
-        //more - the function combo is always shown, and whether the
-        //nominal-system picker or the measurement-config picker is
-        //relevant is decided by the selected function's own shape
-        //(initMeasurementConfigUI, called for the current selection
-        //right after this).
-        this->ui->label_startSystem->setVisible(false);
-        this->ui->comboBox_startSystem->setVisible(false);
-        this->ui->label_destinationSystem->setVisible(false);
-        this->ui->comboBox_destinationSystem->setVisible(false);
-        this->ui->label_function->setVisible(true);
-        this->ui->comboBox_function->setVisible(true);
-        this->ui->checkBox_common->setVisible(true);
-        this->ui->label_entityType->setVisible(true);
-        this->ui->comboBox_entityType->setVisible(true);
-
-        //set checked state
-        this->ui->checkBox_common->setChecked(false);
-
-        //D17: refresh nominal-system/measurement-config visibility for
-        //whichever function is currently selected, since it is no
-        //longer set from a checkbox
-        this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
-
-    }else{ //geometry
-
-        //set visibility - see the comment in the scalar-entity branch above
-        this->ui->label_startSystem->setVisible(false);
-        this->ui->comboBox_startSystem->setVisible(false);
-        this->ui->label_destinationSystem->setVisible(false);
-        this->ui->comboBox_destinationSystem->setVisible(false);
-        this->ui->label_function->setVisible(true);
-        this->ui->comboBox_function->setVisible(true);
-        this->ui->checkBox_common->setVisible(true);
-        this->ui->label_entityType->setVisible(false);
-        this->ui->comboBox_entityType->setVisible(false);
-
-        //set checked state
-        this->ui->checkBox_common->setChecked(false);
-
-        //D17: refresh nominal-system/measurement-config visibility for
-        //whichever function is currently selected, since it is no
-        //longer set from a checkbox
-        this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
-
-    }
-
+    // D17: refresh nominal-system/measurement-config visibility for
+    // whichever function is currently selected, since it is no
+    // longer set from a checkbox
+    this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
+  }
 }
 
 /*!
  * \brief CreateFeatureDialog::initModels
  */
-void CreateFeatureDialog::initModels(){
+void CreateFeatureDialog::initModels() {
+  // set models for possible start and destination systems of a trafo param
+  this->ui->comboBox_startSystem->setModel(
+      &ModelManager::getCoordinateSystemsModel());
+  this->ui->comboBox_destinationSystem->setModel(
+      &ModelManager::getCoordinateSystemsModel());
 
-    //set models for possible start and destination systems of a trafo param
-    this->ui->comboBox_startSystem->setModel(&ModelManager::getCoordinateSystemsModel());
-    this->ui->comboBox_destinationSystem->setModel(&ModelManager::getCoordinateSystemsModel());
+  // set combobox size
+  int sizeSystem = getDropDownMenuSize(
+      ModelManager::getCoordinateSystemsModel().stringList(),
+      this->ui->comboBox_startSystem->width());
+  this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
+  this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
 
-    //set combobox size
-    int sizeSystem = getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
-    this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
-    this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
+  // set model for possible nominal systems of a nominal geometry
+  this->ui->comboBox_nominalSystem->setModel(
+      &ModelManager::getNominalSystemsModel());
+  int sizeNominal =
+      getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(),
+                          this->ui->comboBox_nominalSystem->width());
+  this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
-    //set model for possible nominal systems of a nominal geometry
-    this->ui->comboBox_nominalSystem->setModel(&ModelManager::getNominalSystemsModel());
-    int sizeNominal = getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
-    this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
+  // set model for available measurement configs
+  this->measurementConfigurationModel =
+      &ModelManager::getMeasurementConfigurationProxyModel();
+  this->measurementConfigurationModel->setFilter(true);  // show all
+  this->ui->comboBox_mConfig->setModel(measurementConfigurationModel);
 
-    //set model for available measurement configs
-    this->measurementConfigurationModel = &ModelManager::getMeasurementConfigurationProxyModel();
-    this->measurementConfigurationModel->setFilter(true); // show all
-    this->ui->comboBox_mConfig->setModel(measurementConfigurationModel);
+  // set model for available functions
+  this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
+  this->ui->comboBox_function->setModel(this->functionListModel);
 
-    //set model for available functions
-    this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
-    this->ui->comboBox_function->setModel(this->functionListModel);
+  // set model for available group names
+  this->ui->comboBox_group->setModel(&ModelManager::getGroupNamesModel());
 
-    //set model for available group names
-    this->ui->comboBox_group->setModel(&ModelManager::getGroupNamesModel());
-
-    //set model for available scalar entities
-    this->ui->comboBox_entityType->setModel(&ModelManager::getScalarEntityTypeNamesModel());
-
+  // set model for available scalar entities
+  this->ui->comboBox_entityType->setModel(
+      &ModelManager::getScalarEntityTypeNamesModel());
 }
 
 /*!
  * \brief CreateFeatureDialog::initFunctionsModel
- * Sets the model of the function combo box and selects the default function of the specified feature type
+ * Sets the model of the function combo box and selects the default function of
+ * the specified feature type
  */
-void CreateFeatureDialog::initFunctionsModel(){
+void CreateFeatureDialog::initFunctionsModel() {
+  // set the filter for the function list model
+  this->functionListModel->setFilter(this->typeOfFeature);
 
-    //set the filter for the function list model
-    this->functionListModel->setFilter(this->typeOfFeature);
+  // get and cast source model
+  AvailableFunctionsListModel* source_model =
+      dynamic_cast<AvailableFunctionsListModel*>(
+          this->functionListModel->sourceModel());
+  if (source_model == NULL) {
+    return;
+  }
 
-    //get and cast source model
-    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
-    if(source_model == NULL){
-        return;
-    }
-
-    //select default function
-    this->ui->comboBox_function->setCurrentText(source_model->getDefaultFunction(this->typeOfFeature).first);
-
+  // select default function
+  this->ui->comboBox_function->setCurrentText(
+      source_model->getDefaultFunction(this->typeOfFeature).first);
 }
 
-void CreateFeatureDialog::initMeasurementConfigModel(){
-    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
-    if(source_model == NULL){
-        return;
-    }
-    sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+void CreateFeatureDialog::initMeasurementConfigModel() {
+  AvailableFunctionsListModel* source_model =
+      dynamic_cast<AvailableFunctionsListModel*>(
+          this->functionListModel->sourceModel());
+  if (source_model == NULL) {
+    return;
+  }
+  sys::Function function = this->functionListModel->getFunctionAtIndex(
+      this->ui->comboBox_function->currentIndex());
 
-    SensorType activeSensorType;
-    const QPointer<OiJob> job = ModelManager::getCurrentJob();
-    if(!job.isNull() && !job->getActiveStation().isNull()){
-        activeSensorType = job->getActiveStation()->getActiveSensorType();
-    }
+  SensorType activeSensorType;
+  const QPointer<OiJob> job = ModelManager::getCurrentJob();
+  if (!job.isNull() && !job->getActiveStation().isNull()) {
+    activeSensorType = job->getActiveStation()->getActiveSensorType();
+  }
 
-    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor(), activeSensorType);
+  this->measurementConfigurationModel->setFilter(
+      this->neededElements, this->typeOfFeature, function.applicableFor(),
+      activeSensorType);
 }
 
 /*!
  * \brief CreateFeatureDialog::featureAttributesFromGUI
  * \param attributes
  */
-void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes){
+void CreateFeatureDialog::featureAttributesFromGUI(
+    FeatureAttributes& attributes) {
+  // fill general attributes
+  attributes.typeOfFeature = this->typeOfFeature;
+  attributes.count = this->ui->spinBox_count->value();
+  attributes.name = this->ui->lineEdit_name->text();
+  attributes.group = this->ui->comboBox_group->currentText();
+  if (attributes.group.compare("All Groups") == 0) {
+    attributes.group = "";
+  }
 
-    //fill general attributes
-    attributes.typeOfFeature = this->typeOfFeature;
-    attributes.count = this->ui->spinBox_count->value();
-    attributes.name = this->ui->lineEdit_name->text();
-    attributes.group = this->ui->comboBox_group->currentText();
-    if(attributes.group.compare("All Groups") == 0){
-        attributes.group = "";
+  // fill feature type specific attributes
+  if (this->typeOfFeature == eTrafoParamFeature) {
+    attributes.startSystem = this->ui->comboBox_startSystem->currentText();
+    attributes.destinationSystem =
+        this->ui->comboBox_destinationSystem->currentText();
+
+  } else if (getIsScalarEntity(this->typeOfFeature)) {
+    attributes.typeOfFeature = static_cast<FeatureTypes>(
+        this->ui->comboBox_entityType->currentData(Qt::UserRole).toInt());
+    attributes.isCommon = this->ui->checkBox_common->isChecked();
+    if (this->ui->comboBox_nominalSystem->isVisible()) {
+      attributes.nominalSystem =
+          this->ui->comboBox_nominalSystem->currentText();
     }
 
-    //fill feature type specific attributes
-    if(this->typeOfFeature == eTrafoParamFeature){
-
-        attributes.startSystem = this->ui->comboBox_startSystem->currentText();
-        attributes.destinationSystem = this->ui->comboBox_destinationSystem->currentText();
-
-    }else if(getIsScalarEntity(this->typeOfFeature)){
-
-        attributes.typeOfFeature = static_cast<FeatureTypes>(this->ui->comboBox_entityType->currentData(Qt::UserRole).toInt());
-        attributes.isCommon = this->ui->checkBox_common->isChecked();
-        if(this->ui->comboBox_nominalSystem->isVisible()){
-            attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        }
-
-    }else if(this->typeOfFeature != eCoordinateSystemFeature
-             && this->typeOfFeature != eStationFeature){
-
-        attributes.isCommon = this->ui->checkBox_common->isChecked();
-        if(this->ui->comboBox_nominalSystem->isVisible()){
-            attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        }
-        if(!this->neededElements.isEmpty()) {
-                attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
-                measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
-            );
-        }
+  } else if (this->typeOfFeature != eCoordinateSystemFeature &&
+             this->typeOfFeature != eStationFeature) {
+    attributes.isCommon = this->ui->checkBox_common->isChecked();
+    if (this->ui->comboBox_nominalSystem->isVisible()) {
+      attributes.nominalSystem =
+          this->ui->comboBox_nominalSystem->currentText();
     }
-
-    //fill selected function plugin - D17: every geometry/scalar-entity
-    //feature now gets its producer function attached at creation,
-    //whether it turns out nominal (a scalar-only producer) or actual (a
-    //fit); there is no longer a checkbox that skips this for "nominal"
-    if(getIsGeometry(attributes.typeOfFeature) || getIsScalarEntity(attributes.typeOfFeature)){
-        sys::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
-        attributes.functionPlugin.first = function.name();
-        attributes.functionPlugin.second = function.plugin().filePath();
+    if (!this->neededElements.isEmpty()) {
+      attributes.measurementConfig =
+          this->measurementConfigurationModel->getMeasurementConfig(
+              measurementConfigurationModel->index(
+                  this->ui->comboBox_mConfig->currentIndex(), 0));
     }
+  }
+
+  // fill selected function plugin - D17: every geometry/scalar-entity
+  // feature now gets its producer function attached at creation,
+  // whether it turns out nominal (a scalar-only producer) or actual (a
+  // fit); there is no longer a checkbox that skips this for "nominal"
+  if (getIsGeometry(attributes.typeOfFeature) ||
+      getIsScalarEntity(attributes.typeOfFeature)) {
+    sys::Function function = this->functionListModel->getFunctionAtIndex(
+        this->ui->comboBox_function->currentIndex());
+    attributes.functionPlugin.first = function.name();
+    attributes.functionPlugin.second = function.plugin().filePath();
+  }
 }
 
-void CreateFeatureDialog::setDialogName()
-{
-
-    QString title = "create " + getFeatureTypeDisplayName(typeOfFeature);
-    this->setWindowTitle(title);
+void CreateFeatureDialog::setDialogName() {
+  QString title = "create " + getFeatureTypeDisplayName(typeOfFeature);
+  this->setWindowTitle(title);
 }
 
 /*!
- * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check if the type of the scalar entity changed
+ * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check
+ * if the type of the scalar entity changed
  *
  * Keyed on the index rather than the visible text: the item carries its
  * FeatureTypes in Qt::UserRole, so rewording an entry in the display-name
  * table cannot change which type this resolves to.
  * \param index
  */
-void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(int index)
-{
-    if(index >= 0) {
-        this->typeOfFeature = static_cast<FeatureTypes>(this->ui->comboBox_entityType->itemData(index, Qt::UserRole).toInt());
+void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(
+    int index) {
+  if (index >= 0) {
+    this->typeOfFeature = static_cast<FeatureTypes>(
+        this->ui->comboBox_entityType->itemData(index, Qt::UserRole).toInt());
 
-        this->initFunctionsModel();
+    this->initFunctionsModel();
 
-        for(int i=0; i<this->functionListModel->rowCount(); i++) {
-            sys::Function function = this->functionListModel->getFunctionAtIndex(i);
-            if(this->ui->comboBox_function->currentText() == function.name()) {
-                this->neededElements.clear();
-                this->neededElements.append(function.neededElements());
-                break;
-            }
-        }
-        this->initMeasurementConfigModel();
-
-        this->initGUI();
+    for (int i = 0; i < this->functionListModel->rowCount(); i++) {
+      sys::Function function = this->functionListModel->getFunctionAtIndex(i);
+      if (this->ui->comboBox_function->currentText() == function.name()) {
+        this->neededElements.clear();
+        this->neededElements.append(function.neededElements());
+        break;
+      }
     }
+    this->initMeasurementConfigModel();
 
+    this->initGUI();
+  }
 }
 
-void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int index)
-{
-    this->initMeasurementConfigUI(index);
-    this->initMeasurementConfigModel();
+void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(
+    const int index) {
+  this->initMeasurementConfigUI(index);
+  this->initMeasurementConfigModel();
 }
 
 void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
-    sys::Function function = this->functionListModel->getFunctionAtIndex(functionIndex);
-    if( function.interfaceCategory().startsWith("de.openIndy.plugin.function.constructFunction")
-        || function.interfaceCategory().startsWith("de.openIndy.plugin.function.objectTransformation")
-        || function.interfaceCategory().startsWith("de.openIndy.plugin.function.specialFunction")
-        || function.name().contains("FromPoints") // fitfunction
-        ) {
-        this->neededElements.clear();
-        this->neededElements.append(ElementTypes::eUndefinedElement);
-        this->ui->comboBox_mConfig->setVisible(false);
-        this->ui->label_mConfig->setVisible(false);
-    } else {
-        this->neededElements.clear();
-        this->neededElements.append(function.neededElements());
-        this->ui->comboBox_mConfig->setVisible(true);
-        this->ui->label_mConfig->setVisible(true);
-    }
+  sys::Function function =
+      this->functionListModel->getFunctionAtIndex(functionIndex);
+  if (function.interfaceCategory().startsWith(
+          "de.openIndy.plugin.function.constructFunction") ||
+      function.interfaceCategory().startsWith(
+          "de.openIndy.plugin.function.objectTransformation") ||
+      function.interfaceCategory().startsWith(
+          "de.openIndy.plugin.function.specialFunction") ||
+      function.name().contains("FromPoints")  // fitfunction
+  ) {
+    this->neededElements.clear();
+    this->neededElements.append(ElementTypes::eUndefinedElement);
+    this->ui->comboBox_mConfig->setVisible(false);
+    this->ui->label_mConfig->setVisible(false);
+  } else {
+    this->neededElements.clear();
+    this->neededElements.append(function.neededElements());
+    this->ui->comboBox_mConfig->setVisible(true);
+    this->ui->label_mConfig->setVisible(true);
+  }
 
-    //D17/D19: a nominal producer is a function with no needed elements at
-    //all (not just "hides the measurement config", which ObjectTransformation
-    //and SpecialFunction also do) - only that shape needs a nominal system
-    const bool nominalShaped = this->isNominalShapedFunction(function);
-    this->ui->label_nominalSystem->setVisible(nominalShaped);
-    this->ui->comboBox_nominalSystem->setVisible(nominalShaped);
+  // D17/D19: a nominal producer is a function with no needed elements at
+  // all (not just "hides the measurement config", which ObjectTransformation
+  // and SpecialFunction also do) - only that shape needs a nominal system
+  const bool nominalShaped = this->isNominalShapedFunction(function);
+  this->ui->label_nominalSystem->setVisible(nominalShaped);
+  this->ui->comboBox_nominalSystem->setVisible(nominalShaped);
 }
 
 /*!
@@ -446,7 +459,9 @@ void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
  * \param function
  * \return
  */
-bool CreateFeatureDialog::isNominalShapedFunction(const sys::Function &function) const{
-    return function.interfaceCategory().startsWith("de.openIndy.plugin.function.constructFunction")
-            && function.neededElements().isEmpty();
+bool CreateFeatureDialog::isNominalShapedFunction(
+    const sys::Function& function) const {
+  return function.interfaceCategory().startsWith(
+             "de.openIndy.plugin.function.constructFunction") &&
+         function.neededElements().isEmpty();
 }

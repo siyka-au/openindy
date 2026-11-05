@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QPointer>
 
-#include "observation.h"
 #include "function.h"
+#include "observation.h"
 
 using namespace oi;
 
@@ -13,35 +13,44 @@ using namespace oi;
  * \brief The TrafoController class
  *
  */
-class TrafoController : public QObject
-{
-    Q_OBJECT
+class TrafoController : public QObject {
+  Q_OBJECT
 
-public:
-    explicit TrafoController(QObject *parent = 0);
-    
-signals:
-    
-public slots:
+ public:
+  explicit TrafoController(QObject* parent = 0);
 
-    //######################
-    //transform observations
-    //######################
+ signals:
 
-    void transformObservations(const QPointer<Feature> &feature, const QPointer<CoordinateSystem> &destinationSystem);
-    void transformObservations(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
-    void transformCoordSystems(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem, bool isStation);
+ public slots:
 
-    bool getTransformationMatrix(OiMat &trafoMat, const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
+  // ######################
+  // transform observations
+  // ######################
 
-private:
+  void transformObservations(
+      const QPointer<Feature>& feature,
+      const QPointer<CoordinateSystem>& destinationSystem);
+  void transformObservations(
+      const QPointer<CoordinateSystem>& startSystem,
+      const QPointer<CoordinateSystem>& destinationSystem);
+  void transformCoordSystems(
+      const QPointer<CoordinateSystem>& startSystem,
+      const QPointer<CoordinateSystem>& destinationSystem, bool isStation);
 
-    //##############
-    //helper methods
-    //##############
+  bool getTransformationMatrix(
+      OiMat& trafoMat, const QPointer<CoordinateSystem>& startSystem,
+      const QPointer<CoordinateSystem>& destinationSystem);
 
-    QPointer<TrafoParam> findTransformation(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
-    void setDefaultOriginAndNormal(const QPointer<CoordinateSystem> &startSystem, bool isStation);
+ private:
+  // ##############
+  // helper methods
+  // ##############
+
+  QPointer<TrafoParam> findTransformation(
+      const QPointer<CoordinateSystem>& startSystem,
+      const QPointer<CoordinateSystem>& destinationSystem);
+  void setDefaultOriginAndNormal(const QPointer<CoordinateSystem>& startSystem,
+                                 bool isStation);
 };
 
-#endif // TRAFOCONTROLLER_H
+#endif  // TRAFOCONTROLLER_H

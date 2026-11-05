@@ -5,8 +5,8 @@
 #include <QModelIndex>
 #include <QPixmap>
 
-#include "plugintreeitem.h"
 #include "pluginrepository.h"
+#include "plugintreeitem.h"
 
 using namespace oi;
 
@@ -14,56 +14,56 @@ using namespace oi;
  * \brief The PluginTreeViewModel class
  * Model that holds all plugins currently loaded into OpenIndy
  */
-class PluginTreeViewModel : public QAbstractItemModel
-{
-    Q_OBJECT
+class PluginTreeViewModel : public QAbstractItemModel {
+  Q_OBJECT
 
-public:
-    explicit PluginTreeViewModel(QObject *parent = 0);
+ public:
+  explicit PluginTreeViewModel(QObject* parent = 0);
 
-    //#######################################
-    //override methods of abstract item model
-    //#######################################
+  // #######################################
+  // override methods of abstract item model
+  // #######################################
 
-    QModelIndex	index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
-    QModelIndex	parent(const QModelIndex & index) const;
+  QModelIndex index(int row, int column,
+                    const QModelIndex& parent = QModelIndex()) const;
+  QModelIndex parent(const QModelIndex& index) const;
 
-    int	rowCount(const QModelIndex & parent = QModelIndex()) const;
-    int	columnCount(const QModelIndex & parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const;
 
-    //##################
-    //get or set plugins
-    //##################
+  // ##################
+  // get or set plugins
+  // ##################
 
-    const QList<sys::Plugin> &getPlugins() const;
-    void setPlugins(const QList<sys::Plugin> &plugins);
+  const QList<sys::Plugin>& getPlugins() const;
+  void setPlugins(const QList<sys::Plugin>& plugins);
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private:
+ private:
+  // ##############
+  // loaded plugins
+  // ##############
 
-    //##############
-    //loaded plugins
-    //##############
+  QList<sys::Plugin> plugins;
 
-    QList<sys::Plugin> plugins;
+  // ##############
+  // root tree item
+  // ##############
 
-    //##############
-    //root tree item
-    //##############
-
-    PluginTreeItem *rootItem;
-
+  PluginTreeItem* rootItem;
 };
 
-#endif // PLUGINTREEVIEWMODEL_H
+#endif  // PLUGINTREEVIEWMODEL_H

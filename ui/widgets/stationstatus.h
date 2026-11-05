@@ -7,21 +7,21 @@ namespace Ui {
 class StationStatus;
 }
 
-class StationStatus : public QWidget
-{
-    Q_OBJECT
+class StationStatus : public QWidget {
+  Q_OBJECT
 
-public:
-    explicit StationStatus(QWidget *parent = 0);
-    ~StationStatus();
+ public:
+  explicit StationStatus(QWidget* parent = 0);
+  ~StationStatus();
 
-    void setName(QString name);
-    void setTemperature(QString temperature);
-    void setBundled(bool bundled);
+  void setName(QString name);
+  void setTemperature(QString temperature);
+  void setBundled(bool bundled);
 
-    void reset();
-private:
-    Ui::StationStatus *ui;
+  void reset();
+
+ private:
+  Ui::StationStatus* ui;
 };
 
-#endif // STATIONSTATUS_H
+#endif  // STATIONSTATUS_H

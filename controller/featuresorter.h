@@ -4,15 +4,14 @@
 #include <QPointer>
 
 #include "feature.h"
+#include "featuretablesortingconfig.h"
 #include "featurewrapper.h"
 #include "oijob.h"
 
-#include "featuretablesortingconfig.h"
-
 #if defined(OI_MAIN_LIB)
-#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#define OI_MAIN_EXPORT Q_DECL_EXPORT
 #else
-#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#define OI_MAIN_EXPORT Q_DECL_IMPORT
 #endif
 
 using namespace oi;
@@ -21,72 +20,74 @@ using namespace oi;
  * \brief The FeatureSorter class
  * Sorts features according to sorting settings
  */
-class OI_MAIN_EXPORT FeatureSorter
-{
-public:
-    FeatureSorter();
+class OI_MAIN_EXPORT FeatureSorter {
+ public:
+  FeatureSorter();
 
-    //##########
-    //comparison
-    //##########
+  // ##########
+  // comparison
+  // ##########
 
-    bool operator()(const int &left, const int &right);
-    bool operator()(const QPointer<FeatureWrapper> &left, const QPointer<FeatureWrapper> &right);
+  bool operator()(const int& left, const int& right);
+  bool operator()(const QPointer<FeatureWrapper>& left,
+                  const QPointer<FeatureWrapper>& right);
 
-    //#############
-    //sorting modes
-    //#############
+  // #############
+  // sorting modes
+  // #############
 
-    enum SortingMode{
-        eSortStandard,                  // sort by: id, isNominal
-        eSortBy_Name_ActNom,            // sort by: featureName, isNominal
-        eSortBy_Group_Name_ActNom,      // sort by: groupName, featureName, isNominal
-    };
+  enum SortingMode {
+    eSortStandard,              // sort by: id, isNominal
+    eSortBy_Name_ActNom,        // sort by: featureName, isNominal
+    eSortBy_Group_Name_ActNom,  // sort by: groupName, featureName, isNominal
+  };
 
-    //#################################
-    //get or set sorting mode an config
-    //#################################
+  // #################################
+  // get or set sorting mode an config
+  // #################################
 
-    SortingMode getSortingMode() const;
-    void setSortingMode(SortingMode mode);
+  SortingMode getSortingMode() const;
+  void setSortingMode(SortingMode mode);
 
-    const FeatureTableSortingConfig getSortingConfig() const;
-    void setSortingConfig(const FeatureTableSortingConfig &config);
+  const FeatureTableSortingConfig getSortingConfig() const;
+  void setSortingConfig(const FeatureTableSortingConfig& config);
 
-    //###################################
-    //get or set the current OpenIndy job
-    //###################################
+  // ###################################
+  // get or set the current OpenIndy job
+  // ###################################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    //####################
-    //comparison functions
-    //####################
+  // ####################
+  // comparison functions
+  // ####################
 
-    bool lessThan(const int &left, const int &right) const;
-    bool lessThan(const QPointer<FeatureWrapper> &left, const QPointer<FeatureWrapper> &right) const;
+  bool lessThan(const int& left, const int& right) const;
+  bool lessThan(const QPointer<FeatureWrapper>& left,
+                const QPointer<FeatureWrapper>& right) const;
 
-private:
+ private:
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  QPointer<OiJob> job;
 
-    QPointer<OiJob> job;
+  // sorting mode and config
+  SortingMode mode;
+  FeatureTableSortingConfig config;
 
-    //sorting mode and config
-    SortingMode mode;
-    FeatureTableSortingConfig config;
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
-
-    bool sortStandard(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
-    bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
-    bool sortBy_Group_Name(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
-
+  bool sortStandard(QPointer<FeatureWrapper> left,
+                    QPointer<FeatureWrapper> right) const;
+  bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left,
+                          QPointer<FeatureWrapper> right) const;
+  bool sortBy_Group_Name(QPointer<FeatureWrapper> left,
+                         QPointer<FeatureWrapper> right) const;
 };
 
-#endif // FEATURESORTER_H
+#endif  // FEATURESORTER_H

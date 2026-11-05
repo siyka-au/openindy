@@ -3,30 +3,29 @@
 
 #include "controllersensoractions.h"
 
-class TestControllerSensorActions: public ControllerSensorActions
-{
-public:
-    TestControllerSensorActions();
+class TestControllerSensorActions : public ControllerSensorActions {
+ public:
+  TestControllerSensorActions();
 
-    //sensor actions
-    void startConnect();
-    void startDisconnect();
-    void startMeasurement();
-    void startMove(const oi::Reading &reading);
-    void startAim();
-    void startAimAndMeasure();
-    void startToggleSight();
-    void startInitialize();
-    void startHome();
-    void startCompensation();
-    void startChangeMotorState();
-    void startCustomAction(const QString &task);
-    void startReadingStream(oi::ReadingTypes streamFormat);
-    void stopReadingStream();
-    void finishMeasurement();
-    void startSearch();
+  // sensor actions
+  void startConnect();
+  void startDisconnect();
+  void startMeasurement();
+  void startMove(const oi::Reading& reading);
+  void startAim();
+  void startAimAndMeasure();
+  void startToggleSight();
+  void startInitialize();
+  void startHome();
+  void startCompensation();
+  void startChangeMotorState();
+  void startCustomAction(const QString& task);
+  void startReadingStream(oi::ReadingTypes streamFormat);
+  void stopReadingStream();
+  void finishMeasurement();
+  void startSearch();
 
-    QStringList actions;
+  QStringList actions;
 };
 
-#endif // TESTCONTROLLERSENSORACTIONS_H
+#endif  // TESTCONTROLLERSENSORACTIONS_H

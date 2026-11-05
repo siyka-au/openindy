@@ -3,91 +3,89 @@
 
 #include <QAbstractTableModel>
 
-#include "types.h"
-#include "util.h"
 #include "oijob.h"
 #include "parameterdisplayconfig.h"
+#include "types.h"
+#include "util.h"
 
 using namespace oi;
 
 /*!
  * \brief The ReadingModel class
  */
-class ReadingModel : public QAbstractTableModel
-{
-    Q_OBJECT
+class ReadingModel : public QAbstractTableModel {
+  Q_OBJECT
 
-public:
-    explicit ReadingModel(QObject *parent = 0);
+ public:
+  explicit ReadingModel(QObject* parent = 0);
 
-    //########################################
-    //override methods of abstract table model
-    //########################################
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  virtual QVariant headerData(int section, Qt::Orientation orientation,
+                              int role = Qt::DisplayRole) const;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
 
-    //###############################
-    //get or set current OpenIndy job
-    //###############################
+  // ###############################
+  // get or set current OpenIndy job
+  // ###############################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    //#########################
-    //get or set display config
-    //#########################
+  // #########################
+  // get or set display config
+  // #########################
 
-    const ParameterDisplayConfig &getParameterDisplayConfig() const;
-    void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+  const ParameterDisplayConfig& getParameterDisplayConfig() const;
+  void setParameterDisplayConfig(const ParameterDisplayConfig& config);
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private slots:
+ private slots:
 
-    //##############################################################
-    //update the model when job state or display config have changed
-    //##############################################################
+  // ##############################################################
+  // update the model when job state or display config have changed
+  // ##############################################################
 
-    void activeFeatureChanged();
-    void geometryObservationsChanged(const int & featureId);
+  void activeFeatureChanged();
+  void geometryObservationsChanged(const int& featureId);
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void updateModel();
+  void connectJob();
+  void disconnectJob();
 
-    void updateModel();
-    void connectJob();
-    void disconnectJob();
+ private:
+  // ###########
+  // current job
+  // ###########
 
-private:
+  QPointer<OiJob> currentJob;
 
-    //###########
-    //current job
-    //###########
+  // ##############
+  // display config
+  // ##############
 
-    QPointer<OiJob> currentJob;
-
-    //##############
-    //display config
-    //##############
-
-    ParameterDisplayConfig parameterDisplayConfig;
-
+  ParameterDisplayConfig parameterDisplayConfig;
 };
 
-#endif // READINGMODEL_H
+#endif  // READINGMODEL_H

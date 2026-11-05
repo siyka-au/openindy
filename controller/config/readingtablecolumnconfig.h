@@ -11,21 +11,22 @@ using namespace oi;
  * \brief The ReadingTableColumnConfig class
  * Used to specify which attributes of a reading shall be displayed
  */
-class ReadingTableColumnConfig
-{
-public:
-    ReadingTableColumnConfig();
+class ReadingTableColumnConfig {
+ public:
+  ReadingTableColumnConfig();
 
-    bool getColumnVisibility(const ReadingDisplayAttributes &column) const;
-    void setColumnVisibility(const ReadingDisplayAttributes &column, const bool &isVisible);
+  bool getColumnVisibility(const ReadingDisplayAttributes& column) const;
+  void setColumnVisibility(const ReadingDisplayAttributes& column,
+                           const bool& isVisible);
 
-    int getColumnPosition(const ReadingDisplayAttributes &column) const;
-    void setColumnPosition(const ReadingDisplayAttributes &column, const int &index);
+  int getColumnPosition(const ReadingDisplayAttributes& column) const;
+  void setColumnPosition(const ReadingDisplayAttributes& column,
+                         const int& index);
 
-private:
-    void init();
+ private:
+  void init();
 
-    QList<ReadingDisplayAttributes> displayColumns;
+  QList<ReadingDisplayAttributes> displayColumns;
 };
 
-#endif // READINGTABLECOLUMNCONFIG_H
+#endif  // READINGTABLECOLUMNCONFIG_H

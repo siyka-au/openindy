@@ -6,14 +6,14 @@
 #include <QPixmap>
 #include <QPointer>
 
+#include "measurementconfigmanager.h"
 #include "types.h"
 #include "util.h"
-#include "measurementconfigmanager.h"
 
 #if defined(OI_MAIN_LIB)
-#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#define OI_MAIN_EXPORT Q_DECL_EXPORT
 #else
-#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#define OI_MAIN_EXPORT Q_DECL_IMPORT
 #endif
 
 using namespace oi;
@@ -22,92 +22,94 @@ using namespace oi;
  * \brief The MeasurementConfigurationModel class
  * Model that holds all available measurement configurations
  */
-class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel
-{
-    Q_OBJECT
+class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel {
+  Q_OBJECT
 
-public:
-    explicit MeasurementConfigurationModel(QObject *parent = 0);
+ public:
+  explicit MeasurementConfigurationModel(QObject* parent = 0);
 
-    //#######################################
-    //override methods of abstract item model
-    //#######################################
+  // #######################################
+  // override methods of abstract item model
+  // #######################################
 
-    int	rowCount(const QModelIndex & parent = QModelIndex()) const;
-    int	columnCount(const QModelIndex & parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole);
 
-    //##########################################
-    //get informations about measurement configs
-    //##########################################
+  // ##########################################
+  // get informations about measurement configs
+  // ##########################################
 
-    QModelIndex getIndex(const MeasurementConfig &mConfig) const;
+  QModelIndex getIndex(const MeasurementConfig& mConfig) const;
 
-    MeasurementConfig getMeasurementConfig(const QModelIndex &index) const;
+  MeasurementConfig getMeasurementConfig(const QModelIndex& index) const;
 
-    bool isUserConfig(const QModelIndex &index) const;
+  bool isUserConfig(const QModelIndex& index) const;
 
-    //#################################
-    //add or remove measurement configs
-    //#################################
+  // #################################
+  // add or remove measurement configs
+  // #################################
 
-    QModelIndex addMeasurementConfig(const MeasurementConfig &mConfig);
-    void removeMeasurementConfig(const QModelIndex &index);
+  QModelIndex addMeasurementConfig(const MeasurementConfig& mConfig);
+  void removeMeasurementConfig(const QModelIndex& index);
 
-    void replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig);
+  void replaceMeasurementConfig(const MeasurementConfigKey& oldKey,
+                                const MeasurementConfig& mConfig);
 
-    MeasurementConfig cloneMeasurementConfig(const MeasurementConfig &mConfig);
+  MeasurementConfig cloneMeasurementConfig(const MeasurementConfig& mConfig);
 
-    //#######################################
-    //get or set sensor configuration manager
-    //#######################################
+  // #######################################
+  // get or set sensor configuration manager
+  // #######################################
 
-    const QPointer<MeasurementConfigManager> &getMeasurementConfigurationManager() const;
-    void setMeasurementConfigurationManager(const QPointer<MeasurementConfigManager> &manager);
+  const QPointer<MeasurementConfigManager>& getMeasurementConfigurationManager()
+      const;
+  void setMeasurementConfigurationManager(
+      const QPointer<MeasurementConfigManager>& manager);
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-    //########################################################
-    //inform when the name of a measurement config has changed
-    //########################################################
+  // ########################################################
+  // inform when the name of a measurement config has changed
+  // ########################################################
 
-    void measurementConfigNameChanged(const MeasurementConfig &mConfig);
+  void measurementConfigNameChanged(const MeasurementConfig& mConfig);
 
-private slots:
+ private slots:
 
-    //###########################################
-    //update the model when configuration changes
-    //###########################################
+  // ###########################################
+  // update the model when configuration changes
+  // ###########################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void connectConfigManager();
 
-    void connectConfigManager();
+  // #####################
+  // sensor config manager
+  // #####################
 
-    //#####################
-    //sensor config manager
-    //#####################
-
-    QPointer<MeasurementConfigManager> measurementConfigManager;
-
+  QPointer<MeasurementConfigManager> measurementConfigManager;
 };
 
-#endif // MEASUREMENTCONFIGURATIONMODEL_H
+#endif  // MEASUREMENTCONFIGURATIONMODEL_H

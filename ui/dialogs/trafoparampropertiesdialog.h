@@ -3,9 +3,9 @@
 
 #include <QDialog>
 #include <QMap>
-#include <QShowEvent>
-#include <QPointer>
 #include <QMessageBox>
+#include <QPointer>
+#include <QShowEvent>
 
 #include "modelmanager.h"
 
@@ -18,75 +18,76 @@ class TrafoParamPropertiesDialog;
 /*!
  * \brief The TrafoParamPropertiesDialog class
  */
-class TrafoParamPropertiesDialog : public QDialog
-{
-    Q_OBJECT
+class TrafoParamPropertiesDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit TrafoParamPropertiesDialog(QWidget *parent = 0);
-    ~TrafoParamPropertiesDialog();
+ public:
+  explicit TrafoParamPropertiesDialog(QWidget* parent = 0);
+  ~TrafoParamPropertiesDialog();
 
-    //############################################################
-    //get or set information about the current trafo param feature
-    //############################################################
+  // ############################################################
+  // get or set information about the current trafo param feature
+  // ############################################################
 
-    const int &getId() const;
-    void setId(const int &id);
+  const int& getId() const;
+  void setId(const int& id);
 
-    const QString &getName() const;
-    void setName(const QString &name);
+  const QString& getName() const;
+  void setName(const QString& name);
 
-    void setCurrentTrafoParam(const int &id, const QString &name);
+  void setCurrentTrafoParam(const int& id, const QString& name);
 
-    const QMap<TrafoParamParameters, QString> &getUnknownTrafoParamParameters() const;
-    void setUnknownTrafoParamParameters(const QMap<TrafoParamParameters, QString> &parameters);
+  const QMap<TrafoParamParameters, QString>& getUnknownTrafoParamParameters()
+      const;
+  void setUnknownTrafoParamParameters(
+      const QMap<TrafoParamParameters, QString>& parameters);
 
-signals:
+ signals:
 
-    //###########################
-    //edit trafo param parameters
-    //###########################
+  // ###########################
+  // edit trafo param parameters
+  // ###########################
 
-    void trafoParamParametersChanged(const int &id, const QMap<TrafoParamParameters, double> &parameters);
+  void trafoParamParametersChanged(
+      const int& id, const QMap<TrafoParamParameters, double>& parameters);
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    void on_toolButton_cancel_clicked();
-    void on_toolButton_ok_clicked();
+  void on_toolButton_cancel_clicked();
+  void on_toolButton_ok_clicked();
 
-private:
+ private:
+  // ##################################
+  // methods to initialize GUI elements
+  // ##################################
 
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
+  void showEvent(QShowEvent* event);
 
-    void showEvent(QShowEvent *event);
+  void initGUI();
+  void initModels();
 
-    void initGUI();
-    void initModels();
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void setParametersToGUI(const TrafoParamParameters& param,
+                          const QString& value);
+  void getParametersFromGUI(QMap<TrafoParamParameters, double>& parameters);
 
-    void setParametersToGUI(const TrafoParamParameters &param, const QString &value);
-    void getParametersFromGUI(QMap<TrafoParamParameters, double> &parameters);
+ private:
+  Ui::TrafoParamPropertiesDialog* ui;
 
-private:
-    Ui::TrafoParamPropertiesDialog *ui;
+  // ################################################
+  // attributes that describe the current trafo param
+  // ################################################
 
-    //################################################
-    //attributes that describe the current trafo param
-    //################################################
-
-    int id;
-    QString name;
-    QMap<TrafoParamParameters, QString> parameters;
-
+  int id;
+  QString name;
+  QMap<TrafoParamParameters, QString> parameters;
 };
 
-#endif // TRAFOPARAMPROPERTIESDIALOG_H
+#endif  // TRAFOPARAMPROPERTIESDIALOG_H

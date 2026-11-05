@@ -2,52 +2,49 @@
 #define OIWEBSOCKETSTREAMER_H
 
 #include <QObject>
-#include <QtXml>
 #include <QPointer>
+#include <QtXml>
 
-#include "oirequestresponse.h"
 #include "oijob.h"
+#include "oirequestresponse.h"
 
 /*!
  * \brief The OiWebSocketStreamer class
  * Sends information to OpenIndy-Clients asynchronously
  */
-class OiWebSocketStreamer : public QObject
-{
-    Q_OBJECT
+class OiWebSocketStreamer : public QObject {
+  Q_OBJECT
 
-public:
-    explicit OiWebSocketStreamer(QObject *parent = 0);
+ public:
+  explicit OiWebSocketStreamer(QObject* parent = 0);
 
-    //######################
-    //get or set current job
-    //######################
+  // ######################
+  // get or set current job
+  // ######################
 
-    const QPointer<oi::OiJob> &getJob() const;
-    void setJob(const QPointer<oi::OiJob> &job);
+  const QPointer<oi::OiJob>& getJob() const;
+  void setJob(const QPointer<oi::OiJob>& job);
 
-public slots:
+ public slots:
 
-signals:
+ signals:
 
-    //###########################
-    //send information to clients
-    //###########################
+  // ###########################
+  // send information to clients
+  // ###########################
 
-private:
+ private:
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  QPointer<oi::OiJob> currentJob;
 
-    QPointer<oi::OiJob> currentJob;
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
-
-private slots:
-
+ private slots:
 };
 
-#endif // OIWEBSOCKETSTREAMER_H
+#endif  // OIWEBSOCKETSTREAMER_H

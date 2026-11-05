@@ -1,28 +1,27 @@
 #ifndef SENSORCONFIGURATIONDIALOG_H
 #define SENSORCONFIGURATIONDIALOG_H
 
-#include <QDialog>
-#include <QtSerialPort/QSerialPort>
-#include <QComboBox>
-#include <QtSerialPort/QSerialPortInfo>
-#include <QtNetwork/QNetworkInterface>
 #include <QCloseEvent>
-#include <QMap>
-#include <QLineEdit>
+#include <QComboBox>
+#include <QDialog>
+#include <QGridLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
+#include <QMap>
+#include <QMenu>
 #include <QMessageBox>
 #include <QShowEvent>
-#include <QGridLayout>
-#include <QMenu>
-
-#include "types.h"
-#include "sensorconfiguration.h"
+#include <QtNetwork/QNetworkInterface>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 
 #include "modelmanager.h"
-#include "sensorconfigurationlistdelegate.h"
 #include "sensoraccuracydelegate.h"
+#include "sensorconfiguration.h"
+#include "sensorconfigurationlistdelegate.h"
 #include "sensorparametersdelegate.h"
+#include "types.h"
 
 using namespace oi;
 
@@ -33,118 +32,118 @@ class SensorConfigurationDialog;
 /*!
  * \brief The SensorConfigurationDialog class
  */
-class SensorConfigurationDialog : public QDialog
-{
-    Q_OBJECT
+class SensorConfigurationDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit SensorConfigurationDialog(QWidget *parent = 0);
-    ~SensorConfigurationDialog();
+ public:
+  explicit SensorConfigurationDialog(QWidget* parent = 0);
+  ~SensorConfigurationDialog();
 
-signals:
+ signals:
 
-    //#########
-    //messaging
-    //#########
+  // #########
+  // messaging
+  // #########
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-    //#############################################
-    //signals to inform about sensor config changes
-    //#############################################
+  // #############################################
+  // signals to inform about sensor config changes
+  // #############################################
 
-    //sensor configs edited
-    void sensorConfigurationsEdited(const SensorConfigurationManager &manager);
+  // sensor configs edited
+  void sensorConfigurationsEdited(const SensorConfigurationManager& manager);
 
-    //set and/or connect a sensor config
-    void setSensorConfig(const SensorConfiguration &sConfig);
+  // set and/or connect a sensor config
+  void setSensorConfig(const SensorConfiguration& sConfig);
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    //save, set or cancel
-    void on_pushButton_save_clicked();
-    void on_pushButton_setAndConnect_clicked();
-    void on_pushButton_cancel_clicked();
+  // save, set or cancel
+  void on_pushButton_save_clicked();
+  void on_pushButton_setAndConnect_clicked();
+  void on_pushButton_cancel_clicked();
 
-    //add or remove sensor configs
-    void on_pushButton_remove_clicked();
-    void on_pushButton_add_clicked();
+  // add or remove sensor configs
+  void on_pushButton_remove_clicked();
+  void on_pushButton_add_clicked();
 
-    //#######################
-    //sensor config callbacks
-    //#######################
+  // #######################
+  // sensor config callbacks
+  // #######################
 
-    //active sensor config changed
-    void activeSensorConfigChanged();
+  // active sensor config changed
+  void activeSensorConfigChanged();
 
-    //sensor config renamed
-    void sensorConfigRenamed();
+  // sensor config renamed
+  void sensorConfigRenamed();
 
-    //sensor configs added or removed
-    void sensorConfigsChanged();
+  // sensor configs added or removed
+  void sensorConfigsChanged();
 
-    //sensor config definition changed
-    void sensorAccuracyChanged(const SensorConfiguration &sConfig);
-    void sensorParametersChanged(const SensorConfiguration &sConfig);
-    void sensorConnectionChanged();
-    void sensorPluginChanged();
+  // sensor config definition changed
+  void sensorAccuracyChanged(const SensorConfiguration& sConfig);
+  void sensorParametersChanged(const SensorConfiguration& sConfig);
+  void sensorConnectionChanged();
+  void sensorPluginChanged();
 
-    //sensor type changed
-    void on_comboBox_availableSensorTypes_currentTextChanged(const QString &arg1);
+  // sensor type changed
+  void on_comboBox_availableSensorTypes_currentTextChanged(const QString& arg1);
 
-    //#########################
-    //selection model callbacks
-    //#########################
+  // #########################
+  // selection model callbacks
+  // #########################
 
-    void configSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void sensorPluginSelectionChanged(const QModelIndex &index);
+  void configSelectionChanged(const QItemSelection& selected,
+                              const QItemSelection& deselected);
+  void sensorPluginSelectionChanged(const QModelIndex& index);
 
-private:
-    Ui::SensorConfigurationDialog *ui;
+ private:
+  Ui::SensorConfigurationDialog* ui;
 
-    //##############
-    //helper methods
-    //##############
+  // ##############
+  // helper methods
+  // ##############
 
-    void updateGuiFromSensorConfig(const SensorConfiguration &sConfig);
+  void updateGuiFromSensorConfig(const SensorConfiguration& sConfig);
 
-    void toggleVisibility(const SensorConfiguration &sConfig);
-    void toggleCommandVisibility();
+  void toggleVisibility(const SensorConfiguration& sConfig);
+  void toggleCommandVisibility();
 
-    void setChangesMade(bool changesMade);
+  void setChangesMade(bool changesMade);
 
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
+  // ##################################
+  // methods to initialize GUI elements
+  // ##################################
 
-    void showEvent(QShowEvent *event);
-    void closeEvent(QCloseEvent *event);
+  void showEvent(QShowEvent* event);
+  void closeEvent(QCloseEvent* event);
 
-    void initGUI();
-    void initModels();
-    void connectModels();
+  void initGUI();
+  void initModels();
+  void connectModels();
 
-    //#################
-    //helper attributes
-    //#################
+  // #################
+  // helper attributes
+  // #################
 
-    //indicates wether there are unsaved changes
-    bool changesMade;
+  // indicates wether there are unsaved changes
+  bool changesMade;
 
-    //######
-    //models
-    //######
+  // ######
+  // models
+  // ######
 
-    //sensor models
-    QPointer<SensorConfigurationModel> sensorConfigModel;
-    QPointer<SensorConfigurationProxyModel> sensorConfigProxyModel;
-    QPointer<SensorAccuracyModel> sensorAccuracyModel;
-    QPointer<SensorParametersModel> sensorParametersModel;
-
+  // sensor models
+  QPointer<SensorConfigurationModel> sensorConfigModel;
+  QPointer<SensorConfigurationProxyModel> sensorConfigProxyModel;
+  QPointer<SensorAccuracyModel> sensorAccuracyModel;
+  QPointer<SensorParametersModel> sensorParametersModel;
 };
 
-#endif // SENSORCONFIGURATIONDIALOG_H
+#endif  // SENSORCONFIGURATIONDIALOG_H

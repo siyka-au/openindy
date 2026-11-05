@@ -1,59 +1,57 @@
 #ifndef FEATUREDIFFERENCEPROXYMODEL_H
 #define FEATUREDIFFERENCEPROXYMODEL_H
 
-#include <QSortFilterProxyModel>
 #include <QPointer>
+#include <QSortFilterProxyModel>
 
-#include "oijob.h"
 #include "featuredifferencetablemodel.h"
 #include "featuresorter.h"
+#include "oijob.h"
 
 using namespace oi;
 
 /*!
  * \brief The FeatureDifferenceProxyModel class
  */
-class FeatureDifferenceProxyModel : public QSortFilterProxyModel
-{
-    Q_OBJECT
+class FeatureDifferenceProxyModel : public QSortFilterProxyModel {
+  Q_OBJECT
 
-public:
-    explicit FeatureDifferenceProxyModel(QObject *parent = 0);
+ public:
+  explicit FeatureDifferenceProxyModel(QObject* parent = 0);
 
-    //###############################
-    //get or set current OpenIndy job
-    //###############################
+  // ###############################
+  // get or set current OpenIndy job
+  // ###############################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    void setSortingMode(FeatureSorter::SortingMode mode);
+  void setSortingMode(FeatureSorter::SortingMode mode);
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-protected:
+ protected:
+  bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
+  bool filterAcceptsColumn(int source_column,
+                           const QModelIndex& source_parent) const;
 
-    bool filterAcceptsRow (int source_row, const QModelIndex &source_parent ) const;
-    bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent ) const;
+  bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
 
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+ private:
+  // ###########
+  // current job
+  // ###########
 
-private:
+  QPointer<OiJob> job;
 
-    //###########
-    //current job
-    //###########
-
-    QPointer<OiJob> job;
-
-    FeatureSorter sorter;
-
+  FeatureSorter sorter;
 };
 
-#endif // FEATUREDIFFERENCEPROXYMODEL_H
+#endif  // FEATUREDIFFERENCEPROXYMODEL_H

@@ -3,17 +3,16 @@
 
 #include "measurebehaviorlogic.h"
 
-class TestMeasureBehaviorLogic : public MeasureBehaviorLogic
-{
-public:
-    TestMeasureBehaviorLogic();
+class TestMeasureBehaviorLogic : public MeasureBehaviorLogic {
+ public:
+  TestMeasureBehaviorLogic();
 
-    QList<int> featureIds;
+  QList<int> featureIds;
 
-protected:
-    void showCentered(QDialog &dialog);
+ protected:
+  void showCentered(QDialog& dialog);
 
-    void setActiveFeature(FeatureTableModel *sourceModel, int featureId);
+  void setActiveFeature(FeatureTableModel* sourceModel, int featureId);
 };
 
-#endif // TESTMEASUREBEHAVIORLOGIC_H
+#endif  // TESTMEASUREBEHAVIORLOGIC_H

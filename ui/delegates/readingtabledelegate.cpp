@@ -4,10 +4,8 @@
  * \brief ReadingTableDelegate::ReadingTableDelegate
  * \param parent
  */
-ReadingTableDelegate::ReadingTableDelegate(QObject * parent)
-    : QItemDelegate(parent)
-{
-}
+ReadingTableDelegate::ReadingTableDelegate(QObject* parent)
+    : QItemDelegate(parent) {}
 
 /*!
  * \brief ReadingTableDelegate::createEditor
@@ -16,13 +14,13 @@ ReadingTableDelegate::ReadingTableDelegate(QObject * parent)
  * \param option
  * \param index
  */
-QWidget* ReadingTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
+QWidget* ReadingTableDelegate::createEditor(QWidget* parent,
+                                            const QStyleOptionViewItem& option,
+                                            const QModelIndex& index) const {
+  // create line edit
+  QLineEdit* editor = NULL;
 
-    //create line edit
-    QLineEdit* editor = NULL;
-
-    return editor;
-
+  return editor;
 }
 
 /*!
@@ -31,9 +29,8 @@ QWidget* ReadingTableDelegate::createEditor(QWidget *parent, const QStyleOptionV
  * \param editor
  * \param index
  */
-void ReadingTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
-
-}
+void ReadingTableDelegate::setEditorData(QWidget* editor,
+                                         const QModelIndex& index) const {}
 
 /*!
  * \brief ReadingTableDelegate::setModelData
@@ -42,6 +39,6 @@ void ReadingTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
  * \param model
  * \param index
  */
-void ReadingTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
-
-}
+void ReadingTableDelegate::setModelData(QWidget* editor,
+                                        QAbstractItemModel* model,
+                                        const QModelIndex& index) const {}

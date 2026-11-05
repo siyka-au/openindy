@@ -1,92 +1,88 @@
 #ifndef OIMETADATA_H
 #define OIMETADATA_H
 
-#include <QString>
 #include <QJsonArray>
+#include <QString>
 
-#include "types.h"
-#include "plugin.h"
-#include "sensor.h"
-#include "lasertracker.h"
-#include "totalstation.h"
+#include "bundleadjustment.h"
 #include "constructfunction.h"
-#include "specialfunction.h"
+#include "exchangedefinedformat.h"
+#include "exchangeinterface.h"
+#include "exchangesimpleascii.h"
 #include "fitfunction.h"
 #include "generatefeaturefunction.h"
 #include "geodeticfunction.h"
-#include "bundleadjustment.h"
+#include "lasertracker.h"
 #include "objecttransformation.h"
+#include "plugin.h"
+#include "sensor.h"
+#include "specialfunction.h"
 #include "systemtransformation.h"
-#include "exchangeinterface.h"
-#include "exchangesimpleascii.h"
-#include "exchangedefinedformat.h"
+#include "totalstation.h"
+#include "types.h"
 
 #if defined(OI_MAIN_LIB)
-#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#define OI_MAIN_EXPORT Q_DECL_EXPORT
 #else
-#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#define OI_MAIN_EXPORT Q_DECL_IMPORT
 #endif
 
 /*!
  * \brief The OiMetaData class
  * Holds version information about OpenIndy
  */
-class OI_MAIN_EXPORT OiMetaData
-{
+class OI_MAIN_EXPORT OiMetaData {
+ public:
+  // #########################
+  // plugin interface versions
+  // #########################
 
-public:
+  static QString iid_Plugin;
+  static QString iid_LaserTracker;
+  static QString iid_TotalStation;
+  static QString iid_ConstructFunction;
+  static QString iid_FitFunction;
+  static QString iid_SpecialFunction;
+  static QString iid_GeodeticFunction;
+  static QString iid_BundleAdjustment;
+  static QString iid_ObjectTransformation;
+  static QString iid_SystemTransformation;
+  static QString iid_Sensor;
+  static QString iid_Simulation;
+  static QString iid_Tool;
+  static QString iid_Exchange;
+  static QString iid_ExchangeSimpleAscii;
+  static QString iid_ExchangeDefinedFormat;
 
-    //#########################
-    //plugin interface versions
-    //#########################
+  static bool findIID(const QString& iid);
 
-    static QString iid_Plugin;
-    static QString iid_LaserTracker;
-    static QString iid_TotalStation;
-    static QString iid_ConstructFunction;
-    static QString iid_FitFunction;
-    static QString iid_SpecialFunction;
-    static QString iid_GeodeticFunction;
-    static QString iid_BundleAdjustment;
-    static QString iid_ObjectTransformation;
-    static QString iid_SystemTransformation;
-    static QString iid_Sensor;
-    static QString iid_Simulation;
-    static QString iid_Tool;
-    static QString iid_Exchange;
-    static QString iid_ExchangeSimpleAscii;
-    static QString iid_ExchangeDefinedFormat;
+  static SensorType getSensorType(const QString& iid);
 
-    static bool findIID(const QString &iid);
+  // ###############################
+  // get plugin interface type names
+  // ###############################
 
-    static SensorType getSensorType(const QString &iid);
+  static QStringList getSensorTypeNames();
+  static QString getSensorTypeName(const QString& iid);
 
-    //###############################
-    //get plugin interface type names
-    //###############################
+  static QStringList getFunctionTypeNames();
+  static QString getFunctionTypeName(const QString& iid);
 
-    static QStringList getSensorTypeNames();
-    static QString getSensorTypeName(const QString &iid);
+  static QStringList getExchangeTypeNames();
+  static QString getExchangeTypeName(const QString& iid);
 
-    static QStringList getFunctionTypeNames();
-    static QString getFunctionTypeName(const QString &iid);
+  // #################################
+  // version of the main program (src)
+  // #################################
 
-    static QStringList getExchangeTypeNames();
-    static QString getExchangeTypeName(const QString &iid);
+  static QString version;
 
-    //#################################
-    //version of the main program (src)
-    //#################################
+  // #################################
+  // meta data about this installation
+  // #################################
 
-    static QString version;
-
-    //#################################
-    //meta data about this installation
-    //#################################
-
-    static QString getCompiler();
-    static QString getOperatingSys();
-
+  static QString getCompiler();
+  static QString getOperatingSys();
 };
 
-#endif // OIMETADATA_H
+#endif  // OIMETADATA_H

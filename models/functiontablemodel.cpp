@@ -4,25 +4,22 @@
  * \brief FeatureTableModel::FeatureTableModel
  * \param parent
  */
-FunctionTableModel::FunctionTableModel(QObject *parent) : QAbstractTableModel(parent){
-
-}
+FunctionTableModel::FunctionTableModel(QObject* parent)
+    : QAbstractTableModel(parent) {}
 
 /*!
  * \brief FunctionTableModel::rowCount
  * \param parent
  * \return
  */
-int FunctionTableModel::rowCount(const QModelIndex &parent) const{
+int FunctionTableModel::rowCount(const QModelIndex& parent) const {
+  int numFunctionPlugins = 0;
 
-    int numFunctionPlugins = 0;
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    numFunctionPlugins += plugin.functions().size();
+  }
 
-    foreach(const sys::Plugin &plugin, this->plugins){
-        numFunctionPlugins += plugin.functions().size();
-    }
-
-    return numFunctionPlugins;
-
+  return numFunctionPlugins;
 }
 
 /*!
@@ -30,8 +27,8 @@ int FunctionTableModel::rowCount(const QModelIndex &parent) const{
  * \param parent
  * \return
  */
-int FunctionTableModel::columnCount(const QModelIndex &parent) const{
-    return 2; // first 2 columns: name & plugin
+int FunctionTableModel::columnCount(const QModelIndex& parent) const {
+  return 2;  // first 2 columns: name & plugin
 }
 
 /*!
@@ -40,44 +37,37 @@ int FunctionTableModel::columnCount(const QModelIndex &parent) const{
  * \param role
  * \return
  */
-QVariant FunctionTableModel::data(const QModelIndex &index, int role) const{
-
-    //check model index
-    if(!index.isValid()){
-        return QVariant();
-    }
-
-    //check role
-    if(role != Qt::DisplayRole){
-        return QVariant();
-    }
-
-    int numFunctionPlugins = 0;
-    foreach(const sys::Plugin &plugin, this->plugins){
-
-        //run through all function of the current plugin
-        foreach(const sys::Function &function, plugin.functions()){
-
-            //if the current function corresponds to the given row index
-            if(index.row() == numFunctionPlugins){
-
-                if(index.column() == 0){
-                    return function.name();
-                }else if(index.column() == 1){
-                    return plugin.name();
-                }else if(index.column() == 2){
-                    return function.interfaceCategory();
-                }
-
-            }
-
-            numFunctionPlugins++;
-        }
-
-    }
-
+QVariant FunctionTableModel::data(const QModelIndex& index, int role) const {
+  // check model index
+  if (!index.isValid()) {
     return QVariant();
+  }
 
+  // check role
+  if (role != Qt::DisplayRole) {
+    return QVariant();
+  }
+
+  int numFunctionPlugins = 0;
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    // run through all function of the current plugin
+    foreach (const sys::Function& function, plugin.functions()) {
+      // if the current function corresponds to the given row index
+      if (index.row() == numFunctionPlugins) {
+        if (index.column() == 0) {
+          return function.name();
+        } else if (index.column() == 1) {
+          return plugin.name();
+        } else if (index.column() == 2) {
+          return function.interfaceCategory();
+        }
+      }
+
+      numFunctionPlugins++;
+    }
+  }
+
+  return QVariant();
 }
 
 /*!
@@ -87,25 +77,21 @@ QVariant FunctionTableModel::data(const QModelIndex &index, int role) const{
  * \param role
  * \return
  */
-QVariant FunctionTableModel::headerData(int section, Qt::Orientation orientation, int role) const{
-
-    if((Qt::DisplayRole == role) &&
-            (Qt::Horizontal == orientation) &&
-            (0 <= section) &&
-            (section < columnCount())){
-
-        if(section == 0){
-            return "function";
-        }else if(section == 1){
-            return "plugin";
-        }else if(section == 2){
-            return "iid";
-        }
-
+QVariant FunctionTableModel::headerData(int section,
+                                        Qt::Orientation orientation,
+                                        int role) const {
+  if ((Qt::DisplayRole == role) && (Qt::Horizontal == orientation) &&
+      (0 <= section) && (section < columnCount())) {
+    if (section == 0) {
+      return "function";
+    } else if (section == 1) {
+      return "plugin";
+    } else if (section == 2) {
+      return "iid";
     }
+  }
 
-    return QVariant();
-
+  return QVariant();
 }
 
 /*!
@@ -113,34 +99,28 @@ QVariant FunctionTableModel::headerData(int section, Qt::Orientation orientation
  * \param index
  * \return
  */
-QString FunctionTableModel::getFunctionDescription(const QModelIndex &index) const{
-
-    //check index
-    if(!index.isValid()){
-        return "";
-    }
-
-    //get description of the right function
-    int numFunctionPlugins = 0;
-    foreach(const sys::Plugin &plugin, this->plugins){
-
-        //run through all function of the current plugin
-        foreach(const sys::Function &function, plugin.functions()){
-
-            //if the current function corresponds to the given row index
-            if(index.row() == numFunctionPlugins){
-
-                return function.description();
-
-            }
-
-            numFunctionPlugins++;
-        }
-
-    }
-
+QString FunctionTableModel::getFunctionDescription(
+    const QModelIndex& index) const {
+  // check index
+  if (!index.isValid()) {
     return "";
+  }
 
+  // get description of the right function
+  int numFunctionPlugins = 0;
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    // run through all function of the current plugin
+    foreach (const sys::Function& function, plugin.functions()) {
+      // if the current function corresponds to the given row index
+      if (index.row() == numFunctionPlugins) {
+        return function.description();
+      }
+
+      numFunctionPlugins++;
+    }
+  }
+
+  return "";
 }
 
 /*!
@@ -148,34 +128,27 @@ QString FunctionTableModel::getFunctionDescription(const QModelIndex &index) con
  * \param index
  * \return
  */
-QString FunctionTableModel::getFunctionName(const QModelIndex &index) const{
-
-    //check index
-    if(!index.isValid()){
-        return "";
-    }
-
-    //get description of the right function
-    int numFunctionPlugins = 0;
-    foreach(const sys::Plugin &plugin, this->plugins){
-
-        //run through all function of the current plugin
-        foreach(const sys::Function &function, plugin.functions()){
-
-            //if the current function corresponds to the given row index
-            if(index.row() == numFunctionPlugins){
-
-                return function.name();
-
-            }
-
-            numFunctionPlugins++;
-        }
-
-    }
-
+QString FunctionTableModel::getFunctionName(const QModelIndex& index) const {
+  // check index
+  if (!index.isValid()) {
     return "";
+  }
 
+  // get description of the right function
+  int numFunctionPlugins = 0;
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    // run through all function of the current plugin
+    foreach (const sys::Function& function, plugin.functions()) {
+      // if the current function corresponds to the given row index
+      if (index.row() == numFunctionPlugins) {
+        return function.name();
+      }
+
+      numFunctionPlugins++;
+    }
+  }
+
+  return "";
 }
 
 /*!
@@ -183,59 +156,52 @@ QString FunctionTableModel::getFunctionName(const QModelIndex &index) const{
  * \param index
  * \return
  */
-QString FunctionTableModel::getPluginFilePath(const QModelIndex &index) const{
-
-    //check index
-    if(!index.isValid()){
-        return "";
-    }
-
-    //get description of the right function
-    int numFunctionPlugins = 0;
-    foreach(const sys::Plugin &plugin, this->plugins){
-
-        //run through all function of the current plugin
-        foreach(const sys::Function &function, plugin.functions()){
-
-            //if the current function corresponds to the given row index
-            if(index.row() == numFunctionPlugins){
-
-                return plugin.filePath();
-
-            }
-
-            numFunctionPlugins++;
-        }
-
-    }
-
+QString FunctionTableModel::getPluginFilePath(const QModelIndex& index) const {
+  // check index
+  if (!index.isValid()) {
     return "";
+  }
 
+  // get description of the right function
+  int numFunctionPlugins = 0;
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    // run through all function of the current plugin
+    foreach (const sys::Function& function, plugin.functions()) {
+      // if the current function corresponds to the given row index
+      if (index.row() == numFunctionPlugins) {
+        return plugin.filePath();
+      }
+
+      numFunctionPlugins++;
+    }
+  }
+
+  return "";
 }
 
 /*!
  * \brief FunctionTableModel::getPlugins
  * \return
  */
-const QList<sys::Plugin> &FunctionTableModel::getPlugins() const{
-    return plugins;
+const QList<sys::Plugin>& FunctionTableModel::getPlugins() const {
+  return plugins;
 }
 
 /*!
  * \brief FunctionTableModel::setPlugins
  * \param plugins
  */
-void FunctionTableModel::setPlugins(const QList<sys::Plugin> &plugins){
-    emit this->beginResetModel();
-    this->plugins = plugins;
-    emit this->endResetModel();
-    this->updateModel();
+void FunctionTableModel::setPlugins(const QList<sys::Plugin>& plugins) {
+  emit this->beginResetModel();
+  this->plugins = plugins;
+  emit this->endResetModel();
+  this->updateModel();
 }
 
 /*!
  * \brief FunctionTableModel::updateModel
  */
-void FunctionTableModel::updateModel(){
-    emit this->layoutAboutToBeChanged();
-    emit this->layoutChanged();
+void FunctionTableModel::updateModel() {
+  emit this->layoutAboutToBeChanged();
+  emit this->layoutChanged();
 }

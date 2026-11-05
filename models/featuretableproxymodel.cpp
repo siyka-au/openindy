@@ -1,45 +1,46 @@
 #include "featuretableproxymodel.h"
 
-FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent)
-{
-    this->sort(0);
+FeatureTableProxyModel::FeatureTableProxyModel(QObject* parent)
+    : QSortFilterProxyModel(parent) {
+  this->sort(0);
 }
 
 /*!
  * \brief FeatureTableProxyModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob> &FeatureTableProxyModel::getCurrentJob() const{
-    return this->job;
+const QPointer<OiJob>& FeatureTableProxyModel::getCurrentJob() const {
+  return this->job;
 }
 
 /*!
  * \brief FeatureTableProxyModel::setCurrentJob
  * \param job
  */
-void FeatureTableProxyModel::setCurrentJob(const QPointer<OiJob> &job){
-    if(!job.isNull()){
-        this->job = job;
-        this->sorter.setCurrentJob(job);
-    }
+void FeatureTableProxyModel::setCurrentJob(const QPointer<OiJob>& job) {
+  if (!job.isNull()) {
+    this->job = job;
+    this->sorter.setCurrentJob(job);
+  }
 }
 
 /*!
  * \brief FeatureTableProxyModel::getFeatureTableColumnConfig
  * \return
  */
-const FeatureTableColumnConfig &FeatureTableProxyModel::getFeatureTableColumnConfig() const{
-    return this->featureTableColumnConfig;
+const FeatureTableColumnConfig&
+FeatureTableProxyModel::getFeatureTableColumnConfig() const {
+  return this->featureTableColumnConfig;
 }
 
 /*!
  * \brief FeatureTableProxyModel::setFeatureTableColumnConfig
  * \param config
  */
-void FeatureTableProxyModel::setFeatureTableColumnConfig(const FeatureTableColumnConfig &config){
-    this->featureTableColumnConfig = config;
-    this->invalidateFilter();
+void FeatureTableProxyModel::setFeatureTableColumnConfig(
+    const FeatureTableColumnConfig& config) {
+  this->featureTableColumnConfig = config;
+  this->invalidateFilter();
 }
 
 /*!
@@ -48,19 +49,19 @@ void FeatureTableProxyModel::setFeatureTableColumnConfig(const FeatureTableColum
  * \param sourceIndex
  * \return
  */
-QModelIndex FeatureTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) const{
+QModelIndex FeatureTableProxyModel::mapFromSource(
+    const QModelIndex& sourceIndex) const {
+  // get and check proxyIndex
+  QModelIndex proxyIndex = QSortFilterProxyModel::mapFromSource(sourceIndex);
+  if (!proxyIndex.isValid()) {
+    return proxyIndex;
+  }
 
-    //get and check proxyIndex
-    QModelIndex proxyIndex = QSortFilterProxyModel::mapFromSource(sourceIndex);
-    if(!proxyIndex.isValid()){
-        return proxyIndex;
-    }
-
-    //set up new column position (column sorting)
-    int columnIndex = sourceIndex.column();
-    int columnPosition = this->featureTableColumnConfig.getColumnPosition((FeatureDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
-    return this->index(proxyIndex.row(), columnPosition);
-
+  // set up new column position (column sorting)
+  int columnIndex = sourceIndex.column();
+  int columnPosition = this->featureTableColumnConfig.getColumnPosition(
+      (FeatureDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
+  return this->index(proxyIndex.row(), columnPosition);
 }
 
 /*!
@@ -69,37 +70,37 @@ QModelIndex FeatureTableProxyModel::mapFromSource(const QModelIndex &sourceIndex
  * \param proxyIndex
  * \return
  */
-QModelIndex FeatureTableProxyModel::mapToSource(const QModelIndex &proxyIndex) const{
+QModelIndex FeatureTableProxyModel::mapToSource(
+    const QModelIndex& proxyIndex) const {
+  // get and check sourceIndex
+  QModelIndex sourceIndex = QSortFilterProxyModel::mapToSource(proxyIndex);
+  if (!sourceIndex.isValid()) {
+    return sourceIndex;
+  }
 
-    //get and check sourceIndex
-    QModelIndex sourceIndex = QSortFilterProxyModel::mapToSource(proxyIndex);
-    if(!sourceIndex.isValid()){
-        return sourceIndex;
-    }
+  // get and cast source model
+  FeatureTableModel* source_model =
+      dynamic_cast<FeatureTableModel*>(this->sourceModel());
+  if (source_model == NULL) {
+    return QModelIndex();
+  }
 
-    //get and cast source model
-    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
-    if(source_model == NULL){
-        return QModelIndex();
-    }
+  // get display attribute at column position
+  FeatureDisplayAttributes attr =
+      this->featureTableColumnConfig.getDisplayAttributeAt(proxyIndex.column());
 
-    //get display attribute at column position
-    FeatureDisplayAttributes attr = this->featureTableColumnConfig.getDisplayAttributeAt(proxyIndex.column());
+  // get the index of the attribute in the list of all available attributes
+  int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
 
-    //get the index of the attribute in the list of all available attributes
-    int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
+  // set up correct column position for the source index
+  sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
 
-    //set up correct column position for the source index
-    sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
-
-    return source_model->index(sourceIndex.row(), sourceColumn);
-
+  return source_model->index(sourceIndex.row(), sourceColumn);
 }
 
-void FeatureTableProxyModel::setSortingMode(FeatureSorter::SortingMode mode)
-{
-    this->sorter.setSortingMode(mode);
-    this->invalidate();
+void FeatureTableProxyModel::setSortingMode(FeatureSorter::SortingMode mode) {
+  this->sorter.setSortingMode(mode);
+  this->invalidate();
 }
 
 /*!
@@ -109,50 +110,57 @@ void FeatureTableProxyModel::setSortingMode(FeatureSorter::SortingMode mode)
  * \param source_parent
  * \return
  */
-bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+bool FeatureTableProxyModel::filterAcceptsRow(
+    int source_row, const QModelIndex& source_parent) const {
+  // get and cast source model
+  FeatureTableModel* source_model =
+      dynamic_cast<FeatureTableModel*>(this->sourceModel());
+  if (source_model == NULL) {
+    return false;
+  }
 
-    //get and cast source model
-    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
-    if(source_model == NULL){
-        return false;
+  // check if job is set
+  if (source_model->getCurrentJob().isNull()) {
+    return false;
+  }
+
+  // check if the feature at index source_row exists
+  if (source_model->getCurrentJob()->getFeatureCount() <= source_row) {
+    return false;
+  }
+
+  // get and check the feature
+  QPointer<FeatureWrapper> feature =
+      source_model->getCurrentJob()->getFeaturesList().at(source_row);
+  if (feature.isNull() || feature->getFeature().isNull()) {
+    return false;
+  }
+
+  // if the feature is a trafo param reject it
+  if (!feature->getTrafoParam().isNull()) {
+    return false;
+  }
+
+  // filter by group name
+  if (source_model->getCurrentJob()->getActiveGroup().compare("All Groups") !=
+      0) {
+    if (feature->getFeature()->getGroupName().compare(
+            source_model->getCurrentJob()->getActiveGroup()) != 0) {
+      return false;
     }
+  }
 
-    //check if job is set
-    if(source_model->getCurrentJob().isNull()){
-        return false;
-    }
+  // filter by actual nominal
+  if ((source_model->getActualNominalFilter() == eFilterActual &&
+       !feature->getGeometry().isNull() &&
+       !feature->getGeometry()->getOwnerDescription().has_value()) ||
+      (source_model->getActualNominalFilter() == eFilterNominal &&
+       (feature->getGeometry().isNull() ||
+        feature->getGeometry()->getOwnerDescription().has_value()))) {
+    return false;
+  }
 
-    //check if the feature at index source_row exists
-    if(source_model->getCurrentJob()->getFeatureCount() <= source_row){
-        return false;
-    }
-
-    //get and check the feature
-    QPointer<FeatureWrapper> feature = source_model->getCurrentJob()->getFeaturesList().at(source_row);
-    if(feature.isNull() || feature->getFeature().isNull()){
-        return false;
-    }
-
-    //if the feature is a trafo param reject it
-    if(!feature->getTrafoParam().isNull()){
-        return false;
-    }
-
-    //filter by group name
-    if(source_model->getCurrentJob()->getActiveGroup().compare("All Groups") != 0){
-        if(feature->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) != 0){
-            return false;
-        }
-    }
-
-    //filter by actual nominal
-    if((source_model->getActualNominalFilter() == eFilterActual && !feature->getGeometry().isNull() && !feature->getGeometry()->getOwnerDescription().has_value())
-            || (source_model->getActualNominalFilter() == eFilterNominal && (feature->getGeometry().isNull() || feature->getGeometry()->getOwnerDescription().has_value()))){
-        return false;
-    }
-
-    return true;
-
+  return true;
 }
 
 /*!
@@ -161,22 +169,22 @@ bool FeatureTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
  * \param source_parent
  * \return
  */
-bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
+bool FeatureTableProxyModel::filterAcceptsColumn(
+    int source_column, const QModelIndex& source_parent) const {
+  // get and check display attribute
+  if (getFeatureDisplayAttributes().size() < source_column) {
+    return false;
+  }
+  int attr = getFeatureDisplayAttributes().at(source_column);
 
-    //get and check display attribute
-    if(getFeatureDisplayAttributes().size() < source_column){
-        return false;
-    }
-    int attr = getFeatureDisplayAttributes().at(source_column);
+  // check if the attribute belongs to a non-trafo param feature
+  if (!getIsFeatureDisplayAttribute(attr)) {
+    return false;
+  }
 
-    //check if the attribute belongs to a non-trafo param feature
-    if(!getIsFeatureDisplayAttribute(attr)){
-        return false;
-    }
-
-    //check visibility of the attribute
-   return this->featureTableColumnConfig.getColumnVisibility((FeatureDisplayAttributes)attr);
-
+  // check visibility of the attribute
+  return this->featureTableColumnConfig.getColumnVisibility(
+      (FeatureDisplayAttributes)attr);
 }
 
 /*!
@@ -186,30 +194,33 @@ bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModel
  * \param right
  * \return
  */
-bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
+bool FeatureTableProxyModel::lessThan(const QModelIndex& left,
+                                      const QModelIndex& right) const {
+  // get and cast source model
+  FeatureTableModel* source_model =
+      dynamic_cast<FeatureTableModel*>(this->sourceModel());
+  if (source_model == NULL || source_model->getCurrentJob().isNull()) {
+    return false;
+  }
 
-    //get and cast source model
-    FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
-    if(source_model == NULL || source_model->getCurrentJob().isNull()){
-        return false;
-    }
+  // check indexes
+  if (!left.isValid() || !right.isValid()) {
+    return false;
+  }
 
-    //check indexes
-    if(!left.isValid() || !right.isValid()){
-        return false;
-    }
+  // get and check row index for each model index
+  int leftIndex = left.row();
+  int rightIndex = right.row();
+  if (source_model->getCurrentJob()->getFeaturesList().size() <= leftIndex ||
+      source_model->getCurrentJob()->getFeaturesList().size() <= rightIndex) {
+    return false;
+  }
 
-    //get and check row index for each model index
-    int leftIndex = left.row();
-    int rightIndex = right.row();
-    if(source_model->getCurrentJob()->getFeaturesList().size() <= leftIndex || source_model->getCurrentJob()->getFeaturesList().size() <= rightIndex){
-        return false;
-    }
+  // get features
+  QPointer<FeatureWrapper> leftFeature =
+      source_model->getCurrentJob()->getFeaturesList().at(leftIndex);
+  QPointer<FeatureWrapper> rightFeature =
+      source_model->getCurrentJob()->getFeaturesList().at(rightIndex);
 
-    //get features
-    QPointer<FeatureWrapper> leftFeature = source_model->getCurrentJob()->getFeaturesList().at(leftIndex);
-    QPointer<FeatureWrapper> rightFeature = source_model->getCurrentJob()->getFeaturesList().at(rightIndex);
-
-    return this->sorter.lessThan(leftFeature, rightFeature);
-
+  return this->sorter.lessThan(leftFeature, rightFeature);
 }

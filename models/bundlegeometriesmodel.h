@@ -1,84 +1,82 @@
 #ifndef BUNDLEGEOMETRIESMODEL_H
 #define BUNDLEGEOMETRIESMODEL_H
 
-#include <QAbstractTableModel>
 #include <QAbstractItemModel>
-#include <QObject>
-#include <QJsonObject>
+#include <QAbstractTableModel>
 #include <QJsonArray>
-
-#include "oijob.h"
+#include <QJsonObject>
+#include <QObject>
 
 #include "bundlegeometryitem.h"
+#include "oijob.h"
 
 /*!
  * \brief The BundleGeometriesModel class
  * Model with all bundle geometries
  */
-class BundleGeometriesModel : public QAbstractItemModel
-{
-    Q_OBJECT
+class BundleGeometriesModel : public QAbstractItemModel {
+  Q_OBJECT
 
-public:
-    explicit BundleGeometriesModel(QObject *parent = 0);
-    ~BundleGeometriesModel();
+ public:
+  explicit BundleGeometriesModel(QObject* parent = 0);
+  ~BundleGeometriesModel();
 
-    //########################################
-    //override methods of abstract table model
-    //########################################
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole);
 
-    QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex & index) const;
+  QModelIndex index(int row, int column,
+                    const QModelIndex& parent = QModelIndex()) const;
+  QModelIndex parent(const QModelIndex& index) const;
 
-    //###############
-    //getter / setter
-    //###############
+  // ###############
+  // getter / setter
+  // ###############
 
-    //job
-    const QPointer<oi::OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<oi::OiJob> &job);
+  // job
+  const QPointer<oi::OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<oi::OiJob>& job);
 
-    //stations
-    const QJsonArray &getStations();
-    void setStations(const QJsonArray &stations);
+  // stations
+  const QJsonArray& getStations();
+  void setStations(const QJsonArray& stations);
 
-    //###########################################
-    //update the model when settings have changed
-    //###########################################
+  // ###########################################
+  // update the model when settings have changed
+  // ###########################################
 
-    void updateModel();
+  void updateModel();
 
-private slots:
+ private slots:
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void connectJob();
+  void disconnectJob();
 
-    void connectJob();
-    void disconnectJob();
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  // root item and job
+  BundleGeometryItem* rootItem;
+  QPointer<oi::OiJob> currentJob;
 
-    //root item and job
-    BundleGeometryItem *rootItem;
-    QPointer<oi::OiJob> currentJob;
-
-    //used stations
-    QJsonArray usedStations;
-
-
+  // used stations
+  QJsonArray usedStations;
 };
 
-#endif // BUNDLEGEOMETRIESMODEL_H
+#endif  // BUNDLEGEOMETRIESMODEL_H

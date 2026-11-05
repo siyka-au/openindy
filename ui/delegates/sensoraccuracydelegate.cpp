@@ -4,10 +4,8 @@
  * \brief SensorAccuracyDelegate::SensorAccuracyDelegate
  * \param parent
  */
-SensorAccuracyDelegate::SensorAccuracyDelegate(QObject * parent)
-    : QItemDelegate(parent)
-{
-}
+SensorAccuracyDelegate::SensorAccuracyDelegate(QObject* parent)
+    : QItemDelegate(parent) {}
 
 /*!
  * \brief SensorAccuracyDelegate::createEditor
@@ -16,36 +14,38 @@ SensorAccuracyDelegate::SensorAccuracyDelegate(QObject * parent)
  * \param option
  * \param index
  */
-QWidget* SensorAccuracyDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
+QWidget* SensorAccuracyDelegate::createEditor(
+    QWidget* parent, const QStyleOptionViewItem& option,
+    const QModelIndex& index) const {
+  // create line edit
+  QLineEdit* editor = NULL;
 
-    //create line edit
-    QLineEdit* editor = NULL;
-
-    //check model index
-    if(!index.isValid()){
-        return editor;
-    }
-
-    //get and check model
-    const SensorAccuracyModel *model = static_cast<const SensorAccuracyModel*>(index.model());
-    if(model == NULL){
-        return editor;
-    }
-
-    //get row and column indices
-    int rowIndex = index.row();
-    int columnIndex = index.column();
-
-    //sigma type headers
-    if(rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 || rowIndex == 14){
-        return editor;
-    }
-
-    //create editor
-    editor = new QLineEdit(parent);
-
+  // check model index
+  if (!index.isValid()) {
     return editor;
+  }
 
+  // get and check model
+  const SensorAccuracyModel* model =
+      static_cast<const SensorAccuracyModel*>(index.model());
+  if (model == NULL) {
+    return editor;
+  }
+
+  // get row and column indices
+  int rowIndex = index.row();
+  int columnIndex = index.column();
+
+  // sigma type headers
+  if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
+      rowIndex == 14) {
+    return editor;
+  }
+
+  // create editor
+  editor = new QLineEdit(parent);
+
+  return editor;
 }
 
 /*!
@@ -54,35 +54,36 @@ QWidget* SensorAccuracyDelegate::createEditor(QWidget *parent, const QStyleOptio
  * \param editor
  * \param index
  */
-void SensorAccuracyDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
+void SensorAccuracyDelegate::setEditorData(QWidget* editor,
+                                           const QModelIndex& index) const {
+  // check model index
+  if (!index.isValid()) {
+    return;
+  }
 
-    //check model index
-    if(!index.isValid()){
-        return;
-    }
+  // get and check model
+  const SensorAccuracyModel* model =
+      static_cast<const SensorAccuracyModel*>(index.model());
+  if (model == NULL) {
+    return;
+  }
 
-    //get and check model
-    const SensorAccuracyModel *model = static_cast<const SensorAccuracyModel*>(index.model());
-    if(model == NULL){
-        return;
-    }
+  // get row and column indices
+  int rowIndex = index.row();
+  int columnIndex = index.column();
 
-    //get row and column indices
-    int rowIndex = index.row();
-    int columnIndex = index.column();
+  // sigma type headers
+  if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
+      rowIndex == 14) {
+    return;
+  }
 
-    //sigma type headers
-    if(rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 || rowIndex == 14){
-        return;
-    }
-
-    //set editor default input
-    QLineEdit *customEditor = NULL;
-    customEditor = qobject_cast<QLineEdit*>(editor);
-    if(customEditor != NULL){
-        customEditor->setText(index.data().toString());
-    }
-
+  // set editor default input
+  QLineEdit* customEditor = NULL;
+  customEditor = qobject_cast<QLineEdit*>(editor);
+  if (customEditor != NULL) {
+    customEditor->setText(index.data().toString());
+  }
 }
 
 /*!
@@ -92,26 +93,27 @@ void SensorAccuracyDelegate::setEditorData(QWidget *editor, const QModelIndex &i
  * \param model
  * \param index
  */
-void SensorAccuracyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
+void SensorAccuracyDelegate::setModelData(QWidget* editor,
+                                          QAbstractItemModel* model,
+                                          const QModelIndex& index) const {
+  // check model index
+  if (!index.isValid()) {
+    return;
+  }
 
-    //check model index
-    if(!index.isValid()){
-        return;
-    }
+  // get row and column indices
+  int rowIndex = index.row();
+  int columnIndex = index.column();
 
-    //get row and column indices
-    int rowIndex = index.row();
-    int columnIndex = index.column();
+  // sigma type headers
+  if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
+      rowIndex == 14) {
+    return;
+  }
 
-    //sigma type headers
-    if(rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 || rowIndex == 14){
-        return;
-    }
-
-    //commit changes
-    QLineEdit *customEditor = qobject_cast<QLineEdit*>(editor);
-    if(customEditor != NULL){
-        model->setData(index, customEditor->text());
-    }
-
+  // commit changes
+  QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
+  if (customEditor != NULL) {
+    model->setData(index, customEditor->text());
+  }
 }

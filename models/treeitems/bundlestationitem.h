@@ -6,60 +6,58 @@
 /*!
  * \brief The BundleStationItem class
  */
-class BundleStationItem
-{
-public:
-    BundleStationItem(const QString &key, const bool &value, const int &stationId, BundleStationItem *parentItem = 0);
-    ~BundleStationItem();
+class BundleStationItem {
+ public:
+  BundleStationItem(const QString& key, const bool& value, const int& stationId,
+                    BundleStationItem* parentItem = 0);
+  ~BundleStationItem();
 
-    //######################
-    //tree view item methods
-    //######################
+  // ######################
+  // tree view item methods
+  // ######################
 
-    //children
-    void appendChild(BundleStationItem *child);
-    void removeAllChildren();
-    BundleStationItem *child(int row);
-    int childCount() const;
+  // children
+  void appendChild(BundleStationItem* child);
+  void removeAllChildren();
+  BundleStationItem* child(int row);
+  int childCount() const;
 
-    //row and column count
-    int columnCount() const;
-    QVariant data(int column) const;
-    int row() const;
+  // row and column count
+  int columnCount() const;
+  QVariant data(int column) const;
+  int row() const;
 
-    //parent
-    BundleStationItem *parentItem();
-    void setParentItem(BundleStationItem *parent);
+  // parent
+  BundleStationItem* parentItem();
+  void setParentItem(BundleStationItem* parent);
 
-    //#################
-    //getter and setter
-    //#################
+  // #################
+  // getter and setter
+  // #################
 
-    //station id
-    const int &getStationId() const;
+  // station id
+  const int& getStationId() const;
 
-    //key
-    const QString &getKey() const;
+  // key
+  const QString& getKey() const;
 
-    //value
-    bool getValue() const;
-    void setValue(const bool &value);
+  // value
+  bool getValue() const;
+  void setValue(const bool& value);
 
-private:
+ private:
+  // ##########
+  // attributes
+  // ##########
 
-    //##########
-    //attributes
-    //##########
+  // display values
+  QString key;
+  int stationId;
+  bool value;
 
-    //display values
-    QString key;
-    int stationId;
-    bool value;
-
-    //children and parent
-    QList<BundleStationItem*> m_childItems;
-    BundleStationItem *m_parentItem;
-
+  // children and parent
+  QList<BundleStationItem*> m_childItems;
+  BundleStationItem* m_parentItem;
 };
 
-#endif // BUNDLESTATIONITEM_H
+#endif  // BUNDLESTATIONITEM_H

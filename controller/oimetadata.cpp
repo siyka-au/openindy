@@ -1,12 +1,12 @@
 #include "oimetadata.h"
 
-//define version of the main program (src)
+// define version of the main program (src)
 QString OiMetaData::version = "0.0.1";
 
-//define plugin interface versions
+// define plugin interface versions
 QString OiMetaData::iid_Plugin = Plugin_iidd;
 QString OiMetaData::iid_Sensor = Sensor_iidd;
-QString OiMetaData::iid_LaserTracker=LaserTracker_iidd ;
+QString OiMetaData::iid_LaserTracker = LaserTracker_iidd;
 QString OiMetaData::iid_TotalStation = TotalStation_iidd;
 QString OiMetaData::iid_ConstructFunction = ConstructFunction_iidd;
 QString OiMetaData::iid_FitFunction = FitFunction_iidd;
@@ -26,42 +26,40 @@ QString OiMetaData::iid_ExchangeDefinedFormat = ExchangeDefinedFormat_iidd;
  * \param iid
  * \return
  */
-bool OiMetaData::findIID(const QString &iid){
+bool OiMetaData::findIID(const QString& iid) {
+  if (iid.compare(OiMetaData::iid_LaserTracker) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_ConstructFunction) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_FitFunction) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_SpecialFunction) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_GeodeticFunction) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_BundleAdjustment) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_ObjectTransformation) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_SystemTransformation) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_TotalStation) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_Plugin) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_Simulation) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_Tool) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_Exchange) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0) {
+    return true;
+  } else if (iid.compare(OiMetaData::iid_ExchangeDefinedFormat) == 0) {
+    return true;
+  }
 
-    if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_ConstructFunction) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_FitFunction) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_SpecialFunction) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_BundleAdjustment) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_SystemTransformation) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_Plugin) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_Simulation) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_Tool) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_Exchange) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
-        return true;
-    }else if(iid.compare(OiMetaData::iid_ExchangeDefinedFormat) == 0){
-        return true;
-    }
-
-    return false;
-
+  return false;
 }
 
 /*!
@@ -69,27 +67,23 @@ bool OiMetaData::findIID(const QString &iid){
  * \param iid
  * \return
  */
-SensorType OiMetaData::getSensorType(const QString &iid){
-
-    //derived from the interface id itself, so a plugin can introduce a sensor
-    //type the core has never heard of without a core change
-    return SensorType::fromInterfaceId(iid);
-
+SensorType OiMetaData::getSensorType(const QString& iid) {
+  // derived from the interface id itself, so a plugin can introduce a sensor
+  // type the core has never heard of without a core change
+  return SensorType::fromInterfaceId(iid);
 }
 
 /*!
  * \brief OiMetaData::getSensorTypeNames
  * \return
  */
-QStringList OiMetaData::getSensorTypeNames(){
+QStringList OiMetaData::getSensorTypeNames() {
+  QStringList result;
 
-    QStringList result;
+  result.append(OiMetaData::iid_LaserTracker);
+  result.append(OiMetaData::iid_TotalStation);
 
-    result.append(OiMetaData::iid_LaserTracker);
-    result.append(OiMetaData::iid_TotalStation);
-
-    return result;
-
+  return result;
 }
 
 /*!
@@ -97,34 +91,30 @@ QStringList OiMetaData::getSensorTypeNames(){
  * \param iid
  * \return
  */
-QString OiMetaData::getSensorTypeName(const QString &iid){
-
-    if(iid.compare(OiMetaData::iid_LaserTracker) == 0){
-        return "laser tracker";
-    }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
-        return "total station";
-    }
-    return "";
-
+QString OiMetaData::getSensorTypeName(const QString& iid) {
+  if (iid.compare(OiMetaData::iid_LaserTracker) == 0) {
+    return "laser tracker";
+  } else if (iid.compare(OiMetaData::iid_TotalStation) == 0) {
+    return "total station";
+  }
+  return "";
 }
 
 /*!
  * \brief OiMetaData::getFunctionTypeNames
  * \return
  */
-QStringList OiMetaData::getFunctionTypeNames(){
+QStringList OiMetaData::getFunctionTypeNames() {
+  QStringList result;
 
-    QStringList result;
+  result.append(OiMetaData::iid_FitFunction);
+  result.append(OiMetaData::iid_ConstructFunction);
+  result.append(OiMetaData::iid_SpecialFunction);
+  result.append(OiMetaData::iid_GeodeticFunction);
+  result.append(OiMetaData::iid_ObjectTransformation);
+  result.append(OiMetaData::iid_SystemTransformation);
 
-    result.append(OiMetaData::iid_FitFunction);
-    result.append(OiMetaData::iid_ConstructFunction);
-    result.append(OiMetaData::iid_SpecialFunction);
-    result.append(OiMetaData::iid_GeodeticFunction);
-    result.append(OiMetaData::iid_ObjectTransformation);
-    result.append(OiMetaData::iid_SystemTransformation);
-
-    return result;
-
+  return result;
 }
 
 /*!
@@ -132,38 +122,34 @@ QStringList OiMetaData::getFunctionTypeNames(){
  * \param iid
  * \return
  */
-QString OiMetaData::getFunctionTypeName(const QString &iid){
-
-    if(iid.compare(OiMetaData::iid_FitFunction) == 0){
-        return "fit function";
-    }else if(iid.compare(OiMetaData::iid_ConstructFunction) == 0){
-        return "construct function";
-    }else if(iid.compare(OiMetaData::iid_SpecialFunction) == 0){
-        return "special function";
-    }else if(iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
-        return "geodetic function";
-    }else if(iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
-        return "object transformation";
-    }else if(iid.compare(OiMetaData::iid_SystemTransformation) == 0){
-        return "system transformation";
-    }
-    return "";
-
+QString OiMetaData::getFunctionTypeName(const QString& iid) {
+  if (iid.compare(OiMetaData::iid_FitFunction) == 0) {
+    return "fit function";
+  } else if (iid.compare(OiMetaData::iid_ConstructFunction) == 0) {
+    return "construct function";
+  } else if (iid.compare(OiMetaData::iid_SpecialFunction) == 0) {
+    return "special function";
+  } else if (iid.compare(OiMetaData::iid_GeodeticFunction) == 0) {
+    return "geodetic function";
+  } else if (iid.compare(OiMetaData::iid_ObjectTransformation) == 0) {
+    return "object transformation";
+  } else if (iid.compare(OiMetaData::iid_SystemTransformation) == 0) {
+    return "system transformation";
+  }
+  return "";
 }
 
 /*!
  * \brief OiMetaData::getExchangeTypeNames
  * \return
  */
-QStringList OiMetaData::getExchangeTypeNames(){
+QStringList OiMetaData::getExchangeTypeNames() {
+  QStringList result;
 
-    QStringList result;
+  result.append(OiMetaData::iid_ExchangeSimpleAscii);
+  result.append(OiMetaData::iid_ExchangeDefinedFormat);
 
-    result.append(OiMetaData::iid_ExchangeSimpleAscii);
-    result.append(OiMetaData::iid_ExchangeDefinedFormat);
-
-    return result;
-
+  return result;
 }
 
 /*!
@@ -171,91 +157,85 @@ QStringList OiMetaData::getExchangeTypeNames(){
  * \param iid
  * \return
  */
-QString OiMetaData::getExchangeTypeName(const QString &iid){
-
-    if(iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
-        return "exchange simple ascii";
-    }else if(iid.compare(OiMetaData::iid_ExchangeDefinedFormat) == 0){
-        return "exchange defined format";
-    }
-    return "";
-
+QString OiMetaData::getExchangeTypeName(const QString& iid) {
+  if (iid.compare(OiMetaData::iid_ExchangeSimpleAscii) == 0) {
+    return "exchange simple ascii";
+  } else if (iid.compare(OiMetaData::iid_ExchangeDefinedFormat) == 0) {
+    return "exchange defined format";
+  }
+  return "";
 }
 
 /*!
  * \brief OiMetaData::getCompiler
  * \return
  */
-QString OiMetaData::getCompiler(){
-
-    QString c;
+QString OiMetaData::getCompiler() {
+  QString c;
 
 #if defined(__clang__)
-    /* Clang/LLVM. ---------------------------------------------- */
-    c = "clang 64bit";
-    return c;
+  /* Clang/LLVM. ---------------------------------------------- */
+  c = "clang 64bit";
+  return c;
 
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
-    /* Intel ICC/ICPC. ------------------------------------------ */
-    c = "intel";
-    return c;
+  /* Intel ICC/ICPC. ------------------------------------------ */
+  c = "intel";
+  return c;
 
 #elif defined(__GNUC__) || defined(__GNUG__)
-    /* GNU GCC/G++. --------------------------------------------- */
-    c = "minGW";
-    return c;
+  /* GNU GCC/G++. --------------------------------------------- */
+  c = "minGW";
+  return c;
 
 #elif defined(__HP_cc) || defined(__HP_aCC)
-    /* Hewlett-Packard C/aC++. ---------------------------------- */
-    c = "hewlett";
-    return c;
+  /* Hewlett-Packard C/aC++. ---------------------------------- */
+  c = "hewlett";
+  return c;
 
 #elif defined(__IBMC__) || defined(__IBMCPP__)
-    /* IBM XL C/C++. -------------------------------------------- */
-    c = "intelC";
-    return c;
+  /* IBM XL C/C++. -------------------------------------------- */
+  c = "intelC";
+  return c;
 
 #elif defined(_MSC_VER)
-    /* Microsoft Visual Studio. --------------------------------- */
-    c = "MVSC 64bit";
-    return c;
+  /* Microsoft Visual Studio. --------------------------------- */
+  c = "MVSC 64bit";
+  return c;
 
 #elif defined(__PGI)
-    /* Portland Group PGCC/PGCPP. ------------------------------- */
-    c = "portland";
-    return c;
+  /* Portland Group PGCC/PGCPP. ------------------------------- */
+  c = "portland";
+  return c;
 
 #elif defined(__SUNPRO_C) || defined(__SUNPRO_CC)
-    /* Oracle Solaris Studio. ----------------------------------- */
-    c = "oracle";
-    return c;
+  /* Oracle Solaris Studio. ----------------------------------- */
+  c = "oracle";
+  return c;
 
 #endif
 
-    return c;
-
+  return c;
 }
 
 /*!
  * \brief OiMetaData::getOperatingSys
  * \return
  */
-QString OiMetaData::getOperatingSys(){
-
-    QString o;
+QString OiMetaData::getOperatingSys() {
+  QString o;
 
 #ifdef Q_OS_MAC
-    o = "mac os";
+  o = "mac os";
 #endif
 
 #ifdef Q_OS_WIN
-    o = "windows";
+  o = "windows";
 #endif
 
 #ifdef Q_OS_LINUX
-    o = "linux";
+  o = "linux";
 #endif
 
-    return o;
-
+  return o;
 }

@@ -4,8 +4,8 @@
 #include <QDialog>
 #include <QFile>
 #include <QFileDialog>
-#include <QtWidgets/QMessageBox>
 #include <QShowEvent>
+#include <QtWidgets/QMessageBox>
 
 #include "pluginloader.h"
 
@@ -18,41 +18,40 @@ class PluginLoaderDialog;
 /*!
  * \brief The PluginLoaderDialog class
  */
-class PluginLoaderDialog : public QDialog
-{
-    Q_OBJECT
+class PluginLoaderDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit PluginLoaderDialog(QWidget *parent = 0);
-    ~PluginLoaderDialog();
+ public:
+  explicit PluginLoaderDialog(QWidget* parent = 0);
+  ~PluginLoaderDialog();
 
-signals:
+ signals:
 
-    //#############
-    //send messages
-    //#############
+  // #############
+  // send messages
+  // #############
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    void on_toolButton_Path_clicked();
-    void on_pushButton_Cancel_clicked();
-    void on_pushButton_Ok_clicked();
+  void on_toolButton_Path_clicked();
+  void on_pushButton_Cancel_clicked();
+  void on_pushButton_Ok_clicked();
 
-    //#######################
-    //task finished callbacks
-    //#######################
+  // #######################
+  // task finished callbacks
+  // #######################
 
-    void importFinished(const bool &success);
+  void importFinished(const bool& success);
 
-private:
-    Ui::PluginLoaderDialog *ui;
-
+ private:
+  Ui::PluginLoaderDialog* ui;
 };
 
-#endif // PLUGINLOADERDIALOG_H
+#endif  // PLUGINLOADERDIALOG_H

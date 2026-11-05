@@ -1,85 +1,83 @@
 #ifndef SCALARPARAMETERWIDGET_H
 #define SCALARPARAMETERWIDGET_H
 
-#include <QWidget>
-#include <QMap>
-#include <QString>
-#include <QFormLayout>
 #include <QComboBox>
-#include <QLineEdit>
+#include <QFormLayout>
 #include <QLabel>
+#include <QLineEdit>
+#include <QMap>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
+#include <QString>
+#include <QWidget>
 
-class ScalarParameterWidget : public QWidget
-{
-    Q_OBJECT
+class ScalarParameterWidget : public QWidget {
+  Q_OBJECT
 
-public:
-    explicit ScalarParameterWidget(QWidget *parent = 0);
-    
-signals:
+ public:
+  explicit ScalarParameterWidget(QWidget* parent = 0);
 
-    //#############################################
-    //inform aboud changes of the scalar parameters
-    //#############################################
+ signals:
 
-    void scalarParametersChanged();
-    
-public slots:
+  // #############################################
+  // inform aboud changes of the scalar parameters
+  // #############################################
 
-    //######################
-    //set display parameters
-    //######################
+  void scalarParametersChanged();
 
-    //fill scalar display parameters
-    void setIntParameter(const QMap<QString, int> &intParameter);
-    void setDoubleParameter(const QMap<QString, double> &doubleParameter);
-    void setStringParameter(const QMultiMap<QString, QString> &stringParameter, const QMap<QString, QString> &defaultSelection);
+ public slots:
 
-    //get scalar parameter selection (user defined inputs)
-    const QMap<QString, int> &getIntParameter();
-    const QMap<QString, double> &getDoubleParameter();
-    const QMap<QString, QString> &getStringParameter();
+  // ######################
+  // set display parameters
+  // ######################
 
-    //remove all scalar display parameters
-    void clearAll();
+  // fill scalar display parameters
+  void setIntParameter(const QMap<QString, int>& intParameter);
+  void setDoubleParameter(const QMap<QString, double>& doubleParameter);
+  void setStringParameter(const QMultiMap<QString, QString>& stringParameter,
+                          const QMap<QString, QString>& defaultSelection);
 
-private:
+  // get scalar parameter selection (user defined inputs)
+  const QMap<QString, int>& getIntParameter();
+  const QMap<QString, double>& getDoubleParameter();
+  const QMap<QString, QString>& getStringParameter();
 
-    //#################
-    //helper attributes
-    //#################
+  // remove all scalar display parameters
+  void clearAll();
 
-    //user defined parameters
-    QMap<QString, int> intParameter;
-    QMap<QString, double> doubleParameter;
-    QMap<QString, QStringList> stringParameter;
-    QMap<QString, QString> stringParameterSelection;
+ private:
+  // #################
+  // helper attributes
+  // #################
 
-    //dynamic GUI elements for each available parameter
-    QList<QLabel*> parameterLabel;
-    QMap<QString, QLineEdit*> intParameterLineEdit;
-    QMap<QString, QLineEdit*> doubleParameterLineEdit;
-    QMap<QString, QComboBox*> stringParameterComboBox;
+  // user defined parameters
+  QMap<QString, int> intParameter;
+  QMap<QString, double> doubleParameter;
+  QMap<QString, QStringList> stringParameter;
+  QMap<QString, QString> stringParameterSelection;
 
-    //layout
-    QFormLayout *myLayout;
+  // dynamic GUI elements for each available parameter
+  QList<QLabel*> parameterLabel;
+  QMap<QString, QLineEdit*> intParameterLineEdit;
+  QMap<QString, QLineEdit*> doubleParameterLineEdit;
+  QMap<QString, QComboBox*> stringParameterComboBox;
 
-    //regular expressions to validate user input
-    QRegularExpression validInt;
-    QRegularExpression validDouble;
-    QRegularExpressionValidator *intValidator;
-    QRegularExpressionValidator *doubleValidator;
+  // layout
+  QFormLayout* myLayout;
 
-    //##############
-    //helper methods
-    //##############
+  // regular expressions to validate user input
+  QRegularExpression validInt;
+  QRegularExpression validDouble;
+  QRegularExpressionValidator* intValidator;
+  QRegularExpressionValidator* doubleValidator;
 
-    void setUpGui();
-    void clearGuiElements();
-    void getParameterFromGUI();
-    
+  // ##############
+  // helper methods
+  // ##############
+
+  void setUpGui();
+  void clearGuiElements();
+  void getParameterFromGUI();
 };
 
-#endif // SCALARPARAMETERWIDGET_H
+#endif  // SCALARPARAMETERWIDGET_H

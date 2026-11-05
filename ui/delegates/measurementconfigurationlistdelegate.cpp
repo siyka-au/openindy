@@ -1,13 +1,13 @@
 #include "measurementconfigurationlistdelegate.h"
 
 /*!
- * \brief MeasurementConfigurationListDelegate::MeasurementConfigurationListDelegate
+ * \brief
+ * MeasurementConfigurationListDelegate::MeasurementConfigurationListDelegate
  * \param parent
  */
-MeasurementConfigurationListDelegate::MeasurementConfigurationListDelegate(QObject * parent)
-    : QItemDelegate(parent)
-{
-}
+MeasurementConfigurationListDelegate::MeasurementConfigurationListDelegate(
+    QObject* parent)
+    : QItemDelegate(parent) {}
 
 /*!
  * \brief MeasurementConfigurationListDelegate::createEditor
@@ -16,10 +16,10 @@ MeasurementConfigurationListDelegate::MeasurementConfigurationListDelegate(QObje
  * \param option
  * \param index
  */
-QWidget* MeasurementConfigurationListDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
-
-    return new QLineEdit(parent);
-
+QWidget* MeasurementConfigurationListDelegate::createEditor(
+    QWidget* parent, const QStyleOptionViewItem& option,
+    const QModelIndex& index) const {
+  return new QLineEdit(parent);
 }
 
 /*!
@@ -28,22 +28,21 @@ QWidget* MeasurementConfigurationListDelegate::createEditor(QWidget *parent, con
  * \param editor
  * \param index
  */
-void MeasurementConfigurationListDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
+void MeasurementConfigurationListDelegate::setEditorData(
+    QWidget* editor, const QModelIndex& index) const {
+  // check model index
+  if (!index.isValid()) {
+    return;
+  }
 
-    //check model index
-    if(!index.isValid()){
-        return;
-    }
+  // get and check editor
+  QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
+  if (customEditor == NULL) {
+    return;
+  }
 
-    //get and check editor
-    QLineEdit *customEditor = qobject_cast<QLineEdit*>(editor);
-    if(customEditor == NULL){
-        return;
-    }
-
-    //set editor input
-    customEditor->setText(index.data().toString());
-
+  // set editor input
+  customEditor->setText(index.data().toString());
 }
 
 /*!
@@ -53,25 +52,27 @@ void MeasurementConfigurationListDelegate::setEditorData(QWidget *editor, const 
  * \param model
  * \param index
  */
-void MeasurementConfigurationListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
+void MeasurementConfigurationListDelegate::setModelData(
+    QWidget* editor, QAbstractItemModel* model,
+    const QModelIndex& index) const {
+  // check model index
+  if (!index.isValid()) {
+    return;
+  }
 
-    //check model index
-    if(!index.isValid()){
-        return;
-    }
+  // get and check sensor config proxy model
+  const MeasurementConfigurationProxyModel* mConfigProxyModel =
+      static_cast<const MeasurementConfigurationProxyModel*>(index.model());
+  if (mConfigProxyModel == NULL) {
+    return;
+  }
 
-    //get and check sensor config proxy model
-    const MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<const MeasurementConfigurationProxyModel*>(index.model());
-    if(mConfigProxyModel == NULL){
-        return;
-    }
+  // get and check editor
+  QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
+  if (customEditor == NULL) {
+    return;
+  }
 
-    //get and check editor
-    QLineEdit *customEditor = qobject_cast<QLineEdit*>(editor);
-    if(customEditor == NULL){
-        return;
-    }
-
-    mConfigProxyModel->sourceModel()->setData(mConfigProxyModel->mapToSource(index), customEditor->text());
-
+  mConfigProxyModel->sourceModel()->setData(
+      mConfigProxyModel->mapToSource(index), customEditor->text());
 }

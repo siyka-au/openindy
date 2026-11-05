@@ -4,17 +4,17 @@
 #include <QDialog>
 #include <QShowEvent>
 
-#include "featurewrapper.h"
 #include "featureattributes.h"
+#include "featurewrapper.h"
 #include "modelmanager.h"
 #include "settings.h"
-#include "util.h"
 #include "uiutil.h"
+#include "util.h"
 
 #if defined(OI_MAIN_LIB)
-#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#define OI_MAIN_EXPORT Q_DECL_EXPORT
 #else
-#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#define OI_MAIN_EXPORT Q_DECL_IMPORT
 #endif
 
 using namespace oi;
@@ -26,93 +26,91 @@ class CreateFeatureDialog;
 /*!
  * \brief The CreateFeatureDialog class
  */
-class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog
-{
-    Q_OBJECT
+class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit CreateFeatureDialog(QWidget *parent = 0);
-    ~CreateFeatureDialog();
+ public:
+  explicit CreateFeatureDialog(QWidget* parent = 0);
+  ~CreateFeatureDialog();
 
-    //###########################
-    //get or set the feature type
-    //###########################
+  // ###########################
+  // get or set the feature type
+  // ###########################
 
-    const FeatureTypes &getFeatureType() const;
-    void setFeatureType(const FeatureTypes &type);
+  const FeatureTypes& getFeatureType() const;
+  void setFeatureType(const FeatureTypes& type);
 
-    bool featureCreated(bool created);
+  bool featureCreated(bool created);
 
-    void setCurrentJob(const QPointer<OiJob> &job);
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-signals:
+ signals:
 
-    //#######################################
-    //create features specified by attributes
-    //#######################################
+  // #######################################
+  // create features specified by attributes
+  // #######################################
 
-    void addFeatures(const FeatureAttributes &attributes);
-    void initialized(); // currently used for testing
+  void addFeatures(const FeatureAttributes& attributes);
+  void initialized();  // currently used for testing
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    void on_toolButton_ok_clicked();
-    void on_toolButton_cancel_clicked();
+  void on_toolButton_ok_clicked();
+  void on_toolButton_cancel_clicked();
 
-    void on_comboBox_entityType_currentIndexChanged(int index);
+  void on_comboBox_entityType_currentIndexChanged(int index);
 
-    void on_comboBox_function_currentIndexChanged(const int index);
+  void on_comboBox_function_currentIndexChanged(const int index);
 
-private:
+ private:
+  // ##################################
+  // methods to initialize GUI elements
+  // ##################################
 
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
+  void showEvent(QShowEvent* event);
 
-    void showEvent(QShowEvent *event);
+  void initGUI();
+  void initModels();
 
-    void initGUI();
-    void initModels();
+  void initFunctionsModel();
+  void initMeasurementConfigModel();
 
-    void initFunctionsModel();
-    void initMeasurementConfigModel();
+  // ################
+  // GUI interactions
+  // ################
 
-    //################
-    //GUI interactions
-    //################
+  void featureAttributesFromGUI(FeatureAttributes& attributes);
 
-    void featureAttributesFromGUI(FeatureAttributes &attributes);
+  void initMeasurementConfigUI(const int functionIndex);
 
-    void initMeasurementConfigUI(const int functionIndex);
+  // D17: there is no isNominal/isActual checkbox any more - a nominal
+  // producer is just a function whose shape says so (a ConstructFunction
+  // declaring no needed elements, taking scalar parameters only). This
+  // is what decides whether the nominal-system picker is relevant.
+  bool isNominalShapedFunction(const sys::Function& function) const;
 
-    //D17: there is no isNominal/isActual checkbox any more - a nominal
-    //producer is just a function whose shape says so (a ConstructFunction
-    //declaring no needed elements, taking scalar parameters only). This
-    //is what decides whether the nominal-system picker is relevant.
-    bool isNominalShapedFunction(const sys::Function &function) const;
+ private:
+  Ui::CreateFeatureDialog* ui;
 
-private:
-    Ui::CreateFeatureDialog *ui;
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  FeatureTypes typeOfFeature;
+  QList<ElementTypes> neededElements;
 
-    FeatureTypes typeOfFeature;
-    QList<ElementTypes> neededElements;
+  QPointer<AvailableFunctionsListProxyModel> functionListModel;
+  QPointer<MeasurementConfigurationProxyModel> measurementConfigurationModel;
 
-    QPointer<AvailableFunctionsListProxyModel> functionListModel;
-    QPointer<MeasurementConfigurationProxyModel> measurementConfigurationModel;
+  void setDialogName();
 
-    void setDialogName();
+  QPointer<OiJob> currentJob;
 
-    QPointer<OiJob> currentJob;
-
-    bool created;
+  bool created;
 };
 
-#endif // CREATEFEATUREDIALOG_H
+#endif  // CREATEFEATUREDIALOG_H

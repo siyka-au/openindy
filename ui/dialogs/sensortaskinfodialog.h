@@ -12,38 +12,37 @@ class SensorTaskInfoDialog;
  * \brief The SensorTaskInfoDialog class
  * Dialog that appears whenever a sensor task is running
  */
-class SensorTaskInfoDialog : public QDialog
-{
-    Q_OBJECT
+class SensorTaskInfoDialog : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit SensorTaskInfoDialog(QWidget *parent = 0);
+ public:
+  explicit SensorTaskInfoDialog(QWidget* parent = 0);
 
-    ~SensorTaskInfoDialog();
+  ~SensorTaskInfoDialog();
 
-    //################
-    //set display text
-    //################
+  // ################
+  // set display text
+  // ################
 
-    void setDisplayMessage(const QString &msg);
-    void enableFinishButton(const bool enabled); // currently used for finish scan
+  void setDisplayMessage(const QString& msg);
+  void enableFinishButton(
+      const bool enabled);  // currently used for finish scan
 
-signals:
-    void finishMeasurement();
+ signals:
+  void finishMeasurement();
 
-private slots:
+ private slots:
 
-    //#########################
-    //actions triggered by user
-    //#########################
+  // #########################
+  // actions triggered by user
+  // #########################
 
-    void on_pushButton_cancel_clicked();
+  void on_pushButton_cancel_clicked();
 
-    void on_pushButton_finish_clicked();
+  void on_pushButton_finish_clicked();
 
-private:
-    Ui::SensorTaskInfoDialog *ui;
-
+ private:
+  Ui::SensorTaskInfoDialog* ui;
 };
 
-#endif // SENSORTASKINFODIALOG_H
+#endif  // SENSORTASKINFODIALOG_H

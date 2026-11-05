@@ -1,8 +1,8 @@
 #include "plugintreeitem.h"
 /*
 
-PluginTreeItem::PluginTreeItem(QVariant val) : myParent(NULL), displayValue(val), isPlugin(false), isFunction(false),
-    isSensor(false)
+PluginTreeItem::PluginTreeItem(QVariant val) : myParent(NULL),
+displayValue(val), isPlugin(false), isFunction(false), isSensor(false)
 {
 }
 
@@ -132,18 +132,17 @@ void PluginTreeItem::setParent(PluginTreeItem *parent){
  * \param display
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const QVariant &display, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const QVariant& display, QObject* parent)
+    : QObject(parent) {
+  // set general tree item attributes
+  this->childCount = 0;
+  this->index = -1;
 
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
+  // define what kind of tree item this item is
+  this->setIsHeader();
 
-    //define what kind of tree item this item is
-    this->setIsHeader();
-
-    //set display value
-    this->displayValue = display;
-
+  // set display value
+  this->displayValue = display;
 }
 
 /*!
@@ -151,24 +150,23 @@ PluginTreeItem::PluginTreeItem(const QVariant &display, QObject *parent) : QObje
  * \param plugin
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sys::Plugin &plugin, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Plugin& plugin, QObject* parent)
+    : QObject(parent) {
+  // set general tree item attributes
+  this->childCount = 0;
+  this->index = -1;
 
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
+  // define what kind of tree item this item is
+  this->setIsPlugin();
 
-    //define what kind of tree item this item is
-    this->setIsPlugin();
+  // set plugin
+  this->plugin = plugin;
 
-    //set plugin
-    this->plugin = plugin;
+  // set display value
+  this->displayValue = plugin.name();
 
-    //set display value
-    this->displayValue = plugin.name();
-
-    //set up item and its children
-    this->setUpPlugin();
-
+  // set up item and its children
+  this->setUpPlugin();
 }
 
 /*!
@@ -176,21 +174,20 @@ PluginTreeItem::PluginTreeItem(const sys::Plugin &plugin, QObject *parent) : QOb
  * \param function
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sys::Function &function, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Function& function, QObject* parent)
+    : QObject(parent) {
+  // set general tree item attributes
+  this->childCount = 0;
+  this->index = -1;
 
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
+  // define what kind of tree item this item is
+  this->setIsFunction();
 
-    //define what kind of tree item this item is
-    this->setIsFunction();
+  // set function
+  this->function = function;
 
-    //set function
-    this->function = function;
-
-    //set display value
-    this->displayValue = function.name();
-
+  // set display value
+  this->displayValue = function.name();
 }
 
 /*!
@@ -198,21 +195,20 @@ PluginTreeItem::PluginTreeItem(const sys::Function &function, QObject *parent) :
  * \param sensor
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sys::Sensor &sensor, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Sensor& sensor, QObject* parent)
+    : QObject(parent) {
+  // set general tree item attributes
+  this->childCount = 0;
+  this->index = -1;
 
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
+  // define what kind of tree item this item is
+  this->setIsSensor();
 
-    //define what kind of tree item this item is
-    this->setIsSensor();
+  // set sensor
+  this->sensor = sensor;
 
-    //set sensor
-    this->sensor = sensor;
-
-    //set display value
-    this->displayValue = sensor.name();
-
+  // set display value
+  this->displayValue = sensor.name();
 }
 
 /*!
@@ -220,21 +216,20 @@ PluginTreeItem::PluginTreeItem(const sys::Sensor &sensor, QObject *parent) : QOb
  * \param tool
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sys::Tool &tool, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Tool& tool, QObject* parent)
+    : QObject(parent) {
+  // set general tree item attributes
+  this->childCount = 0;
+  this->index = -1;
 
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
+  // define what kind of tree item this item is
+  this->setIsTool();
 
-    //define what kind of tree item this item is
-    this->setIsTool();
+  // set tool
+  this->tool = tool;
 
-    //set tool
-    this->tool = tool;
-
-    //set display value
-    this->displayValue = tool.name();
-
+  // set display value
+  this->displayValue = tool.name();
 }
 
 /*!
@@ -242,21 +237,21 @@ PluginTreeItem::PluginTreeItem(const sys::Tool &tool, QObject *parent) : QObject
  * \param simulation
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sys::Simulation &simulation, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Simulation& simulation,
+                               QObject* parent)
+    : QObject(parent) {
+  // set general tree item attributes
+  this->childCount = 0;
+  this->index = -1;
 
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
+  // define what kind of tree item this item is
+  this->setIsSimulation();
 
-    //define what kind of tree item this item is
-    this->setIsSimulation();
+  // set simulation
+  this->simulation = simulation;
 
-    //set simulation
-    this->simulation = simulation;
-
-    //set display value
-    this->displayValue = simulation.name();
-
+  // set display value
+  this->displayValue = simulation.name();
 }
 
 /*!
@@ -264,66 +259,59 @@ PluginTreeItem::PluginTreeItem(const sys::Simulation &simulation, QObject *paren
  * \param exchange
  * \param parent
  */
-PluginTreeItem::PluginTreeItem(const sys::Exchange &exchange, QObject *parent) : QObject(parent){
+PluginTreeItem::PluginTreeItem(const sys::Exchange& exchange, QObject* parent)
+    : QObject(parent) {
+  // set general tree item attributes
+  this->childCount = 0;
+  this->index = -1;
 
-    //set general tree item attributes
-    this->childCount = 0;
-    this->index = -1;
+  // define what kind of tree item this item is
+  this->setIsExchange();
 
-    //define what kind of tree item this item is
-    this->setIsExchange();
+  // set exchange
+  this->exchange = exchange;
 
-    //set exchange
-    this->exchange = exchange;
-
-    //set display value
-    this->displayValue = exchange.name();
-
+  // set display value
+  this->displayValue = exchange.name();
 }
 
 /*!
  * \brief PluginTreeItem::~PluginTreeItem
  * Deletes this item and all its children
  */
-PluginTreeItem::~PluginTreeItem(){
-    this->deleteChildren();
-}
+PluginTreeItem::~PluginTreeItem() { this->deleteChildren(); }
 
 /*!
  * \brief PluginTreeItem::getDisplayValue
  * \return
  */
-const QVariant &PluginTreeItem::getDisplayValue() const{
-    return this->displayValue;
+const QVariant& PluginTreeItem::getDisplayValue() const {
+  return this->displayValue;
 }
 
 /*!
  * \brief PluginTreeItem::getChildCount
  * \return
  */
-int PluginTreeItem::getChildCount() const{
-    return this->childCount;
-}
+int PluginTreeItem::getChildCount() const { return this->childCount; }
 
 /*!
  * \brief PluginTreeItem::appendChild
  * \param child
  */
-void PluginTreeItem::appendChild(const QPointer<PluginTreeItem> &child){
+void PluginTreeItem::appendChild(const QPointer<PluginTreeItem>& child) {
+  // check child
+  if (child.isNull()) {
+    return;
+  }
 
-    //check child
-    if(child.isNull()){
-        return;
-    }
+  // set index and parent for child
+  child->index = this->children.size();
+  child->parent = this;
 
-    //set index and parent for child
-    child->index = this->children.size();
-    child->parent = this;
-
-    //add the child
-    this->children.append(child);
-    this->childCount++;
-
+  // add the child
+  this->children.append(child);
+  this->childCount++;
 }
 
 /*!
@@ -331,340 +319,331 @@ void PluginTreeItem::appendChild(const QPointer<PluginTreeItem> &child){
  * \param index
  * \return
  */
-QPointer<PluginTreeItem> PluginTreeItem::getChild(const int &index){
-    if(this->childCount > index){
-        return this->children.at(index);
-    }
-    return QPointer<PluginTreeItem>(NULL);
+QPointer<PluginTreeItem> PluginTreeItem::getChild(const int& index) {
+  if (this->childCount > index) {
+    return this->children.at(index);
+  }
+  return QPointer<PluginTreeItem>(NULL);
 }
 
 /*!
  * \brief PluginTreeItem::deleteChildren
  */
-void PluginTreeItem::deleteChildren(){
-    qDeleteAll(this->children);
-    this->children.clear();
-    this->childCount = 0;
+void PluginTreeItem::deleteChildren() {
+  qDeleteAll(this->children);
+  this->children.clear();
+  this->childCount = 0;
 }
 
 /*!
  * \brief PluginTreeItem::hasParent
  * \return
  */
-bool PluginTreeItem::hasParent() const{
-    if(this->parent.isNull()){
-        return false;
-    }
-    return true;
+bool PluginTreeItem::hasParent() const {
+  if (this->parent.isNull()) {
+    return false;
+  }
+  return true;
 }
 
 /*!
  * \brief PluginTreeItem::getParent
  * \return
  */
-const QPointer<PluginTreeItem> &PluginTreeItem::getParent() const{
-    return this->parent;
+const QPointer<PluginTreeItem>& PluginTreeItem::getParent() const {
+  return this->parent;
 }
 
 /*!
  * \brief PluginTreeItem::getIndex
  * \return
  */
-const int &PluginTreeItem::getIndex() const{
-    return this->index;
-}
+const int& PluginTreeItem::getIndex() const { return this->index; }
 
 /*!
  * \brief PluginTreeItem::getIsHeader
  * \return
  */
-const bool &PluginTreeItem::getIsHeader() const{
-    return this->isHeader;
-}
+const bool& PluginTreeItem::getIsHeader() const { return this->isHeader; }
 
 /*!
  * \brief PluginTreeItem::getIsPlugin
  * \return
  */
-const bool &PluginTreeItem::getIsPlugin() const{
-    return this->isPlugin;
-}
+const bool& PluginTreeItem::getIsPlugin() const { return this->isPlugin; }
 
 /*!
  * \brief PluginTreeItem::getIsFunction
  * \return
  */
-const bool &PluginTreeItem::getIsFunction() const{
-    return this->isFunction;
-}
+const bool& PluginTreeItem::getIsFunction() const { return this->isFunction; }
 
 /*!
  * \brief PluginTreeItem::getIsSensor
  * \return
  */
-const bool &PluginTreeItem::getIsSensor() const{
-    return this->isSensor;
-}
+const bool& PluginTreeItem::getIsSensor() const { return this->isSensor; }
 
 /*!
  * \brief PluginTreeItem::getIsTool
  * \return
  */
-const bool &PluginTreeItem::getIsTool() const{
-    return this->isTool;
-}
+const bool& PluginTreeItem::getIsTool() const { return this->isTool; }
 
 /*!
  * \brief PluginTreeItem::getIsSimulation
  * \return
  */
-const bool &PluginTreeItem::getIsSimulation() const{
-    return this->isSimulation;
+const bool& PluginTreeItem::getIsSimulation() const {
+  return this->isSimulation;
 }
 
 /*!
  * \brief PluginTreeItem::getIsExchange
  * \return
  */
-const bool &PluginTreeItem::getIsExchange() const{
-    return this->isExchange;
-}
+const bool& PluginTreeItem::getIsExchange() const { return this->isExchange; }
 
 /*!
  * \brief PluginTreeItem::getPlugin
  * \return
  */
-const sys::Plugin &PluginTreeItem::getPlugin() const{
-    return this->plugin;
-}
+const sys::Plugin& PluginTreeItem::getPlugin() const { return this->plugin; }
 
 /*!
  * \brief PluginTreeItem::getFunction
  * \return
  */
-const sys::Function &PluginTreeItem::getFunction() const{
-    return this->function;
+const sys::Function& PluginTreeItem::getFunction() const {
+  return this->function;
 }
 
 /*!
  * \brief PluginTreeItem::getSensor
  * \return
  */
-const sys::Sensor &PluginTreeItem::getSensor() const{
-    return this->sensor;
-}
+const sys::Sensor& PluginTreeItem::getSensor() const { return this->sensor; }
 
 /*!
  * \brief PluginTreeItem::getTool
  * \return
  */
-const sys::Tool &PluginTreeItem::getTool() const{
-    return this->tool;
-}
+const sys::Tool& PluginTreeItem::getTool() const { return this->tool; }
 
 /*!
  * \brief PluginTreeItem::getSimulation
  * \return
  */
-const sys::Simulation &PluginTreeItem::getSimulation() const{
-    return this->simulation;
+const sys::Simulation& PluginTreeItem::getSimulation() const {
+  return this->simulation;
 }
 
 /*!
  * \brief PluginTreeItem::getExchange
  * \return
  */
-const sys::Exchange &PluginTreeItem::getExchange() const{
-    return this->exchange;
+const sys::Exchange& PluginTreeItem::getExchange() const {
+  return this->exchange;
 }
 
 /*!
  * \brief PluginTreeItem::setIsHeader
  */
-void PluginTreeItem::setIsHeader(){
-    this->isHeader = true;
-    this->isPlugin = false;
-    this->isFunction = false;
-    this->isSensor = false;
-    this->isTool = false;
-    this->isSimulation = false;
-    this->isExchange = false;
+void PluginTreeItem::setIsHeader() {
+  this->isHeader = true;
+  this->isPlugin = false;
+  this->isFunction = false;
+  this->isSensor = false;
+  this->isTool = false;
+  this->isSimulation = false;
+  this->isExchange = false;
 }
 
 /*!
  * \brief PluginTreeItem::setIsPlugin
  */
-void PluginTreeItem::setIsPlugin(){
-    this->isHeader = false;
-    this->isPlugin = true;
-    this->isFunction = false;
-    this->isSensor = false;
-    this->isTool = false;
-    this->isSimulation = false;
-    this->isExchange = false;
+void PluginTreeItem::setIsPlugin() {
+  this->isHeader = false;
+  this->isPlugin = true;
+  this->isFunction = false;
+  this->isSensor = false;
+  this->isTool = false;
+  this->isSimulation = false;
+  this->isExchange = false;
 }
 
 /*!
  * \brief PluginTreeItem::setIsFunction
  */
-void PluginTreeItem::setIsFunction(){
-    this->isHeader = false;
-    this->isPlugin = false;
-    this->isFunction = true;
-    this->isSensor = false;
-    this->isTool = false;
-    this->isSimulation = false;
-    this->isExchange = false;
+void PluginTreeItem::setIsFunction() {
+  this->isHeader = false;
+  this->isPlugin = false;
+  this->isFunction = true;
+  this->isSensor = false;
+  this->isTool = false;
+  this->isSimulation = false;
+  this->isExchange = false;
 }
 
 /*!
  * \brief PluginTreeItem::setIsSensor
  */
-void PluginTreeItem::setIsSensor(){
-    this->isHeader = false;
-    this->isPlugin = false;
-    this->isFunction = false;
-    this->isSensor = true;
-    this->isTool = false;
-    this->isSimulation = false;
-    this->isExchange = false;
+void PluginTreeItem::setIsSensor() {
+  this->isHeader = false;
+  this->isPlugin = false;
+  this->isFunction = false;
+  this->isSensor = true;
+  this->isTool = false;
+  this->isSimulation = false;
+  this->isExchange = false;
 }
 
 /*!
  * \brief PluginTreeItem::setIsTool
  */
-void PluginTreeItem::setIsTool(){
-    this->isHeader = false;
-    this->isPlugin = false;
-    this->isFunction = false;
-    this->isSensor = false;
-    this->isTool = true;
-    this->isSimulation = false;
-    this->isExchange = false;
+void PluginTreeItem::setIsTool() {
+  this->isHeader = false;
+  this->isPlugin = false;
+  this->isFunction = false;
+  this->isSensor = false;
+  this->isTool = true;
+  this->isSimulation = false;
+  this->isExchange = false;
 }
 
 /*!
  * \brief PluginTreeItem::setIsSimulation
  */
-void PluginTreeItem::setIsSimulation(){
-    this->isHeader = false;
-    this->isPlugin = false;
-    this->isFunction = false;
-    this->isSensor = false;
-    this->isTool = false;
-    this->isSimulation = true;
-    this->isExchange = false;
+void PluginTreeItem::setIsSimulation() {
+  this->isHeader = false;
+  this->isPlugin = false;
+  this->isFunction = false;
+  this->isSensor = false;
+  this->isTool = false;
+  this->isSimulation = true;
+  this->isExchange = false;
 }
 
 /*!
  * \brief PluginTreeItem::setIsExchange
  */
-void PluginTreeItem::setIsExchange(){
-    this->isHeader = false;
-    this->isPlugin = false;
-    this->isFunction = false;
-    this->isSensor = false;
-    this->isTool = false;
-    this->isSimulation = false;
-    this->isExchange = true;
+void PluginTreeItem::setIsExchange() {
+  this->isHeader = false;
+  this->isPlugin = false;
+  this->isFunction = false;
+  this->isSensor = false;
+  this->isTool = false;
+  this->isSimulation = false;
+  this->isExchange = true;
 }
 
 /*!
  * \brief PluginTreeItem::setUpPlugin
  */
-void PluginTreeItem::setUpPlugin(){
-
-    //set up sensors
-    PluginTreeItem *sensors = new PluginTreeItem("sensors:");
-    PluginTreeItem *laserTracker = new PluginTreeItem("laser tracker:");
-    PluginTreeItem *totalStation = new PluginTreeItem("total stations:");
-    foreach(const sys::Sensor &sensor, plugin.sensors()){
-        PluginTreeItem *sensorItem = new PluginTreeItem(sensor);
-        if(sensor.interfaceCategory().compare(OiMetaData::iid_LaserTracker) == 0){
-            laserTracker->appendChild(sensorItem);
-        }else if(sensor.interfaceCategory().compare(OiMetaData::iid_TotalStation) == 0){
-            totalStation->appendChild(sensorItem);
-        }else{
-            delete sensorItem;
-            continue;
-        }
+void PluginTreeItem::setUpPlugin() {
+  // set up sensors
+  PluginTreeItem* sensors = new PluginTreeItem("sensors:");
+  PluginTreeItem* laserTracker = new PluginTreeItem("laser tracker:");
+  PluginTreeItem* totalStation = new PluginTreeItem("total stations:");
+  foreach (const sys::Sensor& sensor, plugin.sensors()) {
+    PluginTreeItem* sensorItem = new PluginTreeItem(sensor);
+    if (sensor.interfaceCategory().compare(OiMetaData::iid_LaserTracker) == 0) {
+      laserTracker->appendChild(sensorItem);
+    } else if (sensor.interfaceCategory().compare(
+                   OiMetaData::iid_TotalStation) == 0) {
+      totalStation->appendChild(sensorItem);
+    } else {
+      delete sensorItem;
+      continue;
     }
-    sensors->appendChild(laserTracker);
-    sensors->appendChild(totalStation);
+  }
+  sensors->appendChild(laserTracker);
+  sensors->appendChild(totalStation);
 
-    //set up functions
-    PluginTreeItem *functions = new PluginTreeItem("functions:");
-    PluginTreeItem *fitFunctions = new PluginTreeItem("fit functions:");
-    PluginTreeItem *constructFunctions = new PluginTreeItem("construct functions:");
-    PluginTreeItem *specialFunctions = new PluginTreeItem("special functions:");
-    PluginTreeItem *geodeticFunctions = new PluginTreeItem("geodetic functions:");
-    PluginTreeItem *objectTransformations = new PluginTreeItem("object transformations:");
-    PluginTreeItem *systemTransformations = new PluginTreeItem("system transformations:");
-    foreach(const sys::Function &function, plugin.functions()){
-        PluginTreeItem *functionItem = new PluginTreeItem(function);
-        if(function.interfaceCategory().compare(OiMetaData::iid_FitFunction) == 0){
-            fitFunctions->appendChild(functionItem);
-        }else if(function.interfaceCategory().compare(OiMetaData::iid_ConstructFunction) == 0){
-            constructFunctions->appendChild(functionItem);
-        }else if(function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) == 0){
-            specialFunctions->appendChild(functionItem);
-        }else if(function.interfaceCategory().compare(OiMetaData::iid_GeodeticFunction) == 0){
-            geodeticFunctions->appendChild(functionItem);
-        }else if(function.interfaceCategory().compare(OiMetaData::iid_ObjectTransformation) == 0){
-            objectTransformations->appendChild(functionItem);
-        }else if(function.interfaceCategory().compare(OiMetaData::iid_SystemTransformation) == 0){
-            systemTransformations->appendChild(functionItem);
-        }else{
-            delete functionItem;
-            continue;
-        }
+  // set up functions
+  PluginTreeItem* functions = new PluginTreeItem("functions:");
+  PluginTreeItem* fitFunctions = new PluginTreeItem("fit functions:");
+  PluginTreeItem* constructFunctions =
+      new PluginTreeItem("construct functions:");
+  PluginTreeItem* specialFunctions = new PluginTreeItem("special functions:");
+  PluginTreeItem* geodeticFunctions = new PluginTreeItem("geodetic functions:");
+  PluginTreeItem* objectTransformations =
+      new PluginTreeItem("object transformations:");
+  PluginTreeItem* systemTransformations =
+      new PluginTreeItem("system transformations:");
+  foreach (const sys::Function& function, plugin.functions()) {
+    PluginTreeItem* functionItem = new PluginTreeItem(function);
+    if (function.interfaceCategory().compare(OiMetaData::iid_FitFunction) ==
+        0) {
+      fitFunctions->appendChild(functionItem);
+    } else if (function.interfaceCategory().compare(
+                   OiMetaData::iid_ConstructFunction) == 0) {
+      constructFunctions->appendChild(functionItem);
+    } else if (function.interfaceCategory().compare(
+                   OiMetaData::iid_SpecialFunction) == 0) {
+      specialFunctions->appendChild(functionItem);
+    } else if (function.interfaceCategory().compare(
+                   OiMetaData::iid_GeodeticFunction) == 0) {
+      geodeticFunctions->appendChild(functionItem);
+    } else if (function.interfaceCategory().compare(
+                   OiMetaData::iid_ObjectTransformation) == 0) {
+      objectTransformations->appendChild(functionItem);
+    } else if (function.interfaceCategory().compare(
+                   OiMetaData::iid_SystemTransformation) == 0) {
+      systemTransformations->appendChild(functionItem);
+    } else {
+      delete functionItem;
+      continue;
     }
-    functions->appendChild(fitFunctions);
-    functions->appendChild(constructFunctions);
-    functions->appendChild(geodeticFunctions);
-    functions->appendChild(objectTransformations);
-    functions->appendChild(systemTransformations);
-    if(specialFunctions->getChildCount() > 0) {
-        functions->appendChild(specialFunctions);
+  }
+  functions->appendChild(fitFunctions);
+  functions->appendChild(constructFunctions);
+  functions->appendChild(geodeticFunctions);
+  functions->appendChild(objectTransformations);
+  functions->appendChild(systemTransformations);
+  if (specialFunctions->getChildCount() > 0) {
+    functions->appendChild(specialFunctions);
+  }
+
+  // set up tools
+  PluginTreeItem* tools = new PluginTreeItem("tools:");
+  foreach (const sys::Tool& tool, plugin.tools()) {
+    PluginTreeItem* toolItem = new PluginTreeItem(tool);
+    tools->appendChild(toolItem);
+  }
+
+  // set up simulations
+  PluginTreeItem* simulations = new PluginTreeItem("simulations:");
+  foreach (const sys::Simulation& simulation, plugin.simulations()) {
+    PluginTreeItem* simulationItem = new PluginTreeItem(simulation);
+    simulations->appendChild(simulationItem);
+  }
+
+  // set up exchanges
+  PluginTreeItem* exchanges = new PluginTreeItem("exchanges:");
+  PluginTreeItem* simpleAscii = new PluginTreeItem("simple ascii exchanges:");
+  PluginTreeItem* definedFormat =
+      new PluginTreeItem("defined format exchanges:");
+  foreach (const sys::Exchange& exchange, plugin.exchanges()) {
+    PluginTreeItem* exchangeItem = new PluginTreeItem(exchange);
+    if (exchange.interfaceCategory().compare(
+            OiMetaData::iid_ExchangeSimpleAscii) == 0) {
+      simpleAscii->appendChild(exchangeItem);
+    } else if (exchange.interfaceCategory().compare(
+                   OiMetaData::iid_ExchangeDefinedFormat) == 0) {
+      definedFormat->appendChild(exchangeItem);
+    } else {
+      delete exchangeItem;
+      continue;
     }
+  }
+  exchanges->appendChild(simpleAscii);
+  exchanges->appendChild(definedFormat);
 
-    //set up tools
-    PluginTreeItem *tools = new PluginTreeItem("tools:");
-    foreach(const sys::Tool &tool, plugin.tools()){
-        PluginTreeItem *toolItem = new PluginTreeItem(tool);
-        tools->appendChild(toolItem);
-    }
-
-    //set up simulations
-    PluginTreeItem *simulations = new PluginTreeItem("simulations:");
-    foreach(const sys::Simulation &simulation, plugin.simulations()){
-        PluginTreeItem *simulationItem = new PluginTreeItem(simulation);
-        simulations->appendChild(simulationItem);
-    }
-
-    //set up exchanges
-    PluginTreeItem *exchanges = new PluginTreeItem("exchanges:");
-    PluginTreeItem *simpleAscii = new PluginTreeItem("simple ascii exchanges:");
-    PluginTreeItem *definedFormat = new PluginTreeItem("defined format exchanges:");
-    foreach(const sys::Exchange &exchange, plugin.exchanges()){
-        PluginTreeItem *exchangeItem = new PluginTreeItem(exchange);
-        if(exchange.interfaceCategory().compare(OiMetaData::iid_ExchangeSimpleAscii) == 0){
-            simpleAscii->appendChild(exchangeItem);
-        }else if(exchange.interfaceCategory().compare(OiMetaData::iid_ExchangeDefinedFormat) == 0){
-            definedFormat->appendChild(exchangeItem);
-        }else{
-            delete exchangeItem;
-            continue;
-        }
-    }
-    exchanges->appendChild(simpleAscii);
-    exchanges->appendChild(definedFormat);
-
-    //add all children
-    this->appendChild(sensors);
-    this->appendChild(functions);
-    this->appendChild(tools);
-    this->appendChild(simulations);
-    this->appendChild(exchanges);
-
+  // add all children
+  this->appendChild(sensors);
+  this->appendChild(functions);
+  this->appendChild(tools);
+  this->appendChild(simulations);
+  this->appendChild(exchanges);
 }

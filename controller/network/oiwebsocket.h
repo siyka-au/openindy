@@ -2,83 +2,80 @@
 #define OIWEBSOCKET_H
 
 #include <QObject>
+#include <QPointer>
 #include <QWebSocket>
 #include <QtXml>
-#include <QPointer>
 
-#include "types.h"
 #include "oirequestresponse.h"
+#include "types.h"
 
 /*!
  * \brief The OiWebSocket class
  * Represents a websocket connection of a client to OpenIndy
  */
-class OiWebSocket : public QObject
-{
-    Q_OBJECT
+class OiWebSocket : public QObject {
+  Q_OBJECT
 
-public:
-    explicit OiWebSocket(QObject *parent = 0);
-    ~OiWebSocket();
+ public:
+  explicit OiWebSocket(QObject* parent = 0);
+  ~OiWebSocket();
 
-    //##########
-    //set socket
-    //##########
+  // ##########
+  // set socket
+  // ##########
 
-    bool setSocket(const QPointer<QWebSocket> &mySocket);
+  bool setSocket(const QPointer<QWebSocket>& mySocket);
 
-    //#####################
-    //get socket identifier
-    //#####################
+  // #####################
+  // get socket identifier
+  // #####################
 
-    int getInternalRef() const;
+  int getInternalRef() const;
 
-signals:
+ signals:
 
-    //###############################
-    //inform about connection changes
-    //###############################
+  // ###############################
+  // inform about connection changes
+  // ###############################
 
-    void connected();
-    void disconnected();
+  void connected();
+  void disconnected();
 
-    //##########################
-    //send a request to OpenIndy
-    //##########################
+  // ##########################
+  // send a request to OpenIndy
+  // ##########################
 
-    void sendRequest(const oi::OiRequestResponse &request);
+  void sendRequest(const oi::OiRequestResponse& request);
 
-public slots:
+ public slots:
 
-    //#######################
-    //close socket connection
-    //#######################
+  // #######################
+  // close socket connection
+  // #######################
 
-    void close();
+  void close();
 
-    //##############################
-    //recevie response from OpenIndy
-    //##############################
+  // ##############################
+  // recevie response from OpenIndy
+  // ##############################
 
-    void receiveResponse(const oi::OiRequestResponse &response);
+  void receiveResponse(const oi::OiRequestResponse& response);
 
-private slots:
+ private slots:
 
-    //##############
-    //helper methods
-    //##############
+  // ##############
+  // helper methods
+  // ##############
 
-    void readMessage(const QString &msg);
+  void readMessage(const QString& msg);
 
-private:
+ private:
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
-
-    QPointer<QWebSocket> socket;
-    int internalRef;
-
+  QPointer<QWebSocket> socket;
+  int internalRef;
 };
 
-#endif // OIWEBSOCKET_H
+#endif  // OIWEBSOCKET_H

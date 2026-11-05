@@ -1,422 +1,434 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <QObject>
-#include <QPointer>
-#include <QString>
-#include <QFileDevice>
-#include <QSaveFile>
 #include <QFile>
+#include <QFileDevice>
 #include <QFileInfo>
-#include <QThread>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QObject>
+#include <QPointer>
+#include <QSaveFile>
+#include <QString>
+#include <QThread>
 
-#include "oijob.h"
 #include "calibratedconstellation.h"
-#include "modelmanager.h"
-#include "settings.h"
 #include "console.h"
-#include "featuretablecolumnconfig.h"
-#include "trafoparamtablecolumnconfig.h"
-#include "parameterdisplayconfig.h"
-#include "featureattributes.h"
-#include "exchangeParams.h"
 #include "dataexchanger.h"
-#include "sensorconfigurationmanager.h"
-#include "measurementconfigmanager.h"
+#include "exchangeParams.h"
+#include "featureattributes.h"
+#include "featuretablecolumnconfig.h"
 #include "featureupdater.h"
-#include "projectexchanger.h"
+#include "measurementconfigmanager.h"
+#include "modelmanager.h"
+#include "oijob.h"
+#include "parameterdisplayconfig.h"
 #include "pluginloader.h"
+#include "projectexchanger.h"
+#include "sensorconfigurationmanager.h"
+#include "settings.h"
+#include "trafoparamtablecolumnconfig.h"
 #ifdef OI_WEBSOCKETSERVER_ENABLED
 #include "oiwebsocketserver.h"
 #endif
-#include "projectconfig.h"
 #include "controllersensoractions.h"
+#include "projectconfig.h"
 
 using namespace oi;
 
 struct StationStatusData {
-    QVariant id;
-    QString name;
+  QVariant id;
+  QString name;
 };
 
 /*!
  * \brief The Controller class
  */
-class Controller : public QObject, public ControllerSensorActions
-{
-    Q_OBJECT
+class Controller : public QObject, public ControllerSensorActions {
+  Q_OBJECT
 
-public:
-    explicit Controller(QObject *parent = 0);
-    ~Controller();
+ public:
+  explicit Controller(QObject* parent = 0);
+  ~Controller();
 
-    void init();
+  void init();
 
-public:
+ public:
+  // ###############################
+  // getter to query available tools
+  // ###############################
 
-    //###############################
-    //getter to query available tools
-    //###############################
+  const QList<QPointer<Tool> >& getAvailableTools() const;
 
-    const QList<QPointer<Tool> > &getAvailableTools() const;
+  bool hasProjectDigestChanged();
 
-    bool hasProjectDigestChanged();
+  void _startMeasurement(bool dummyPoint);
 
-    void _startMeasurement(bool dummyPoint);
+  bool isStationBundled(int id);
 
-    bool isStationBundled(int id);
+  QList<QJsonObject> loadBundleTemplates();
 
-    QList<QJsonObject> loadBundleTemplates();
+ private slots:
+  void startAimAndMeasure();
 
-private slots:
-    void startAimAndMeasure();
+ public slots:
 
-public slots:
+  // #######################
+  // tasks triggered by user
+  // #######################
 
-    //#######################
-    //tasks triggered by user
-    //#######################
+  // add or remove features
+  void addFeatures(const FeatureAttributes& attributes);
+  void removeFeatures(const QSet<int>& featureIds);
+  QPointer<FeatureWrapper> getActiveFeature();
 
-    //add or remove features
-    void addFeatures(const FeatureAttributes &attributes);
-    void removeFeatures(const QSet<int> &featureIds);
-    QPointer<FeatureWrapper> getActiveFeature();
+  // change feature parameters
+  void setNominalParameters(const int& featureId,
+                            const QMap<GeometryParameters, double>& parameters);
+  void setTrafoParamParameters(
+      const int& featureId,
+      const QMap<TrafoParamParameters, double>& parameters);
 
-    //change feature parameters
-    void setNominalParameters(const int &featureId, const QMap<GeometryParameters, double> &parameters);
-    void setTrafoParamParameters(const int &featureId, const QMap<TrafoParamParameters, double> &parameters);
+  // recalculation
+  void recalcActiveFeature();
 
-    //recalculation
-    void recalcActiveFeature();
+  // UI verification checkpoint: generate a function-owned sub-geometry
+  //(Stage 7h, D19) for the active feature - "check a box in a
+  // relationship" per the user's own framing. No-arg, operates on the
+  // active feature, same convention as startAim()/recalcActiveFeature().
+  void generateOwnedNormalLine();
+  void generateOwnedOriginPoint();
 
-    //UI verification checkpoint: generate a function-owned sub-geometry
-    //(Stage 7h, D19) for the active feature - "check a box in a
-    //relationship" per the user's own framing. No-arg, operates on the
-    //active feature, same convention as startAim()/recalcActiveFeature().
-    void generateOwnedNormalLine();
-    void generateOwnedOriginPoint();
+  // set sensor configuration for active station
+  void setSensorConfig(const SensorConfiguration& sConfig, bool connectSensor);
 
-    //set sensor configuration for active station
-    void setSensorConfig(const SensorConfiguration &sConfig, bool connectSensor);
+  // remove the sensor of the active station
+  void removeActiveStationSensor();
 
-    //remove the sensor of the active station
-    void removeActiveStationSensor();
+  // sensor configs edited
+  void sensorConfigurationsEdited(const SensorConfigurationManager& manager);
 
-    //sensor configs edited
-    void sensorConfigurationsEdited(const SensorConfigurationManager &manager);
+  // active station's sensor config edited
+  void sensorConfigurationUpdated(const SensorConfiguration& sConfig);
 
-    //active station's sensor config edited
-    void sensorConfigurationUpdated(const SensorConfiguration &sConfig);
+  // set measurement configuration for active feature
+  void measurementConfigurationChanged(const MeasurementConfig& mConfig);
+  void saveUserConfig(const MeasurementConfig& mConfig);
 
-    //set measurement configuration for active feature
-    void measurementConfigurationChanged(const MeasurementConfig &mConfig);
-    void saveUserConfig(const MeasurementConfig &mConfig);
+  // import or export features
+  void importNominals(const ExchangeParams& params);
+  void exportFeatures(const ExchangeParams& params);
 
-    //import or export features
-    void importNominals(const ExchangeParams &params);
-    void exportFeatures(const ExchangeParams &params);
+  // add or remove observations
+  void importObservations(const QString& filename);
+  void removeObservations(const int& featureId);
+  void removeObservationsById(const QList<int> selectedIds);
+  void removeAllObservations();
+  void enableObservations(const int& featureId);
+  void disableObservations(const int& featureId);
 
-    //add or remove observations
-    void importObservations(const QString &filename);
-    void removeObservations(const int &featureId);
-    void removeObservationsById(const QList<int> selectedIds);
-    void removeAllObservations();
-    void enableObservations(const int &featureId);
-    void disableObservations(const int &featureId);
+  // set display configs
+  void setFeatureTableColumnConfig(const FeatureTableColumnConfig& config);
+  void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig& config);
+  void setObservationTableColumnConfig(
+      const ObservationTableColumnConfig& config);
+  void setReadingTableColumnConfig(const ReadingTableColumnConfig& config);
+  void setParameterDisplayConfig(const ParameterDisplayConfig& config);
 
-    //set display configs
-    void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
-    void setTrafoParamColumnConfig(const TrafoParamTableColumnConfig &config);
-    void setObservationTableColumnConfig(const ObservationTableColumnConfig &config);
-    void setReadingTableColumnConfig(const ReadingTableColumnConfig &config);
-    void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+  // add or remove bundle system
+  void addBundleSystem();
+  void removeBundleSystem(const int& id);
 
-    //add or remove bundle system
-    void addBundleSystem();
-    void removeBundleSystem(const int &id);
+  // load or calculate bundle
+  QJsonObject getBundleTemplate();
+  QPointer<BundleAdjustment> getBundleAdjustment();
+  void updateBundleAdjustment(const QJsonObject& param);
+  void loadBundleTemplate(const QJsonObject& bundleTemplate);
+  void runBundle();
 
-    //load or calculate bundle
-    QJsonObject getBundleTemplate();
-    QPointer<BundleAdjustment> getBundleAdjustment();
-    void updateBundleAdjustment(const QJsonObject &param);
-    void loadBundleTemplate(const QJsonObject &bundleTemplate);
-    void runBundle();
+  // save or load a job
+  void saveProject();
+  void saveProject(const QString& fileName);
+  void loadProject(const QString& projectName,
+                   const QPointer<QFileDevice>& device);
+  const QPointer<OiJob>& createDefaultJob();
 
-    //save or load a job
-    void saveProject();
-    void saveProject(const QString &fileName);
-    void loadProject(const QString &projectName, const QPointer<QFileDevice> &device);
-    const QPointer<OiJob> &createDefaultJob();
+  // sensor actions
+  void startConnect();
+  void startDisconnect();
+  void startMeasurement();
+  void startMove(const Reading& reading);
+  void startAim();
+  void startToggleSight();
+  void startInitialize();
+  void startHome();
+  void startCompensation();
+  void startChangeMotorState();
+  void startCustomAction(const QString& task);
+  void startReadingStream(ReadingTypes streamFormat);
+  void stopReadingStream();
+  void finishMeasurement();
+  void startSearch();
 
-    //sensor actions
-    void startConnect();
-    void startDisconnect();
-    void startMeasurement();
-    void startMove(const Reading &reading);
-    void startAim();
-    void startToggleSight();
-    void startInitialize();
-    void startHome();
-    void startCompensation();
-    void startChangeMotorState();
-    void startCustomAction(const QString &task);
-    void startReadingStream(ReadingTypes streamFormat);
-    void stopReadingStream();
-    void finishMeasurement();
-    void startSearch();
+  // log messages to the specified destination
+  void log(const QString& msg, const MessageTypes& msgType,
+           const MessageDestinations& msgDest);
 
-    //log messages to the specified destination
-    void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
+  // init configs from mainwindowSlot
+  void initConfigs();
 
-    //init configs from mainwindowSlot
-    void initConfigs();
+  // show tool widget
+  void showToolWidget(const QString& pluginName, const QString& toolName);
 
-    //show tool widget
-    void showToolWidget(const QString &pluginName, const QString &toolName);
+  void createTemplateFromJob();
 
-    void createTemplateFromJob();
+  void createNewStation();
 
-    void createNewStation();
+ signals:
 
-signals:
+  void stationStatus(const StationStatusData& status);
 
-    void stationStatus(const StationStatusData &status);
+  void sensorStatus(const SensorStatus& status, const QString& msg);
 
-    void sensorStatus(const SensorStatus &status, const QString &msg);
+  // #################################################
+  // signals to inform about current job state changes
+  // #################################################
 
-    //#################################################
-    //signals to inform about current job state changes
-    //#################################################
+  // active feature changes
+  void activeFeatureChanged();
+  void activeStationChanged();
+  void activeCoordinateSystemChanged();
 
-    //active feature changes
-    void activeFeatureChanged();
-    void activeStationChanged();
-    void activeCoordinateSystemChanged();
+  // feature(s) added or removed
+  void featureSetChanged();
+  void coordSystemSetChanged();
+  void stationSetChanged();
+  void trafoParamSetChanged();
+  void geometrySetChanged();
 
-    //feature(s) added or removed
-    void featureSetChanged();
-    void coordSystemSetChanged();
-    void stationSetChanged();
-    void trafoParamSetChanged();
-    void geometrySetChanged();
+  bool featureCreated(bool created);
 
-    bool featureCreated(bool created);
+  void setExchangeParams(ExchangeParams exchangeParams);
 
-    void setExchangeParams(ExchangeParams exchangeParams);
+  // group(s) added or removed
+  void availableGroupsChanged();
+  void activeGroupChanged();
 
-    //group(s) added or removed
-    void availableGroupsChanged();
-    void activeGroupChanged();
+  // general feature attributes changed
+  void featureAttributesChanged();
 
-    //general feature attributes changed
-    void featureAttributesChanged();
+  // feature specific attributes changed
+  void featureNameChanged(const int& featureId, const QString& oldName);
+  void featureGroupChanged(const int& featureId, const QString& oldGroup);
+  void featureCommentChanged(const int& featureId);
+  void featureIsUpdatedChanged(const int& featureId);
+  void featureIsSolvedChanged(const int& featureId);
+  void featureFunctionsChanged(const int& featureId);
+  void featureUsedForChanged(const int& featureId);
+  void featurePreviouslyNeededChanged(const int& featureId);
 
-    //feature specific attributes changed
-    void featureNameChanged(const int &featureId, const QString &oldName);
-    void featureGroupChanged(const int &featureId, const QString &oldGroup);
-    void featureCommentChanged(const int &featureId);
-    void featureIsUpdatedChanged(const int &featureId);
-    void featureIsSolvedChanged(const int &featureId);
-    void featureFunctionsChanged(const int &featureId);
-    void featureUsedForChanged(const int &featureId);
-    void featurePreviouslyNeededChanged(const int &featureId);
+  // geometry specific attributes changed
+  void geometryIsCommonChanged(const int& featureId);
+  void geometryRealisesChanged(const int& featureId);
+  void geometryObservationsChanged(const int& featureId);
+  void geometryNominalSystemChanged(const int& featureId);
+  void geometryStatisticChanged(const int& featureId);
+  void geometrySimulationDataChanged(const int& featureId);
+  void geometryMeasurementConfigChanged(const int& featureId);
 
-    //geometry specific attributes changed
-    void geometryIsCommonChanged(const int &featureId);
-    void geometryRealisesChanged(const int &featureId);
-    void geometryObservationsChanged(const int &featureId);
-    void geometryNominalSystemChanged(const int &featureId);
-    void geometryStatisticChanged(const int &featureId);
-    void geometrySimulationDataChanged(const int &featureId);
-    void geometryMeasurementConfigChanged(const int &featureId);
+  // coordinate system specific attributes changed
+  void systemObservationsChanged(const int& featureId, const int& obsId);
+  void systemTrafoParamsChanged(const int& featureId);
+  void systemsNominalsChanged(const int& featureId);
 
-    //coordinate system specific attributes changed
-    void systemObservationsChanged(const int &featureId, const int &obsId);
-    void systemTrafoParamsChanged(const int &featureId);
-    void systemsNominalsChanged(const int &featureId);
+  // station specific attributes changed
+  void stationSensorChanged(const int& featureId);
 
-    //station specific attributes changed
-    void stationSensorChanged(const int &featureId);
+  // transformation parameter specific attributes changed
+  void trafoParamParametersChanged(const int& featureId);
+  void trafoParamSystemsChanged(const int& featureId);
+  void trafoParamIsUsedChanged(const int& featureId);
+  void trafoParamValidTimeChanged(const int& featureId);
+  // void trafoParamIsMovementChanged(const int &featureId);
 
-    //transformation parameter specific attributes changed
-    void trafoParamParametersChanged(const int &featureId);
-    void trafoParamSystemsChanged(const int &featureId);
-    void trafoParamIsUsedChanged(const int &featureId);
-    void trafoParamValidTimeChanged(const int &featureId);
-    //void trafoParamIsMovementChanged(const int &featureId);
+  // whole job instance changed
+  void currentJobChanged();
+  // set current job to other modules / tools
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    //whole job instance changed
-    void currentJobChanged();
-    // set current job to other modules / tools
-    void setCurrentJob(const QPointer<OiJob> &job);
+  // #################################
+  // import export task status changes
+  // #################################
 
-    //#################################
-    //import export task status changes
-    //#################################
+  // nominal import
+  void nominalImportStarted();
+  void nominalImportProgressUpdated(const int& progress, const QString& msg);
+  void nominalImportFinished(const bool& success);
 
-    //nominal import
-    void nominalImportStarted();
-    void nominalImportProgressUpdated(const int &progress, const QString &msg);
-    void nominalImportFinished(const bool &success);
+  // observation import
+  void observationImportStarted();
+  void observationImportProgressUpdated(const int& progress,
+                                        const QString& msg);
+  void observationImportFinished(const bool& success);
 
-    //observation import
-    void observationImportStarted();
-    void observationImportProgressUpdated(const int &progress, const QString &msg);
-    void observationImportFinished(const bool &success);
+  // ##############
+  // sensor actions
+  // ##############
 
-    //##############
-    //sensor actions
-    //##############
+  // sensor actions
+  void sensorActionStarted(
+      const QString& name,
+      const SensorAction sensorAction = SensorAction::eSensorActionUndefind,
+      const bool enableFinishButton = false);
+  void sensorActionFinished(
+      const bool& success, const QString& msg,
+      const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
+  void measurementCompleted();
+  void measurementDone(bool success);
 
-    //sensor actions
-    void sensorActionStarted(const QString &name, const SensorAction sensorAction = SensorAction::eSensorActionUndefind, const bool enableFinishButton = false);
-    void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
-    void measurementCompleted();
-    void measurementDone(bool success);
+  // #############
+  // show messages
+  // #############
 
-    //#############
-    //show messages
-    //#############
+  // messaging
+  int showMessageBox(const QString& msg, const MessageTypes& msgType);
+  void showStatusMessage(const QString& msg, const MessageTypes& msgType);
+  void showClientMessage(const QString& msg, const MessageTypes& msgType);
+  void showStatusSensor(const SensorStatus& code, const QString& msg);
 
-    //messaging
-    int showMessageBox(const QString &msg, const MessageTypes &msgType);
-    void showStatusMessage(const QString &msg, const MessageTypes &msgType);
-    void showClientMessage(const QString &msg, const MessageTypes &msgType);
-    void showStatusSensor(const SensorStatus &code, const QString &msg);
+  // #################
+  // update status bar
+  // #################
 
-    //#################
-    //update status bar
-    //#################
+  void updateStatusBar();
 
-    void updateStatusBar();
+  // ########################
+  // trigger GUI interactions
+  // ########################
 
-    //########################
-    //trigger GUI interactions
-    //########################
+  void saveAsTriggered();
 
-    void saveAsTriggered();
+  // ##############################
+  // web socket server interactions
+  // ##############################
 
-    //##############################
-    //web socket server interactions
-    //##############################
-
-    //start and stop server
+  // start and stop server
 #ifdef OI_WEBSOCKETSERVER_ENABLED
-    void startWebSocketServer();
-    void stopWebSocketServer();
+  void startWebSocketServer();
+  void stopWebSocketServer();
 #endif
 
-    //error create trafo Param
-    void requestMessageBoxTrafoParam();
+  // error create trafo Param
+  void requestMessageBoxTrafoParam();
 
-private slots:
+ private slots:
 
-    //###################################
-    //slots to react on job state changes
-    //###################################
+  // ###################################
+  // slots to react on job state changes
+  // ###################################
 
-    //active station changed
-    void activeStationChangedCallback();
+  // active station changed
+  void activeStationChangedCallback();
 
-    //################################
-    //slots to react on sensor results
-    //################################
+  // ################################
+  // slots to react on sensor results
+  // ################################
 
-    void measurementFinished(const int &geomId, const QList<QPointer<Reading> > &readings);
+  void measurementFinished(const int& geomId,
+                           const QList<QPointer<Reading> >& readings);
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  // set OpenIndy job
+  void setJob(const QPointer<OiJob>& job);
 
-    //set OpenIndy job
-    void setJob(const QPointer<OiJob> &job);
+  // init configs and plugins
+  void initDisplayConfigs();
+  void initConfigManager();
+  void initToolPlugins();
+  void initDefaults();
 
-    //init configs and plugins
-    void initDisplayConfigs();
-    void initConfigManager();
-    void initToolPlugins();
-    void initDefaults();
+  // register meta types
+  void registerMetaTypes();
 
-    //register meta types
-    void registerMetaTypes();
-
-    //start or stop OpenIndy server
+  // start or stop OpenIndy server
 #ifdef OI_WEBSOCKETSERVER_ENABLED
-    void initServer();
-    void startServer();
-    void stopServer();
-    void connectRequestHandler();
+  void initServer();
+  void startServer();
+  void stopServer();
+  void connectRequestHandler();
 #endif
 
-    //create feature helpers
+  // create feature helpers
 
-    //"measure this nominal" (domain-model.md §4): always creates a new
-    //actual referencing this nominal via Geometry::realises - D17
-    //deliberately allows many actuals per nominal (re-inspection over
-    //time), so this never reuses an existing one.
-    QPointer<FeatureWrapper> createActualForNominal(const QPointer<Geometry> &nominal);
-    void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
-                                 const MeasurementConfig &mConfig, const QString &path, const QString &fName);
+  //"measure this nominal" (domain-model.md §4): always creates a new
+  // actual referencing this nominal via Geometry::realises - D17
+  // deliberately allows many actuals per nominal (re-inspection over
+  // time), so this never reuses an existing one.
+  QPointer<FeatureWrapper> createActualForNominal(
+      const QPointer<Geometry>& nominal);
+  void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> >& actuals,
+                               const MeasurementConfig& mConfig,
+                               const QString& path, const QString& fName);
 
-    //shared by generateOwnedNormalLine()/generateOwnedOriginPoint(): creates
-    //a bare subType feature with no function attached, then attaches
-    //functionName as its owned producer via OiJob::addOwnedSubGeometry.
-    void generateOwnedSubGeometry(const FeatureTypes &subType, const QString &functionName, const QString &namePrefix);
+  // shared by generateOwnedNormalLine()/generateOwnedOriginPoint(): creates
+  // a bare subType feature with no function attached, then attaches
+  // functionName as its owned producer via OiJob::addOwnedSubGeometry.
+  void generateOwnedSubGeometry(const FeatureTypes& subType,
+                                const QString& functionName,
+                                const QString& namePrefix);
 
-    //###############
-    //set up connects
-    //###############
+  // ###############
+  // set up connects
+  // ###############
 
-    //connect helper objects
-    void connectDataExchanger();
-    void connectFeatureUpdater();
+  // connect helper objects
+  void connectDataExchanger();
+  void connectFeatureUpdater();
 
-    //connect tools
-    void connectToolPlugin(const QPointer<Tool> &tool);
+  // connect tools
+  void connectToolPlugin(const QPointer<Tool>& tool);
 
-private:
+ private:
+  // ##################
+  // general attributes
+  // ##################
 
-    //##################
-    //general attributes
-    //##################
+  QPointer<OiJob> job;
 
-    QPointer<OiJob> job;
+  // data exchanger
+  DataExchanger exchanger;
 
-    //data exchanger
-    DataExchanger exchanger;
+  // feature updater
+  FeatureUpdater featureUpdater;
 
-    //feature updater
-    FeatureUpdater featureUpdater;
-
-    //config manager
-    QPointer<SensorConfigurationManager> sensorConfigManager;
-    QPointer<MeasurementConfigManager> measurementConfigManager;
-    ProjectExchanger projectExchanger;
+  // config manager
+  QPointer<SensorConfigurationManager> sensorConfigManager;
+  QPointer<MeasurementConfigManager> measurementConfigManager;
+  ProjectExchanger projectExchanger;
 
 #ifdef OI_WEBSOCKETSERVER_ENABLED
-    //thread and server instance
-    QThread serverThread;
-    QPointer<OiWebSocketServer> webSocketServer;
+  // thread and server instance
+  QThread serverThread;
+  QPointer<OiWebSocketServer> webSocketServer;
 
-    //request handler for web socket requests
-    OiRequestHandler requestHandler;
+  // request handler for web socket requests
+  OiRequestHandler requestHandler;
 #endif
 
-    //tool plugins
-    QList<QPointer<Tool> > toolPlugins;
+  // tool plugins
+  QList<QPointer<Tool> > toolPlugins;
 
-    // synchronize saveProject calls
-    QMutex saveProjectMutex;
+  // synchronize saveProject calls
+  QMutex saveProjectMutex;
 
-    QPointer<Station> getConnectedActiveStation();
+  QPointer<Station> getConnectedActiveStation();
 
-    QPointer<QThread> sensorWorkerThread;
-    QPointer<Station> getActiveStation();
-
+  QPointer<QThread> sensorWorkerThread;
+  QPointer<Station> getActiveStation();
 };
 
-#endif // CONTROLLER_H
+#endif  // CONTROLLER_H

@@ -4,10 +4,8 @@
  * \brief ObservationTableDelegate::ObservationTableDelegate
  * \param parent
  */
-ObservationTableDelegate::ObservationTableDelegate(QObject * parent)
-    : QItemDelegate(parent)
-{
-}
+ObservationTableDelegate::ObservationTableDelegate(QObject* parent)
+    : QItemDelegate(parent) {}
 
 /*!
  * \brief ObservationTableDelegate::createEditor
@@ -16,13 +14,13 @@ ObservationTableDelegate::ObservationTableDelegate(QObject * parent)
  * \param option
  * \param index
  */
-QWidget* ObservationTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
+QWidget* ObservationTableDelegate::createEditor(
+    QWidget* parent, const QStyleOptionViewItem& option,
+    const QModelIndex& index) const {
+  // create line edit
+  QLineEdit* editor = NULL;
 
-    //create line edit
-    QLineEdit* editor = NULL;
-
-    return editor;
-
+  return editor;
 }
 
 /*!
@@ -31,9 +29,8 @@ QWidget* ObservationTableDelegate::createEditor(QWidget *parent, const QStyleOpt
  * \param editor
  * \param index
  */
-void ObservationTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
-
-}
+void ObservationTableDelegate::setEditorData(QWidget* editor,
+                                             const QModelIndex& index) const {}
 
 /*!
  * \brief ObservationTableDelegate::setModelData
@@ -42,6 +39,6 @@ void ObservationTableDelegate::setEditorData(QWidget *editor, const QModelIndex 
  * \param model
  * \param index
  */
-void ObservationTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
-
-}
+void ObservationTableDelegate::setModelData(QWidget* editor,
+                                            QAbstractItemModel* model,
+                                            const QModelIndex& index) const {}

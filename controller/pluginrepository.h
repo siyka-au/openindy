@@ -11,9 +11,9 @@
 #include "types.h"
 
 #if defined(OI_MAIN_LIB)
-#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#define OI_MAIN_EXPORT Q_DECL_EXPORT
 #else
-#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#define OI_MAIN_EXPORT Q_DECL_IMPORT
 #endif
 
 using namespace oi;
@@ -24,74 +24,82 @@ using namespace oi;
  * as plain domain objects (see plugininfo.h) - no consumer needs to know this
  * used to be backed by SystemDbManager's SQLite catalog.
  */
-class OI_MAIN_EXPORT PluginRepository
-{
-public:
+class OI_MAIN_EXPORT PluginRepository {
+ public:
+  static void init();
 
-    static void init();
+  // #################
+  // get all / by name
+  // #################
 
-    //#################
-    //get all / by name
-    //#################
+  static QList<sys::Plugin> getAll();
+  static std::optional<sys::Plugin> getByName(
+      const QString& name);  // convenience/display lookup - can be ambiguous,
+                             // see plugininfo.h
+  static std::optional<sys::Plugin> getByFilePath(
+      const QString& filePath);  // the real, collision-safe lookup
 
-    static QList<sys::Plugin> getAll();
-    static std::optional<sys::Plugin> getByName(const QString &name);          //convenience/display lookup - can be ambiguous, see plugininfo.h
-    static std::optional<sys::Plugin> getByFilePath(const QString &filePath);  //the real, collision-safe lookup
+  // #############
+  // get functions
+  // #############
 
-    //#############
-    //get functions
-    //#############
+  static QList<sys::Function> getAllFunctions();
+  // whether a function is a "create" function for the given feature type, i.e.
+  // one that can produce it from scratch. A pure predicate over the function
+  // itself - exposed so consumers filtering their own function lists (e.g.
+  // proxy models over an injected list) can apply identical semantics without
+  // querying this repository
+  static bool isCreateFunctionFor(const sys::Function& function,
+                                  const FeatureTypes& type);
 
-    static QList<sys::Function> getAllFunctions();
-    //whether a function is a "create" function for the given feature type, i.e. one
-    //that can produce it from scratch. A pure predicate over the function itself -
-    //exposed so consumers filtering their own function lists (e.g. proxy models over
-    //an injected list) can apply identical semantics without querying this repository
-    static bool isCreateFunctionFor(const sys::Function &function, const FeatureTypes &type);
+  static QList<sys::Function> getFunctionsApplicableTo(
+      const FeatureTypes&
+          type);  // fit/construct/special/system-transformation functions, i.e.
+                  // functions used to create a feature
+  static QList<sys::Function> getChangeFunctions(
+      const FeatureTypes& type);  // everything else, i.e. functions used to
+                                  // modify an already-solved feature
+  static std::optional<sys::Function> getByQualifiedId(
+      const QString& qualifiedId);
 
-    static QList<sys::Function> getFunctionsApplicableTo(const FeatureTypes &type);   //fit/construct/special/system-transformation functions, i.e. functions used to create a feature
-    static QList<sys::Function> getChangeFunctions(const FeatureTypes &type);         //everything else, i.e. functions used to modify an already-solved feature
-    static std::optional<sys::Function> getByQualifiedId(const QString &qualifiedId);
+  // ################
+  // default function
+  // ################
 
-    //################
-    //default function
-    //################
+  // resolves Settings' "defaultFunction.<type>" (Project -> User -> System)
+  // against getFunctionsApplicableTo(type) by name - the same
+  // convenience-lookup semantics as getByName(), and falls through to a less
+  // specific tier if a more specific one's reference no longer resolves (e.g. a
+  // project saved against a plugin set that's since changed)
+  static std::optional<sys::Function> getDefaultFunction(
+      const FeatureTypes& type);
 
-    //resolves Settings' "defaultFunction.<type>" (Project -> User -> System) against
-    //getFunctionsApplicableTo(type) by name - the same convenience-lookup semantics
-    //as getByName(), and falls through to a less specific tier if a more specific
-    //one's reference no longer resolves (e.g. a project saved against a plugin set
-    //that's since changed)
-    static std::optional<sys::Function> getDefaultFunction(const FeatureTypes &type);
+  // #########
+  // get tools
+  // #########
 
-    //#########
-    //get tools
-    //#########
+  static QList<sys::Tool> getAllTools();
 
-    static QList<sys::Tool> getAllTools();
+  static QList<sys::Sensor> getAllSensors();
+  static QList<MeasurementConfig> getAllMeasurementConfigs();
 
-    static QList<sys::Sensor> getAllSensors();
-    static QList<MeasurementConfig> getAllMeasurementConfigs();
+  // ###################
+  // ABI-rejected plugins
+  // ###################
 
-    //###################
-    //ABI-rejected plugins
-    //###################
+  // one line per plugin found but not loaded because it was built against a
+  // different plugin ABI. Never silently empty-by-omission: a plugin that
+  // fails this check is recorded here precisely so it can be surfaced
+  static const QStringList& getRejectedPlugins();
 
-    //one line per plugin found but not loaded because it was built against a
-    //different plugin ABI. Never silently empty-by-omission: a plugin that
-    //fails this check is recorded here precisely so it can be surfaced
-    static const QStringList &getRejectedPlugins();
+ private:
+  static QList<sys::Plugin> scanDirectory(const QString& dirPath);
+  static sys::Plugin scanPluginFile(const QString& filePath);
+  static bool checkAbiVersion(const QString& filePath, const QJsonObject& meta);
 
-private:
-
-    static QList<sys::Plugin> scanDirectory(const QString &dirPath);
-    static sys::Plugin scanPluginFile(const QString &filePath);
-    static bool checkAbiVersion(const QString &filePath, const QJsonObject &meta);
-
-    static QList<sys::Plugin> plugins;
-    static QStringList rejected;
-    static bool isInit;
-
+  static QList<sys::Plugin> plugins;
+  static QStringList rejected;
+  static bool isInit;
 };
 
-#endif // PLUGINREPOSITORY_H
+#endif  // PLUGINREPOSITORY_H

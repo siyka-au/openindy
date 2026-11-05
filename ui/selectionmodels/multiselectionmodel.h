@@ -1,24 +1,24 @@
 #ifndef MULTISELECTIONMODEL_H
 #define MULTISELECTIONMODEL_H
 
-#include <QDebug>
 #include <QAbstractItemModel>
+#include <QDebug>
 #include <QItemSelectionModel>
 
-class MultiSelectionModel : public QItemSelectionModel
-{
-    Q_OBJECT
+class MultiSelectionModel : public QItemSelectionModel {
+  Q_OBJECT
 
-public:
-    MultiSelectionModel(QAbstractItemModel *myModel);
-    ~MultiSelectionModel();
+ public:
+  MultiSelectionModel(QAbstractItemModel* myModel);
+  ~MultiSelectionModel();
 
-public slots:
-    void select(const QItemSelection &selection, SelectionFlags command);
-    void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command);
+ public slots:
+  void select(const QItemSelection& selection, SelectionFlags command);
+  void select(const QModelIndex& index,
+              QItemSelectionModel::SelectionFlags command);
 
-private:
-    bool checkIndex(const QModelIndex &index, const QItemSelection &selection);
+ private:
+  bool checkIndex(const QModelIndex& index, const QItemSelection& selection);
 };
 
-#endif // MULTISELECTIONMODEL_H
+#endif  // MULTISELECTIONMODEL_H

@@ -1,21 +1,21 @@
 #ifndef OIDATAEXCHANGER_H
 #define OIDATAEXCHANGER_H
 
+#include <QApplication>
+#include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QObject>
-#include <QApplication>
 
+#include "console.h"
+#include "exchangeParams.h"
+#include "exchangedefinedformat.h"
+#include "exchangesimpleascii.h"
+#include "measurementconfigmanager.h"
+#include "observationimporter.h"
+#include "oijob.h"
+#include "pluginloader.h"
 #include "pluginrepository.h"
 #include "settings.h"
-#include "exchangesimpleascii.h"
-#include "exchangedefinedformat.h"
-#include "oijob.h"
-#include "exchangeParams.h"
-#include "pluginloader.h"
-#include "console.h"
-#include "observationimporter.h"
-#include "measurementconfigmanager.h"
 #include "util.h"
 
 using namespace oi;
@@ -24,99 +24,102 @@ using namespace oi;
  * \brief The DataExchanger class
  * Imports or exports nominals by invoking plugins
  */
-class DataExchanger : public QObject
-{
-    Q_OBJECT
+class DataExchanger : public QObject {
+  Q_OBJECT
 
-public:
-    explicit DataExchanger(QObject *parent = 0);
+ public:
+  explicit DataExchanger(QObject* parent = 0);
 
-    ~DataExchanger();
+  ~DataExchanger();
 
-    //#############################
-    //get or set general attributes
-    //#############################
+  // #############################
+  // get or set general attributes
+  // #############################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-    const QPointer<MeasurementConfigManager> &getMeasurementConfigManager();
-    void setMesaurementConfigManager(const QPointer<MeasurementConfigManager> &manager);
+  const QPointer<MeasurementConfigManager>& getMeasurementConfigManager();
+  void setMesaurementConfigManager(
+      const QPointer<MeasurementConfigManager>& manager);
 
-    void setExchangeParams(ExchangeParams exchangeParams);
+  void setExchangeParams(ExchangeParams exchangeParams);
 
-    //######################
-    //start import or export
-    //######################
+  // ######################
+  // start import or export
+  // ######################
 
-    //import or export features
-    bool importData(const ExchangeParams &params);
-    bool exportData(const ExchangeParams &params);
+  // import or export features
+  bool importData(const ExchangeParams& params);
+  bool exportData(const ExchangeParams& params);
 
-    //import observations
-    bool importObservations(const QString &filename);
+  // import observations
+  bool importObservations(const QString& filename);
 
-signals:
+ signals:
 
-    //##############################
-    //inform about exchange progress
-    //##############################
+  // ##############################
+  // inform about exchange progress
+  // ##############################
 
-    //nominal im- and export
-    void updateNominalImportProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
-    void updateNominalExportProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
-    void nominalImportFinished(const bool &success);
-    void nominalExportFinished(const bool &success);
+  // nominal im- and export
+  void updateNominalImportProgress(const int& progress,
+                                   const QString& msg);  // 0 <= progress <= 100
+  void updateNominalExportProgress(const int& progress,
+                                   const QString& msg);  // 0 <= progress <= 100
+  void nominalImportFinished(const bool& success);
+  void nominalExportFinished(const bool& success);
 
-    //observation import
-    void updateObservationImportProgress(const int &progress, const QString &msg); // 0 <= progress <= 100
-    void observationImportFinished(const bool &success);
+  // observation import
+  void updateObservationImportProgress(
+      const int& progress, const QString& msg);  // 0 <= progress <= 100
+  void observationImportFinished(const bool& success);
 
-    //print messages
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  // print messages
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private slots:
+ private slots:
 
-    //########################################################
-    //add features to current job after an import was finished
-    //########################################################
+  // ########################################################
+  // add features to current job after an import was finished
+  // ########################################################
 
-    void importFeatures(const bool &success);
-    void exportFeatures(const bool &success);
+  void importFeatures(const bool& success);
+  void exportFeatures(const bool& success);
 
-    void importObservationsFinished(const bool &success);
+  void importObservationsFinished(const bool& success);
 
-private:
+ private:
+  // ##################
+  // general attributes
+  // ##################
 
-    //##################
-    //general attributes
-    //##################
+  QPointer<OiJob> currentJob;
 
-    QPointer<OiJob> currentJob;
+  ExchangeParams exchangeParams;
+  QPointer<ExchangeInterface> exchange;
 
-    ExchangeParams exchangeParams;
-    QPointer<ExchangeInterface> exchange;
+  QPointer<ObservationImporter> observationImporter;
 
-    QPointer<ObservationImporter> observationImporter;
+  // #########################
+  // thread the plugin runs on
+  // #########################
 
-    //#########################
-    //thread the plugin runs on
-    //#########################
+  QThread exchangeThread;
 
-    QThread exchangeThread;
+  QPointer<MeasurementConfigManager> mConfigManager;
 
-    QPointer<MeasurementConfigManager> mConfigManager;
+  // #############
+  // helper method
+  // #############
+  void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> >& actuals,
+                               const MeasurementConfig& mConfig,
+                               const QString& path, const QString& fName);
 
-    //#############
-    //helper method
-    //#############
-    void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
-                                 const MeasurementConfig &mConfig, const QString &path, const QString &fName);
-
-    // import readings of features
-    void importMeasurements(QList<QPointer<FeatureWrapper> > features);
-    void createActuals(QList<QPointer<FeatureWrapper> > features);
-
+  // import readings of features
+  void importMeasurements(QList<QPointer<FeatureWrapper> > features);
+  void createActuals(QList<QPointer<FeatureWrapper> > features);
 };
 
-#endif // OIDATAEXCHANGER_H
+#endif  // OIDATAEXCHANGER_H

@@ -2,14 +2,14 @@
 #define FUNCTIONTABLEMODEL_H
 
 #include <QAbstractTableModel>
+#include <QList>
 #include <QObject>
 #include <QPointer>
-#include <QList>
 
 #include "oijob.h"
+#include "pluginrepository.h"
 #include "types.h"
 #include "util.h"
-#include "pluginrepository.h"
 
 using namespace oi;
 
@@ -17,63 +17,62 @@ using namespace oi;
  * \brief The FunctionTableModel class
  * Model that holds all available function plugins
  */
-class FunctionTableModel : public QAbstractTableModel
-{
-    Q_OBJECT
+class FunctionTableModel : public QAbstractTableModel {
+  Q_OBJECT
 
-public:
-    explicit FunctionTableModel(QObject *parent = 0);
+ public:
+  explicit FunctionTableModel(QObject* parent = 0);
 
-    //########################################
-    //override methods of abstract table model
-    //########################################
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  virtual QVariant headerData(int section, Qt::Orientation orientation,
+                              int role = Qt::DisplayRole) const;
 
-    //########################
-    //get function information
-    //########################
+  // ########################
+  // get function information
+  // ########################
 
-    QString getFunctionDescription(const QModelIndex &index) const;
-    QString getFunctionName(const QModelIndex &index) const;
-    QString getPluginFilePath(const QModelIndex &index) const;
+  QString getFunctionDescription(const QModelIndex& index) const;
+  QString getFunctionName(const QModelIndex& index) const;
+  QString getPluginFilePath(const QModelIndex& index) const;
 
-    //######################################
-    //get or set currently available plugins
-    //######################################
+  // ######################################
+  // get or set currently available plugins
+  // ######################################
 
-    const QList<sys::Plugin> &getPlugins() const;
-    void setPlugins(const QList<sys::Plugin> &plugins);
+  const QList<sys::Plugin>& getPlugins() const;
+  void setPlugins(const QList<sys::Plugin>& plugins);
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-private slots:
+ private slots:
 
-    //##############################################
-    //update the model when the plugins were changed
-    //##############################################
+  // ##############################################
+  // update the model when the plugins were changed
+  // ##############################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // ###########################
+  // currently available plugins
+  // ###########################
 
-    //###########################
-    //currently available plugins
-    //###########################
-
-    QList<sys::Plugin> plugins;
-    
+  QList<sys::Plugin> plugins;
 };
 
-#endif // FUNCTIONTABLEMODEL_H
+#endif  // FUNCTIONTABLEMODEL_H

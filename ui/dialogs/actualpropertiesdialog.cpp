@@ -1,324 +1,355 @@
 #include "actualpropertiesdialog.h"
-#include "ui_actualpropertiesdialog.h"
 
 #include <algorithm>
+
+#include "ui_actualpropertiesdialog.h"
 
 /*!
  * \brief ActualPropertiesDialog::ActualPropertiesDialog
  * \param parent
  */
-ActualPropertiesDialog::ActualPropertiesDialog(QWidget *parent) :
-    QDialog(parent), ui(new Ui::ActualPropertiesDialog)
-{
-    this->ui->setupUi(this);
+ActualPropertiesDialog::ActualPropertiesDialog(QWidget* parent)
+    : QDialog(parent), ui(new Ui::ActualPropertiesDialog) {
+  this->ui->setupUi(this);
 
-    //init GUI elements and assign models
-    this->initGUI();
-    this->initModels();
+  // init GUI elements and assign models
+  this->initGUI();
+  this->initModels();
 
-    QObject::connect(this,&ActualPropertiesDialog::useObservation, &ModelManager::getObservationModel(),
-                     &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
-    QObject::connect(this,&ActualPropertiesDialog::unUseObservation, &ModelManager::getObservationModel(),
-                     &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
+  QObject::connect(this, &ActualPropertiesDialog::useObservation,
+                   &ModelManager::getObservationModel(),
+                   &ObservationModel::setObservationUseStateByContextmenu,
+                   Qt::AutoConnection);
+  QObject::connect(this, &ActualPropertiesDialog::unUseObservation,
+                   &ModelManager::getObservationModel(),
+                   &ObservationModel::setObservationUseStateByContextmenu,
+                   Qt::AutoConnection);
 
-    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &ActualPropertiesDialog::sendMessage, Qt::AutoConnection);
+  QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this,
+                   &ActualPropertiesDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!
  * \brief ActualPropertiesDialog::~ActualPropertiesDialog
  */
-ActualPropertiesDialog::~ActualPropertiesDialog(){
-    QObject::disconnect(this,&ActualPropertiesDialog::useObservation, &ModelManager::getObservationModel(),
-                     &ObservationModel::setObservationUseStateByContextmenu);
-    QObject::disconnect(this,&ActualPropertiesDialog::unUseObservation, &ModelManager::getObservationModel(),
-                     &ObservationModel::setObservationUseStateByContextmenu);
-    delete this->ui;
+ActualPropertiesDialog::~ActualPropertiesDialog() {
+  QObject::disconnect(this, &ActualPropertiesDialog::useObservation,
+                      &ModelManager::getObservationModel(),
+                      &ObservationModel::setObservationUseStateByContextmenu);
+  QObject::disconnect(this, &ActualPropertiesDialog::unUseObservation,
+                      &ModelManager::getObservationModel(),
+                      &ObservationModel::setObservationUseStateByContextmenu);
+  delete this->ui;
 }
 
 /*!
  * \brief ActualPropertiesDialog::keyPressEvent
  * \param e
  */
-void ActualPropertiesDialog::keyPressEvent(QKeyEvent *e){
-
-    //check triggered keys
-    switch(e->key()){
+void ActualPropertiesDialog::keyPressEvent(QKeyEvent* e) {
+  // check triggered keys
+  switch (e->key()) {
     case Qt::Key_C:
 
-        if(e->modifiers() == Qt::CTRL){
-            this->copyToClipboard();
-        }
-
-    }
-
+      if (e->modifiers() == Qt::CTRL) {
+        this->copyToClipboard();
+      }
+  }
 }
 
 /*!
- * \brief ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested
+ * \brief
+ * ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested
  * \param pos
  */
-void ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested(const QPoint &pos){
+void ActualPropertiesDialog::
+    on_tableView_observation_customContextMenuRequested(const QPoint& pos) {
+  // create menu and add import action
+  QMenu* menu = new QMenu();
+  menu->addAction(QIcon(":/Images/icons/edit_add.png"),
+                  QString("import observations"), this,
+                  SLOT(importObservationsMenuClicked(bool)));
 
-    //create menu and add import action
-    QMenu *menu = new QMenu();
-    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("import observations"), this, SLOT(importObservationsMenuClicked(bool)));
+  // add use / unuse actions
+  menu->addAction(QIcon(":/Images/icons/edit_add.png"),
+                  QString("use selected observation(s)"), this,
+                  SLOT(useObservations()));
+  menu->addAction(QIcon(":/Images/icons/edit_remove.png"),
+                  QString("unuse selected observation(s)"), this,
+                  SLOT(unUseObservations()));
+  menu->addAction(QIcon(":/Images/icons/edit_remove.png"),
+                  QString("delete selected observation(s)"), this,
+                  SLOT(deleteObservations()));
 
-    //add use / unuse actions
-    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("use selected observation(s)"), this, SLOT(useObservations()));
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations()));
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected observation(s)"), this, SLOT(deleteObservations()));
+  // get observation table models
+  ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
+      this->ui->tableView_observation->model());
+  if (model == NULL) {
+    delete menu;
+    return;
+  }
 
-    //get observation table models
-    ObservationProxyModel *model = static_cast<ObservationProxyModel*>(this->ui->tableView_observation->model());
-    if(model == NULL){
-        delete menu;
-        return;
-    }
-
-    ObservationModel *sourceModel =  static_cast<ObservationModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        delete menu;
-        return;
-    }
-    menu->exec(this->ui->tableView_observation->mapToGlobal(pos));
-
+  ObservationModel* sourceModel =
+      static_cast<ObservationModel*>(model->sourceModel());
+  if (sourceModel == NULL) {
+    delete menu;
+    return;
+  }
+  menu->exec(this->ui->tableView_observation->mapToGlobal(pos));
 }
 
 /*!
  * \brief ActualPropertiesDialog::importObservationsMenuClicked
  * \param checked
  */
-void ActualPropertiesDialog::importObservationsMenuClicked(bool checked){
+void ActualPropertiesDialog::importObservationsMenuClicked(bool checked) {
+  QString filename =
+      QFileDialog::getOpenFileName(this, "Choose a file", "", "");
+  if (filename.compare("") == 0) {
+    return;
+  }
 
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "");
-    if(filename.compare("") == 0){
-        return;
-    }
-
-    emit this->importObservations(filename);
-
+  emit this->importObservations(filename);
 }
 
 /*!
  * \brief ActualPropertiesDialog::resizeTableView
  */
-void ActualPropertiesDialog::resizeTableView(){
-    this->ui->tableView_observation->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
-    this->ui->tableView_readings->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
-    this->ui->tableView_observation->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
-    this->ui->tableView_readings->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+void ActualPropertiesDialog::resizeTableView() {
+  this->ui->tableView_observation->horizontalHeader()->resizeSections(
+      QHeaderView::ResizeToContents);
+  this->ui->tableView_readings->horizontalHeader()->resizeSections(
+      QHeaderView::ResizeToContents);
+  this->ui->tableView_observation->verticalHeader()->resizeSections(
+      QHeaderView::ResizeToContents);
+  this->ui->tableView_readings->verticalHeader()->resizeSections(
+      QHeaderView::ResizeToContents);
 }
 
 /*!
- * \brief ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged
+ * \brief
+ * ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged
  * \param index
  */
-void ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged(int index){
+void ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged(
+    int index) {
+  // check function statistic model
+  if (this->functionStatisticModel.isNull()) {
+    return;
+  }
 
-    //check function statistic model
-    if(this->functionStatisticModel.isNull()){
-        return;
-    }
-
-    this->functionStatisticModel->setFunctionIndex(index);
-
+  this->functionStatisticModel->setFunctionIndex(index);
 }
 
 /*!
  * \brief ActualPropertiesDialog::copyToClipboard
  * Copies the current selection into the clipboard
  */
-void ActualPropertiesDialog::copyToClipboard(){
+void ActualPropertiesDialog::copyToClipboard() {
+  // init variables
+  QPointer<QAbstractItemModel> model = NULL;
+  QPointer<QItemSelectionModel> selectionModel = NULL;
 
-    //init variables
-    QPointer<QAbstractItemModel> model = NULL;
-    QPointer<QItemSelectionModel>selectionModel = NULL;
+  // get selection of the active table view
+  if (this->ui->tabWidget_selectedFeature->currentWidget() ==
+      this->ui->tab_observations) {  // observation table view
+    model = this->ui->tableView_observation->model();
+    selectionModel = this->ui->tableView_observation->selectionModel();
+  } else if (this->ui->tabWidget_selectedFeature->currentWidget() ==
+             this->ui->tab_readings) {  // reading table view
+    model = this->ui->tableView_readings->model();
+    selectionModel = this->ui->tableView_readings->selectionModel();
+  }
 
-    //get selection of the active table view
-    if(this->ui->tabWidget_selectedFeature->currentWidget() == this->ui->tab_observations){ //observation table view
-        model = this->ui->tableView_observation->model();
-        selectionModel = this->ui->tableView_observation->selectionModel();
-    }else if(this->ui->tabWidget_selectedFeature->currentWidget() == this->ui->tab_readings){ //reading table view
-        model = this->ui->tableView_readings->model();
-        selectionModel = this->ui->tableView_readings->selectionModel();
-    }
-
-    clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
-
+  clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
 }
 
 /*!
  * \brief ActualPropertiesDialog::showEvent
  * \param event
  */
-void ActualPropertiesDialog::showEvent(QShowEvent *event){
+void ActualPropertiesDialog::showEvent(QShowEvent* event) {
+  this->resizeTableView();
 
-    this->resizeTableView();
-
-    event->accept();
-
+  event->accept();
 }
 
 /*!
  * \brief ActualPropertiesDialog::initGUI
  */
-void ActualPropertiesDialog::initGUI(){
+void ActualPropertiesDialog::initGUI() {
+  // resize rows and columns to table view contents on double click
+  QObject::connect(this->ui->tableView_observation->horizontalHeader(),
+                   &QHeaderView::sectionDoubleClicked, this,
+                   &ActualPropertiesDialog::resizeTableView,
+                   Qt::AutoConnection);
+  QObject::connect(this->ui->tableView_observation->verticalHeader(),
+                   &QHeaderView::sectionDoubleClicked, this,
+                   &ActualPropertiesDialog::resizeTableView,
+                   Qt::AutoConnection);
+  QObject::connect(this->ui->tableView_readings->horizontalHeader(),
+                   &QHeaderView::sectionDoubleClicked, this,
+                   &ActualPropertiesDialog::resizeTableView,
+                   Qt::AutoConnection);
+  QObject::connect(this->ui->tableView_readings->verticalHeader(),
+                   &QHeaderView::sectionDoubleClicked, this,
+                   &ActualPropertiesDialog::resizeTableView,
+                   Qt::AutoConnection);
 
-    //resize rows and columns to table view contents on double click
-    QObject::connect(this->ui->tableView_observation->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
-    QObject::connect(this->ui->tableView_observation->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
-    QObject::connect(this->ui->tableView_readings->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
-    QObject::connect(this->ui->tableView_readings->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &ActualPropertiesDialog::resizeTableView, Qt::AutoConnection);
+  // enable context menu in observations table view
+  this->ui->tableView_observation->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    //enable context menu in observations table view
-    this->ui->tableView_observation->setContextMenuPolicy(Qt::CustomContextMenu);
-
-    //set up delegates
-    ObservationTableDelegate *observationTableDelegate = new ObservationTableDelegate();
-    this->ui->tableView_observation->setItemDelegate(observationTableDelegate);
-    ReadingTableDelegate *readingTableDelegate = new ReadingTableDelegate();
-    this->ui->tableView_readings->setItemDelegate(readingTableDelegate);
-
+  // set up delegates
+  ObservationTableDelegate* observationTableDelegate =
+      new ObservationTableDelegate();
+  this->ui->tableView_observation->setItemDelegate(observationTableDelegate);
+  ReadingTableDelegate* readingTableDelegate = new ReadingTableDelegate();
+  this->ui->tableView_readings->setItemDelegate(readingTableDelegate);
 }
 
 /*!
  * \brief ActualPropertiesDialog::initModels
  */
-void ActualPropertiesDialog::initModels(){
+void ActualPropertiesDialog::initModels() {
+  // assign observation and reading models
+  this->ui->tableView_observation->setModel(
+      &ModelManager::getObservationProxyModel());
+  this->ui->tableView_readings->setModel(&ModelManager::getReadingProxyModel());
 
-    //assign observation and reading models
-    this->ui->tableView_observation->setModel(&ModelManager::getObservationProxyModel());
-    this->ui->tableView_readings->setModel(&ModelManager::getReadingProxyModel());
-
-    this->ui->tableView_observation->setSortingEnabled(true);
-    this->ui->tableView_readings->setSortingEnabled(true);
-
+  this->ui->tableView_observation->setSortingEnabled(true);
+  this->ui->tableView_readings->setSortingEnabled(true);
 }
 
 /*!
  * \brief ActualPropertiesDialog::getSelection
  * \return
  */
-QModelIndexList ActualPropertiesDialog::getSelection()
-{
-    //init variables
-    QPointer<QSortFilterProxyModel> model;
-    QPointer<QItemSelectionModel> selectionModel;
-    QModelIndexList selection;
+QModelIndexList ActualPropertiesDialog::getSelection() {
+  // init variables
+  QPointer<QSortFilterProxyModel> model;
+  QPointer<QItemSelectionModel> selectionModel;
+  QModelIndexList selection;
 
-    //get models of observation tabview
-    if(this->ui->tabWidget_selectedFeature->currentWidget() != this->ui->tab_observations){
-        return selection;
-    }
-
-    model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
-    if(model == NULL){
-        return selection;
-    }
-
-    //get selection
-    selectionModel = this->ui->tableView_observation->selectionModel();
-
-    //get and check source model
-    ObservationModel *sourceModel = static_cast<ObservationModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return selection;
-    }
-
-    //get selected indexes
-    selection = selectionModel->selectedIndexes();
-    if(selection.size() > 0){
-        std::sort(selection.begin(), selection.end());
-    }
-
+  // get models of observation tabview
+  if (this->ui->tabWidget_selectedFeature->currentWidget() !=
+      this->ui->tab_observations) {
     return selection;
+  }
+
+  model = static_cast<ObservationProxyModel*>(
+      this->ui->tableView_observation->model());
+  if (model == NULL) {
+    return selection;
+  }
+
+  // get selection
+  selectionModel = this->ui->tableView_observation->selectionModel();
+
+  // get and check source model
+  ObservationModel* sourceModel =
+      static_cast<ObservationModel*>(model->sourceModel());
+  if (sourceModel == NULL) {
+    return selection;
+  }
+
+  // get selected indexes
+  selection = selectionModel->selectedIndexes();
+  if (selection.size() > 0) {
+    std::sort(selection.begin(), selection.end());
+  }
+
+  return selection;
 }
 
 /*!
- * \brief ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuRequested
+ * \brief
+ * ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuRequested
  * \param pos
  */
-void ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuRequested(const QPoint &pos)
-{
-    //create  menu and add delete action
-    QMenu *menu = new QMenu();
+void ActualPropertiesDialog::
+    on_tabWidget_selectedFeature_customContextMenuRequested(const QPoint& pos) {
+  // create  menu and add delete action
+  QMenu* menu = new QMenu();
 
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("use selected observation(s)"), this, SLOT(useObservations()));
-    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations()));
+  menu->addAction(QIcon(":/Images/icons/edit_remove.png"),
+                  QString("use selected observation(s)"), this,
+                  SLOT(useObservations()));
+  menu->addAction(QIcon(":/Images/icons/edit_add.png"),
+                  QString("unuse selected observation(s)"), this,
+                  SLOT(unUseObservations()));
 
-    //get observation table models
-    ObservationProxyModel *model = static_cast<ObservationProxyModel*>(this->ui->tableView_observation->model());
-    if(model == NULL){
-        delete menu;
-        return;
-    }
+  // get observation table models
+  ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
+      this->ui->tableView_observation->model());
+  if (model == NULL) {
+    delete menu;
+    return;
+  }
 
-    ObservationModel *sourceModel =  static_cast<ObservationModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        delete menu;
-        return;
-    }
+  ObservationModel* sourceModel =
+      static_cast<ObservationModel*>(model->sourceModel());
+  if (sourceModel == NULL) {
+    delete menu;
+    return;
+  }
 }
 
 /*!
  * \brief ActualPropertiesDialog::unUseObservations
  */
-void ActualPropertiesDialog::unUseObservations()
-{
-    this->useObservations(false);
+void ActualPropertiesDialog::unUseObservations() {
+  this->useObservations(false);
 }
 
 /*!
  * \brief ActualPropertiesDialog::useObservations
  */
-void ActualPropertiesDialog::useObservations()
-{
-    this->useObservations(true);
-}
+void ActualPropertiesDialog::useObservations() { this->useObservations(true); }
 
-void ActualPropertiesDialog::useObservations(bool use)
-{
-    //init variables
-    QModelIndexList selection;
+void ActualPropertiesDialog::useObservations(bool use) {
+  // init variables
+  QModelIndexList selection;
 
-    //get selected indexes
-    selection = this->getSelection();
-    if(selection.size() > 0){
-        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
-        if(model == NULL){
-            return;
-        }
-        QModelIndexList s;
-        foreach (QModelIndex idx, selection) {
-            s.append(model->mapToSource(idx));
-        }
-        foreach (QModelIndex idx, s) {
-            emit this->useObservation(use, idx);
-        }
+  // get selected indexes
+  selection = this->getSelection();
+  if (selection.size() > 0) {
+    ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
+        this->ui->tableView_observation->model());
+    if (model == NULL) {
+      return;
     }
+    QModelIndexList s;
+    foreach (QModelIndex idx, selection) {
+      s.append(model->mapToSource(idx));
+    }
+    foreach (QModelIndex idx, s) {
+      emit this->useObservation(use, idx);
+    }
+  }
 }
 /*!
  * \brief ActualPropertiesDialog::deleteObservations
  */
-void ActualPropertiesDialog::deleteObservations()
-{
-    //init variables
-    QModelIndexList selection;
+void ActualPropertiesDialog::deleteObservations() {
+  // init variables
+  QModelIndexList selection;
 
-    //get selected indexes
-    selection = this->getSelection();
-    if(selection.size() > 0){
-        QList<int> selectedIds;
-        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
-        if(model == NULL){
-            return;
-        }
-        foreach (QModelIndex idx, selection) {
-            int i = ModelManager::getObservationModel().getObservationIdByIndex(model->mapToSource(idx));
-            if (i >= 0) {
-                selectedIds.append(i);
-            }
-        }   
-        emit this->removeObservationsById(selectedIds);
+  // get selected indexes
+  selection = this->getSelection();
+  if (selection.size() > 0) {
+    QList<int> selectedIds;
+    ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
+        this->ui->tableView_observation->model());
+    if (model == NULL) {
+      return;
     }
+    foreach (QModelIndex idx, selection) {
+      int i = ModelManager::getObservationModel().getObservationIdByIndex(
+          model->mapToSource(idx));
+      if (i >= 0) {
+        selectedIds.append(i);
+      }
+    }
+    emit this->removeObservationsById(selectedIds);
+  }
 }

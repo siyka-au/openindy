@@ -1,77 +1,75 @@
 #ifndef OIWEBSOCKETSERVER_H
 #define OIWEBSOCKETSERVER_H
 
-#include <QWebSocketServer>
 #include <QList>
 #include <QPointer>
+#include <QWebSocketServer>
 
-#include "types.h"
-#include "oiwebsocket.h"
 #include "oirequesthandler.h"
+#include "oiwebsocket.h"
 #include "oiwebsocketstreamer.h"
+#include "types.h"
 
 /*!
  * \brief The OiWebSocketServer class
  * Class to handle all web socket connections to OpenIndy
  */
-class OiWebSocketServer : public QWebSocketServer
-{
-    Q_OBJECT
+class OiWebSocketServer : public QWebSocketServer {
+  Q_OBJECT
 
-public:
-    explicit OiWebSocketServer(QObject *parent = 0);
-    ~OiWebSocketServer();
+ public:
+  explicit OiWebSocketServer(QObject* parent = 0);
+  ~OiWebSocketServer();
 
-    static int generateUniqueId();
+  static int generateUniqueId();
 
-signals:
+ signals:
 
-    //#########################
-    //send messages to OpenIndy
-    //#########################
+  // #########################
+  // send messages to OpenIndy
+  // #########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest = eConsoleMessage);
 
-    //##########################
-    //send a request to OpenIndy
-    //##########################
+  // ##########################
+  // send a request to OpenIndy
+  // ##########################
 
-    void sendRequest(oi::OiRequestResponse request);
+  void sendRequest(oi::OiRequestResponse request);
 
-    //##############################
-    //send response to the requester
-    //##############################
+  // ##############################
+  // send response to the requester
+  // ##############################
 
-    void receiveResponse(const OiRequestResponse &response);
+  void receiveResponse(const OiRequestResponse& response);
 
-public slots:
+ public slots:
 
-    //#################
-    //server connection
-    //#################
+  // #################
+  // server connection
+  // #################
 
-    void startServer();
-    void stopServer();
+  void startServer();
+  void stopServer();
 
-private slots:
+ private slots:
 
-    //######################
-    //new client connections
-    //######################
+  // ######################
+  // new client connections
+  // ######################
 
-    void incomingConnection();
+  void incomingConnection();
 
-private:
+ private:
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  QPointer<OiWebSocketStreamer> streamer;
 
-    QPointer<OiWebSocketStreamer> streamer;
-
-    static int currentId;
-    QList<QPointer<OiWebSocket> > usedSockets;
-
+  static int currentId;
+  QList<QPointer<OiWebSocket> > usedSockets;
 };
 
-#endif // OIWEBSOCKETSERVER_H
+#endif  // OIWEBSOCKETSERVER_H

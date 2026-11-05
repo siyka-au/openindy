@@ -6,94 +6,92 @@
 #include <QPixmap>
 #include <QPointer>
 
+#include "sensorconfigurationmanager.h"
 #include "types.h"
 #include "util.h"
-#include "sensorconfigurationmanager.h"
 
 /*!
  * \brief The SensorConfigurationTreeViewModel class
  * Model that holds all available sensor configurations
  */
-class SensorConfigurationModel : public QAbstractListModel
-{
-    Q_OBJECT
+class SensorConfigurationModel : public QAbstractListModel {
+  Q_OBJECT
 
-public:
-    explicit SensorConfigurationModel(QObject *parent = 0);
+ public:
+  explicit SensorConfigurationModel(QObject* parent = 0);
 
-    //#######################################
-    //override methods of abstract item model
-    //#######################################
+  // #######################################
+  // override methods of abstract item model
+  // #######################################
 
-    int	rowCount(const QModelIndex & parent = QModelIndex()) const;
-    int	columnCount(const QModelIndex & parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+  QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole);
 
-    //#######################################
-    //get or set sensor configuration manager
-    //#######################################
+  // #######################################
+  // get or set sensor configuration manager
+  // #######################################
 
-    const SensorConfigurationManager &getSensorConfigurationManager() const;
-    void setSensorConfigurationManager(const SensorConfigurationManager &manager);
+  const SensorConfigurationManager& getSensorConfigurationManager() const;
+  void setSensorConfigurationManager(const SensorConfigurationManager& manager);
 
-    //####################################
-    //get or set sensor config information
-    //####################################
+  // ####################################
+  // get or set sensor config information
+  // ####################################
 
-    //add or remove configs
-    SensorConfiguration addSensorConfiguration();
-    bool removeSensorConfiguration(const QModelIndex &index);
+  // add or remove configs
+  SensorConfiguration addSensorConfiguration();
+  bool removeSensorConfiguration(const QModelIndex& index);
 
-    //update the active sensor config
-    void updateSensorAccuracy(const SensorConfiguration &sConfig);
-    void updateSensorParameters(const SensorConfiguration &sConfig);
-    void updateSensorPlugin(const SensorConfiguration &sConfig);
-    void updateSensorConnection(const SensorConfiguration &sConfig);
+  // update the active sensor config
+  void updateSensorAccuracy(const SensorConfiguration& sConfig);
+  void updateSensorParameters(const SensorConfiguration& sConfig);
+  void updateSensorPlugin(const SensorConfiguration& sConfig);
+  void updateSensorConnection(const SensorConfiguration& sConfig);
 
-    //get or set active sensor config
-    const SensorConfiguration &getActiveSensorConfig() const;
-    QModelIndex getActiveSensorConfigIndex() const;
-    void setActiveSensorConfig(const SensorConfiguration &sConfig);
-    void setActiveSensorConfig(const QModelIndex &index);
+  // get or set active sensor config
+  const SensorConfiguration& getActiveSensorConfig() const;
+  QModelIndex getActiveSensorConfigIndex() const;
+  void setActiveSensorConfig(const SensorConfiguration& sConfig);
+  void setActiveSensorConfig(const QModelIndex& index);
 
-signals:
+ signals:
 
-    //##################################
-    //inform about sensor config changes
-    //##################################
+  // ##################################
+  // inform about sensor config changes
+  // ##################################
 
-    //active config changed
-    void activeSensorConfigChanged();
+  // active config changed
+  void activeSensorConfigChanged();
 
-    //config renamed
-    void sensorConfigRenamed();
+  // config renamed
+  void sensorConfigRenamed();
 
-    //configs added or removed
-    void sensorConfigsChanged();
+  // configs added or removed
+  void sensorConfigsChanged();
 
-public slots:
+ public slots:
 
-    //###########################################
-    //update the model when configuration changes
-    //###########################################
+  // ###########################################
+  // update the model when configuration changes
+  // ###########################################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // #####################
+  // sensor config manager
+  // #####################
 
-    //#####################
-    //sensor config manager
-    //#####################
-
-    SensorConfigurationManager sensorConfigManager;
-
+  SensorConfigurationManager sensorConfigManager;
 };
 
-#endif // SENSORCONFIGURATIONMODEL_H
+#endif  // SENSORCONFIGURATIONMODEL_H

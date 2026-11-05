@@ -1,99 +1,98 @@
 #ifndef BUNDLESTATIONSMODEL_H
 #define BUNDLESTATIONSMODEL_H
 
-#include <QAbstractTableModel>
 #include <QAbstractItemModel>
-#include <QObject>
-#include <QJsonObject>
+#include <QAbstractTableModel>
 #include <QJsonArray>
-
-#include "oijob.h"
+#include <QJsonObject>
+#include <QObject>
 
 #include "bundlestationitem.h"
+#include "oijob.h"
 
 /*!
  * \brief The BundleStationsModel class
  * Model with all bundle stations
  */
-class BundleStationsModel : public QAbstractItemModel
-{
-    Q_OBJECT
+class BundleStationsModel : public QAbstractItemModel {
+  Q_OBJECT
 
-public:
-    explicit BundleStationsModel(QObject *parent = 0);
-    ~BundleStationsModel();
+ public:
+  explicit BundleStationsModel(QObject* parent = 0);
+  ~BundleStationsModel();
 
-    //########################################
-    //override methods of abstract table model
-    //########################################
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  QVariant headerData(int section, Qt::Orientation orientation,
+                      int role = Qt::DisplayRole) const;
+  Qt::ItemFlags flags(const QModelIndex& index) const;
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole);
 
-    QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex & index) const;
+  QModelIndex index(int row, int column,
+                    const QModelIndex& parent = QModelIndex()) const;
+  QModelIndex parent(const QModelIndex& index) const;
 
-    //###############
-    //getter / setter
-    //###############
+  // ###############
+  // getter / setter
+  // ###############
 
-    //job
-    const QPointer<oi::OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<oi::OiJob> &job);
+  // job
+  const QPointer<oi::OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<oi::OiJob>& job);
 
-    //stations
-    const QJsonArray &getStations();
-    void setStations(const QJsonArray &stations);
+  // stations
+  const QJsonArray& getStations();
+  void setStations(const QJsonArray& stations);
 
-    //template
-    const QJsonObject &getBundleTemplate();
-    void setBundleTemplate(const QJsonObject &bundleTemplate);
+  // template
+  const QJsonObject& getBundleTemplate();
+  void setBundleTemplate(const QJsonObject& bundleTemplate);
 
-signals:
+ signals:
 
-    //#####################################
-    //signals to inform about model changes
-    //#####################################
+  // #####################################
+  // signals to inform about model changes
+  // #####################################
 
-    void stationsChanged();
+  void stationsChanged();
 
-private slots:
+ private slots:
 
-    //################
-    //update the model
-    //################
+  // ################
+  // update the model
+  // ################
 
-    void updateModel();
+  void updateModel();
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void connectJob();
+  void disconnectJob();
 
-    void connectJob();
-    void disconnectJob();
+  // update json from current selection
+  void updateJson();
 
-    //update json from current selection
-    void updateJson();
+  // #################
+  // helper attributes
+  // #################
 
-    //#################
-    //helper attributes
-    //#################
+  // root item and job
+  BundleStationItem* rootItem;
+  QPointer<oi::OiJob> currentJob;
 
-    //root item and job
-    BundleStationItem *rootItem;
-    QPointer<oi::OiJob> currentJob;
-
-    //used stations and template
-    QJsonObject bundleTemplate;
-    QJsonArray usedStations;
-
+  // used stations and template
+  QJsonObject bundleTemplate;
+  QJsonArray usedStations;
 };
 
-#endif // BUNDLESTATIONSMODEL_H
+#endif  // BUNDLESTATIONSMODEL_H

@@ -2,11 +2,10 @@
 #define MEASUREBEHAVIORTYPES
 
 enum Decision {
-    eNotSet,
-    eSearch,
-    eTryAgain,
-    eSkip,
+  eNotSet,
+  eSearch,
+  eTryAgain,
+  eSkip,
 };
 
-#endif // MEASUREBEHAVIORTYPES
-
+#endif  // MEASUREBEHAVIORTYPES

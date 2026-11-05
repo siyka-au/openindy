@@ -4,26 +4,23 @@
  * \brief AvailableFunctionsListModel::AvailableFunctionsListModel
  * \param parent
  */
-AvailableFunctionsListModel::AvailableFunctionsListModel(QObject *parent) : QAbstractListModel(parent){
-
-}
+AvailableFunctionsListModel::AvailableFunctionsListModel(QObject* parent)
+    : QAbstractListModel(parent) {}
 
 /*!
  * \brief AvailableFunctionsListModel::rowCount
  * \param parent
  * \return
  */
-int AvailableFunctionsListModel::rowCount(const QModelIndex &parent) const{
+int AvailableFunctionsListModel::rowCount(const QModelIndex& parent) const {
+  int rowCount = 0;
 
-    int rowCount = 0;
+  // get the number of function plugins
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    rowCount += plugin.functions().size();
+  }
 
-    //get the number of function plugins
-    foreach(const sys::Plugin &plugin, this->plugins){
-        rowCount += plugin.functions().size();
-    }
-
-    return rowCount;
-
+  return rowCount;
 }
 
 /*!
@@ -31,8 +28,8 @@ int AvailableFunctionsListModel::rowCount(const QModelIndex &parent) const{
  * \param parent
  * \return
  */
-int AvailableFunctionsListModel::columnCount(const QModelIndex &parent) const{
-    return 1;
+int AvailableFunctionsListModel::columnCount(const QModelIndex& parent) const {
+  return 1;
 }
 
 /*!
@@ -41,29 +38,27 @@ int AvailableFunctionsListModel::columnCount(const QModelIndex &parent) const{
  * \param role
  * \return
  */
-QVariant AvailableFunctionsListModel::data(const QModelIndex &index, int role) const{
+QVariant AvailableFunctionsListModel::data(const QModelIndex& index,
+                                           int role) const {
+  if (!index.isValid()) return QVariant();
 
-    if(!index.isValid())
-        return QVariant();
-
-    if(role != Qt::DisplayRole){
-        return QVariant();
-    }
-
-    int rowCount = 0;
-
-    //get the name of the function at index.row()
-    foreach(const sys::Plugin &plugin, this->plugins){
-        foreach(const sys::Function &function, plugin.functions()){
-            if(rowCount == index.row()){
-                return function.name();
-            }
-            rowCount++;
-        }
-    }
-
+  if (role != Qt::DisplayRole) {
     return QVariant();
+  }
 
+  int rowCount = 0;
+
+  // get the name of the function at index.row()
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    foreach (const sys::Function& function, plugin.functions()) {
+      if (rowCount == index.row()) {
+        return function.name();
+      }
+      rowCount++;
+    }
+  }
+
+  return QVariant();
 }
 
 /*!
@@ -73,15 +68,14 @@ QVariant AvailableFunctionsListModel::data(const QModelIndex &index, int role) c
  * \param role
  * \return
  */
-QVariant AvailableFunctionsListModel::headerData(int section, Qt::Orientation orientation, int role) const{
-    if((Qt::DisplayRole == role) &&
-            (Qt::Horizontal == orientation) &&
-            (0 <= section) &&
-            (section < 1)){
-
-        return "available functions";
-    }
-    return QVariant();
+QVariant AvailableFunctionsListModel::headerData(int section,
+                                                 Qt::Orientation orientation,
+                                                 int role) const {
+  if ((Qt::DisplayRole == role) && (Qt::Horizontal == orientation) &&
+      (0 <= section) && (section < 1)) {
+    return "available functions";
+  }
+  return QVariant();
 }
 
 /*!
@@ -89,23 +83,21 @@ QVariant AvailableFunctionsListModel::headerData(int section, Qt::Orientation or
  * \param index
  * \return
  */
-sys::Function AvailableFunctionsListModel::getFunctionAtIndex(const QModelIndex &index) const{
+sys::Function AvailableFunctionsListModel::getFunctionAtIndex(
+    const QModelIndex& index) const {
+  if (!index.isValid()) return sys::Function();
 
-    if(!index.isValid())
-        return sys::Function();
-
-    int rowCount = 0;
-    foreach(const sys::Plugin &plugin, this->plugins){
-        foreach(const sys::Function &function, plugin.functions()){
-            if(rowCount == index.row()){
-                return function;
-            }
-            rowCount++;
-        }
+  int rowCount = 0;
+  foreach (const sys::Plugin& plugin, this->plugins) {
+    foreach (const sys::Function& function, plugin.functions()) {
+      if (rowCount == index.row()) {
+        return function;
+      }
+      rowCount++;
     }
+  }
 
-    return sys::Function();
-
+  return sys::Function();
 }
 
 /*!
@@ -113,51 +105,53 @@ sys::Function AvailableFunctionsListModel::getFunctionAtIndex(const QModelIndex 
  * \param type
  * \return
  */
-QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(const FeatureTypes &type) const{
-
-    //resolved against this->plugins (this model's own scoped list), not the
-    //global PluginRepository - consistent with every other method here, and
-    //what actually makes this model's result reflect whatever it was given
-    //via setPlugins() (production data or an injected test list alike)
-    QString name = Settings::get(QString("defaultFunction.%1").arg(getFeatureTypeName(type)));
-    if(!name.isEmpty()){
-        foreach(const sys::Plugin &plugin, this->plugins){
-            foreach(const sys::Function &function, plugin.functions()){
-                if(function.name().compare(name) == 0 && function.applicableFor().contains(type)){
-                    QPair<QString, QString> result;
-                    result.first = function.name();
-                    result.second = function.plugin().filePath();
-                    return result;
-                }
-            }
+QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(
+    const FeatureTypes& type) const {
+  // resolved against this->plugins (this model's own scoped list), not the
+  // global PluginRepository - consistent with every other method here, and
+  // what actually makes this model's result reflect whatever it was given
+  // via setPlugins() (production data or an injected test list alike)
+  QString name = Settings::get(
+      QString("defaultFunction.%1").arg(getFeatureTypeName(type)));
+  if (!name.isEmpty()) {
+    foreach (const sys::Plugin& plugin, this->plugins) {
+      foreach (const sys::Function& function, plugin.functions()) {
+        if (function.name().compare(name) == 0 &&
+            function.applicableFor().contains(type)) {
+          QPair<QString, QString> result;
+          result.first = function.name();
+          result.second = function.plugin().filePath();
+          return result;
         }
+      }
     }
+  }
 
-    return QPair<QString, QString>();
-
+  return QPair<QString, QString>();
 }
 
 /*!
  * \brief AvailableFunctionsListModel::getPlugins
  * \return
  */
-const QList<sys::Plugin> &AvailableFunctionsListModel::getPlugins() const{
-    return this->plugins;
+const QList<sys::Plugin>& AvailableFunctionsListModel::getPlugins() const {
+  return this->plugins;
 }
 
 /*!
  * \brief AvailableFunctionsListModel::setPlugins
  * \param plugins
  */
-void AvailableFunctionsListModel::setPlugins(const QList<sys::Plugin> &plugins){
-    this->plugins = plugins;
-    this->updateModel();
+void AvailableFunctionsListModel::setPlugins(
+    const QList<sys::Plugin>& plugins) {
+  this->plugins = plugins;
+  this->updateModel();
 }
 
 /*!
  * \brief AvailableFunctionsListModel::updateModel
  */
-void AvailableFunctionsListModel::updateModel(){
-    emit this->layoutAboutToBeChanged();
-    emit this->layoutChanged();
+void AvailableFunctionsListModel::updateModel() {
+  emit this->layoutAboutToBeChanged();
+  emit this->layoutChanged();
 }

@@ -4,17 +4,17 @@
 #include <QObject>
 #include <QPointer>
 
-#include "featurewrapper.h"
-#include "feature.h"
-#include "coordinatesystem.h"
-#include "trafoparam.h"
-#include "function.h"
-#include "featureattributes.h"
 #include "console.h"
-#include "pluginloader.h"
-#include "trafocontroller.h"
+#include "coordinatesystem.h"
+#include "feature.h"
+#include "featureattributes.h"
+#include "featurewrapper.h"
+#include "function.h"
 #include "oijob.h"
+#include "pluginloader.h"
 #include "sortlistbyname.h"
+#include "trafocontroller.h"
+#include "trafoparam.h"
 
 using namespace oi;
 
@@ -22,94 +22,111 @@ using namespace oi;
  * \brief The FeatureUpdater class
  * Handles all recalculation tasks of features of an OpenIndy job
  */
-class FeatureUpdater : public QObject
-{
-    Q_OBJECT
+class FeatureUpdater : public QObject {
+  Q_OBJECT
 
-public:
-    explicit FeatureUpdater(QObject *parent = 0);
+ public:
+  explicit FeatureUpdater(QObject* parent = 0);
 
-signals:
+ signals:
 
-    //#####################################################
-    //inform when a recalculation process has been finished
-    //#####################################################
+  // #####################################################
+  // inform when a recalculation process has been finished
+  // #####################################################
 
-    void featuresRecalculated();
-    void featureRecalculated(const int &featureId);
-    void trafoParamRecalculated(const int &featureId);
-    
-public:
+  void featuresRecalculated();
+  void featureRecalculated(const int& featureId);
+  void trafoParamRecalculated(const int& featureId);
 
-    //###################################
-    //get or set the current OpenIndy job
-    //###################################
+ public:
+  // ###################################
+  // get or set the current OpenIndy job
+  // ###################################
 
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
+  const QPointer<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const QPointer<OiJob>& job);
 
-public slots:
+ public slots:
 
-    //#####################
-    //recalculation methods
-    //#####################
+  // #####################
+  // recalculation methods
+  // #####################
 
-    //recalculate features
-    void recalcFeatureSet();
-    void recalcFeature(const QPointer<Feature> &feature);
-    void recalcTrafoParam(const QPointer<TrafoParam> &trafoParam);
-    bool recalcBundle(const QPointer<CoordinateSystem> &bundleSystem);
+  // recalculate features
+  void recalcFeatureSet();
+  void recalcFeature(const QPointer<Feature>& feature);
+  void recalcTrafoParam(const QPointer<TrafoParam>& trafoParam);
+  bool recalcBundle(const QPointer<CoordinateSystem>& bundleSystem);
 
-    //change the active coordinate system (transforms all observations to the given coordinate system, if possible)
-    void switchCoordinateSystem();
+  // change the active coordinate system (transforms all observations to the
+  // given coordinate system, if possible)
+  void switchCoordinateSystem();
 
-private:
+ private:
+  // ##############
+  // helper methods
+  // ##############
 
-    //##############
-    //helper methods
-    //##############
+  void connectJob();
+  void disconnectJob();
 
-    void connectJob();
-    void disconnectJob();
+  // recursive recalculation
+  void recursiveFeatureRecalculation(const QPointer<Feature>& feature);
 
-    //recursive recalculation
-    void recursiveFeatureRecalculation(const QPointer<Feature> &feature);
+  // set up input elements for trafo param features
+  void setUpTrafoParamActualActual(
+      const QPointer<TrafoParam>& trafoParam,
+      const QPointer<SystemTransformation>& systemTransformation);
+  void setUpTrafoParamActualNominal(
+      const QPointer<TrafoParam>& trafoParam,
+      const QPointer<SystemTransformation>& systemTransformation);
+  void setUpTrafoParamNominalNominal(
+      const QPointer<TrafoParam>& trafoParam,
+      const QPointer<SystemTransformation>& systemTransformation);
+  void setUpTrafoParamBundleNominal(
+      const QPointer<TrafoParam>& trafoParam,
+      const QPointer<SystemTransformation>& systemTransformation);
 
-    //set up input elements for trafo param features
-    void setUpTrafoParamActualActual(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
-    void setUpTrafoParamActualNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
-    void setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
-    void setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
+  // change the active coordinate system (does not transform observations)
+  void switchCoordinateSystemWithoutTransformation(
+      const QPointer<CoordinateSystem>& destinationSystem);
+  void transformAllObsToDestSystem(
+      const QPointer<CoordinateSystem>& destinationSystem);
+  void recalcFeatureSetWithoutTransformation();
+  void recalcFeatureWithoutTransformation(const QPointer<Feature>& feature);
+  // change with transformation for bundle
+  void switchCoordinateSystemWithTransformation(
+      const QPointer<CoordinateSystem>& destinationSystem);
 
-    //change the active coordinate system (does not transform observations)
-    void switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem);
-    void transformAllObsToDestSystem(const QPointer<CoordinateSystem> &destinationSystem);
-    void recalcFeatureSetWithoutTransformation();
-    void recalcFeatureWithoutTransformation(const QPointer<Feature> &feature);
-    //change with transformation for bundle
-    void switchCoordinateSystemWithTransformation(const QPointer<CoordinateSystem> &destinationSystem);
+  void transformObsAndNominals(
+      const QPointer<CoordinateSystem>& destinationSystem);
 
-    void transformObsAndNominals(const QPointer<CoordinateSystem> &destinationSystem);
+  // copy geometry
+  void copyGeometry(InputElement& newElement,
+                    const QPointer<FeatureWrapper>& oldElement,
+                    const ElementTypes& type);
 
-    //copy geometry
-    void copyGeometry(InputElement &newElement, const QPointer<FeatureWrapper> &oldElement, const ElementTypes &type);
+  // clear or save bundle results
+  void clearBundleResults(const QPointer<CoordinateSystem>& bundleSystem);
+  void saveBundleResults(const QPointer<CoordinateSystem>& bundleSystem);
+  // void createBundleGeometries(const QList<BundleGeometry> &geometries, const
+  // QPointer<CoordinateSystem> &bundleSystem);
+  void createBundleTransformations(
+      QList<BundleTransformation>& transformations,
+      const QPointer<CoordinateSystem>& bundleSystem);
+  // recalc bundle- trafoParam dependencies
+  void recalcAllBundleTrafoDependencies(
+      const QPointer<CoordinateSystem>& bundleSystem);
 
-    //clear or save bundle results
-    void clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem);
-    void saveBundleResults(const QPointer<CoordinateSystem> &bundleSystem);
-    //void createBundleGeometries(const QList<BundleGeometry> &geometries, const QPointer<CoordinateSystem> &bundleSystem);
-    void createBundleTransformations(QList<BundleTransformation> &transformations, const QPointer<CoordinateSystem> &bundleSystem);
-    //recalc bundle- trafoParam dependencies
-    void recalcAllBundleTrafoDependencies(const QPointer<CoordinateSystem> &bundleSystem);
+  // ##################
+  // general attributes
+  // ##################
 
-    //##################
-    //general attributes
-    //##################
+  QPointer<OiJob> currentJob;
 
-    QPointer<OiJob> currentJob;
-
-    TrafoController trafoController; //handles all transformations to transform Observations in the right coordinate system
-
+  TrafoController
+      trafoController;  // handles all transformations to transform Observations
+                        // in the right coordinate system
 };
 
-#endif // FEATUREUPDATER_H
+#endif  // FEATUREUPDATER_H
