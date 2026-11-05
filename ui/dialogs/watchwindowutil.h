@@ -20,7 +20,7 @@ struct Result {
   Position position;
   Radius radius;
   OiVec delta;
-  double d3D;
+  double d3D{};
 };
 
 class OI_MAIN_EXPORT WatchWindowUtil {

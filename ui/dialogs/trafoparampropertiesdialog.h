@@ -85,7 +85,7 @@ class TrafoParamPropertiesDialog : public QDialog {
   // attributes that describe the current trafo param
   // ################################################
 
-  int id;
+  int id{};
   QString name;
   QMap<TrafoParamParameters, QString> parameters;
 };

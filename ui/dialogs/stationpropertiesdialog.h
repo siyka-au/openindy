@@ -107,7 +107,7 @@ class StationPropertiesDialog : public QDialog {
   // #################
 
   SensorConfiguration sConfig;
-  bool isActiveStation;
+  bool isActiveStation{};
 
   ClipBoardUtil clipBoardUtil;
 };

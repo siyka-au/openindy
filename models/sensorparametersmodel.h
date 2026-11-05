@@ -78,7 +78,7 @@ class SensorParametersModel : public QAbstractTableModel {
   // #################
 
   oi::SensorConfiguration sConfig;
-  bool isReadOnly;
+  bool isReadOnly{};
 
   // ##############
   // display config

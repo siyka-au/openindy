@@ -108,7 +108,7 @@ class FeatureFunctionsDialog : public QDialog {
   // #################
 
   // widget with scalar input parameters
-  ScalarParameterWidget* scalarParameterWidget;
+  ScalarParameterWidget* scalarParameterWidget{};
 
   // ##################################
   // methods to initialize GUI elements

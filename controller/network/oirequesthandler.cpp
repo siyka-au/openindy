@@ -1,5 +1,7 @@
 #include "oirequesthandler.h"
 
+#include <math.h>
+
 #include <algorithm>
 
 // QPointer<OiRequestHandler> OiRequestHandler::myRequestHandler(NULL);
@@ -2041,7 +2043,7 @@ bool OiRequestHandler::buildWatchWindowMessage(QDomElement& wwTag,
       }
 
       // get sensor xyz
-      double azimuth, zenith, distance;
+      double azimuth = NAN, zenith = NAN, distance = NAN;
       azimuth = streamData.value("azimuth").toDouble();
       zenith = streamData.value("zenith").toDouble();
       distance = streamData.value("distance").toDouble();
@@ -2053,7 +2055,7 @@ bool OiRequestHandler::buildWatchWindowMessage(QDomElement& wwTag,
       streamXyz = tMat * streamXyz;
 
       // transform sensor cartesian to polar
-      double x, y, z;
+      double x = NAN, y = NAN, z = NAN;
       x = streamXyz.getAt(0);
       y = streamXyz.getAt(1);
       z = streamXyz.getAt(2);

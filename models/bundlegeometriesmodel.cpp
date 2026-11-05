@@ -20,7 +20,7 @@ BundleGeometriesModel::~BundleGeometriesModel() { delete this->rootItem; }
  * \return
  */
 int BundleGeometriesModel::rowCount(const QModelIndex& parent) const {
-  BundleGeometryItem* parentItem;
+  BundleGeometryItem* parentItem = nullptr;
   if (parent.column() > 0) return 0;
 
   if (!parent.isValid())
@@ -42,7 +42,7 @@ int BundleGeometriesModel::rowCount(const QModelIndex& parent) const {
 int BundleGeometriesModel::columnCount(const QModelIndex& parent) const {
   if (parent.isValid()) {
     // get and check item
-    BundleGeometryItem* item;
+    BundleGeometryItem* item = nullptr;
     item = static_cast<BundleGeometryItem*>(parent.internalPointer());
     if (!item) return 0;
 
@@ -130,7 +130,7 @@ QModelIndex BundleGeometriesModel::index(int row, int column,
     return QModelIndex();
   }
 
-  BundleGeometryItem* parentItem;
+  BundleGeometryItem* parentItem = nullptr;
   if (!parent.isValid()) {
     parentItem = this->rootItem;
   } else {

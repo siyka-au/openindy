@@ -98,10 +98,10 @@ class UsedElementsModel : public QAbstractListModel {
   // function position
   // #################
 
-  int functionPosition;  // specifies the index of the function list of the
-                         // active feature
-  int neededElementIndex;  // specifies the needed element index of the function
-                           // at functionPosition
+  int functionPosition{};    // specifies the index of the function list of the
+                             // active feature
+  int neededElementIndex{};  // specifies the needed element index of the
+                             // function at functionPosition
 
   // #######################
   // save connected function

@@ -110,7 +110,7 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
 
   QPointer<OiJob> currentJob;
 
-  bool created;
+  bool created{};
 };
 
 #endif  // CREATEFEATUREDIALOG_H

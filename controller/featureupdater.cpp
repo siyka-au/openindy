@@ -488,7 +488,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(
   systemTransformation->inputElementsDestinationSystem.clear();
 
   // get and check keys
-  bool isAlignment;
+  bool isAlignment = false;
   QList<int> keys = systemTransformation->getInputElements().keys();
   if (keys.size() <= 0) {  // no input elements
     return;
@@ -676,7 +676,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
   systemTransformation->inputElementsDestinationSystem.clear();
 
   // get and check keys
-  bool isAlignment;
+  bool isAlignment = false;
   QList<int> keys = systemTransformation->getInputElements().keys();
   if (keys.size() <= 0) {  // no input elements
     return;
@@ -929,7 +929,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
   // TODO bool oder aehnliches verwenden und nicht keys
 
   // get and check keys
-  bool isAlignment;
+  bool isAlignment = false;
   QList<int> keys = systemTransformation->getInputElements().keys();
   if (keys.size() <= 0) {  // no input elements
     return;
@@ -1059,7 +1059,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   }
 
   // get and check keys
-  bool isAlignment;
+  bool isAlignment = false;
   QList<int> keys = systemTransformation->getInputElements().keys();
   if (keys.size() <= 0) {  // no input elements
     return;

@@ -99,10 +99,10 @@ class FeatureTreeItem : public QObject {
   // ####################################################
 
   // define what kind of tree item this item is
-  bool isHeader;
-  bool isFeature;
-  bool isObservation;
-  bool isReading;
+  bool isHeader{};
+  bool isFeature{};
+  bool isObservation{};
+  bool isReading{};
 
   // pointer to the corresponding element
   QPointer<FeatureWrapper> feature;

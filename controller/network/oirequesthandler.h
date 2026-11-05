@@ -20,7 +20,7 @@
  * \brief The WatchWindowTask struct
  */
 struct WatchWindowTask {
-  bool taskInProgress;
+  bool taskInProgress{};
   ReadingTypes type;
   OiRequestResponse request;
 };

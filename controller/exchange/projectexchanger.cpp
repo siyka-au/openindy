@@ -32,7 +32,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob>& job) {
   // add active station and active coordinate system
   QDomElement activeSystem = project.createElement("activeCoordinateSystem");
   QDomElement activeStation = project.createElement("activeStation");
-  int activeSystemId, activeStationId = -1;
+  int activeSystemId = 0, activeStationId = -1;
   if (!job->getActiveCoordinateSystem().isNull()) {
     activeSystemId = job->getActiveCoordinateSystem()->getId();
   }

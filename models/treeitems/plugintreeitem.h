@@ -102,13 +102,13 @@ class PluginTreeItem : public QObject {
   QList<QPointer<PluginTreeItem> > children;
 
   // define what kind of tree item this item is
-  bool isHeader;
-  bool isPlugin;
-  bool isFunction;
-  bool isSensor;
-  bool isTool;
-  bool isSimulation;
-  bool isExchange;
+  bool isHeader{};
+  bool isPlugin{};
+  bool isFunction{};
+  bool isSensor{};
+  bool isTool{};
+  bool isSimulation{};
+  bool isExchange{};
 
   // object behind the tree item
   sys::Plugin plugin;

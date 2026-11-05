@@ -53,9 +53,9 @@ class PluginInfoWidget : public QWidget {
   QTextBrowser* txt_description{nullptr};
 
   // function specific GUI elements
-  QLabel* label_applicableFor;
+  QLabel* label_applicableFor{};
   QHBoxLayout* layout_applicableFor{nullptr};
-  QLabel* label_neededElements;
+  QLabel* label_neededElements{};
   QHBoxLayout* layout_neededElements{nullptr};
   QMap<FeatureTypes, QLabel*> applicableFor;   // labels with icons of features
   QMap<ElementTypes, QLabel*> neededElements;  // labels with icons of elements

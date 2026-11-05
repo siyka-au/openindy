@@ -1,5 +1,7 @@
 #include "watchwindowutil.h"
 
+#include <math.h>
+
 using namespace oi;
 
 WatchWindowUtil::WatchWindowUtil() {}
@@ -34,7 +36,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
     QPointer<Geometry> geometry = feature->getGeometry();
     switch (feature->getFeatureTypeEnum()) {
       case ePlaneFeature: {
-        double dot;
+        double dot = NAN;
         OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(),
                    geometry->getDirection().getVectorH());
         OiVec point = trackerXYZ - dot * geometry->getDirection().getVectorH();
@@ -46,7 +48,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
       case eCylinderFeature:
       case eLineFeature: {
         // projection on axis
-        double dot;
+        double dot = NAN;
         OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(),
                    geometry->getDirection().getVectorH());
         OiVec point = geometry->getPosition().getVectorH() +
@@ -76,7 +78,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
                  result.radius.getRadius();
 
     if (feature->getFeatureTypeEnum() == ePlaneElement) {
-      double dot;
+      double dot = NAN;
       OiVec d = OiVec(result.delta.getSize());
       d = result.delta;
       d.removeLast();  // xyz

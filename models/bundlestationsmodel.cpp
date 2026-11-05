@@ -20,7 +20,7 @@ BundleStationsModel::~BundleStationsModel() { delete this->rootItem; }
  * \return
  */
 int BundleStationsModel::rowCount(const QModelIndex& parent) const {
-  BundleStationItem* parentItem;
+  BundleStationItem* parentItem = nullptr;
   if (parent.column() > 0) return 0;
 
   if (!parent.isValid())
@@ -42,7 +42,7 @@ int BundleStationsModel::rowCount(const QModelIndex& parent) const {
 int BundleStationsModel::columnCount(const QModelIndex& parent) const {
   if (parent.isValid()) {
     // get and check item
-    BundleStationItem* item;
+    BundleStationItem* item = nullptr;
     item = static_cast<BundleStationItem*>(parent.internalPointer());
     if (!item) return 0;
 
@@ -208,7 +208,7 @@ QModelIndex BundleStationsModel::index(int row, int column,
     return QModelIndex();
   }
 
-  BundleStationItem* parentItem;
+  BundleStationItem* parentItem = nullptr;
   if (!parent.isValid()) {
     parentItem = this->rootItem;
   } else {

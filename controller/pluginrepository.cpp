@@ -318,7 +318,7 @@ QList<sys::Function> PluginRepository::getAllFunctions() {
  */
 bool PluginRepository::isCreateFunctionFor(const sys::Function& function,
                                            const FeatureTypes& type) {
-  bool isCreateCategory;
+  bool isCreateCategory = false;
   if (type == eTrafoParamFeature) {
     isCreateCategory = function.interfaceCategory().compare(
                            OiMetaData::iid_SystemTransformation) == 0;

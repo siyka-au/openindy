@@ -133,7 +133,7 @@ class SensorConfigurationDialog : public QDialog {
   // #################
 
   // indicates wether there are unsaved changes
-  bool changesMade;
+  bool changesMade{};
 
   // ######
   // models

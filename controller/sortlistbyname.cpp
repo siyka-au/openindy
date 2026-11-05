@@ -25,7 +25,7 @@ void SortListByName::addRefPoint(Point p) {
       }
     } else {  // if there is not a point with this name available
       this->refPoints.append(p);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.ref = true;
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refPoints.size() - 1;
@@ -58,7 +58,7 @@ void SortListByName::addLocPoint(Point p) {
       }
     } else {  // if there is not a point with this name available
       this->locPoints.append(p);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.loc = true;
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locPoints.size() - 1;
@@ -139,7 +139,7 @@ void SortListByName::addRefLine(Line l) {
       }
     } else {  // if there is not a line with this name available
       this->refLines.append(l);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.ref = true;
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refLines.size() - 1;
@@ -172,7 +172,7 @@ void SortListByName::addLocLine(Line l) {
       }
     } else {  // if there is not a line with this name available
       this->locLines.append(l);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.loc = true;
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locLines.size() - 1;
@@ -253,7 +253,7 @@ void SortListByName::addRefPlane(Plane p) {
       }
     } else {  // if there is not a plane with this name available
       this->refPlanes.append(p);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.ref = true;
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refPlanes.size() - 1;
@@ -286,7 +286,7 @@ void SortListByName::addLocPlane(Plane p) {
       }
     } else {  // if there is not a plane with this name available
       this->locPlanes.append(p);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.loc = true;
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locPlanes.size() - 1;
@@ -367,7 +367,7 @@ void SortListByName::addRefSphere(Sphere s) {
       }
     } else {  // if there is not a sphere with this name available
       this->refSpheres.append(s);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.ref = true;
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refSpheres.size() - 1;
@@ -400,7 +400,7 @@ void SortListByName::addLocSphere(Sphere s) {
       }
     } else {  // if there is not a sphere with this name available
       this->locSpheres.append(s);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.loc = true;
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locSpheres.size() - 1;
@@ -485,7 +485,7 @@ void SortListByName::addRefScalarEntityDistance(ScalarEntityDistance s) {
       }
     } else {  // if there is not a scalarEntityDistance with this name available
       this->refScalarEntityDistances.append(s);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.ref = true;
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refScalarEntityDistances.size() - 1;
@@ -520,7 +520,7 @@ void SortListByName::addLocScalarEntityDistance(ScalarEntityDistance s) {
       }
     } else {  // if there is not a scalarEntityDistance with this name available
       this->locScalarEntityDistances.append(s);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.loc = true;
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locScalarEntityDistances.size() - 1;
@@ -608,7 +608,7 @@ void SortListByName::addRefScalarEntityAngle(ScalarEntityAngle s) {
       }
     } else {  // if there is not a scalarEntityAngle with this name available
       this->refScalarEntityAngles.append(s);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.ref = true;
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refScalarEntityAngles.size() - 1;
@@ -642,7 +642,7 @@ void SortListByName::addLocScalarEntityAngle(ScalarEntityAngle s) {
       }
     } else {  // if there is not a scalarEntityAngle with this name available
       this->locScalarEntityAngles.append(s);
-      LocRefBool checkAvailable;
+      LocRefBool checkAvailable{};
       checkAvailable.loc = true;
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locScalarEntityAngles.size() - 1;

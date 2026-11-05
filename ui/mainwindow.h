@@ -454,17 +454,17 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   // ##########
 
   // sensor actions
-  QAction* actionConnect;
-  QAction* actionDisconnect;
-  QAction* actionInitialize;
-  QAction* actionMeasure;
-  QAction* actionAim;
-  QAction* actionMove;
-  QAction* actionHome;
-  QAction* actionChangeMotorState;
-  QAction* actionToggleSightOrientation;
-  QAction* actionCompensation;
-  QAction* actionSearch;
+  QAction* actionConnect{};
+  QAction* actionDisconnect{};
+  QAction* actionInitialize{};
+  QAction* actionMeasure{};
+  QAction* actionAim{};
+  QAction* actionMove{};
+  QAction* actionHome{};
+  QAction* actionChangeMotorState{};
+  QAction* actionToggleSightOrientation{};
+  QAction* actionCompensation{};
+  QAction* actionSearch{};
   QList<QPointer<QAction>> selfDefinedActions;
 
   QPointer<QSignalMapper> customActionMapper;
@@ -473,12 +473,12 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   // status bar widgets
   // ##################
 
-  QLabel* label_statusUnitMetric;
-  QLabel* label_statusUnitAngular;
-  QLabel* label_statusUnitTemperature;
-  QLabel* label_statusSensor;
-  QPropertyAnimation* animation_label_statusSensor;
-  StationStatus* stationStatus;
+  QLabel* label_statusUnitMetric{};
+  QLabel* label_statusUnitAngular{};
+  QLabel* label_statusUnitTemperature{};
+  QLabel* label_statusSensor{};
+  QPropertyAnimation* animation_label_statusSensor{};
+  StationStatus* stationStatus{};
 
   // ######
   // models
@@ -499,7 +499,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
 
   void showFoundFeature(int index);
   QList<QPointer<FeatureWrapper>> foundFeatures;
-  int showFoundFeatureIndex;
+  int showFoundFeatureIndex{};
 
   ClipBoardUtil clipBoardUtil;
 
@@ -509,7 +509,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
 
   QModelIndex getBundleIndex();
 
-  BundleOverviewDelegate* bundleOverviewDelegate;
+  BundleOverviewDelegate* bundleOverviewDelegate{};
 };
 
 #endif  // MAINWINDOW_H

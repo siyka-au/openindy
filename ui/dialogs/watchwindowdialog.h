@@ -170,7 +170,7 @@ class WatchWindowDialog : public QDialog {
   // ####################
 
   // watch window values
-  QVBoxLayout* masterLayout;
+  QVBoxLayout* masterLayout{};
   QMap<DisplayAttributes, QLabel*> streamData;
   QMap<DisplayAttributes, int> masterLayoutIndex;
 

@@ -57,7 +57,7 @@ class PluginManagerDialog : public QDialog {
  private:
   Ui::PluginManagerDialog* ui;
 
-  PluginInfoWidget* pluginInformation;
+  PluginInfoWidget* pluginInformation{};
 
   /*
   QStringList allFeatureAttributes;

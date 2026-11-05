@@ -2585,7 +2585,7 @@ void MainWindow::initToolMenus() {
     }
 
     // create an action and add it to the corresponding menu item
-    ToolAction* action;
+    ToolAction* action = nullptr;
     action = new ToolAction();
     action->setToolName(tool->getMetaData().name);
     action->setPluginName(tool->getMetaData().pluginName);
@@ -3456,7 +3456,7 @@ void MainWindow::on_action_RunBundle_triggered() {
 }
 
 void MainWindow::on_lineEdit_maxError_textChanged(const QString& arg1) {
-  bool ok;
+  bool ok = false;
   double value = arg1.toDouble(&ok);
   if (ok) {
     bundleOverviewDelegate->maxError = value;
@@ -3465,7 +3465,7 @@ void MainWindow::on_lineEdit_maxError_textChanged(const QString& arg1) {
 }
 
 void MainWindow::on_lineEdit_stdDev_textChanged(const QString& arg1) {
-  bool ok;
+  bool ok = false;
   double value = arg1.toDouble(&ok);
   if (ok) {
     bundleOverviewDelegate->maxStdDev = value;
@@ -3474,7 +3474,7 @@ void MainWindow::on_lineEdit_stdDev_textChanged(const QString& arg1) {
 }
 
 void MainWindow::on_lineEdit_scaleDev_textChanged(const QString& arg1) {
-  bool ok;
+  bool ok = false;
   double value = arg1.toDouble(&ok);
   if (ok) {
     bundleOverviewDelegate->maxScaleDev = value;
@@ -3484,7 +3484,7 @@ void MainWindow::on_lineEdit_scaleDev_textChanged(const QString& arg1) {
 
 void MainWindow::on_lineEdit_atLeastCommonPoints_textChanged(
     const QString& arg1) {
-  bool ok;
+  bool ok = false;
   int value = arg1.toInt(&ok);
   if (ok) {
     bundleOverviewDelegate->minCommonPoints = value;

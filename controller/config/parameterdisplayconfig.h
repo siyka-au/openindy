@@ -39,16 +39,16 @@ class ParameterDisplayConfig {
   UnitType temperatureDisplayUnit;  // unit in which temperature parameter
                                     // values are displayed
 
-  int metricDisplayDigits;  // number of digits that are displayed for metric
-                            // parameter values
-  int angularDisplayDigits;  // number of digits that are displayed for angular
-                             // parameter values
-  int temperatureDisplayDigits;  // number of digits that are displayed for
-                                 // temperature parameter values
-  int dimensionlessDisplayDigits;  // number of digits that are displayed for
-                                   // dimensionless parameter values
+  int metricDisplayDigits{};   // number of digits that are displayed for metric
+                               // parameter values
+  int angularDisplayDigits{};  // number of digits that are displayed for
+                               // angular parameter values
+  int temperatureDisplayDigits{};    // number of digits that are displayed for
+                                     // temperature parameter values
+  int dimensionlessDisplayDigits{};  // number of digits that are displayed for
+                                     // dimensionless parameter values
 
-  bool useSounds;
+  bool useSounds{};
 };
 
 Q_DECLARE_METATYPE(ParameterDisplayConfig)

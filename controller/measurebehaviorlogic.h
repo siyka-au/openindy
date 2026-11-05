@@ -56,8 +56,8 @@ class OI_MAIN_EXPORT MeasureBehaviorLogic : public QObject {
 
   MeasureBehaviorDialog measureBehaviorDialog;
 
-  ControllerSensorActions* control;
-  FeatureTableModel* sourceModel;
+  ControllerSensorActions* control{};
+  FeatureTableModel* sourceModel{};
   QList<int> measureFeatures;
 
   int activeFeatureId{-1};
