@@ -1,6 +1,7 @@
 #include "observationimporter.h"
 
 #include <QRegularExpression>
+#include <array>
 
 /*!
  * \brief ObservationImporter::ObservationImporter
@@ -137,7 +138,7 @@ bool ObservationImporter::importObservations() {
       bool parsingSuccess = true;
 
       // parse the line to xyz coordinates
-      double xyz[3];
+      std::array<double, 3> xyz{};
       for (int i = 0; i < 3; i++) {
         xyz[i] = columns.at(i).toDouble(&parsingSuccess);
         if (!parsingSuccess) {
