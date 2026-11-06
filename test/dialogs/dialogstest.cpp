@@ -866,9 +866,8 @@ void DialogsTest::projectSaveLoad() {
   projectExchanger.setMeasurementConfigManager(
       ModelManager::getMeasurementConfigManager());
 
-  QDomDocument project = projectExchanger.saveProject(&jobS);
-
-  qDebug() << project;
+  const QByteArray project = projectExchanger.saveProject(&jobS);
+  QVERIFY(!project.isEmpty());
 
   QString name =
       getKeys(ModelManager::getMeasurementConfigManager()->getConfigs())
@@ -904,7 +903,7 @@ void DialogsTest::projectSaveLoad() {
       "standard), (StdPoint, standard), (StdTwoSide, standard), (StdTwoSide, "
       "standard), (level, standard), (measconfig-scandistance, user)" == name);
 
-  QPointer<OiJob> jobL = projectExchanger.loadProject(project);
+  QPointer<OiJob> jobL = projectExchanger.loadProject(project).job;
 
   name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs())
              .join(", ");

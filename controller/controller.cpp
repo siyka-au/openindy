@@ -1038,22 +1038,25 @@ void Controller::saveProject() {
 
   QMutexLocker locker(&saveProjectMutex);  // synchronize write file
 
-  // get project xml
-  QDomDocument project = projectExchanger.saveProject(this->job);
+  // serialise the project
+  const QByteArray project = projectExchanger.saveProject(this->job);
 
-  if (project.isNull()) {
-    this->log("Error while creating project XML", MessageTypes::eErrorMessage,
+  if (project.isEmpty()) {
+    this->log("Error while creating the project file",
+              MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
     return;
   }
 
-  // save project xml
+  // write the project file
   QSaveFile saveFile(fileDevice->fileName());
-  if (saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate |
-                    QIODevice::Text)) {
-    QTextStream stream(&saveFile);
-    project.save(stream, 4);
-    saveFile.commit();
+  if (saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+    if (saveFile.write(project) != project.size() || !saveFile.commit()) {
+      this->log(QString("Cannot write file \"%1\"").arg(fileDevice->fileName()),
+                MessageTypes::eErrorMessage,
+                MessageDestinations::eMessageBoxMessage);
+      return;
+    }
 
     this->log(QString("OpenIndy project \"%1\" successfully stored.")
                   .arg(fileDevice->fileName()),
@@ -1118,28 +1121,27 @@ void Controller::loadProject(const QString& projectName,
     return;
   }
 
-  // create empty job
-  QPointer<OiJob> newJob(nullptr);
-
-  // load xml file to DOM tree
-  QDomDocument project;
-  try {
-    device->open(QIODevice::ReadOnly);
-    project.setContent(device);
+  // read the project file
+  QByteArray project;
+  if (device->open(QIODevice::ReadOnly)) {
+    project = device->readAll();
     device->close();
-  } catch (const exception& e) {
-    this->log("Error while opening OpenIndy xml file.",
+  } else {
+    this->log("Error while opening OpenIndy project file.",
               MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
     return;
   }
 
-  // load project from xml
-  newJob = projectExchanger.loadProject(project);
+  // load the project
+  const ProjectExchanger::LoadResult loaded =
+      projectExchanger.loadProject(project);
+  QPointer<OiJob> newJob = loaded.job;
 
   // check job
   if (newJob.isNull()) {
-    this->log("Error while parsing OpenIndy xml file.",
+    this->log(QString("Error while loading OpenIndy project file: %1")
+                  .arg(loaded.error),
               MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
     return;

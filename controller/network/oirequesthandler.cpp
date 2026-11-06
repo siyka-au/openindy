@@ -332,11 +332,16 @@ void OiRequestHandler::getProject(OiRequestResponse& request) {
   request.myRequestType = OiRequestResponse::RequestType::eGetProject;
   this->prepareResponse(request);
 
-  // get and set project xml
-  QDomDocument project = projectExchanger.saveProject(this->currentJob);
-  if (!project.isNull()) {
-    request.response.documentElement().appendChild(
-        request.response.importNode(project.documentElement(), true));
+  // The network protocol is still XML (it moves to protobuf with the rest of
+  // the wire format); until then the project travels as its protobuf bytes,
+  // base64 encoded, in a single element.
+  const QByteArray project = projectExchanger.saveProject(this->currentJob);
+  if (!project.isEmpty()) {
+    QDomElement element = request.response.createElement("project");
+    element.setAttribute("encoding", "base64");
+    element.appendChild(request.response.createTextNode(
+        QString::fromLatin1(project.toBase64())));
+    request.response.documentElement().appendChild(element);
   }
 
   emit this->sendResponse(request);

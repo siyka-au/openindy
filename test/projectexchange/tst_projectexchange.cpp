@@ -1,3 +1,4 @@
+#include <QByteArray>
 #include <QPointer>
 #include <QtTest>
 
@@ -30,11 +31,10 @@ using namespace oi::math;
  */
 namespace {
 
-// every ProjectExchanger::loadProject call dereferences the active
-// station/coordinate system unconditionally, and the "create Bundle01_1 if
-// not exists" step requires a "Bundle01" system and a "STATION01" station to
-// already exist - same minimal setup test/dialogs/dialogstest.cpp uses to
-// get a save/load round trip to succeed at all.
+// a project needs an active station and coordinate system, and loading
+// creates "Bundle01_1" if it is missing, which requires a "Bundle01" system
+// and a "STATION01" station - the same minimal setup
+// test/dialogs/dialogstest.cpp uses to get a save/load round trip to succeed.
 QPointer<OiJob> makeJobWithStationAndSystem() {
   QPointer<OiJob> job = new OiJob();
 
@@ -114,7 +114,7 @@ class ProjectExchangeTest : public QObject {
   void groupOfMixedTypesSurvivesSaveAndReload();
   void pointGroupSurvivesSaveAndReload();
   void typeConstraintSurvivesSaveAndReload();
-  void loadFailsWithoutActiveStation();
+  void loadFailsOnAFileThatIsNotAProject();
 };
 
 void ProjectExchangeTest::initTestCase() {
@@ -147,9 +147,9 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   QCOMPARE(group->memberCount(), 2);
 
   ProjectExchanger exchanger;
-  QDomDocument xml = exchanger.saveProject(job);
+  const QByteArray xml = exchanger.saveProject(job);
 
-  QPointer<OiJob> reloaded = exchanger.loadProject(xml);
+  QPointer<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY2(!reloaded.isNull(), "the project should reload without error");
 
   const QList<QPointer<FeatureWrapper> > reloadedGroups =
@@ -199,9 +199,9 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
   QVERIFY(job->addFeature(groupWrapper));
 
   ProjectExchanger exchanger;
-  QDomDocument xml = exchanger.saveProject(job);
+  const QByteArray xml = exchanger.saveProject(job);
 
-  QPointer<OiJob> reloaded = exchanger.loadProject(xml);
+  QPointer<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY(!reloaded.isNull());
 
   // must come back as a PointGroup, not a plain Group
@@ -244,9 +244,9 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   QVERIFY(job->addFeature(groupWrapper));
 
   ProjectExchanger exchanger;
-  QDomDocument xml = exchanger.saveProject(job);
+  const QByteArray xml = exchanger.saveProject(job);
 
-  QPointer<OiJob> reloaded = exchanger.loadProject(xml);
+  QPointer<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY(!reloaded.isNull());
 
   const QList<QPointer<FeatureWrapper> > reloadedGroups =
@@ -277,23 +277,15 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
 }
 
 /*!
- * A project file with no activeStation element used to crash loadProject (the
- * check was commented out and the lookups were dereferenced unconditionally).
- * It must now fail cleanly by returning a null job.
+ * Anything that is not a project must fail cleanly - a null job and a reason
+ * for the user - rather than produce a half-built job.
  */
-void ProjectExchangeTest::loadFailsWithoutActiveStation() {
-  QPointer<OiJob> job = makeJobWithStationAndSystem();
-
+void ProjectExchangeTest::loadFailsOnAFileThatIsNotAProject() {
   ProjectExchanger exchanger;
-  QDomDocument xml = exchanger.saveProject(job);
-
-  QDomElement active = xml.documentElement().firstChildElement("activeStation");
-  QVERIFY2(!active.isNull(), "the saved project should name an active station");
-  xml.documentElement().removeChild(active);
-
-  QPointer<OiJob> reloaded = exchanger.loadProject(xml);
-  QVERIFY2(reloaded.isNull(),
-           "a project without an active station must fail to load");
+  const ProjectExchanger::LoadResult result =
+      exchanger.loadProject("this is not an OpenIndy project");
+  QVERIFY(result.job.isNull());
+  QVERIFY(!result.error.isEmpty());
 }
 
 QTEST_APPLESS_MAIN(ProjectExchangeTest)

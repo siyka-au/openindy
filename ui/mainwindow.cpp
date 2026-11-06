@@ -1309,7 +1309,8 @@ void MainWindow::on_actionOpen_triggered() {
   saveProjectIfDigestChanged();
 
   QString filename = QFileDialog::getOpenFileName(
-      this, "Choose a file", ProjectConfig::getProjectPath(), "xml (*.xml)");
+      this, "Choose a file", ProjectConfig::getProjectPath(),
+      "OpenIndy project (*.oip)");
 
   this->loadProjectFile(filename);
 }
@@ -1319,7 +1320,7 @@ void MainWindow::loadProjectFile(QString file) {
     return;
   }
 
-  if (!file.toLower().endsWith(".xml")) {
+  if (!file.toLower().endsWith(".oip")) {
     return;
   }
 
@@ -2999,8 +3000,8 @@ void MainWindow::saveProjectAs(bool asTemplate) {
     caption = "Save project as";
   }
 
-  QString filename = QFileDialog::getSaveFileName(this, caption, preferedName,
-                                                  tr("xml (*.xml)"));
+  QString filename = QFileDialog::getSaveFileName(
+      this, caption, preferedName, tr("OpenIndy project (*.oip)"));
 
   if (!filename.isEmpty()) {
     QFileInfo info(filename);

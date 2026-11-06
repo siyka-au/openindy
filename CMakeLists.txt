@@ -452,6 +452,8 @@ target_link_libraries(OpenIndyApp
         OpenIndyCore
         OpenIndyMath
     PRIVATE
+        # the protobuf project format; its runtime lives in this library only
+        OpenIndyCodec
         GL
         GLU
 )

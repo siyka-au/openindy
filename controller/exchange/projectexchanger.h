@@ -1,102 +1,43 @@
 #ifndef OIPROJECTEXCHANGER_H
 #define OIPROJECTEXCHANGER_H
 
-#include <QCryptographicHash>
-#include <QDateTime>
-#include <QFile>
-#include <QMap>
+#include <QByteArray>
 #include <QPointer>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
-#include <QtAlgorithms>
-#include <QtXml>
+#include <QString>
 
-#include "console.h"
-#include "function.h"
-#include "group.h"
 #include "measurementconfigmanager.h"
-#include "pluginloader.h"
-#include "pluginrepository.h"
-#include "pointgroup.h"
-#include "sensorcontrol.h"
-#include "types.h"
-#include "util.h"
+#include "oijob.h"
 
 using namespace oi;
 
 /*!
- * \brief The OiProjectExchanger class
- * This class provides methods to save and load OpenIndy projects and different
- * configs
+ * \brief The ProjectExchanger class
+ * Saves and loads OpenIndy projects. The format and the linking of a loaded
+ * project's references live in the core (project_codec.h); this class gives the
+ * core what only the application knows: where the plugins are and which
+ * measurement configs exist.
  */
-class OI_CORE_EXPORT ProjectExchanger {
+class ProjectExchanger {
  public:
-  ProjectExchanger();
-  ~ProjectExchanger();
+  struct LoadResult {
+    QPointer<OiJob> job;  //!< null if the project could not be loaded
+    QString error;        //!< why, for the user
+  };
 
-  // ##############################
-  // save or load OpenIndy projects
-  // ##############################
+  ProjectExchanger() = default;
 
-  QDomDocument saveProject(const QPointer<OiJob>& job);
-  const QPointer<OiJob> loadProject(const QDomDocument& project);
+  //! the project as bytes; empty if there is no job
+  QByteArray saveProject(const QPointer<OiJob>& job);
 
-  // #####################################
-  // get or set measurement config manager
-  // #####################################
+  //! the caller owns the job
+  LoadResult loadProject(const QByteArray& project);
 
   QPointer<MeasurementConfigManager>& getMeasurementConfigManager();
   void setMeasurementConfigManager(
       const QPointer<MeasurementConfigManager>& mConfigManager);
 
  private:
-  // #############################
-  // helper methods and attributes
-  // #############################
-
-  // helper methods for loading different types of elements & configs
-  bool loadObservations(const QDomDocument& project);
-  bool loadStations(const QDomDocument& project);
-  bool loadCoordinateSystems(const QDomDocument& project);
-  bool loadTransformationParameters(const QDomDocument& project);
-  bool loadGeometries(const QDomDocument& project);
-  bool loadGroups(const QDomDocument& project);
-  bool loadConfigs(const QDomDocument& project);
-
-  // helper methods for restoring the dependencies between the loaded elements
-  bool restoreStationDependencies(const QDomDocument& project);
-  bool restoreCoordinateSystemDependencies(const QDomDocument& project);
-  bool restoreTrafoParamDependencies(const QDomDocument& project);
-  bool restoreGeometryDependencies(const QDomDocument& project);
-  bool restoreGroupDependencies(const QDomDocument& project);
-  bool restoreObservationDependencies(const QDomDocument& project);
-
-  QList<QPointer<Function> > restoreFunctionDependencies(
-      const QDomElement& functions);
-  QPointer<BundleAdjustment> restoreBundleDependencies(QDomElement& bundle);
-
-  // helper maps for loading an OpenIndy project (key is the id of an element)
-  QMap<int, QPointer<Observation> > myObservations;
-  QMap<int, QPointer<Reading> > myReadings;
-  QMap<int, QPointer<FeatureWrapper> > myStations;
-  QMap<int, QPointer<FeatureWrapper> > myCoordinateSystems;
-  QMap<int, QPointer<FeatureWrapper> > myTransformationParameters;
-  QMap<int, QPointer<FeatureWrapper> > myGeometries;
-  QMap<int, QPointer<FeatureWrapper> > myGroups;
-
-  // all loaded MeasurementConfigs from project file, keyed by full
-  // identity (name+sensorType) - name alone collides once two drivers
-  // publish same-named configs (e.g. "FastPoint")
-  QMap<MeasurementConfigKey, MeasurementConfig> measurementConfigs;
-  QMap<QString, SensorConfiguration> mySConfigs;
-
-  void clearHelperMaps(bool deleteOnClear);
-
-  QList<int> stationPoints;
-
   QPointer<MeasurementConfigManager> mConfigManager;
-
-  bool isScalar(QPointer<FeatureWrapper> geometry);
 };
 
 #endif  // OIPROJECTEXCHANGER_H
