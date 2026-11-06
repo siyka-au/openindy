@@ -14,6 +14,7 @@ class ShowLicensesDialog;
 
 class ShowLicensesDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ShowLicensesDialog)
 
  public:
   explicit ShowLicensesDialog(QWidget* parent = nullptr);

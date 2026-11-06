@@ -24,6 +24,7 @@ class ExportDialog;
  */
 class ExportDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ExportDialog)
 
  public:
   explicit ExportDialog(QWidget* parent = nullptr);

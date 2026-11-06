@@ -20,6 +20,7 @@ class TrafoParamPropertiesDialog;
  */
 class TrafoParamPropertiesDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(TrafoParamPropertiesDialog)
 
  public:
   explicit TrafoParamPropertiesDialog(QWidget* parent = nullptr);

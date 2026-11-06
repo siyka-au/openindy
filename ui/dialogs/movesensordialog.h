@@ -22,6 +22,7 @@ class MoveSensorDialog;
  */
 class MoveSensorDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MoveSensorDialog)
 
  public:
   explicit MoveSensorDialog(QWidget* parent = nullptr);

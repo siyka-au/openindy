@@ -13,6 +13,7 @@ using namespace oi;
 
 class PluginTreeItem : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(PluginTreeItem)
 
  public:
   explicit PluginTreeItem(const QVariant& display, QObject* parent = nullptr);

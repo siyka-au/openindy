@@ -15,6 +15,7 @@
  */
 class OiWebSocket : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(OiWebSocket)
 
  public:
   explicit OiWebSocket(QObject* parent = nullptr);

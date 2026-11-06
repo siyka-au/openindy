@@ -19,6 +19,7 @@ using namespace oi;
  */
 class FunctionTreeItem : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(FunctionTreeItem)
 
  public:
   explicit FunctionTreeItem(const QVariant& display, QObject* parent = nullptr);

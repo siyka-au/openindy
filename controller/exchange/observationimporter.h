@@ -17,6 +17,7 @@ using namespace oi;
  */
 class ObservationImporter : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ObservationImporter)
 
  public:
   explicit ObservationImporter(QObject* parent = nullptr);

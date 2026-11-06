@@ -23,6 +23,7 @@ class PluginManagerDialog;
  */
 class PluginManagerDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(PluginManagerDialog)
 
  public:
   explicit PluginManagerDialog(QWidget* parent = nullptr);

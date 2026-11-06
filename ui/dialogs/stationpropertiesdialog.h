@@ -24,6 +24,7 @@ class StationPropertiesDialog;
  */
 class StationPropertiesDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(StationPropertiesDialog)
 
  public:
   explicit StationPropertiesDialog(QWidget* parent = nullptr);

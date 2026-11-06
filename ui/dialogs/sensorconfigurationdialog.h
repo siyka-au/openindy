@@ -34,6 +34,7 @@ class SensorConfigurationDialog;
  */
 class SensorConfigurationDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(SensorConfigurationDialog)
 
  public:
   explicit SensorConfigurationDialog(QWidget* parent = nullptr);

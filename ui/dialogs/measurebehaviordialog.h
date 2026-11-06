@@ -11,6 +11,7 @@ class MeasureBehaviorDialog;
 
 class MeasureBehaviorDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MeasureBehaviorDialog)
 
  public:
   explicit MeasureBehaviorDialog(QWidget* parent = nullptr);

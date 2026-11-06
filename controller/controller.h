@@ -46,6 +46,7 @@ struct StationStatusData {
  */
 class Controller : public QObject, public ControllerSensorActions {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(Controller)
 
  public:
   explicit Controller(QObject* parent = nullptr);

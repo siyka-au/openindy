@@ -9,6 +9,7 @@ class StationStatus;
 
 class StationStatus : public QWidget {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(StationStatus)
 
  public:
   explicit StationStatus(QWidget* parent = nullptr);

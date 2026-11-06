@@ -43,6 +43,7 @@ class MeasurementConfigurationDialog;
  */
 class OI_MAIN_EXPORT MeasurementConfigurationDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MeasurementConfigurationDialog)
 
  public:
   explicit MeasurementConfigurationDialog(QWidget* parent = nullptr);

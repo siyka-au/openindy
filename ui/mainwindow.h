@@ -84,6 +84,7 @@ inline size_t qHash(const QVariant& variant, size_t seed = 0) {
  */
 class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MainWindow)
 
  public:
   explicit MainWindow(QWidget* parent = nullptr);

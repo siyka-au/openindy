@@ -14,6 +14,7 @@ class SensorTaskInfoDialog;
  */
 class SensorTaskInfoDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(SensorTaskInfoDialog)
 
  public:
   explicit SensorTaskInfoDialog(QWidget* parent = nullptr);

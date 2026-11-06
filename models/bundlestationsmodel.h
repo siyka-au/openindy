@@ -16,6 +16,7 @@
  */
 class BundleStationsModel : public QAbstractItemModel {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(BundleStationsModel)
 
  public:
   explicit BundleStationsModel(QObject* parent = nullptr);

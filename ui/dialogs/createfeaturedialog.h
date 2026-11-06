@@ -28,6 +28,7 @@ class CreateFeatureDialog;
  */
 class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(CreateFeatureDialog)
 
  public:
   explicit CreateFeatureDialog(QWidget* parent = nullptr);

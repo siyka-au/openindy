@@ -15,6 +15,7 @@ class LoadingDialog;
  */
 class LoadingDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(LoadingDialog)
 
  public:
   explicit LoadingDialog(QWidget* parent = nullptr);

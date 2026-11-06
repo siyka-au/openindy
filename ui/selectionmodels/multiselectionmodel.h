@@ -7,6 +7,7 @@
 
 class MultiSelectionModel : public QItemSelectionModel {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MultiSelectionModel)
 
  public:
   explicit MultiSelectionModel(QAbstractItemModel* myModel);

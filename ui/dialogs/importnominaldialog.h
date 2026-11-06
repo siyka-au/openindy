@@ -25,6 +25,7 @@ class ImportNominalDialog;
  */
 class ImportNominalDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ImportNominalDialog)
 
  public:
   explicit ImportNominalDialog(QWidget* parent = nullptr);

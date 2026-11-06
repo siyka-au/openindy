@@ -35,6 +35,7 @@ class ActualPropertiesDialog;
  */
 class ActualPropertiesDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ActualPropertiesDialog)
 
  public:
   explicit ActualPropertiesDialog(QWidget* parent = nullptr);

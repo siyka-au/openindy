@@ -73,6 +73,7 @@ class WatchWindowDialog;
  */
 class WatchWindowDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(WatchWindowDialog)
 
  public:
   explicit WatchWindowDialog(WatchWindowBehavior behavior, QPointer<OiJob> job,

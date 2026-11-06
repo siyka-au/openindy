@@ -19,6 +19,7 @@ class NominalPropertiesDialog;
  */
 class NominalPropertiesDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(NominalPropertiesDialog)
 
  public:
   explicit NominalPropertiesDialog(QWidget* parent = nullptr);

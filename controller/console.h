@@ -21,6 +21,7 @@ using namespace oi;
 
 class Console : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(Console)
 
  private:
   explicit Console(QObject* parent = nullptr);

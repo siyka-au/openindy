@@ -34,6 +34,7 @@ class FeatureFunctionsDialog;
  */
 class FeatureFunctionsDialog : public QDialog {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(FeatureFunctionsDialog)
 
  public:
   explicit FeatureFunctionsDialog(QWidget* parent = nullptr);

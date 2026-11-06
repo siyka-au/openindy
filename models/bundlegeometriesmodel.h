@@ -16,6 +16,7 @@
  */
 class BundleGeometriesModel : public QAbstractItemModel {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(BundleGeometriesModel)
 
  public:
   explicit BundleGeometriesModel(QObject* parent = nullptr);

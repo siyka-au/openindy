@@ -26,6 +26,7 @@ using namespace oi;
  */
 class DataExchanger : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(DataExchanger)
 
  public:
   explicit DataExchanger(QObject* parent = nullptr);
