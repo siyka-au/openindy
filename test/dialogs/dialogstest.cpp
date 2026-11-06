@@ -855,7 +855,7 @@ void DialogsTest::projectSaveLoad() {
       ModelManager::getMeasurementConfigManager()->getProjectConfig(
           "measconfig-fastpoint_project");
   QVERIFY(point1.measurementConfig.isValid());
-  point1.functionPlugin = QPair<QString, QString>("function1", "path");
+  point1.functionPlugin = std::pair<QString, QString>("function1", "path");
   jobS.addFeatures(point1);  // job is reponsible
   QPointer<FeatureWrapper> feature = jobS.getFeaturesByName(point1.name).at(0);
   // feature->getFeature()->addFunction(function); // controller ist responsible

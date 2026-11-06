@@ -399,7 +399,7 @@ bool DataExchanger::importObservations(const QString& filename) {
 
 void DataExchanger::importMeasurements(
     QList<QPointer<FeatureWrapper>> features) {
-  QDateTime curDateTime = QDateTime::currentDateTime();
+  const auto curDateTime = std::chrono::system_clock::now();
   foreach (QPointer<FeatureWrapper> importedFeature, features) {
     QList<QPointer<FeatureWrapper>> jobFeatures =
         this->currentJob->getFeaturesByName(
@@ -516,7 +516,7 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
         sys::Function defaultFunction =
             PluginRepository::getDefaultFunction(funFeatureType)
                 .value_or(sys::Function());
-        QPair<QString, QString> functionPlugin;
+        std::pair<QString, QString> functionPlugin;
         functionPlugin.first = defaultFunction.name();
         functionPlugin.second = defaultFunction.plugin().filePath();
         fAttr.functionPlugin = functionPlugin;

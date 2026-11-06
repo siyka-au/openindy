@@ -573,7 +573,7 @@ void FeatureTreeItem::setUpObservation() {
  */
 void FeatureTreeItem::setUpReading() {
   // set display value
-  this->displayValue = this->reading->getMeasuredAt().toString();
+  this->displayValue = this->reading->getDisplayTime();
   /*if(this->reading->getObservation()->getTargetGeometries().size() > 0){
       this->displayValue = "id:" + QString::number(this->reading->getId()) +
   this->reading->getObservation()->getTargetGeometries().at(0)->getFeatureName();

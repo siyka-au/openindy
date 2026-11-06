@@ -113,7 +113,7 @@ bool ObservationImporter::importObservations() {
     qint64 readSize = 0;
     qint64 numObservations = 0;
 
-    QDateTime curDateTime = QDateTime::currentDateTime();
+    const auto curDateTime = std::chrono::system_clock::now();
     // read all lines
     QTextStream in(device);
     while (!in.atEnd()) {
