@@ -1,0 +1,19 @@
+# Third-party dependencies resolved by Conan. This repo pulls in openindy-core
+# through CMake, so it needs the same packages as core; keep the [requires]
+# list identical to ../openindy-core/conanfile.txt. Qt and Armadillo come from
+# the system.
+#
+#   conan install . -pr:a ../openindy-core/conan/profiles/linux-gcc \
+#       --build=missing -of build/conan
+#   cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan/conan_toolchain.cmake
+[requires]
+protobuf/6.33.5
+spdlog/1.17.0
+catch2/3.14.0
+
+[tool_requires]
+protobuf/6.33.5
+
+[generators]
+CMakeDeps
+CMakeToolchain
