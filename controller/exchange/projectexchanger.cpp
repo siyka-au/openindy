@@ -335,7 +335,9 @@ const QPointer<OiJob> ProjectExchanger::loadProject(
       !this->myCoordinateSystems.contains(
           activeCoordinateSystem.attribute("ref").toInt())) {
     // clear all created elements if no active station or active coordinate
-    // system is available this->clearHelperMaps(true); return NULL;
+    // system is available
+    this->clearHelperMaps(true);
+    return nullptr;
   }
   QPointer<FeatureWrapper> myActiveStation =
       this->myStations.value(activeStation.attribute("ref").toInt());

@@ -25,6 +25,7 @@ UnitType ParameterDisplayConfig::getDisplayUnit(
     case DimensionType::eDimensionless:
       return UnitType::eNoUnit;
   }
+  return UnitType::eNoUnit;  // not reachable for valid enum values
 }
 
 /*!
@@ -77,6 +78,7 @@ int ParameterDisplayConfig::getDisplayDigits(
     case DimensionType::eDimensionless:
       return this->dimensionlessDisplayDigits;
   }
+  return this->dimensionlessDisplayDigits;  // not reachable for valid values
 }
 
 /*!

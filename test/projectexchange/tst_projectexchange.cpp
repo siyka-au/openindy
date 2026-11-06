@@ -114,6 +114,7 @@ class ProjectExchangeTest : public QObject {
   void groupOfMixedTypesSurvivesSaveAndReload();
   void pointGroupSurvivesSaveAndReload();
   void typeConstraintSurvivesSaveAndReload();
+  void loadFailsWithoutActiveStation();
 };
 
 void ProjectExchangeTest::initTestCase() {
@@ -273,6 +274,26 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   QVERIFY(!reloadedSphere.isNull());
   QVERIFY2(!reloadedGroup->addMember(reloadedSphere),
            "a plane-constrained group must still reject a sphere after reload");
+}
+
+/*!
+ * A project file with no activeStation element used to crash loadProject (the
+ * check was commented out and the lookups were dereferenced unconditionally).
+ * It must now fail cleanly by returning a null job.
+ */
+void ProjectExchangeTest::loadFailsWithoutActiveStation() {
+  QPointer<OiJob> job = makeJobWithStationAndSystem();
+
+  ProjectExchanger exchanger;
+  QDomDocument xml = exchanger.saveProject(job);
+
+  QDomElement active = xml.documentElement().firstChildElement("activeStation");
+  QVERIFY2(!active.isNull(), "the saved project should name an active station");
+  xml.documentElement().removeChild(active);
+
+  QPointer<OiJob> reloaded = exchanger.loadProject(xml);
+  QVERIFY2(reloaded.isNull(),
+           "a project without an active station must fail to load");
 }
 
 QTEST_APPLESS_MAIN(ProjectExchangeTest)
