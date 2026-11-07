@@ -20,15 +20,19 @@ LoadingDialog::LoadingDialog(QWidget* parent)
 LoadingDialog::~LoadingDialog() { delete ui; }
 
 /*!
- * \brief LoadingDialog::updateProgress
- * \param progress
+ * \brief LoadingDialog::setProgress
+ * Shows a report of a QtProgressSink
+ * \param percent 0..100, or -1 when the operation cannot say how far it is
  * \param msg
  */
-void LoadingDialog::updateProgress(const int& progress,
-                                   const QString& msg) const {
-  // update display text and progress bar
+void LoadingDialog::setProgress(int percent, const QString& msg) const {
   this->ui->label_description->setText(msg);
-  this->ui->progressBar->setValue(progress);
+  if (percent < 0) {
+    this->ui->progressBar->setRange(0, 0);  // busy indicator
+  } else {
+    this->ui->progressBar->setRange(0, 100);
+    this->ui->progressBar->setValue(percent);
+  }
 }
 
 /*!

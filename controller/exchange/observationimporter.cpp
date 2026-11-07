@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 #include <QtCore>
+#include <algorithm>
 #include <array>
 #include <vector>
 
@@ -111,6 +112,7 @@ bool ObservationImporter::importObservations() {
     device->open(QIODevice::ReadOnly | QIODevice::Text);
 
     // init helper variables
+    const oi::OperationContext ctx(this->progressSink);
     qint64 fileSize = device->size();
     qint64 readSize = 0;
     qint64 numObservations = 0;
@@ -169,13 +171,15 @@ bool ObservationImporter::importObservations() {
       readings.push_back(reading);
 
       // update import progress
-      int progress = (int)(((float)readSize / (float)fileSize) * 100.0);
-      if (progress == 100) {
-        progress = 99;
-      }
       numObservations++;
-      emit this->updateProgress(
-          progress, QString("%1 observation(s) loaded").arg(numObservations));
+      // never 100% before the import has finished
+      ctx.report(fileSize > 0
+                     ? std::min(0.99, static_cast<double>(readSize) /
+                                          static_cast<double>(fileSize))
+                     : 0.0,
+                 QString("%1 observation(s) loaded")
+                     .arg(numObservations)
+                     .toStdString());
       readSize += 2;
     }
 
@@ -197,4 +201,8 @@ bool ObservationImporter::importObservations() {
   emit this->importFinished(true);
 
   return true;
+}
+
+void ObservationImporter::setProgressSink(oi::ProgressSink* sink) {
+  this->progressSink = sink;
 }

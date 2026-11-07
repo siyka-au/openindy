@@ -2291,11 +2291,11 @@ void MainWindow::connectDialogs() {
 
   // connect loading dialog
   QObject::connect(&this->control, &Controller::nominalImportProgressUpdated,
-                   &this->loadingDialog, &LoadingDialog::updateProgress,
+                   &this->loadingDialog, &LoadingDialog::setProgress,
                    Qt::AutoConnection);
   QObject::connect(
       &this->control, &Controller::observationImportProgressUpdated,
-      &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
+      &this->loadingDialog, &LoadingDialog::setProgress, Qt::AutoConnection);
 
   // connect sensor config dialog
   QObject::connect(&this->sensorConfigurationDialog,

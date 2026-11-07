@@ -48,8 +48,8 @@ void DataExchangerTest::reportsFromAWorkerThreadArriveOnTheUiThreadInOrder() {
     // what a plugin does on its thread: message, progress, then done
     exchanger.onMessage("reading file", MessageTypes::eInformationMessage,
                         MessageDestinations::eConsoleMessage);
-    exchanger.onProgress(40, "40%");
-    exchanger.onProgress(100, "done");
+    exchanger.nominalImportProgress().onProgress({0.4, "40%"});
+    exchanger.nominalImportProgress().onProgress({1.0, "done"});
     exchanger.onImportFinished(false);
   });
   worker->start();
@@ -71,7 +71,7 @@ void DataExchangerTest::reportsFromTheOwnThreadAreDeliveredDirectly() {
   DataExchanger exchanger;
   QSignalSpy progressSpy(&exchanger,
                          &DataExchanger::updateNominalImportProgress);
-  exchanger.onProgress(10, "now");
+  exchanger.nominalImportProgress().onProgress({0.1, "now"});
   QCOMPARE(progressSpy.count(), 1);
   QCOMPARE(progressSpy.first().at(0).toInt(), 10);
 }

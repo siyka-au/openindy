@@ -10,7 +10,12 @@
  * \brief DataExchanger::DataExchanger
  * \param parent
  */
-DataExchanger::DataExchanger(QObject* parent) : QObject(parent) {}
+DataExchanger::DataExchanger(QObject* parent) : QObject(parent) {
+  QObject::connect(&this->nominalProgress, &QtProgressSink::progressChanged,
+                   this, &DataExchanger::updateNominalImportProgress);
+  QObject::connect(&this->observationProgress, &QtProgressSink::progressChanged,
+                   this, &DataExchanger::updateObservationImportProgress);
+}
 
 /*!
  * \brief DataExchanger::~DataExchanger
@@ -242,9 +247,11 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   this->exchange->setMessageSink(this);
   this->exchange->setObserver(this);
   // run the import on the exchange thread
-  this->runOnExchangeThread([exchange = this->exchange]() {
-    if (!exchange.isNull()) exchange->importOiData();
-  });
+  this->runOnExchangeThread(
+      [exchange = this->exchange, sink = &this->nominalProgress]() {
+        if (!exchange.isNull())
+          exchange->importOiData(oi::OperationContext(sink));
+      });
 
   return true;
 }
@@ -361,7 +368,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   this->exchange->setObserver(this);
   // run the export on the exchange thread
   this->runOnExchangeThread([exchange = this->exchange]() {
-    if (!exchange.isNull()) exchange->exportOiData();
+    if (!exchange.isNull()) exchange->exportOiData({});
   });
 
   return true;
@@ -393,6 +400,7 @@ bool DataExchanger::importObservations(const QString& filename) {
   this->observationImporter = new ObservationImporter();
   this->observationImporter->setCurrentJob(this->currentJob);
   this->observationImporter->setFileName(filename);
+  this->observationImporter->setProgressSink(&this->observationProgress);
 
   // connect observation importer
   QObject::connect(&this->exchangeThread, &QThread::started,
@@ -402,10 +410,6 @@ bool DataExchanger::importObservations(const QString& filename) {
   QObject::connect(
       this->observationImporter.data(), &ObservationImporter::importFinished,
       this, &DataExchanger::importObservationsFinished, Qt::AutoConnection);
-  QObject::connect(this->observationImporter.data(),
-                   &ObservationImporter::updateProgress, this,
-                   &DataExchanger::updateObservationImportProgress,
-                   Qt::AutoConnection);
   QObject::connect(this->observationImporter.data(),
                    &ObservationImporter::sendMessage, this,
                    &DataExchanger::sendMessage, Qt::AutoConnection);
@@ -588,15 +592,6 @@ void DataExchanger::onMessage(const std::string& msg, const MessageTypes& type,
                               const MessageDestinations& dest) {
   this->runOnOwnThread([this, msg = toQString(msg), type, dest] {
     emit this->sendMessage(msg, type, dest);
-  });
-}
-
-void DataExchanger::onProgress(int percent, const std::string& text) {
-  // only an import has ever shown progress
-  this->runOnOwnThread([this, percent, message = toQString(text)] {
-    if (!this->exporting) {
-      emit this->updateNominalImportProgress(percent, message);
-    }
   });
 }
 

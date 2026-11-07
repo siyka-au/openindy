@@ -27,8 +27,8 @@ class LoadingDialog : public QDialog {
   // update progress and display message
   // ###################################
 
-  void updateProgress(const int& progress,
-                      const QString& msg) const;  // progress (0-100)
+  void setProgress(int percent,
+                   const QString& msg) const;  // progress (0-100)
 
  private:
   // ##################################

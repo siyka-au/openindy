@@ -8,6 +8,7 @@
 
 #include "console.h"
 #include "oijob.h"
+#include "progress.h"
 
 using namespace oi;
 
@@ -34,6 +35,10 @@ class ObservationImporter : public QObject {
   [[nodiscard]] const QString& getFileName() const;
   void setFileName(const QString& filename);
 
+  // where the import reports how far it is (non-owning, may be null; it is
+  // called from the thread the import runs on)
+  void setProgressSink(oi::ProgressSink* sink);
+
  public slots:
 
   // ######################
@@ -51,8 +56,6 @@ class ObservationImporter : public QObject {
   void sendMessage(const QString& msg, const MessageTypes& msgType,
                    const MessageDestinations& msgDest =
                        MessageDestinations::eConsoleMessage);
-  void updateProgress(const int& progress,
-                      const QString& msg);  // 0 <= progress <= 100
   void importFinished(const bool& success);
 
  private:
@@ -63,6 +66,7 @@ class ObservationImporter : public QObject {
   oi::Guarded<OiJob> currentJob;
 
   QString filename;
+  oi::ProgressSink* progressSink = nullptr;
 };
 
 #endif  // OBSERVATIONIMPORTER_H

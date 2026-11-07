@@ -22,6 +22,7 @@
 #include "oijob.h"
 #include "pluginmanager.h"
 #include "pluginrepository.h"
+#include "qtprogresssink.h"
 #include "settings.h"
 #include "util.h"
 
@@ -73,9 +74,17 @@ class DataExchanger : public QObject,
   // is turned into signals and slots. Public so they are the seam tests use.
   // ##############################################################
 
+  // progress arrives through the exchange's OperationContext: each sink hands
+  // reports to this thread in order and re-emits them as the signals below
+  [[nodiscard]] QtProgressSink& nominalImportProgress() {
+    return this->nominalProgress;
+  }
+  [[nodiscard]] QtProgressSink& observationImportProgress() {
+    return this->observationProgress;
+  }
+
   void onMessage(const std::string& msg, const MessageTypes& type,
                  const MessageDestinations& dest) override;
-  void onProgress(int percent, const std::string& message) override;
   void onImportFinished(bool success) override;
   void onExportFinished(bool success) override;
 
@@ -118,6 +127,9 @@ class DataExchanger : public QObject,
   // runs `work` on this object's thread: directly if called from it, queued
   // otherwise (what a signal emitted by the plugin used to do)
   void runOnOwnThread(std::function<void()> work);
+
+  QtProgressSink nominalProgress;
+  QtProgressSink observationProgress;
 
   // runs `work` once on exchangeThread; replaces any earlier runner
   void runOnExchangeThread(std::function<void()> work);
