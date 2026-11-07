@@ -144,6 +144,8 @@ add_library(OpenIndyApp SHARED
     controller/clipboardutil.cpp
     controller/qtjobadapter.cpp
     controller/qtjobadapter.h
+    controller/qtfunctionadapter.cpp
+    controller/qtfunctionadapter.h
     controller/config/featuretablecolumnconfig.cpp
     controller/config/featuretablesortingconfig.cpp
     controller/config/measurementconfigmanager.cpp
@@ -576,3 +578,13 @@ add_test(NAME ownedsubgeometryui COMMAND tst_ownedsubgeometryui)
 add_executable(tst_qtjobadapter test/qtjobadapter/tst_qtjobadapter.cpp)
 target_link_libraries(tst_qtjobadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME qtjobadapter COMMAND tst_qtjobadapter)
+
+# QtFunctionAdapter: the Function observer turned back into the Qt signals
+add_executable(tst_qtfunctionadapter test/qtfunctionadapter/tst_qtfunctionadapter.cpp)
+target_link_libraries(tst_qtfunctionadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
+add_test(NAME qtfunctionadapter COMMAND tst_qtfunctionadapter)
+
+# DataExchanger: reports of an exchange plugin's worker thread reach the UI thread
+add_executable(tst_dataexchanger test/dataexchanger/tst_dataexchanger.cpp)
+target_link_libraries(tst_dataexchanger PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
+add_test(NAME dataexchanger COMMAND tst_dataexchanger)

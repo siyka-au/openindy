@@ -5,12 +5,15 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <functional>
 
 #include "console.h"
 #include "exchangeParams.h"
 #include "exchangedefinedformat.h"
+#include "exchangeobserver.h"
 #include "exchangesimpleascii.h"
 #include "measurementconfigmanager.h"
+#include "messagesink.h"
 #include "observationimporter.h"
 #include "oijob.h"
 #include "pluginloader.h"
@@ -24,7 +27,9 @@ using namespace oi;
  * \brief The DataExchanger class
  * Imports or exports nominals by invoking plugins
  */
-class DataExchanger : public QObject {
+class DataExchanger : public QObject,
+                      public oi::MessageSink,
+                      public oi::ExchangeObserver {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DataExchanger)
 
@@ -56,6 +61,19 @@ class DataExchanger : public QObject {
 
   // import observations
   bool importObservations(const QString& filename);
+
+  // ##############################################################
+  // the exchange plugin reports from its worker thread through plain
+  // callbacks (it is given this object as sink and observer); these hand
+  // every report over to this object's (the UI) thread, in order, before it
+  // is turned into signals and slots. Public so they are the seam tests use.
+  // ##############################################################
+
+  void onMessage(const QString& msg, const MessageTypes& type,
+                 const MessageDestinations& dest) override;
+  void onProgress(int percent, const QString& message) override;
+  void onImportFinished(bool success) override;
+  void onExportFinished(bool success) override;
 
  signals:
 
@@ -93,6 +111,10 @@ class DataExchanger : public QObject {
   void importObservationsFinished(const bool& success);
 
  private:
+  // runs `work` on this object's thread: directly if called from it, queued
+  // otherwise (what a signal emitted by the plugin used to do)
+  void runOnOwnThread(std::function<void()> work);
+
   // ##################
   // general attributes
   // ##################
@@ -101,6 +123,7 @@ class DataExchanger : public QObject {
 
   ExchangeParams exchangeParams;
   QPointer<ExchangeInterface> exchange;
+  bool exporting = false;  // whether the running exchange is an export
 
   QPointer<ObservationImporter> observationImporter;
 

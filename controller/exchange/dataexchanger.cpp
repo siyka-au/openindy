@@ -15,6 +15,12 @@ DataExchanger::~DataExchanger() {
     this->exchangeThread.quit();
     this->exchangeThread.wait();
   }
+
+  // an exchange that is still around must not report to a dead exchanger
+  if (!this->exchange.isNull()) {
+    this->exchange->setMessageSink(nullptr);
+    this->exchange->setObserver(nullptr);
+  }
 }
 
 /*!
@@ -199,23 +205,12 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   }
 
   // connect exchange plugin
-  QObject::connect(exchange.data(),
-                   SIGNAL(sendMessage(const QString&, const MessageTypes&,
-                                      const MessageDestinations&)),
-                   this,
-                   SIGNAL(sendMessage(const QString&, const MessageTypes&,
-                                      const MessageDestinations&)));
+  this->exporting = false;
+  this->exchange->setMessageSink(this);
+  this->exchange->setObserver(this);
   QObject::connect(&this->exchangeThread, SIGNAL(started()),
                    this->exchange.data(), SLOT(importOiData()),
                    Qt::AutoConnection);
-  QObject::connect(this->exchange.data(), SIGNAL(importFinished(const bool&)),
-                   this, SLOT(importFeatures(const bool&)), Qt::AutoConnection);
-  // QObject::connect(this->exchange.data(), SIGNAL(exportFinished(const
-  // bool&)), this, SIGNAL(exportFinished(const bool&)), Qt::AutoConnection);
-  QObject::connect(
-      this->exchange.data(), SIGNAL(updateProgress(const int&, const QString&)),
-      this, SIGNAL(updateNominalImportProgress(const int&, const QString&)),
-      Qt::AutoConnection);
 
   // move exchange plugin to thread and start data exchange
   this->exchange->moveToThread(&this->exchangeThread);
@@ -331,17 +326,12 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   this->exchange->setFeatures(params.exportFeatures);
 
   // connect exchange plugin
-  QObject::connect(exchange.data(),
-                   SIGNAL(sendMessage(const QString&, const MessageTypes&,
-                                      const MessageDestinations&)),
-                   this,
-                   SIGNAL(sendMessage(const QString&, const MessageTypes&,
-                                      const MessageDestinations&)));
+  this->exporting = true;
+  this->exchange->setMessageSink(this);
+  this->exchange->setObserver(this);
   QObject::connect(&this->exchangeThread, SIGNAL(started()),
                    this->exchange.data(), SLOT(exportOiData()),
                    Qt::AutoConnection);
-  QObject::connect(this->exchange.data(), SIGNAL(exportFinished(const bool&)),
-                   this, SLOT(exportFeatures(const bool&)), Qt::AutoConnection);
 
   // move exchange plugin to thread and start data exchange
   this->exchange->moveToThread(&this->exchangeThread);
@@ -550,6 +540,37 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
 
     }  // switch
   }
+}
+
+void DataExchanger::runOnOwnThread(std::function<void()> work) {
+  if (QThread::currentThread() == this->thread()) {
+    work();
+  } else {
+    QMetaObject::invokeMethod(this, std::move(work), Qt::QueuedConnection);
+  }
+}
+
+void DataExchanger::onMessage(const QString& msg, const MessageTypes& type,
+                              const MessageDestinations& dest) {
+  this->runOnOwnThread(
+      [this, msg, type, dest] { emit this->sendMessage(msg, type, dest); });
+}
+
+void DataExchanger::onProgress(int percent, const QString& message) {
+  // only an import has ever shown progress
+  this->runOnOwnThread([this, percent, message] {
+    if (!this->exporting) {
+      emit this->updateNominalImportProgress(percent, message);
+    }
+  });
+}
+
+void DataExchanger::onImportFinished(bool success) {
+  this->runOnOwnThread([this, success] { this->importFeatures(success); });
+}
+
+void DataExchanger::onExportFinished(bool success) {
+  this->runOnOwnThread([this, success] { this->exportFeatures(success); });
 }
 
 /*!

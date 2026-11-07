@@ -1,5 +1,6 @@
 #include "availableelementstreeviewproxymodel.h"
 
+#include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -91,8 +92,8 @@ void AvailableElementsTreeViewProxyModel::setSelectedFunctionPosition(
   this->connectedFunction = feature->getFunctions().at(this->functionPosition);
 
   // connect the specified function
-  QObject::connect(this->connectedFunction.data(),
-                   &Function::inputElementsChanged, this,
+  QObject::connect(QtFunctionAdapter::of(this->connectedFunction),
+                   &QtFunctionAdapter::inputElementsChanged, this,
                    &AvailableElementsTreeViewProxyModel::invalidateFilter,
                    Qt::AutoConnection);
 
@@ -250,15 +251,15 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
 
     // add all features as input elements
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(true);
-    function->blockSignals(true);
+    QtFunctionAdapter::of(function)->blockSignals(true);
     foreach (const QPointer<FeatureWrapper>& feature, features) {
       emit this->addInputFeature(this->currentJob->getActiveFeature(),
                                  this->functionPosition, inputElementKey,
                                  feature);
     }
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(false);
-    function->blockSignals(false);
-    function->inputElementsChanged();
+    QtFunctionAdapter::of(function)->blockSignals(false);
+    emit QtFunctionAdapter::of(function)->inputElementsChanged();
 
   } else if (neededElementType ==
              ElementTypes::eObservationElement) {  // observation
@@ -273,15 +274,15 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
 
     // add all observations as input elements
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(true);
-    function->blockSignals(true);
+    QtFunctionAdapter::of(function)->blockSignals(true);
     foreach (const QPointer<Observation>& observation, observations) {
       emit this->addInputObservation(this->currentJob->getActiveFeature(),
                                      this->functionPosition, inputElementKey,
                                      observation);
     }
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(false);
-    function->blockSignals(false);
-    function->inputElementsChanged();
+    QtFunctionAdapter::of(function)->blockSignals(false);
+    emit QtFunctionAdapter::of(function)->inputElementsChanged();
     if (!this->currentJob->getActiveFeature()->getGeometry().isNull()) {
       this->currentJob->getActiveFeature()
           ->getGeometry()
@@ -300,15 +301,15 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
 
     // add all readings as input elements
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(true);
-    function->blockSignals(true);
+    QtFunctionAdapter::of(function)->blockSignals(true);
     foreach (const QPointer<Reading>& reading, readings) {
       emit this->addInputReading(this->currentJob->getActiveFeature(),
                                  this->functionPosition, inputElementKey,
                                  reading);
     }
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(false);
-    function->blockSignals(false);
-    function->inputElementsChanged();
+    QtFunctionAdapter::of(function)->blockSignals(false);
+    emit QtFunctionAdapter::of(function)->inputElementsChanged();
   }
 }
 
@@ -519,8 +520,8 @@ void AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition() {
 
   // disconnect function
   if (!this->connectedFunction.isNull()) {
-    QObject::disconnect(this->connectedFunction.data(),
-                        &Function::inputElementsChanged, this,
+    QObject::disconnect(QtFunctionAdapter::of(this->connectedFunction),
+                        &QtFunctionAdapter::inputElementsChanged, this,
                         &AvailableElementsTreeViewProxyModel::invalidateFilter);
     this->connectedFunction = QPointer<Function>(nullptr);
   }

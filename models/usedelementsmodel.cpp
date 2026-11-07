@@ -1,5 +1,6 @@
 #include "usedelementsmodel.h"
 
+#include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -363,8 +364,8 @@ void UsedElementsModel::setSelectedFunctionPosition(
   this->connectedFunction = feature->getFunctions().at(this->functionPosition);
 
   // connect the specified function
-  QObject::connect(this->connectedFunction.data(),
-                   &Function::inputElementsChanged, this,
+  QObject::connect(QtFunctionAdapter::of(this->connectedFunction),
+                   &QtFunctionAdapter::inputElementsChanged, this,
                    &UsedElementsModel::updateModel, Qt::AutoConnection);
 
   this->updateModel();
@@ -421,8 +422,8 @@ void UsedElementsModel::resetSelectedFunctionPosition() {
 
   // disconnect function
   if (!this->connectedFunction.isNull()) {
-    QObject::disconnect(this->connectedFunction.data(),
-                        &Function::inputElementsChanged, this,
+    QObject::disconnect(QtFunctionAdapter::of(this->connectedFunction),
+                        &QtFunctionAdapter::inputElementsChanged, this,
                         &UsedElementsModel::updateModel);
     this->connectedFunction = QPointer<Function>(nullptr);
   }
