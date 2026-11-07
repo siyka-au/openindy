@@ -1,6 +1,10 @@
 #include "measurementconfigmanager.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QFile>
+
+#include "configfile.h"
 
 /*!
  * \brief MeasurementConfigManager::MeasurementConfigManager
@@ -303,7 +307,7 @@ void MeasurementConfigManager::replaceMeasurementConfig(
     return;
   }
 
-  // write user config as xml file
+  // write user config as json file
   if (mConfig.isUserConfig()) {
     this->saveToConfigFolder(oldConfig.getName(), mConfig);
   }
@@ -315,12 +319,6 @@ void MeasurementConfigManager::replaceMeasurementConfig(
 
 void MeasurementConfigManager::saveToConfigFolder(
     const QString& name, const MeasurementConfig& mConfig) {
-  QDomDocument mConfigXml("measurementConfig");
-
-  // add mConfig to document as xml
-  QDomElement root = mConfig.toOpenIndyXML(mConfigXml);
-  mConfigXml.appendChild(root);
-
   // get config folder (create if does not exist yet)
   QString appPath = qApp->applicationDirPath();
   QDir mConfigFolder(appPath.append("/config/measurementConfigs"));
@@ -328,21 +326,15 @@ void MeasurementConfigManager::saveToConfigFolder(
     mConfigFolder.mkpath(".");
   }
 
-  // set the file name
-  QString fileName = mConfig.getName();
-
   // remove old config file
-  QFile oldConfigFile(mConfigFolder.absoluteFilePath(name + ".xml"));
+  QFile oldConfigFile(mConfigFolder.absoluteFilePath(name + ".json"));
   if (oldConfigFile.exists()) {
     oldConfigFile.remove();
   }
 
-  // save mConfig to xml file
-  QFile configFile(mConfigFolder.absoluteFilePath(fileName.append(".xml")));
-  configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-  QTextStream stream(&configFile);
-  mConfigXml.save(stream, 4);
-  configFile.close();
+  // save mConfig to json file
+  configfile::write(mConfigFolder.absoluteFilePath(mConfig.getName() + ".json"),
+                    oi::codec::encodeMeasurementConfig(mConfig));
 }
 
 /*!
@@ -364,10 +356,10 @@ void MeasurementConfigManager::loadFromConfigFolder() {
     return;
   }
 
-  // get a list of all xml files inside the measurementConfigs folder
-  QStringList xmlFilter;
-  xmlFilter.append("*.xml");
-  QStringList fileNames = mConfigFolder.entryList(xmlFilter, QDir::Files);
+  // get a list of all json files inside the measurementConfigs folder
+  QStringList jsonFilter;
+  jsonFilter.append("*.json");
+  QStringList fileNames = mConfigFolder.entryList(jsonFilter, QDir::Files);
 
   // create a list that is filled with the names of the loaded measurement
   // configs
@@ -375,25 +367,15 @@ void MeasurementConfigManager::loadFromConfigFolder() {
 
   // load all files and create a MeasurementConfig object for each of them
   for (const auto& fileName : fileNames) {
-    // create file from file name and check if it exists
-    QFile mConfigFile(mConfigFolder.absoluteFilePath(fileName));
-    if (!mConfigFile.exists()) {
+    // try to parse the file to a MeasurementConfig object; unreadable or
+    // invalid files are skipped
+    const QString filePath = mConfigFolder.absoluteFilePath(fileName);
+    const auto loaded = configfile::readMeasurementConfig(filePath);
+    if (!loaded) {
       continue;
     }
-
-    // try to parse the file content to a QDomDocument
-    QDomDocument mConfigXml;
-    if (!mConfigXml.setContent(&mConfigFile) || mConfigXml.isNull()) {
-      continue;
-    }
-
-    // try to parse the file to a MeasurementConfig object
-    MeasurementConfig userConfig;
-    QDomElement mConfigTag = mConfigXml.documentElement();
-    if (!userConfig.fromOpenIndyXML(mConfigTag)) {
-      continue;
-    }
-    if (userConfig.isStandardConfig()) {  // skip standard config from xml
+    MeasurementConfig userConfig = *loaded;
+    if (userConfig.isStandardConfig()) {  // skip standard config from file
       continue;
     }
     userConfig.makeUserConfig();
@@ -401,7 +383,7 @@ void MeasurementConfigManager::loadFromConfigFolder() {
     // check if a measurement config with the same name has been loaded before
     if (mConfigNames.contains(userConfig.getName())) {
       // delete the config file permanently
-      mConfigFile.remove();
+      QFile::remove(filePath);
       continue;
     }
     mConfigNames.append(userConfig.getName());
@@ -423,23 +405,13 @@ void MeasurementConfigManager::loadFromConfigFolder() {
   if (userMConfigFolder.exists()) {
     QStringList userMConfigNames;
     foreach (const QString& fileName,
-             userMConfigFolder.entryList(xmlFilter, QDir::Files)) {
-      QFile mConfigFile(userMConfigFolder.absoluteFilePath(fileName));
-      if (!mConfigFile.exists()) {
+             userMConfigFolder.entryList(jsonFilter, QDir::Files)) {
+      const QString filePath = userMConfigFolder.absoluteFilePath(fileName);
+      const auto loaded = configfile::readMeasurementConfig(filePath);
+      if (!loaded || loaded->isStandardConfig()) {
         continue;
       }
-
-      QDomDocument mConfigXml;
-      if (!mConfigXml.setContent(&mConfigFile) || mConfigXml.isNull()) {
-        continue;
-      }
-
-      MeasurementConfig userConfig;
-      QDomElement mConfigTag = mConfigXml.documentElement();
-      if (!userConfig.fromOpenIndyXML(mConfigTag) ||
-          userConfig.isStandardConfig()) {
-        continue;
-      }
+      MeasurementConfig userConfig = *loaded;
       userConfig.makeUserConfig();
 
       if (userMConfigNames.contains(userConfig.getName())) {
@@ -452,8 +424,7 @@ void MeasurementConfigManager::loadFromConfigFolder() {
         if (this->configs.value(key).getName().compare(userConfig.getName()) ==
             0) {
           qWarning() << "MeasurementConfigManager: user measurement config"
-                     << mConfigFile.fileName()
-                     << "shadows a system one sharing the name"
+                     << filePath << "shadows a system one sharing the name"
                      << userConfig.getName();
           this->configs.remove(key);
           break;
@@ -503,13 +474,6 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig& mConfig) {
   // create config file at config folder
   // ###################################
 
-  // create xml document
-  QDomDocument mConfigXml("measurementConfig");
-
-  // add mConfig to document as xml
-  QDomElement root = mConfig.toOpenIndyXML(mConfigXml);
-  mConfigXml.appendChild(root);
-
   // get config folder (create if does not exist yet)
   QString appPath = qApp->applicationDirPath();
   QDir mConfigFolder(appPath.append("/config/measurementConfigs"));
@@ -517,15 +481,9 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig& mConfig) {
     mConfigFolder.mkpath(".");
   }
 
-  // set the file name
-  QString fileName = mConfig.getName();
-
-  // save mConfig to xml file
-  QFile configFile(mConfigFolder.absoluteFilePath(fileName.append(".xml")));
-  configFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-  QTextStream stream(&configFile);
-  mConfigXml.save(stream, 4);
-  configFile.close();
+  // save mConfig to json file
+  configfile::write(mConfigFolder.absoluteFilePath(mConfig.getName() + ".json"),
+                    oi::codec::encodeMeasurementConfig(mConfig));
 
   // ########################################
   // add mConfig to the list of saved configs
@@ -556,7 +514,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString& name) {
   QDir mConfigFolder(appPath.append("/config/measurementConfigs"));
   if (mConfigFolder.exists()) {
     // get config file
-    QFile configFile(mConfigFolder.absoluteFilePath(name + ".xml"));
+    QFile configFile(mConfigFolder.absoluteFilePath(name + ".json"));
     if (configFile.exists()) {
       configFile.remove();
     }

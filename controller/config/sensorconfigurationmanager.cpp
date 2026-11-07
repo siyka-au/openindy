@@ -1,6 +1,10 @@
 #include "sensorconfigurationmanager.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QFile>
+
+#include "configfile.h"
 
 /*!
  * \brief SensorConfigurationManager::SensorConfigurationManager
@@ -306,17 +310,10 @@ void SensorConfigurationManager::replaceSensorConfig(
   }
 
   // ########################
-  // replace sConfig xml file
+  // replace sConfig json file
   // ########################
 
   if (save) {
-    // create xml document
-    QDomDocument sConfigXml("sensorConfig");
-
-    // add mConfig to document as xml
-    QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
-    sConfigXml.appendChild(root);
-
     // get config folder (create if does not exist yet)
     QString appPath = qApp->applicationDirPath();
     QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
@@ -324,22 +321,16 @@ void SensorConfigurationManager::replaceSensorConfig(
       sConfigFolder.mkpath(".");
     }
 
-    // set the file name
-    QString fileName = sConfig.getName();
-
     // remove old config file
-    QFile oldConfigFile(sConfigFolder.absoluteFilePath(name + ".xml"));
+    QFile oldConfigFile(sConfigFolder.absoluteFilePath(name + ".json"));
     if (oldConfigFile.exists()) {
       oldConfigFile.remove();
     }
 
-    // save mConfig to xml file
-    QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
-    configFile.open(QIODevice::ReadWrite | QIODevice::Truncate |
-                    QIODevice::Text);
-    QTextStream stream(&configFile);
-    sConfigXml.save(stream, 4);
-    configFile.close();
+    // save sConfig to json file
+    configfile::write(
+        sConfigFolder.absoluteFilePath(sConfig.getName() + ".json"),
+        oi::codec::encodeSensorConfiguration(sConfig));
   }
 
   // ###############################
@@ -385,40 +376,29 @@ void SensorConfigurationManager::loadFromConfigFolder() {
     return;
   }
 
-  // get a list of all xml files inside the sensorConfigs folder
-  QStringList xmlFilter;
-  xmlFilter.append("*.xml");
-  QStringList fileNames = sConfigFolder.entryList(xmlFilter, QDir::Files);
+  // get a list of all json files inside the sensorConfigs folder
+  QStringList jsonFilter;
+  jsonFilter.append("*.json");
+  QStringList fileNames = sConfigFolder.entryList(jsonFilter, QDir::Files);
 
   // create a list that is filled with the names of the loaded sensor configs
   QStringList sConfigNames;
 
   // load all files and create a SensorConfiguration object for each of them
   for (const auto& fileName : fileNames) {
-    // create file from file name and check if it exists
-    QFile sConfigFile(sConfigFolder.absoluteFilePath(fileName));
-    if (!sConfigFile.exists()) {
+    // unreadable or invalid files are skipped
+    const QString filePath = sConfigFolder.absoluteFilePath(fileName);
+    const auto loaded = configfile::readSensorConfiguration(filePath);
+    if (!loaded) {
       continue;
     }
-
-    // try to parse the file content to a QDomDocument
-    QDomDocument sConfigXml;
-    if (!sConfigXml.setContent(&sConfigFile) || sConfigXml.isNull()) {
-      continue;
-    }
-
-    // try to parse the file to a SensorConfiguration object
-    SensorConfiguration userConfig;
-    QDomElement sConfigTag = sConfigXml.documentElement();
-    if (!userConfig.fromOpenIndyXML(sConfigTag)) {
-      continue;
-    }
+    SensorConfiguration userConfig = *loaded;
     userConfig.setIsSaved(true);
 
     // check if a sensor config with the same name has been loaded before
     if (sConfigNames.contains(userConfig.getName())) {
       // delete the config file permanently
-      sConfigFile.remove();
+      QFile::remove(filePath);
       continue;
     }
     sConfigNames.append(userConfig.getName());
@@ -439,28 +419,18 @@ void SensorConfigurationManager::loadFromConfigFolder() {
   QDir userSConfigFolder(QDir::homePath() + "/.openindy/sensorConfigs");
   if (userSConfigFolder.exists()) {
     foreach (const QString& fileName,
-             userSConfigFolder.entryList(xmlFilter, QDir::Files)) {
-      QFile sConfigFile(userSConfigFolder.absoluteFilePath(fileName));
-      if (!sConfigFile.exists()) {
+             userSConfigFolder.entryList(jsonFilter, QDir::Files)) {
+      const QString filePath = userSConfigFolder.absoluteFilePath(fileName);
+      const auto loaded = configfile::readSensorConfiguration(filePath);
+      if (!loaded) {
         continue;
       }
-
-      QDomDocument sConfigXml;
-      if (!sConfigXml.setContent(&sConfigFile) || sConfigXml.isNull()) {
-        continue;
-      }
-
-      SensorConfiguration userConfig;
-      QDomElement sConfigTag = sConfigXml.documentElement();
-      if (!userConfig.fromOpenIndyXML(sConfigTag)) {
-        continue;
-      }
+      SensorConfiguration userConfig = *loaded;
       userConfig.setIsSaved(true);
 
       if (this->savedSensorConfigsMap.contains(userConfig.getName())) {
         qWarning() << "SensorConfigurationManager: user sensor config"
-                   << sConfigFile.fileName()
-                   << "shadows a system one sharing the name"
+                   << filePath << "shadows a system one sharing the name"
                    << userConfig.getName();
         this->savedSensorConfigsList.removeOne(
             this->savedSensorConfigsMap.value(userConfig.getName()));
@@ -523,13 +493,6 @@ void SensorConfigurationManager::saveSensorConfig(
   // ###################################
 
   if (save) {
-    // create xml document
-    QDomDocument sConfigXml("sensorConfig");
-
-    // add sConfig to document as xml
-    QDomElement root = sConfig.toOpenIndyXML(sConfigXml);
-    sConfigXml.appendChild(root);
-
     // get config folder (create if does not exist yet)
     QString appPath = qApp->applicationDirPath();
     QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
@@ -537,16 +500,10 @@ void SensorConfigurationManager::saveSensorConfig(
       sConfigFolder.mkpath(".");
     }
 
-    // set the file name
-    QString fileName = sConfig.getName();
-
-    // save sConfig to xml file
-    QFile configFile(sConfigFolder.absoluteFilePath(fileName.append(".xml")));
-    configFile.open(QIODevice::ReadWrite | QIODevice::Truncate |
-                    QIODevice::Text);
-    QTextStream stream(&configFile);
-    sConfigXml.save(stream, 4);
-    configFile.close();
+    // save sConfig to json file
+    configfile::write(
+        sConfigFolder.absoluteFilePath(sConfig.getName() + ".json"),
+        oi::codec::encodeSensorConfiguration(sConfig));
   }
 
   // ########################################
@@ -582,7 +539,7 @@ void SensorConfigurationManager::deleteSensorConfig(const QString& name,
     QDir sConfigFolder(appPath.append("/config/sensorConfigs"));
     if (sConfigFolder.exists()) {
       // get config file
-      QFile configFile(sConfigFolder.absoluteFilePath(name + ".xml"));
+      QFile configFile(sConfigFolder.absoluteFilePath(name + ".json"));
       if (configFile.exists()) {
         configFile.remove();
       }

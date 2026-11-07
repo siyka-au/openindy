@@ -537,7 +537,7 @@ set_tests_properties(watchwindow PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscre
 add_executable(tst_dialogs test/dialogs/dialogstest.cpp)
 target_compile_definitions(tst_dialogs PRIVATE
     SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/dialogs")
-target_link_libraries(tst_dialogs PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
+target_link_libraries(tst_dialogs PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyCodec)
 add_test(NAME dialogs COMMAND tst_dialogs)
 set_tests_properties(dialogs PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
@@ -546,6 +546,15 @@ set_tests_properties(dialogs PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 add_executable(tst_projectexchange test/projectexchange/tst_projectexchange.cpp)
 target_link_libraries(tst_projectexchange PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME projectexchange COMMAND tst_projectexchange)
+
+# config files (JSON): the shipped ones load and say what the old XML said;
+# bad files fall back
+add_executable(tst_configfiles test/configfiles/tst_configfiles.cpp)
+target_compile_definitions(tst_configfiles PRIVATE
+    RESDIR="${CMAKE_CURRENT_SOURCE_DIR}/res-rt/config")
+target_include_directories(tst_configfiles PRIVATE controller/config)
+target_link_libraries(tst_configfiles PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyCodec)
+add_test(NAME configfiles COMMAND tst_configfiles)
 
 # UI verification checkpoint - Controller::generateOwnedNormalLine()/
 # generateOwnedOriginPoint(), the new feature-table context-menu actions,

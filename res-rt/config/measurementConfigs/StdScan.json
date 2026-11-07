@@ -1,0 +1,9 @@
+{
+  "name": "StdScan",
+  "mode": "MEASUREMENT_MODE_FAST",
+  "type": "MEASUREMENT_TYPE_SCAN_DISTANCE_DEPENDENT",
+  "measure_two_sides": false,
+  "max_observations": 143,
+  "time_interval": 0,
+  "distance_interval": 20
+}

@@ -1,0 +1,34 @@
+{
+  "projectDistanceUnit": 0,
+  "projectAngularUnit": 6,
+  "projectTemperatureUnit": 8,
+  "projectDistanceDigits": 2,
+  "projectAngularDigits": 6,
+  "projectTemperatureDigits": 1,
+  "projectSoundSettings": 1,
+  "projectAutoSaveInterval": 10,
+  "projectFeatureViewSettings": {
+    "columns": [
+      { "name": "Type" },
+      { "name": "IsActual" },
+      { "name": "Group" },
+      { "name": "Name" },
+      { "name": "X" },
+      { "name": "Y" },
+      { "name": "Z" },
+      { "name": "StDev" },
+      { "name": "Observations" },
+      { "name": "MeasurementConfig" },
+      { "name": "Functions" },
+      { "name": "IsCommon" },
+      { "name": "PrimaryI" },
+      { "name": "PrimaryJ" },
+      { "name": "PrimaryK" },
+      { "name": "RadiusA" },
+      { "name": "IsSolved" },
+      { "name": "Comment" },
+      { "name": "Angle" },
+      { "name": "Distance" }
+    ]
+  }
+}

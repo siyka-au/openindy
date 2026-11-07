@@ -43,6 +43,10 @@ class ProjectConfig {
   static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
   static ParameterDisplayConfig getParameterDisplayConfig();
 
+  /*! Where the config files live; the application's own config/projectConfigs
+   *  folder when empty (the default). Lets tests use a scratch folder. */
+  static void setConfigFolder(const QString& folder);
+
   //********************************************
   // save and load functions for all config files
   //********************************************
@@ -54,6 +58,7 @@ class ProjectConfig {
   static bool saveprojectSettingsConfigFile();
 
  private:
+  static QString configFolder;
   static QString importNominalPath;
   static QString projectPath;
 

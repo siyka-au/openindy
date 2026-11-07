@@ -1,0 +1,133 @@
+{
+  "name": "VirtualTracker",
+  "is_saved": true,
+  "plugin_name": "OpenIndy Default Plugin",
+  "sensor_name": "PseudoTracker",
+  "sensor_type": "laserTracker",
+  "connection": {
+    "kind": "network",
+    "ip": "",
+    "port": "",
+    "com_port": "",
+    "baud_rate": 0,
+    "data_bits": "SERIAL_DATA_BITS_UNSPECIFIED",
+    "parity": "SERIAL_PARITY_UNSPECIFIED",
+    "stop_bits": "SERIAL_STOP_BITS_TWO",
+    "flow_control": "SERIAL_FLOW_CONTROL_UNSPECIFIED"
+  },
+  "accuracy": {
+    "sigma_xyz": {
+      "x": 2.5e-05,
+      "y": 2.5e-05,
+      "z": 2.5e-05
+    },
+    "sigma_azimuth": 1.57e-06,
+    "sigma_zenith": 1.57e-06,
+    "sigma_distance": 2.5e-05,
+    "sigma_temp": 0.5,
+    "sigma_i": 0,
+    "sigma_j": 0,
+    "sigma_k": 0,
+    "sigma_undefined": []
+  },
+  "integer_parameters": [],
+  "double_parameters": [
+    {
+      "name": "Aa1 [arc sec]",
+      "value": 0.064
+    },
+    {
+      "name": "Aa2 [arc sec]",
+      "value": 0.073
+    },
+    {
+      "name": "Ae0 [arc sec]",
+      "value": 0.223
+    },
+    {
+      "name": "Ae1 [arc sec]",
+      "value": 0.152
+    },
+    {
+      "name": "Ae2 [arc sec]",
+      "value": 0.214
+    },
+    {
+      "name": "Ba1 [arc sec]",
+      "value": 0.08
+    },
+    {
+      "name": "Ba2 [arc sec]",
+      "value": 0.09
+    },
+    {
+      "name": "Be1 [arc sec]",
+      "value": 0.183
+    },
+    {
+      "name": "Be2 [arc sec]",
+      "value": 0.179
+    },
+    {
+      "name": "alpha [arc sec]",
+      "value": 0.128
+    },
+    {
+      "name": "by [mm]",
+      "value": 6.54e-05
+    },
+    {
+      "name": "bz [mm]",
+      "value": 9.74e-05
+    },
+    {
+      "name": "echo value",
+      "value": -123.45
+    },
+    {
+      "name": "ex [mm]",
+      "value": 1.22e-05
+    },
+    {
+      "name": "gamma [arc sec]",
+      "value": 0.079
+    },
+    {
+      "name": "lambda [mm]",
+      "value": 0.000403
+    },
+    {
+      "name": "mu",
+      "value": 5e-06
+    }
+  ],
+  "string_parameters": [
+    {
+      "name": "active probe",
+      "value": "1.5''"
+    },
+    {
+      "name": "reading type",
+      "value": "polar"
+    }
+  ],
+  "available_string_parameters": [
+    {
+      "name": "active probe",
+      "options": [
+        "0.5''",
+        "1.0''",
+        "1.5''"
+      ]
+    },
+    {
+      "name": "reading type",
+      "options": [
+        "cartesian",
+        "polar",
+        "direction",
+        "distance"
+      ]
+    }
+  ]
+}

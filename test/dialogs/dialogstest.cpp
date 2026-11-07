@@ -7,6 +7,7 @@
 
 #include "availablefunctionslistproxymodel.h"
 #include "chooselalib.h"
+#include "config_codec.h"
 #include "controller.h"
 #include "createfeaturedialog.h"
 #include "measurementconfigurationdialog.h"
@@ -17,15 +18,6 @@
 // https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
 
 using namespace oi;
-
-QDebug operator<<(QDebug debug, const QDomDocument& dom) {
-  QByteArray arr;
-  QTextStream stream(&arr);
-  dom.save(stream, 2 /*indent*/);
-  stream.flush();
-  debug.noquote() << arr;
-  return debug;
-}
 
 class DialogsTest : public QObject {
   Q_OBJECT
@@ -47,7 +39,7 @@ class DialogsTest : public QObject {
   void createLevel();
   void reuseDialogInstance();
 
-  void measurementConfigXML_RW();
+  void measurementConfigJson_RW();
   void measurementConfigFilter();
 
   void measurementConfigDialog();
@@ -533,25 +525,29 @@ void DialogsTest::reuseDialogInstance() {
           mConfigLV->model()->index(0, 0).data(Qt::DisplayRole).toString());
 }
 
-void DialogsTest::measurementConfigXML_RW() {
-  MeasurementConfig config =
-      ModelManager::getMeasurementConfigManager()->getProjectConfig(
-          "measconfig-scantime");
+void DialogsTest::measurementConfigJson_RW() {
+  MeasurementConfig config;
+  config.setName("measconfig-scantime");
+  config.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
+  config.setMeasurementType(
+      MeasurementTypes::eScanTimeDependent_MeasurementType);
+  config.setMeasureTwoSides(true);
+  config.setMaxObservations(17);
+  config.setTimeInterval(1.5);
+  config.setDistanceInterval(0.25);
 
-  QDomDocument xml("measurementConfig");
-  QDomElement root = config.toOpenIndyXML(xml);
-  xml.appendChild(root);
+  const auto decoded =
+      codec::decodeMeasurementConfig(codec::encodeMeasurementConfig(config));
+  QVERIFY(decoded.has_value());
+  QCOMPARE(decoded->getName(), config.getName());
+  const MeasurementConfig& fromJson = *decoded;
 
-  MeasurementConfig fromXML;
-  QDomElement docElem = xml.documentElement();
-  fromXML.fromOpenIndyXML(docElem);
-
-  QVERIFY(config.getMeasurementMode() == fromXML.getMeasurementMode());
-  QVERIFY(config.getMeasurementType() == fromXML.getMeasurementType());
-  QVERIFY(config.getMeasureTwoSides() == fromXML.getMeasureTwoSides());
-  QVERIFY(config.getMaxObservations() == fromXML.getMaxObservations());
-  QVERIFY(config.getTimeInterval() == fromXML.getTimeInterval());
-  QVERIFY(config.getDistanceInterval() == fromXML.getDistanceInterval());
+  QVERIFY(config.getMeasurementMode() == fromJson.getMeasurementMode());
+  QVERIFY(config.getMeasurementType() == fromJson.getMeasurementType());
+  QVERIFY(config.getMeasureTwoSides() == fromJson.getMeasureTwoSides());
+  QVERIFY(config.getMaxObservations() == fromJson.getMaxObservations());
+  QVERIFY(config.getTimeInterval() == fromJson.getTimeInterval());
+  QVERIFY(config.getDistanceInterval() == fromJson.getDistanceInterval());
 }
 
 QStringList DialogsTest::getNames(QSortFilterProxyModel* model) {
