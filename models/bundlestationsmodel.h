@@ -49,8 +49,8 @@ class BundleStationsModel : public QAbstractItemModel {
   // ###############
 
   // job
-  [[nodiscard]] const QPointer<oi::OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<oi::OiJob>& job);
+  [[nodiscard]] const oi::Guarded<oi::OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<oi::OiJob>& job);
 
   // stations
   const QJsonArray& getStations();
@@ -93,7 +93,7 @@ class BundleStationsModel : public QAbstractItemModel {
 
   // root item and job
   BundleStationItem* rootItem;
-  QPointer<oi::OiJob> currentJob;
+  oi::Guarded<oi::OiJob> currentJob;
 
   // used stations and template
   QJsonObject bundleTemplate;

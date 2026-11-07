@@ -176,7 +176,7 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
                        QList<sys::Simulation>());
 
   QList<sys::Function> functions;
-  foreach (const QPointer<Function>& f,
+  foreach (const oi::Guarded<Function>& f,
            PluginLoader::loadFunctionPlugins(filePath)) {
     if (f.isNull()) {
       continue;
@@ -191,7 +191,7 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   }
 
   QList<sys::Sensor> sensors;
-  foreach (const QPointer<Sensor>& s,
+  foreach (const oi::Guarded<Sensor>& s,
            PluginLoader::loadSensorPlugins(filePath)) {
     if (s.isNull()) {
       continue;
@@ -221,7 +221,7 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   }
 
   QList<sys::Exchange> exchanges;
-  foreach (const QPointer<ExchangeSimpleAscii>& e,
+  foreach (const oi::Guarded<ExchangeSimpleAscii>& e,
            PluginLoader::loadExchangeSimpleAsciiPlugins(filePath)) {
     if (e.isNull()) {
       continue;
@@ -230,7 +230,7 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
                                    e->getMetaData().description, ownerRef,
                                    e->getMetaData().iid));
   }
-  foreach (const QPointer<ExchangeDefinedFormat>& e,
+  foreach (const oi::Guarded<ExchangeDefinedFormat>& e,
            PluginLoader::loadExchangeDefinedFormatPlugins(filePath)) {
     if (e.isNull()) {
       continue;
@@ -241,7 +241,7 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   }
 
   QList<sys::Simulation> simulations;
-  foreach (const QPointer<SimulationModel>& sim,
+  foreach (const oi::Guarded<SimulationModel>& sim,
            PluginLoader::loadSimulationPlugins(filePath)) {
     if (sim.isNull()) {
       continue;

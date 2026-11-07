@@ -817,14 +817,14 @@ void DialogsTest::measurementConfigurationModel() {
 void DialogsTest::projectSaveLoad() {
   OiJob jobS;
 
-  QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
-  QPointer<Station> station = new Station();
+  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
+  oi::Guarded<Station> station = new Station();
   station->setFeatureName("STATION01");
   stationFeature->setStation(station);
   jobS.addFeature(stationFeature);
 
-  QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
-  QPointer<CoordinateSystem> system = new CoordinateSystem();
+  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
+  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
   system->setFeatureName("PART");
   systemFeature->setCoordinateSystem(system);
   jobS.addFeature(systemFeature);
@@ -853,7 +853,8 @@ void DialogsTest::projectSaveLoad() {
   QVERIFY(point1.measurementConfig.isValid());
   point1.functionPlugin = std::pair<QString, QString>("function1", "path");
   jobS.addFeatures(point1);  // job is reponsible
-  QPointer<FeatureWrapper> feature = jobS.getFeaturesByName(point1.name).at(0);
+  oi::Guarded<FeatureWrapper> feature =
+      jobS.getFeaturesByName(point1.name).at(0);
   // feature->getFeature()->addFunction(function); // controller ist responsible
   feature->getGeometry()->setMeasurementConfig(
       point1.measurementConfig.getKey());  // controller ist responsible
@@ -899,7 +900,7 @@ void DialogsTest::projectSaveLoad() {
       "standard), (StdPoint, standard), (StdTwoSide, standard), (StdTwoSide, "
       "standard), (level, standard), (measconfig-scandistance, user)" == name);
 
-  QPointer<OiJob> jobL = projectExchanger.loadProject(project).job;
+  oi::Guarded<OiJob> jobL = projectExchanger.loadProject(project).job;
 
   name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs())
              .join(", ");

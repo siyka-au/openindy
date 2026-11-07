@@ -43,8 +43,8 @@ class FeatureUpdater : public QObject {
   // get or set the current OpenIndy job
   // ###################################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
  public slots:
 
@@ -54,9 +54,9 @@ class FeatureUpdater : public QObject {
 
   // recalculate features
   void recalcFeatureSet();
-  void recalcFeature(const QPointer<Feature>& feature);
-  void recalcTrafoParam(const QPointer<TrafoParam>& trafoParam);
-  bool recalcBundle(const QPointer<CoordinateSystem>& bundleSystem);
+  void recalcFeature(const oi::Guarded<Feature>& feature);
+  void recalcTrafoParam(const oi::Guarded<TrafoParam>& trafoParam);
+  bool recalcBundle(const oi::Guarded<CoordinateSystem>& bundleSystem);
 
   // change the active coordinate system (transforms all observations to the
   // given coordinate system, if possible)
@@ -71,58 +71,58 @@ class FeatureUpdater : public QObject {
   void disconnectJob();
 
   // recursive recalculation
-  void recursiveFeatureRecalculation(const QPointer<Feature>& feature);
+  void recursiveFeatureRecalculation(const oi::Guarded<Feature>& feature);
 
   // set up input elements for trafo param features
   void setUpTrafoParamActualActual(
-      const QPointer<TrafoParam>& trafoParam,
-      const QPointer<SystemTransformation>& systemTransformation);
+      const oi::Guarded<TrafoParam>& trafoParam,
+      const oi::Guarded<SystemTransformation>& systemTransformation);
   void setUpTrafoParamActualNominal(
-      const QPointer<TrafoParam>& trafoParam,
-      const QPointer<SystemTransformation>& systemTransformation);
+      const oi::Guarded<TrafoParam>& trafoParam,
+      const oi::Guarded<SystemTransformation>& systemTransformation);
   void setUpTrafoParamNominalNominal(
-      const QPointer<TrafoParam>& trafoParam,
-      const QPointer<SystemTransformation>& systemTransformation);
+      const oi::Guarded<TrafoParam>& trafoParam,
+      const oi::Guarded<SystemTransformation>& systemTransformation);
   void setUpTrafoParamBundleNominal(
-      const QPointer<TrafoParam>& trafoParam,
-      const QPointer<SystemTransformation>& systemTransformation);
+      const oi::Guarded<TrafoParam>& trafoParam,
+      const oi::Guarded<SystemTransformation>& systemTransformation);
 
   // change the active coordinate system (does not transform observations)
   void switchCoordinateSystemWithoutTransformation(
-      const QPointer<CoordinateSystem>& destinationSystem);
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
   void transformAllObsToDestSystem(
-      const QPointer<CoordinateSystem>& destinationSystem);
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
   void recalcFeatureSetWithoutTransformation();
-  void recalcFeatureWithoutTransformation(const QPointer<Feature>& feature);
+  void recalcFeatureWithoutTransformation(const oi::Guarded<Feature>& feature);
   // change with transformation for bundle
   void switchCoordinateSystemWithTransformation(
-      const QPointer<CoordinateSystem>& destinationSystem);
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
 
   void transformObsAndNominals(
-      const QPointer<CoordinateSystem>& destinationSystem);
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
 
   // copy geometry
   void copyGeometry(InputElement& newElement,
-                    const QPointer<FeatureWrapper>& oldElement,
+                    const oi::Guarded<FeatureWrapper>& oldElement,
                     const ElementTypes& type);
 
   // clear or save bundle results
-  void clearBundleResults(const QPointer<CoordinateSystem>& bundleSystem);
-  void saveBundleResults(const QPointer<CoordinateSystem>& bundleSystem);
+  void clearBundleResults(const oi::Guarded<CoordinateSystem>& bundleSystem);
+  void saveBundleResults(const oi::Guarded<CoordinateSystem>& bundleSystem);
   // void createBundleGeometries(const QList<BundleGeometry> &geometries, const
-  // QPointer<CoordinateSystem> &bundleSystem);
+  // oi::Guarded<CoordinateSystem> &bundleSystem);
   void createBundleTransformations(
       QList<BundleTransformation>& transformations,
-      const QPointer<CoordinateSystem>& bundleSystem);
+      const oi::Guarded<CoordinateSystem>& bundleSystem);
   // recalc bundle- trafoParam dependencies
   void recalcAllBundleTrafoDependencies(
-      const QPointer<CoordinateSystem>& bundleSystem);
+      const oi::Guarded<CoordinateSystem>& bundleSystem);
 
   // ##################
   // general attributes
   // ##################
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   TrafoController
       trafoController;  // handles all transformations to transform Observations

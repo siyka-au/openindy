@@ -35,17 +35,17 @@ namespace {
 // creates "Bundle01_1" if it is missing, which requires a "Bundle01" system
 // and a "STATION01" station - the same minimal setup
 // test/dialogs/dialogstest.cpp uses to get a save/load round trip to succeed.
-QPointer<OiJob> makeJobWithStationAndSystem() {
-  QPointer<OiJob> job = new OiJob();
+oi::Guarded<OiJob> makeJobWithStationAndSystem() {
+  oi::Guarded<OiJob> job = new OiJob();
 
-  QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
-  QPointer<Station> station = new Station();
+  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
+  oi::Guarded<Station> station = new Station();
   station->setFeatureName("STATION01");
   stationFeature->setStation(station);
   job->addFeature(stationFeature);
 
-  QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
-  QPointer<CoordinateSystem> system = new CoordinateSystem();
+  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
+  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
   system->setFeatureName("PART");
   systemFeature->setCoordinateSystem(system);
   job->addFeature(systemFeature);
@@ -70,11 +70,11 @@ QPointer<OiJob> makeJobWithStationAndSystem() {
   return job;
 }
 
-QPointer<FeatureWrapper> addPoint(const QPointer<OiJob>& job,
-                                  const QString& name, double x, double y,
-                                  double z) {
-  QPointer<FeatureWrapper> wrapper = new FeatureWrapper();
-  QPointer<Point> point = new Point(Position(x, y, z));
+oi::Guarded<FeatureWrapper> addPoint(const oi::Guarded<OiJob>& job,
+                                     const QString& name, double x, double y,
+                                     double z) {
+  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
+  oi::Guarded<Point> point = new Point(Position(x, y, z));
   point->setFeatureName(name);
   point->setIsSolved(true);
   wrapper->setPoint(point);
@@ -82,20 +82,20 @@ QPointer<FeatureWrapper> addPoint(const QPointer<OiJob>& job,
   return wrapper;
 }
 
-QPointer<FeatureWrapper> addPlane(const QPointer<OiJob>& job,
-                                  const QString& name) {
-  QPointer<FeatureWrapper> wrapper = new FeatureWrapper();
-  QPointer<Plane> plane = new Plane();
+oi::Guarded<FeatureWrapper> addPlane(const oi::Guarded<OiJob>& job,
+                                     const QString& name) {
+  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
+  oi::Guarded<Plane> plane = new Plane();
   plane->setFeatureName(name);
   wrapper->setPlane(plane);
   job->addFeature(wrapper);
   return wrapper;
 }
 
-QPointer<FeatureWrapper> addSphere(const QPointer<OiJob>& job,
-                                   const QString& name) {
-  QPointer<FeatureWrapper> wrapper = new FeatureWrapper();
-  QPointer<Sphere> sphere = new Sphere();
+oi::Guarded<FeatureWrapper> addSphere(const oi::Guarded<OiJob>& job,
+                                      const QString& name) {
+  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
+  oi::Guarded<Sphere> sphere = new Sphere();
   sphere->setFeatureName(name);
   wrapper->setSphere(sphere);
   job->addFeature(wrapper);
@@ -129,13 +129,13 @@ void ProjectExchangeTest::initTestCase() {
  * legitimately produces new objects.
  */
 void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
-  QPointer<OiJob> job = makeJobWithStationAndSystem();
+  oi::Guarded<OiJob> job = makeJobWithStationAndSystem();
 
-  QPointer<FeatureWrapper> plane = addPlane(job, "Plane01");
-  QPointer<FeatureWrapper> sphere = addSphere(job, "Sphere01");
+  oi::Guarded<FeatureWrapper> plane = addPlane(job, "Plane01");
+  oi::Guarded<FeatureWrapper> sphere = addSphere(job, "Sphere01");
 
-  QPointer<FeatureWrapper> groupWrapper = new FeatureWrapper();
-  QPointer<Group> group = new Group();
+  oi::Guarded<FeatureWrapper> groupWrapper = new FeatureWrapper();
+  oi::Guarded<Group> group = new Group();
   group->setFeatureName("MixedGroup");
   groupWrapper->setGroup(group);
   QVERIFY2(group->addMember(plane),
@@ -149,14 +149,14 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);
 
-  QPointer<OiJob> reloaded = exchanger.loadProject(xml).job;
+  oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY2(!reloaded.isNull(), "the project should reload without error");
 
-  const QList<QPointer<FeatureWrapper> > reloadedGroups =
+  const QList<oi::Guarded<FeatureWrapper> > reloadedGroups =
       reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
   QCOMPARE(reloadedGroups.size(), 1);
 
-  QPointer<Group> reloadedGroup = reloadedGroups.first()->getGroup();
+  oi::Guarded<Group> reloadedGroup = reloadedGroups.first()->getGroup();
   QVERIFY(!reloadedGroup.isNull());
   QCOMPARE(reloadedGroup->getFeatureName(), QString("MixedGroup"));
 
@@ -166,7 +166,7 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   QCOMPARE(reloadedGroup->memberCount(), 2);
 
   QStringList memberNames;
-  foreach (const QPointer<FeatureWrapper>& member,
+  foreach (const oi::Guarded<FeatureWrapper>& member,
            reloadedGroup->getMembers()) {
     if (!member.isNull() && !member->getFeature().isNull()) {
       memberNames << member->getFeature()->getFeatureName();
@@ -183,14 +183,14 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
  * attribute is what makes that possible.
  */
 void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
-  QPointer<OiJob> job = makeJobWithStationAndSystem();
+  oi::Guarded<OiJob> job = makeJobWithStationAndSystem();
 
-  QPointer<FeatureWrapper> p1 = addPoint(job, "P1", 0.0, 0.0, 0.0);
-  QPointer<FeatureWrapper> p2 = addPoint(job, "P2", 1.0, 0.0, 0.0);
-  QPointer<FeatureWrapper> p3 = addPoint(job, "P3", 0.0, 1.0, 0.0);
+  oi::Guarded<FeatureWrapper> p1 = addPoint(job, "P1", 0.0, 0.0, 0.0);
+  oi::Guarded<FeatureWrapper> p2 = addPoint(job, "P2", 1.0, 0.0, 0.0);
+  oi::Guarded<FeatureWrapper> p3 = addPoint(job, "P3", 0.0, 1.0, 0.0);
 
-  QPointer<FeatureWrapper> groupWrapper = new FeatureWrapper();
-  QPointer<PointGroup> pointGroup = new PointGroup();
+  oi::Guarded<FeatureWrapper> groupWrapper = new FeatureWrapper();
+  oi::Guarded<PointGroup> pointGroup = new PointGroup();
   pointGroup->setFeatureName("Wall");
   groupWrapper->setPointGroup(pointGroup);
   QVERIFY(pointGroup->addMember(p1));
@@ -201,16 +201,16 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);
 
-  QPointer<OiJob> reloaded = exchanger.loadProject(xml).job;
+  oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY(!reloaded.isNull());
 
   // must come back as a PointGroup, not a plain Group
   QCOMPARE(reloaded->getFeaturesByType(FeatureTypes::eGroupFeature).size(), 0);
-  const QList<QPointer<FeatureWrapper> > reloadedPointGroups =
+  const QList<oi::Guarded<FeatureWrapper> > reloadedPointGroups =
       reloaded->getFeaturesByType(FeatureTypes::ePointGroupFeature);
   QCOMPARE(reloadedPointGroups.size(), 1);
 
-  QPointer<PointGroup> reloadedGroup =
+  oi::Guarded<PointGroup> reloadedGroup =
       reloadedPointGroups.first()->getPointGroup();
   QVERIFY(!reloadedGroup.isNull());
   QCOMPARE(reloadedGroup->getFeatureName(), QString("Wall"));
@@ -229,13 +229,13 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
  * object.
  */
 void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
-  QPointer<OiJob> job = makeJobWithStationAndSystem();
+  oi::Guarded<OiJob> job = makeJobWithStationAndSystem();
 
-  QPointer<FeatureWrapper> plane = addPlane(job, "Plane01");
-  QPointer<FeatureWrapper> sphere = addSphere(job, "Sphere01");
+  oi::Guarded<FeatureWrapper> plane = addPlane(job, "Plane01");
+  oi::Guarded<FeatureWrapper> sphere = addSphere(job, "Sphere01");
 
-  QPointer<FeatureWrapper> groupWrapper = new FeatureWrapper();
-  QPointer<Group> group = new Group("Planes", FeatureTypes::ePlaneFeature);
+  oi::Guarded<FeatureWrapper> groupWrapper = new FeatureWrapper();
+  oi::Guarded<Group> group = new Group("Planes", FeatureTypes::ePlaneFeature);
   groupWrapper->setGroup(group);
   QVERIFY2(group->addMember(plane),
            "plane should be accepted by a plane-constrained group");
@@ -246,14 +246,14 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);
 
-  QPointer<OiJob> reloaded = exchanger.loadProject(xml).job;
+  oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY(!reloaded.isNull());
 
-  const QList<QPointer<FeatureWrapper> > reloadedGroups =
+  const QList<oi::Guarded<FeatureWrapper> > reloadedGroups =
       reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
   QCOMPARE(reloadedGroups.size(), 1);
 
-  QPointer<Group> reloadedGroup = reloadedGroups.first()->getGroup();
+  oi::Guarded<Group> reloadedGroup = reloadedGroups.first()->getGroup();
   QVERIFY(!reloadedGroup.isNull());
   QVERIFY2(reloadedGroup->getConstraint().has_value(),
            "the constraint itself must survive reload");
@@ -263,8 +263,8 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   // find the reloaded sphere by name - a fresh, unconstrained wrapper
   // cannot be built here because accepts() checks the feature's own type,
   // which the reloaded Sphere object still correctly reports
-  QPointer<FeatureWrapper> reloadedSphere;
-  foreach (const QPointer<FeatureWrapper>& candidate,
+  oi::Guarded<FeatureWrapper> reloadedSphere;
+  foreach (const oi::Guarded<FeatureWrapper>& candidate,
            reloaded->getGeometriesList()) {
     if (!candidate.isNull() &&
         candidate->getFeatureTypeEnum() == FeatureTypes::eSphereFeature) {

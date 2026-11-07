@@ -43,7 +43,7 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
 
   bool featureCreated(bool created);
 
-  void setCurrentJob(const QPointer<OiJob>& job);
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
  signals:
 
@@ -110,7 +110,7 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
 
   void setDialogName();
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   bool created{};
 };

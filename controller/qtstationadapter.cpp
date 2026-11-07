@@ -1,5 +1,6 @@
 #include "qtstationadapter.h"
 
+#include <QCoreApplication>
 #include <QHash>
 #include <QMutex>
 #include <QMutexLocker>
@@ -29,17 +30,18 @@ QtStationAdapter* QtStationAdapter::of(Station* station) {
     return it.value();
   }
   auto* adapter = new QtStationAdapter;
-  // no QObject parent: the station may be used from another thread than the
-  // one asking for the adapter, so move it next to the station instead
-  if (adapter->thread() != station->thread()) {
-    adapter->moveToThread(station->thread());
+  // no QObject parent: the station may be used from any thread, but the adapter
+  // re-emits Qt signals for the UI, so it lives on the application's thread
+  if (QCoreApplication::instance() != nullptr &&
+      adapter->thread() != QCoreApplication::instance()->thread()) {
+    adapter->moveToThread(QCoreApplication::instance()->thread());
   }
   registry().insert(station, adapter);
   station->setStationObserver(adapter);
   return adapter;
 }
 
-QtStationAdapter* QtStationAdapter::of(const QPointer<Station>& station) {
+QtStationAdapter* QtStationAdapter::of(const oi::Guarded<Station>& station) {
   return of(station.data());
 }
 
@@ -93,7 +95,7 @@ void QtStationAdapter::onCommandFinished(bool success, const QString& msg,
 }
 
 void QtStationAdapter::onMeasurementFinished(
-    int geomId, const QList<QPointer<Reading>>& readings) {
+    int geomId, const QList<oi::Guarded<Reading>>& readings) {
   emit this->measurementFinished(geomId, readings);
 }
 

@@ -42,8 +42,8 @@ class DataExchanger : public QObject,
   // get or set general attributes
   // #############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   const QPointer<MeasurementConfigManager>& getMeasurementConfigManager();
   void setMesaurementConfigManager(
@@ -115,14 +115,18 @@ class DataExchanger : public QObject,
   // otherwise (what a signal emitted by the plugin used to do)
   void runOnOwnThread(std::function<void()> work);
 
+  // runs `work` once on exchangeThread; replaces any earlier runner
+  void runOnExchangeThread(std::function<void()> work);
+  void discardExchangeRunner();
+
   // ##################
   // general attributes
   // ##################
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   ExchangeParams exchangeParams;
-  QPointer<ExchangeInterface> exchange;
+  oi::Guarded<ExchangeInterface> exchange;
   bool exporting = false;  // whether the running exchange is an export
 
   QPointer<ObservationImporter> observationImporter;
@@ -132,19 +136,21 @@ class DataExchanger : public QObject,
   // #########################
 
   QThread exchangeThread;
+  QObject* exchangeRunner{nullptr};  // context object living on exchangeThread
 
   QPointer<MeasurementConfigManager> mConfigManager;
 
   // #############
   // helper method
   // #############
-  void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> >& actuals,
-                               const MeasurementConfig& mConfig,
-                               const QString& path, const QString& fName);
+  void addFunctionsAndMConfigs(
+      const QList<oi::Guarded<FeatureWrapper> >& actuals,
+      const MeasurementConfig& mConfig, const QString& path,
+      const QString& fName);
 
   // import readings of features
-  void importMeasurements(QList<QPointer<FeatureWrapper> > features);
-  void createActuals(QList<QPointer<FeatureWrapper> > features);
+  void importMeasurements(QList<oi::Guarded<FeatureWrapper> > features);
+  void createActuals(QList<oi::Guarded<FeatureWrapper> > features);
 };
 
 #endif  // OIDATAEXCHANGER_H

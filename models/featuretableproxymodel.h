@@ -24,8 +24,8 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // #########################
   // get or set display config
@@ -76,7 +76,7 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
   // current job
   // ###########
 
-  QPointer<OiJob> job;
+  oi::Guarded<OiJob> job;
 
   // ##############
   // feature sorter

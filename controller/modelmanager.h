@@ -102,8 +102,8 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   // get or set the current OiJob
   // ############################
 
-  static const QPointer<OiJob>& getCurrentJob();
-  static void setCurrentJob(const QPointer<OiJob>& job);
+  static const oi::Guarded<OiJob>& getCurrentJob();
+  static void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // ##########################
   // get or set config managers
@@ -271,7 +271,7 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   void featureNameChanged(const int& featureId, const QString& oldName);
 
  private:
-  static QPointer<OiJob> currentJob;
+  static oi::Guarded<OiJob> currentJob;
 
   // #############
   // static models

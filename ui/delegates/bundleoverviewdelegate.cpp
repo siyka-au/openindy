@@ -9,17 +9,17 @@ void BundleOverviewDelegate::paint(QPainter* painter,
 
   const BundleGeometriesModel* model =
       static_cast<const BundleGeometriesModel*>(index.model());
-  const QPointer<OiJob> job = model->getCurrentJob();
+  const oi::Guarded<OiJob> job = model->getCurrentJob();
   if (job.isNull()) {
     return;
   }
 
-  QList<QPointer<FeatureWrapper> > stations =
+  QList<oi::Guarded<FeatureWrapper> > stations =
       job->getFeaturesByName(stationName);
   if (stations.isEmpty()) {
     return;
   }
-  QPointer<Station> station = stations.first()->getStation();
+  oi::Guarded<Station> station = stations.first()->getStation();
   if (station.isNull()) {
     return;
   }
@@ -28,7 +28,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
   double scale = 0;
   bool isOk = false;  // show green or red bullet point
   bool isSolved = false;
-  for (QPointer<TrafoParam> tp :
+  for (oi::Guarded<TrafoParam> tp :
        model->getCurrentJob()->getTransformationParametersList()) {
     if (isBundleStationTrafo(tp) &&
         tp->getDestinationSystem()->getFeatureName() == stationName &&
@@ -49,17 +49,17 @@ void BundleOverviewDelegate::paint(QPainter* painter,
     double sum_vv = 0.0;
     int count_v = 0;
 
-    for (QPointer<Geometry> tg : station->getTargetGeometries()) {
+    for (oi::Guarded<Geometry> tg : station->getTargetGeometries()) {
       if (!tg.isNull() && tg->getIsCommon() && tg->getIsSolved()) {
         numberOfCommonGeometries++;
 
         OiVec actual = tg->getPosition().getVector();
-        for (QPointer<Observation> observation : tg->getObservations()) {
+        for (oi::Guarded<Observation> observation : tg->getObservations()) {
           if (observation->getStation()->getId() == station->getId()) {
             // see ObservationModel::data -> case eObservationDisplayIsUsed:
             if (tg->getFunctions().size() > 0 &&
                 !tg->getFunctions().at(0).isNull()) {
-              QPointer<Function> function =
+              oi::Guarded<Function> function =
                   tg->getFunctions()[0];  // first function BestFit...
 
               if (!function->getShouldBeUsed(0, observation->getId())) {
@@ -91,7 +91,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
       double actualTemperature = TEMPERATURE_NOT_SET;
       double referenceTemperature = TEMPERATURE_NOT_SET;
       QString material;
-      for(QPointer<TrafoParam> tp :
+      for(oi::Guarded<TrafoParam> tp :
      model->getCurrentJob()->getTransformationParametersList()) { if(
      !isBundleStationTrafo(tp)
               && tp->getDestinationSystem()->getFeatureName() == "PART"
@@ -100,8 +100,8 @@ void BundleOverviewDelegate::paint(QPainter* painter,
               && tp->getIsUsed()) {
                   hasTransformationBundleToPart = true;
 
-                  for(QPointer<Function> f : tp->getFunctions()) { // search for
-     alignment with temperature material =
+                  for(oi::Guarded<Function> f : tp->getFunctions()) { // search
+     for alignment with temperature material =
      f->getStringParameter().value("material"); actualTemperature =
      f->getDoubleParameter().value("actual temperature", TEMPERATURE_NOT_SET);
                       referenceTemperature =
@@ -165,7 +165,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
 }
 // BundleParameterTableProxyModel::isBundleStationTrafo
 bool BundleOverviewDelegate::isBundleStationTrafo(
-    const QPointer<TrafoParam>& param) const {
+    const oi::Guarded<TrafoParam>& param) const {
   return (param->getStartSystem()->getIsStationSystem() &&
           param->getDestinationSystem()->getIsBundleSystem()) ||
          (param->getStartSystem()->getIsBundleSystem() &&

@@ -20,13 +20,13 @@ int ReadingModel::rowCount(const QModelIndex& parent) const {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return 0;
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(nullptr);
+  oi::Guarded<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
@@ -67,13 +67,13 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return QVariant();
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(nullptr);
+  oi::Guarded<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
@@ -89,7 +89,7 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
   int columnIndex = index.column();
 
   // get and check reading
-  QPointer<Reading> reading(nullptr);
+  oi::Guarded<Reading> reading(nullptr);
   if (rowIndex < geometry->getObservations().size() &&
       !geometry->getObservations().at(rowIndex).isNull()) {
     reading = geometry->getObservations().at(rowIndex)->getReading();
@@ -263,7 +263,7 @@ Qt::ItemFlags ReadingModel::flags(const QModelIndex& index) const {
  * \brief ReadingModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& ReadingModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& ReadingModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -271,7 +271,7 @@ const QPointer<OiJob>& ReadingModel::getCurrentJob() const {
  * \brief ReadingModel::setCurrentJob
  * \param job
  */
-void ReadingModel::setCurrentJob(const QPointer<OiJob>& job) {
+void ReadingModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {

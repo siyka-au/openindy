@@ -169,7 +169,7 @@ QModelIndex BundleGeometriesModel::parent(const QModelIndex& index) const {
  * \brief BundleGeometriesModel::getCurrentJob
  * \return
  */
-const QPointer<oi::OiJob>& BundleGeometriesModel::getCurrentJob() const {
+const oi::Guarded<oi::OiJob>& BundleGeometriesModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -177,7 +177,7 @@ const QPointer<oi::OiJob>& BundleGeometriesModel::getCurrentJob() const {
  * \brief BundleGeometriesModel::setCurrentJob
  * \param job
  */
-void BundleGeometriesModel::setCurrentJob(const QPointer<oi::OiJob>& job) {
+void BundleGeometriesModel::setCurrentJob(const oi::Guarded<oi::OiJob>& job) {
   // disconnect old job
   this->disconnectJob();
 
@@ -231,7 +231,8 @@ void BundleGeometriesModel::updateModel() {
     int id = station.value("id").toInt();
 
     // get and check station feature
-    QPointer<oi::FeatureWrapper> feature = this->currentJob->getFeatureById(id);
+    oi::Guarded<oi::FeatureWrapper> feature =
+        this->currentJob->getFeatureById(id);
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
     }
@@ -241,17 +242,17 @@ void BundleGeometriesModel::updateModel() {
     BundleGeometryItem* stationItem = new BundleGeometryItem(name);
 
     // get target geometries
-    QList<QPointer<oi::Geometry> > geometries =
+    QList<oi::Guarded<oi::Geometry> > geometries =
         feature->getStation()->getTargetGeometries();
     struct {
-      bool operator()(QPointer<oi::Geometry> a,
-                      QPointer<oi::Geometry> b) const {
+      bool operator()(oi::Guarded<oi::Geometry> a,
+                      oi::Guarded<oi::Geometry> b) const {
         return a->getId() < b->getId();
       }
     } customLess;
     std::sort(geometries.begin(), geometries.end(), customLess);
 
-    foreach (const QPointer<oi::Geometry>& geom, geometries) {
+    foreach (const oi::Guarded<oi::Geometry>& geom, geometries) {
       if (!geom.isNull() && geom->getIsCommon()) {
         BundleGeometryItem* geomItem =
             new BundleGeometryItem(geom->getFeatureName());

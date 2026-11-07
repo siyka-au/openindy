@@ -18,7 +18,7 @@ ObservationImporter::~ObservationImporter() {}
  * \brief ObservationImporter::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& ObservationImporter::getCurrentJob() const {
+const oi::Guarded<OiJob>& ObservationImporter::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -26,7 +26,7 @@ const QPointer<OiJob>& ObservationImporter::getCurrentJob() const {
  * \brief ObservationImporter::setCurrentJob
  * \param job
  */
-void ObservationImporter::setCurrentJob(const QPointer<OiJob>& job) {
+void ObservationImporter::setCurrentJob(const oi::Guarded<OiJob>& job) {
   this->currentJob = job;
 }
 
@@ -101,7 +101,7 @@ bool ObservationImporter::importObservations() {
   }
 
   // create list of imported readings
-  QList<QPointer<Reading> > readings;
+  QList<oi::Guarded<Reading> > readings;
 
   // open file and create observations
   try {
@@ -158,7 +158,7 @@ bool ObservationImporter::importObservations() {
       rCartesian.xyz.setAt(1, xyz[1]);
       rCartesian.xyz.setAt(2, xyz[2]);
       rCartesian.isValid = true;
-      QPointer<Reading> reading = new Reading(rCartesian);
+      oi::Guarded<Reading> reading = new Reading(rCartesian);
       reading->setSensorFace(SensorFaces::eUndefinedSide);
       reading->setMeasuredAt(curDateTime);
       reading->setImported(true);

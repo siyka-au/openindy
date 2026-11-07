@@ -1,5 +1,6 @@
 #include "usedelementsmodel.h"
 
+#include "jobconnect.h"
 #include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
 
@@ -313,7 +314,7 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList& selection) {
  * \brief UsedElementsModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& UsedElementsModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& UsedElementsModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -321,7 +322,7 @@ const QPointer<OiJob>& UsedElementsModel::getCurrentJob() const {
  * \brief UsedElementsModel::setCurrentJob
  * \param job
  */
-void UsedElementsModel::setCurrentJob(const QPointer<OiJob>& job) {
+void UsedElementsModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -391,9 +392,8 @@ void UsedElementsModel::connectJob() {
                    &QtJobAdapter::activeFeatureChanged, this,
                    &UsedElementsModel::updateModel, Qt::AutoConnection);
 
-  QObject::connect(this, &UsedElementsModel::startRemoveUsedElements,
-                   this->currentJob.data(), &OiJob::removeInputElement,
-                   Qt::AutoConnection);
+  connectToJob(this, &UsedElementsModel::startRemoveUsedElements,
+               this->currentJob, &OiJob::removeInputElement);
 }
 
 /*!
@@ -407,8 +407,7 @@ void UsedElementsModel::disconnectJob() {
                       &QtJobAdapter::activeFeatureChanged, this,
                       &UsedElementsModel::updateModel);
 
-  QObject::disconnect(this, &UsedElementsModel::startRemoveUsedElements,
-                      this->currentJob.data(), &OiJob::removeInputElement);
+  disconnectFromJob(this);
 }
 
 /*!
@@ -425,6 +424,6 @@ void UsedElementsModel::resetSelectedFunctionPosition() {
     QObject::disconnect(QtFunctionAdapter::of(this->connectedFunction),
                         &QtFunctionAdapter::inputElementsChanged, this,
                         &UsedElementsModel::updateModel);
-    this->connectedFunction = QPointer<Function>(nullptr);
+    this->connectedFunction = oi::Guarded<Function>(nullptr);
   }
 }

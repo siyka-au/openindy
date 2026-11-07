@@ -21,13 +21,39 @@ DataExchanger::~DataExchanger() {
     this->exchange->setMessageSink(nullptr);
     this->exchange->setObserver(nullptr);
   }
+
+  this->discardExchangeRunner();
+}
+
+/*!
+ * \brief DataExchanger::discardExchangeRunner
+ * Deletes the object whose thread affinity carries the exchange task; the
+ * exchange thread must not be running.
+ */
+void DataExchanger::discardExchangeRunner() {
+  delete this->exchangeRunner;
+  this->exchangeRunner = nullptr;
+}
+
+/*!
+ * \brief DataExchanger::runOnExchangeThread
+ * Runs `work` once on the exchange thread (the exchange plugin is no longer a
+ * QObject that could be moved there and have a slot invoked).
+ */
+void DataExchanger::runOnExchangeThread(std::function<void()> work) {
+  this->discardExchangeRunner();
+  this->exchangeRunner = new QObject();
+  QObject::connect(&this->exchangeThread, &QThread::started,
+                   this->exchangeRunner, std::move(work));
+  this->exchangeRunner->moveToThread(&this->exchangeThread);
+  this->exchangeThread.start();
 }
 
 /*!
  * \brief DataExchanger::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& DataExchanger::getCurrentJob() const {
+const oi::Guarded<OiJob>& DataExchanger::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -35,7 +61,7 @@ const QPointer<OiJob>& DataExchanger::getCurrentJob() const {
  * \brief DataExchanger::setCurrentJob
  * \param job
  */
-void DataExchanger::setCurrentJob(const QPointer<OiJob>& job) {
+void DataExchanger::setCurrentJob(const oi::Guarded<OiJob>& job) {
   this->currentJob = job;
 }
 
@@ -85,7 +111,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   }
 
   // check nominal system
-  QList<QPointer<FeatureWrapper>> features =
+  QList<oi::Guarded<FeatureWrapper>> features =
       this->currentJob->getFeaturesByName(params.nominalSystem);
   if (features.size() != 1 || features.at(0).isNull() ||
       features.at(0)->getCoordinateSystem().isNull() ||
@@ -118,9 +144,9 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   }
 
   // load exchange method with plugin loader
-  QPointer<ExchangeInterface> exchange(nullptr);
+  oi::Guarded<ExchangeInterface> exchange(nullptr);
   if (params.isDefinedFormat) {
-    QPointer<ExchangeDefinedFormat> definedFormat =
+    oi::Guarded<ExchangeDefinedFormat> definedFormat =
         PluginLoader::loadExchangeDefinedFormatPlugin(plugin->filePath(),
                                                       params.exchangeName);
     if (!definedFormat.isNull()) {
@@ -128,7 +154,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
     }
     exchange = definedFormat;
   } else {
-    QPointer<ExchangeSimpleAscii> simpleAscii =
+    oi::Guarded<ExchangeSimpleAscii> simpleAscii =
         PluginLoader::loadExchangeSimpleAsciiPlugin(plugin->filePath(),
                                                     params.exchangeName);
     if (!simpleAscii.isNull()) {
@@ -208,13 +234,10 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   this->exporting = false;
   this->exchange->setMessageSink(this);
   this->exchange->setObserver(this);
-  QObject::connect(&this->exchangeThread, SIGNAL(started()),
-                   this->exchange.data(), SLOT(importOiData()),
-                   Qt::AutoConnection);
-
-  // move exchange plugin to thread and start data exchange
-  this->exchange->moveToThread(&this->exchangeThread);
-  this->exchangeThread.start();
+  // run the import on the exchange thread
+  this->runOnExchangeThread([exchange = this->exchange]() {
+    if (!exchange.isNull()) exchange->importOiData();
+  });
 
   return true;
 }
@@ -260,9 +283,9 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   }
 
   // load exchange method with plugin loader
-  QPointer<ExchangeInterface> exchange(nullptr);
+  oi::Guarded<ExchangeInterface> exchange(nullptr);
   if (params.isDefinedFormat) {
-    QPointer<ExchangeDefinedFormat> definedFormat =
+    oi::Guarded<ExchangeDefinedFormat> definedFormat =
         PluginLoader::loadExchangeDefinedFormatPlugin(
             qApp->applicationDirPath() + "/" + plugin->filePath(),
             params.exchangeName);
@@ -271,7 +294,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
     }
     exchange = definedFormat;
   } else {
-    QPointer<ExchangeSimpleAscii> simpleAscii =
+    oi::Guarded<ExchangeSimpleAscii> simpleAscii =
         PluginLoader::loadExchangeSimpleAsciiPlugin(
             qApp->applicationDirPath() + "/" + plugin->filePath(),
             params.exchangeName);
@@ -329,13 +352,10 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   this->exporting = true;
   this->exchange->setMessageSink(this);
   this->exchange->setObserver(this);
-  QObject::connect(&this->exchangeThread, SIGNAL(started()),
-                   this->exchange.data(), SLOT(exportOiData()),
-                   Qt::AutoConnection);
-
-  // move exchange plugin to thread and start data exchange
-  this->exchange->moveToThread(&this->exchangeThread);
-  this->exchangeThread.start();
+  // run the export on the exchange thread
+  this->runOnExchangeThread([exchange = this->exchange]() {
+    if (!exchange.isNull()) exchange->exportOiData();
+  });
 
   return true;
 }
@@ -358,6 +378,9 @@ bool DataExchanger::importObservations(const QString& filename) {
                            MessageDestinations::eMessageBoxMessage);
     return false;
   }
+
+  // no stale runner may fire when the thread starts again
+  this->discardExchangeRunner();
 
   // create observation importer and pass the current job
   this->observationImporter = new ObservationImporter();
@@ -388,10 +411,10 @@ bool DataExchanger::importObservations(const QString& filename) {
 }
 
 void DataExchanger::importMeasurements(
-    QList<QPointer<FeatureWrapper>> features) {
+    QList<oi::Guarded<FeatureWrapper>> features) {
   const auto curDateTime = std::chrono::system_clock::now();
-  foreach (QPointer<FeatureWrapper> importedFeature, features) {
-    QList<QPointer<FeatureWrapper>> jobFeatures =
+  foreach (oi::Guarded<FeatureWrapper> importedFeature, features) {
+    QList<oi::Guarded<FeatureWrapper>> jobFeatures =
         this->currentJob->getFeaturesByName(
             importedFeature->getFeature()->getFeatureName());
     if (jobFeatures.isEmpty()) {
@@ -400,15 +423,15 @@ void DataExchanger::importMeasurements(
       continue;
     }
 
-    foreach (QPointer<FeatureWrapper> jobFeature, jobFeatures) {
+    foreach (oi::Guarded<FeatureWrapper> jobFeature, jobFeatures) {
       if (!jobFeature->getGeometry()->getOwnerDescription().has_value()) {
         qDebug() << "isNominal: "
                  << jobFeature->getGeometry()->getFeatureName();
         continue;
       }
 
-      QList<QPointer<Reading>> importedReadings;
-      QPointer<Reading> reading = nullptr;
+      QList<oi::Guarded<Reading>> importedReadings;
+      oi::Guarded<Reading> reading = nullptr;
 
       switch (jobFeature->getFeatureTypeEnum()) {
         case FeatureTypes::ePointFeature: {
@@ -426,7 +449,7 @@ void DataExchanger::importMeasurements(
         }
         case FeatureTypes::ePlaneFeature: {
           if (importedFeature->getFeature()
-                  ->property("OI_FEATURE_PLANE_LEVEL")
+                  ->getTransientAttribute("OI_FEATURE_PLANE_LEVEL")
                   .toBool()) {
             // Level
             OiVec direction =
@@ -471,8 +494,8 @@ void DataExchanger::importMeasurements(
   }
 }
 
-void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
-  foreach (QPointer<FeatureWrapper> fw, features) {
+void DataExchanger::createActuals(QList<oi::Guarded<FeatureWrapper>> features) {
+  foreach (oi::Guarded<FeatureWrapper> fw, features) {
     switch (fw->getFeatureTypeEnum()) {
       case FeatureTypes::ePlaneFeature:
       case FeatureTypes::ePointFeature: {
@@ -483,13 +506,15 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
         fAttr.group = fw->getFeature()->getGroupName();
 
         fAttr.isCommon = !QString::compare(
-            fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(),
+            fw->getFeature()
+                ->getTransientAttribute("OI_FEATURE_COMMONSTATE")
+                .toString(),
             "true", Qt::CaseInsensitive);
 
         QString mcElementTypeName;
         FeatureTypes funFeatureType;
         if (fw->getFeature()
-                ->property("OI_FEATURE_PLANE_LEVEL")
+                ->getTransientAttribute("OI_FEATURE_PLANE_LEVEL")
                 .toBool()) {  // property is still needed because there is no
                               // separate FeatureType for Level
           mcElementTypeName = getElementTypeName(ElementTypes::eLevelElement);
@@ -511,7 +536,7 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
         functionPlugin.second = defaultFunction.plugin().filePath();
         fAttr.functionPlugin = functionPlugin;
 
-        QList<QPointer<FeatureWrapper>> addedFeatures =
+        QList<oi::Guarded<FeatureWrapper>> addedFeatures =
             this->currentJob->addFeatures(fAttr);
 
         this->addFunctionsAndMConfigs(addedFeatures, mConfig,
@@ -523,7 +548,7 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
         // type nominal already in the job, if there is one
         if (addedFeatures.size() == 1 && !addedFeatures.first().isNull() &&
             !addedFeatures.first()->getGeometry().isNull()) {
-          foreach (const QPointer<FeatureWrapper>& candidate,
+          foreach (const oi::Guarded<FeatureWrapper>& candidate,
                    this->currentJob->getFeaturesByName(fAttr.name)) {
             if (!candidate.isNull() && !candidate->getGeometry().isNull() &&
                 candidate->getFeatureTypeEnum() == fAttr.typeOfFeature &&
@@ -584,7 +609,7 @@ void DataExchanger::importFeatures(const bool& success) {
   }
 
   // add the imported features to current OpenIndy job
-  QList<QPointer<FeatureWrapper>> features = this->exchange->getFeatures();
+  QList<oi::Guarded<FeatureWrapper>> features = this->exchange->getFeatures();
 
   bool importSuccess = false;
   if (this->exchangeParams.importMeasurements) {
@@ -604,9 +629,9 @@ void DataExchanger::importFeatures(const bool& success) {
     // get the specified coordinate system by its defined name from exchange
     // parameters and set this one true so destination system from import
     // nominals is active system and all nominal values will be shown directly
-    QList<QPointer<CoordinateSystem>> coordSystemList =
+    QList<oi::Guarded<CoordinateSystem>> coordSystemList =
         this->currentJob->getCoordinateSystemsList();
-    foreach (QPointer<CoordinateSystem> cs, coordSystemList) {
+    foreach (oi::Guarded<CoordinateSystem> cs, coordSystemList) {
       if (cs->getFeatureName().compare(this->exchangeParams.nominalSystem) ==
           0) {
         this->currentJob->getActiveCoordinateSystem()
@@ -684,7 +709,7 @@ void DataExchanger::importObservationsFinished(const bool& success) {
  * \param fName
  */
 void DataExchanger::addFunctionsAndMConfigs(
-    const QList<QPointer<FeatureWrapper>>& actuals,
+    const QList<oi::Guarded<FeatureWrapper>>& actuals,
     const MeasurementConfig& mConfig, const QString& path,
     const QString& fName) {
   // check job
@@ -692,26 +717,24 @@ void DataExchanger::addFunctionsAndMConfigs(
     return;
   }
 
-  foreach (const QPointer<FeatureWrapper>& feature, actuals) {
+  foreach (const oi::Guarded<FeatureWrapper>& feature, actuals) {
     // check feature
     if (feature.isNull() || feature->getFeature().isNull()) {
       continue;
     }
 
     // load function plugin
-    QPointer<Function> function(nullptr);
+    oi::Guarded<Function> function(nullptr);
     if (!path.isEmpty() && !fName.isEmpty()) {
       function = PluginLoader::loadFunctionPlugin(path, fName);
     }
 
     // assign function and measurement config to feature
-    this->currentJob->blockSignals(true);
     if (!function.isNull()) {
       feature->getFeature()->addFunction(function);
     }
     if (mConfig.isValid() && !feature->getGeometry().isNull()) {
       feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
     }
-    this->currentJob->blockSignals(false);
   }
 }

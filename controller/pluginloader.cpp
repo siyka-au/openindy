@@ -159,9 +159,9 @@ void PluginLoader::deletePlugin(const QString& name) {
  * \param name
  * \return
  */
-QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString& path,
-                                                const QString& name) {
-  QPointer<Sensor> sensor(nullptr);
+oi::Guarded<Sensor> PluginLoader::loadSensorPlugin(const QString& path,
+                                                   const QString& name) {
+  oi::Guarded<Sensor> sensor(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -196,9 +196,9 @@ QPointer<Sensor> PluginLoader::loadSensorPlugin(const QString& path,
  * \param name
  * \return
  */
-QPointer<Function> PluginLoader::loadFunctionPlugin(const QString& path,
-                                                    const QString& name) {
-  QPointer<Function> function(nullptr);
+oi::Guarded<Function> PluginLoader::loadFunctionPlugin(const QString& path,
+                                                       const QString& name) {
+  oi::Guarded<Function> function(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -233,9 +233,9 @@ QPointer<Function> PluginLoader::loadFunctionPlugin(const QString& path,
  * \param name
  * \return
  */
-QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(
+oi::Guarded<SimulationModel> PluginLoader::loadSimulationPlugin(
     const QString& path, const QString& name) {
-  QPointer<SimulationModel> simulation(nullptr);
+  oi::Guarded<SimulationModel> simulation(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -270,9 +270,9 @@ QPointer<SimulationModel> PluginLoader::loadSimulationPlugin(
  * \param name
  * \return
  */
-QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(
+oi::Guarded<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(
     const QString& path, const QString& name) {
-  QPointer<BundleAdjustment> bundleAdjustment(nullptr);
+  oi::Guarded<BundleAdjustment> bundleAdjustment(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -320,7 +320,7 @@ QPointer<Tool> PluginLoader::loadToolPlugin(const QString& path,
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
   if (plugin) {
-    Plugin* toolFactory = qobject_cast<Plugin*>(plugin);
+    ToolPlugin* toolFactory = qobject_cast<ToolPlugin*>(plugin);
     if (toolFactory) {
       tool = toolFactory->createTool(name);
       if (!tool.isNull()) {
@@ -350,9 +350,9 @@ QPointer<Tool> PluginLoader::loadToolPlugin(const QString& path,
  * \param name
  * \return
  */
-QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(
+oi::Guarded<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(
     const QString& path, const QString& name) {
-  QPointer<ExchangeSimpleAscii> exchange(nullptr);
+  oi::Guarded<ExchangeSimpleAscii> exchange(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -387,9 +387,10 @@ QPointer<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(
  * \param name
  * \return
  */
-QPointer<ExchangeDefinedFormat> PluginLoader::loadExchangeDefinedFormatPlugin(
-    const QString& path, const QString& name) {
-  QPointer<ExchangeDefinedFormat> exchange(nullptr);
+oi::Guarded<ExchangeDefinedFormat>
+PluginLoader::loadExchangeDefinedFormatPlugin(const QString& path,
+                                              const QString& name) {
+  oi::Guarded<ExchangeDefinedFormat> exchange(nullptr);
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -423,8 +424,9 @@ QPointer<ExchangeDefinedFormat> PluginLoader::loadExchangeDefinedFormatPlugin(
  * \param path
  * \return
  */
-QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString& path) {
-  QList<QPointer<Sensor> > sensorList;
+QList<oi::Guarded<Sensor> > PluginLoader::loadSensorPlugins(
+    const QString& path) {
+  QList<oi::Guarded<Sensor> > sensorList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -432,7 +434,7 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString& path) {
     Plugin* sensorFactory = qobject_cast<Plugin*>(plugin);
     if (sensorFactory) {
       sensorList = sensorFactory->createSensors();
-      foreach (const QPointer<Sensor>& sensor, sensorList) {
+      foreach (const oi::Guarded<Sensor>& sensor, sensorList) {
         if (!sensor.isNull()) {
           sensor->init();
         }
@@ -456,9 +458,9 @@ QList<QPointer<Sensor> > PluginLoader::loadSensorPlugins(const QString& path) {
  * \param path
  * \return
  */
-QList<QPointer<Function> > PluginLoader::loadFunctionPlugins(
+QList<oi::Guarded<Function> > PluginLoader::loadFunctionPlugins(
     const QString& path) {
-  QList<QPointer<Function> > functionList;
+  QList<oi::Guarded<Function> > functionList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -466,7 +468,7 @@ QList<QPointer<Function> > PluginLoader::loadFunctionPlugins(
     Plugin* functionFactory = qobject_cast<Plugin*>(plugin);
     if (functionFactory) {
       functionList = functionFactory->createFunctions();
-      foreach (const QPointer<Function>& function, functionList) {
+      foreach (const oi::Guarded<Function>& function, functionList) {
         if (!function.isNull()) {
           function->init();
         }
@@ -490,9 +492,9 @@ QList<QPointer<Function> > PluginLoader::loadFunctionPlugins(
  * \param path
  * \return
  */
-QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(
+QList<oi::Guarded<SimulationModel> > PluginLoader::loadSimulationPlugins(
     const QString& path) {
-  QList<QPointer<SimulationModel> > simulationList;
+  QList<oi::Guarded<SimulationModel> > simulationList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -500,7 +502,7 @@ QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(
     Plugin* simulationFactory = qobject_cast<Plugin*>(plugin);
     if (simulationFactory) {
       simulationList = simulationFactory->createSimulations();
-      foreach (const QPointer<SimulationModel>& simulation, simulationList) {
+      foreach (const oi::Guarded<SimulationModel>& simulation, simulationList) {
         if (!simulation.isNull()) {
           simulation->init();
         }
@@ -525,9 +527,9 @@ QList<QPointer<SimulationModel> > PluginLoader::loadSimulationPlugins(
  * \param path
  * \return
  */
-QList<QPointer<BundleAdjustment> > PluginLoader::loadBundleAdjustmentPlugins(
+QList<oi::Guarded<BundleAdjustment> > PluginLoader::loadBundleAdjustmentPlugins(
     const QString& path) {
-  QList<QPointer<BundleAdjustment> > bundleAdjustmentList;
+  QList<oi::Guarded<BundleAdjustment> > bundleAdjustmentList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -535,7 +537,8 @@ QList<QPointer<BundleAdjustment> > PluginLoader::loadBundleAdjustmentPlugins(
     Plugin* bundleAdjustmentFactory = qobject_cast<Plugin*>(plugin);
     if (bundleAdjustmentFactory) {
       bundleAdjustmentList = bundleAdjustmentFactory->createBundleAdjustments();
-      foreach (const QPointer<BundleAdjustment>& bundle, bundleAdjustmentList) {
+      foreach (const oi::Guarded<BundleAdjustment>& bundle,
+               bundleAdjustmentList) {
         if (!bundle.isNull()) {
           bundle->init();
         }
@@ -567,7 +570,7 @@ QList<QPointer<Tool> > PluginLoader::loadToolPlugins(const QString& path) {
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
   if (plugin) {
-    Plugin* toolFactory = qobject_cast<Plugin*>(plugin);
+    ToolPlugin* toolFactory = qobject_cast<ToolPlugin*>(plugin);
     if (toolFactory) {
       toolList = toolFactory->createTools();
       foreach (const QPointer<Tool>& tool, toolList) {
@@ -594,9 +597,9 @@ QList<QPointer<Tool> > PluginLoader::loadToolPlugins(const QString& path) {
  * \param path
  * \return
  */
-QList<QPointer<ExchangeSimpleAscii> >
+QList<oi::Guarded<ExchangeSimpleAscii> >
 PluginLoader::loadExchangeSimpleAsciiPlugins(const QString& path) {
-  QList<QPointer<ExchangeSimpleAscii> > exchangeList;
+  QList<oi::Guarded<ExchangeSimpleAscii> > exchangeList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -604,7 +607,7 @@ PluginLoader::loadExchangeSimpleAsciiPlugins(const QString& path) {
     Plugin* exchangeFactory = qobject_cast<Plugin*>(plugin);
     if (exchangeFactory) {
       exchangeList = exchangeFactory->createSimpleAsciiExchanges();
-      foreach (const QPointer<ExchangeSimpleAscii>& exchange, exchangeList) {
+      foreach (const oi::Guarded<ExchangeSimpleAscii>& exchange, exchangeList) {
         if (!exchange.isNull()) {
           exchange->init();
         }
@@ -630,9 +633,9 @@ PluginLoader::loadExchangeSimpleAsciiPlugins(const QString& path) {
  * \param path
  * \return
  */
-QList<QPointer<ExchangeDefinedFormat> >
+QList<oi::Guarded<ExchangeDefinedFormat> >
 PluginLoader::loadExchangeDefinedFormatPlugins(const QString& path) {
-  QList<QPointer<ExchangeDefinedFormat> > exchangeList;
+  QList<oi::Guarded<ExchangeDefinedFormat> > exchangeList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -640,7 +643,8 @@ PluginLoader::loadExchangeDefinedFormatPlugins(const QString& path) {
     Plugin* exchangeFactory = qobject_cast<Plugin*>(plugin);
     if (exchangeFactory) {
       exchangeList = exchangeFactory->createDefinedFormatExchanges();
-      foreach (const QPointer<ExchangeDefinedFormat>& exchange, exchangeList) {
+      foreach (const oi::Guarded<ExchangeDefinedFormat>& exchange,
+               exchangeList) {
         if (!exchange.isNull()) {
           exchange->init();
         }

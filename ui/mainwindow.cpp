@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget* parent)
   this->control.init();
 
   // create default job
-  QPointer<OiJob> job = this->control.createDefaultJob();
+  oi::Guarded<OiJob> job = this->control.createDefaultJob();
   this->createFeatureDialog.setCurrentJob(job);
 
   // assign models of ModelManager to GUI-elements
@@ -147,7 +147,7 @@ void MainWindow::activeFeatureChanged() {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = sourceModel->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return;
   }
@@ -175,7 +175,7 @@ void MainWindow::activeStationChanged() {
   }
 
   // get and check active station
-  QPointer<Station> station = sourceModel->getActiveStation();
+  oi::Guarded<Station> station = sourceModel->getActiveStation();
   if (station.isNull() || !station->getIsSensorSet()) {
     return;
   }
@@ -216,7 +216,7 @@ void MainWindow::activeCoordinateSystemChanged() {
   }
 
   // get and check current job
-  QPointer<OiJob> job = sourceModel->getCurrentJob();
+  oi::Guarded<OiJob> job = sourceModel->getCurrentJob();
   if (job.isNull()) {
     return;
   }
@@ -260,13 +260,13 @@ void MainWindow::featureNameChanged(const int& featureId,
   }
 
   // get and check current job
-  QPointer<OiJob> job = sourceModel->getCurrentJob();
+  oi::Guarded<OiJob> job = sourceModel->getCurrentJob();
   if (job.isNull()) {
     return;
   }
 
   // get the feature with the given id
-  QPointer<FeatureWrapper> feature = job->getFeatureById(featureId);
+  oi::Guarded<FeatureWrapper> feature = job->getFeatureById(featureId);
   if (feature.isNull() || feature->getFeature().isNull()) {
     return;
   }
@@ -298,7 +298,7 @@ void MainWindow::stationSensorChanged(const int& featureId) {
   }
 
   // get type of sensor
-  QPointer<Station> activeStation = sourceModel->getActiveStation();
+  oi::Guarded<Station> activeStation = sourceModel->getActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -318,7 +318,7 @@ void MainWindow::stationSensorChanged(const int& featureId) {
  */
 void MainWindow::currentJobChanged() {
   // get current job and pass it to watch window
-  QPointer<OiJob> job = ModelManager::getCurrentJob();
+  oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
 
   for (auto it = watchWindowDialogs.begin(); it != watchWindowDialogs.end();) {
     if (it.value().isNull()) {
@@ -537,7 +537,7 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
     case Qt::Key_F7: {  // delete observations
 
       // get and check the active feature
-      QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+      oi::Guarded<FeatureWrapper> feature = sourceModel->getActiveFeature();
       if (feature.isNull() || feature->getFeature().isNull()) {
         return;
       }
@@ -559,7 +559,7 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
     case Qt::Key_F1:  // open properties dialog
 
       // get and check the active feature
-      QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+      oi::Guarded<FeatureWrapper> feature = sourceModel->getActiveFeature();
       if (feature.isNull() || feature->getFeature().isNull()) {
         return;
       }
@@ -733,7 +733,7 @@ void MainWindow::on_tableView_features_doubleClicked(const QModelIndex& index) {
 
   if (model->getFeatureTableColumnConfig().getDisplayAttributeAt(
           index.column()) == eFeatureDisplayFunctions) {
-    QPointer<FeatureWrapper> selectedFeature =
+    oi::Guarded<FeatureWrapper> selectedFeature =
         sourceModel->getCurrentJob()->getActiveFeature();
 
     if (selectedFeature->getStation().isNull() &&
@@ -790,12 +790,12 @@ void MainWindow::on_tableView_features_customContextMenuRequested(
 
   // get and check the feature at that index
   int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(selectedIndex));
-  QPointer<OiJob> job = sourceModel->getCurrentJob();
+  oi::Guarded<OiJob> job = sourceModel->getCurrentJob();
   if (job.isNull() || id < 0) {
     delete menu;
     return;
   }
-  QPointer<FeatureWrapper> selectedFeature = job->getFeatureById(id);
+  oi::Guarded<FeatureWrapper> selectedFeature = job->getFeatureById(id);
   if (selectedFeature.isNull() || selectedFeature->getFeature().isNull()) {
     delete menu;
     return;
@@ -984,7 +984,7 @@ void MainWindow::on_tableView_trafoParams_doubleClicked(
 
   if (model->getTrafoParamTableColumnConfig().getDisplayAttributeAt(
           index.column()) == eTrafoParamDisplayFunctions) {
-    QPointer<FeatureWrapper> selectedFeature =
+    oi::Guarded<FeatureWrapper> selectedFeature =
         sourceModel->getCurrentJob()->getActiveFeature();
 
     if (selectedFeature->getStation().isNull() &&
@@ -1038,12 +1038,12 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(
 
   // get and check the feature at that index
   int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(selectedIndex));
-  QPointer<OiJob> job = sourceModel->getCurrentJob();
+  oi::Guarded<OiJob> job = sourceModel->getCurrentJob();
   if (job.isNull() || id < 0) {
     delete menu;
     return;
   }
-  QPointer<FeatureWrapper> selectedFeature = job->getFeatureById(id);
+  oi::Guarded<FeatureWrapper> selectedFeature = job->getFeatureById(id);
   if (selectedFeature.isNull() || selectedFeature->getFeature().isNull()) {
     delete menu;
     return;
@@ -1156,7 +1156,7 @@ void MainWindow::on_actionStationProperties_triggered() {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = sourceModel->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return;
   }
@@ -1258,7 +1258,7 @@ void MainWindow::on_comboBox_activeCoordSystem_currentTextChanged(
 
   // check system name
   if (arg1.compare("") == 0) {
-    QPointer<CoordinateSystem> activeSystem =
+    oi::Guarded<CoordinateSystem> activeSystem =
         sourceModel->getActiveCoordinateSystem();
     if (!activeSystem.isNull()) {
       this->ui->comboBox_activeCoordSystem->setCurrentText(
@@ -1401,7 +1401,7 @@ void MainWindow::on_actionMeasurement_Configuration_triggered() {
 
   // check if there is an active feature and pass its config to the measurement
   // config dialog
-  QPointer<FeatureWrapper> activeFeature = model.getActiveFeature();
+  oi::Guarded<FeatureWrapper> activeFeature = model.getActiveFeature();
   if (!activeFeature.isNull() && !activeFeature->getGeometry().isNull()) {
     this->measurementConfigDialog.setMeasurementConfiguration(
         ModelManager::getMeasurementConfigManager()->getConfig(
@@ -1443,7 +1443,7 @@ void MainWindow::on_actionActivate_station_triggered() {
   QModelIndex index = selection.at(0);
 
   // get active feature to check station name
-  QPointer<FeatureWrapper> actStation = sourceModel->getActiveFeature();
+  oi::Guarded<FeatureWrapper> actStation = sourceModel->getActiveFeature();
   if (actStation.isNull() || actStation->getFeature().isNull()) {
     return;
   }
@@ -1513,7 +1513,7 @@ void MainWindow::removeObservationOfActiveFeature() {
   }
 
   // get and check the active feature
-  QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = sourceModel->getActiveFeature();
   if (!feature.isNull() && !feature->getFeature().isNull()) {
     QMessageBox msgBox;
     msgBox.setText(QString("Delete observations of feature %1?")
@@ -1561,7 +1561,7 @@ void MainWindow::showFeatureProperties(bool checked) {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = sourceModel->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return;
   }
@@ -1654,7 +1654,7 @@ void MainWindow::aimAndMeasureFeatures() {
   }
 
   // get current job
-  QPointer<OiJob> job = sourceModel->getCurrentJob();
+  oi::Guarded<OiJob> job = sourceModel->getCurrentJob();
   if (job.isNull()) {
     return;
   }
@@ -2012,7 +2012,8 @@ void MainWindow::bundleSelectionChanged() {
 
   // get and check bundle plugin and template
   QJsonObject bundleTemplate = this->control.getBundleTemplate();
-  QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment();
+  oi::Guarded<BundleAdjustment> bundlePlugin =
+      this->control.getBundleAdjustment();
   if (bundlePlugin.isNull()) {
     return;
   }
@@ -2033,7 +2034,7 @@ void MainWindow::bundleSelectionChanged() {
   const QList<BundleStation>& stations = bundlePlugin->getInputStations();
   foreach (const BundleStation& station, stations) {
     // get and check station
-    QPointer<FeatureWrapper> feature =
+    oi::Guarded<FeatureWrapper> feature =
         ModelManager::getCurrentJob()->getFeatureById(station.id);
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
@@ -2819,7 +2820,8 @@ void MainWindow::activeSensorTypeChanged(
  * \brief MainWindow::updateMagnifyWindow
  * \param feature
  */
-void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper>& feature) {
+void MainWindow::updateMagnifyWindow(
+    const oi::Guarded<FeatureWrapper>& feature) {
   // update contents
   this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
   if (!feature->getGeometry().isNull()) {
@@ -2880,7 +2882,7 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper>& feature) {
  */
 void MainWindow::updateGroupFilterSize() {
   // get and check current job
-  QPointer<OiJob> job = ModelManager::getCurrentJob();
+  oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (job.isNull()) {
     return;
   }
@@ -2896,28 +2898,28 @@ void MainWindow::updateGroupFilterSize() {
  */
 void MainWindow::updateSystemFilterSize() {
   // get and check current job
-  QPointer<OiJob> job = ModelManager::getCurrentJob();
+  oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (job.isNull()) {
     return;
   }
 
   /*//get the largest system name
-  const QList<QPointer<CoordinateSystem> > &nominalSystems =
-  job->getCoordinateSystemsList(); QList<QPointer<CoordinateSystem> >
+  const QList<oi::Guarded<CoordinateSystem> > &nominalSystems =
+  job->getCoordinateSystemsList(); QList<oi::Guarded<CoordinateSystem> >
   &stationSystems = job->getStationSystemsList();
-  QList<QPointer<CoordinateSystem> > &bundleSystems =
+  QList<oi::Guarded<CoordinateSystem> > &bundleSystems =
   job->getBundleSystemList(); QString largestSystemName = ""; foreach(const
-  QPointer<CoordinateSystem> &system, nominalSystems){ if(!system.isNull() &&
+  oi::Guarded<CoordinateSystem> &system, nominalSystems){ if(!system.isNull() &&
   system->getFeatureName().length() > largestSystemName.length()){
           largestSystemName = system->getFeatureName();
       }
   }
-  foreach(const QPointer<CoordinateSystem> &system, stationSystems){
+  foreach(const oi::Guarded<CoordinateSystem> &system, stationSystems){
       if(!system.isNull() && system->getFeatureName().length() >
   largestSystemName.length()){ largestSystemName = system->getFeatureName();
       }
   }
-  foreach(const QPointer<CoordinateSystem> &system, bundleSystems){
+  foreach(const oi::Guarded<CoordinateSystem> &system, bundleSystems){
       if(!system.isNull() && system->getFeatureName().length() >
   largestSystemName.length()){ largestSystemName = system->getFeatureName();
       }
@@ -3149,7 +3151,7 @@ void MainWindow::enableOrDisableObservationsOfActiveFeature(bool enable) {
   }
 
   // get and check the active feature
-  QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = sourceModel->getActiveFeature();
   if (!feature.isNull() && !feature->getFeature().isNull()) {
     if (enable) {
       emit this->enableObservations(feature->getFeature()->getId());
@@ -3178,9 +3180,9 @@ void MainWindow::on_actionNew_watch_window_triggered() {
 }
 
 void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
-  QPointer<OiJob> job = ModelManager::getCurrentJob();
+  oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (!job.isNull()) {
-    QList<QPointer<FeatureWrapper> > features;
+    QList<oi::Guarded<FeatureWrapper> > features;
     QVariant watchWindowKey;
     QString windowTitleSuffix;
 
@@ -3189,7 +3191,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
           eShowCurrentSelectedFeature:  // open new watch window for current
                                         // selected feature
       {
-        QPointer<FeatureWrapper> feature = job->getActiveFeature();
+        oi::Guarded<FeatureWrapper> feature = job->getActiveFeature();
         if (feature.isNull()) {
           return;
         }
@@ -3223,7 +3225,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
             this->ui->tableView_features->selectionModel()->selectedIndexes();
         foreach (const QModelIndex& index, selection) {
           int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-          QPointer<FeatureWrapper> feature = job->getFeatureById(id);
+          oi::Guarded<FeatureWrapper> feature = job->getFeatureById(id);
           if (!feature.isNull()) {
             features.append(feature);
           }
@@ -3280,7 +3282,7 @@ void MainWindow::on_actionWatch_window_nearest_nominal_triggered() {
 }
 
 void MainWindow::updateCompleter() {
-  QPointer<OiJob> job = ModelManager::getCurrentJob();
+  oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (!job.isNull()) {
     FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(
         this->ui->tableView_features->model());
@@ -3319,7 +3321,7 @@ void MainWindow::updateCompleter() {
 }
 
 void MainWindow::on_lineEdit_searchFeatureName_returnPressed() {
-  QPointer<OiJob> job = ModelManager::getCurrentJob();
+  oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (!job.isNull()) {
     foundFeatures = job->getFeaturesByName(
         this->ui->lineEdit_searchFeatureName->text(), true);
@@ -3336,7 +3338,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed() {
 
 void MainWindow::showFoundFeature(int index) {
   if (!foundFeatures.isEmpty() && foundFeatures.size() > index) {
-    QPointer<FeatureWrapper> feature = foundFeatures.at(index);
+    oi::Guarded<FeatureWrapper> feature = foundFeatures.at(index);
 
     if (!feature.isNull()) {
       FeatureTableProxyModel* model = static_cast<FeatureTableProxyModel*>(

@@ -160,6 +160,9 @@ add_library(OpenIndyApp SHARED
     controller/config/sensorconfigurationmanager.cpp
     controller/config/trafoparamtablecolumnconfig.cpp
     controller/console.cpp
+    controller/tool.cpp
+    controller/tool.h
+    controller/jobconnect.h
     controller/controller.cpp
     controller/exchange/dataexchanger.cpp
     controller/exchange/observationimporter.cpp

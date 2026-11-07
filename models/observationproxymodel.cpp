@@ -82,11 +82,11 @@ bool ObservationProxyModel::lessThan(const QModelIndex& source_left,
               ->getFunctions()
               .size() >= 1) {
     // fit function
-    QPointer<Function> function = source_model->getCurrentJob()
-                                      ->getActiveFeature()
-                                      ->getFeature()
-                                      ->getFunctions()
-                                      .at(0);
+    oi::Guarded<Function> function = source_model->getCurrentJob()
+                                         ->getActiveFeature()
+                                         ->getFeature()
+                                         ->getFunctions()
+                                         .at(0);
     QList<InputElement> inputElem = function->getInputElements().value(0);
 
     if (source_right.isValid() && source_left.isValid() &&

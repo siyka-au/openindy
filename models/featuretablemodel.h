@@ -27,7 +27,7 @@ class FeatureTableModel : public QAbstractTableModel {
   Q_OBJECT
 
  public:
-  explicit FeatureTableModel(const QPointer<OiJob>& job,
+  explicit FeatureTableModel(const oi::Guarded<OiJob>& job,
                              QObject* parent = nullptr);
   explicit FeatureTableModel(QObject* parent = nullptr);
 
@@ -71,15 +71,15 @@ class FeatureTableModel : public QAbstractTableModel {
   // get or set active feature
   // #########################
 
-  [[nodiscard]] QPointer<FeatureWrapper> getActiveFeature() const;
+  [[nodiscard]] oi::Guarded<FeatureWrapper> getActiveFeature() const;
   void setActiveFeature(const QModelIndex& index);
   void setActiveFeature(const int& id);
 
-  [[nodiscard]] QPointer<Station> getActiveStation() const;
+  [[nodiscard]] oi::Guarded<Station> getActiveStation() const;
   void setActiveStation(const QModelIndex& index);
   void setActiveStation(const int& id);
 
-  [[nodiscard]] QPointer<CoordinateSystem> getActiveCoordinateSystem() const;
+  [[nodiscard]] oi::Guarded<CoordinateSystem> getActiveCoordinateSystem() const;
   void setActiveCoordinateSystem(const QString& name);
 
   // #######################
@@ -100,8 +100,8 @@ class FeatureTableModel : public QAbstractTableModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // #########################
   // get or set display config
@@ -146,23 +146,23 @@ class FeatureTableModel : public QAbstractTableModel {
   // ##############
 
   [[nodiscard]] QVariant getDisplayValue(
-      const QPointer<FeatureWrapper>& feature, const int& column) const;
+      const oi::Guarded<FeatureWrapper>& feature, const int& column) const;
   [[nodiscard]] QVariant getBackgroundValue(
-      const QPointer<FeatureWrapper>& feature, const int& column) const;
+      const oi::Guarded<FeatureWrapper>& feature, const int& column) const;
   [[nodiscard]] QVariant getForegroundValue(
-      const QPointer<FeatureWrapper>& feature, const int& column) const;
+      const oi::Guarded<FeatureWrapper>& feature, const int& column) const;
 
   void connectJob();
   void disconnectJob();
 
-  QPointer<Function> loadFunctionByName(QString name);
+  oi::Guarded<Function> loadFunctionByName(QString name);
 
  private:
   // ###########
   // current job
   // ###########
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // ##############
   // display config

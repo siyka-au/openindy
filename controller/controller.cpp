@@ -114,7 +114,7 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
     return;
   }
 
-  QList<QPointer<FeatureWrapper> > features =
+  QList<oi::Guarded<FeatureWrapper> > features =
       this->job->addFeatures(attributes);
   if (features.size() == 0) {
     this->log("No feature were created - See console output for details",
@@ -163,10 +163,10 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
                                   attributes.functionPlugin.first);
   }
 
-  foreach (QPointer<FeatureWrapper> feature, features) {
-    QPointer<Station> station = feature->getStation();
+  foreach (oi::Guarded<FeatureWrapper> feature, features) {
+    oi::Guarded<Station> station = feature->getStation();
     if (!station.isNull()) {
-      QPointer<Station> activeStation = this->job->getActiveStation();
+      oi::Guarded<Station> activeStation = this->job->getActiveStation();
       station->setEstimatedCoordinateSystem(
           activeStation->getCoordinateSystem());
     }
@@ -207,7 +207,7 @@ void Controller::setNominalParameters(
   }
 
   // get and check the feature by its id
-  QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
+  oi::Guarded<FeatureWrapper> feature = this->job->getFeatureById(featureId);
   if (feature.isNull() || feature->getGeometry().isNull()) {
     this->log(QString("No geometry with the id %1").arg(featureId),
               MessageTypes::eErrorMessage,
@@ -237,7 +237,7 @@ void Controller::setTrafoParamParameters(
   }
 
   // get and check the feature by its id
-  QPointer<FeatureWrapper> feature = this->job->getFeatureById(featureId);
+  oi::Guarded<FeatureWrapper> feature = this->job->getFeatureById(featureId);
   if (feature.isNull() || feature->getTrafoParam().isNull()) {
     this->log(QString("No trafo param with the id %1").arg(featureId),
               MessageTypes::eErrorMessage,
@@ -260,7 +260,7 @@ void Controller::recalcActiveFeature() {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = this->job->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->job->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return;
   }
@@ -320,7 +320,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   // get and check active feature - must be a solved Plane (the only owner
   // type this checkpoint's producers support; other geometry types are
   // Stage 7h's Haiku-replication follow-up, not this one)
-  QPointer<FeatureWrapper> owner = this->job->getActiveFeature();
+  oi::Guarded<FeatureWrapper> owner = this->job->getActiveFeature();
   if (owner.isNull() || owner->getPlane().isNull() ||
       !owner->getGeometry()->getIsSolved()) {
     return;
@@ -329,7 +329,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   // resolve the producer function's plugin, then instantiate it
   QList<sys::Function> candidates =
       PluginRepository::getFunctionsApplicableTo(subType);
-  QPointer<Function> producerFunction(nullptr);
+  oi::Guarded<Function> producerFunction(nullptr);
   for (const sys::Function& candidate : candidates) {
     if (candidate.name().compare(functionName) == 0) {
       producerFunction = PluginLoader::loadFunctionPlugin(
@@ -350,7 +350,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   subAttributes.name =
       QString("%1_%2").arg(namePrefix).arg(owner->getFeature()->getId());
   subAttributes.count = 1;
-  QList<QPointer<FeatureWrapper> > created =
+  QList<oi::Guarded<FeatureWrapper> > created =
       this->job->addFeatures(subAttributes);
   if (created.size() != 1 || created.at(0).isNull()) {
     return;
@@ -375,7 +375,7 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->getActiveStation();
+  oi::Guarded<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
     this->log("No active station", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -402,7 +402,7 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
   }
 
   // create sensor instance and assign it to the active station
-  QPointer<Sensor> sensor = PluginLoader::loadSensorPlugin(
+  oi::Guarded<Sensor> sensor = PluginLoader::loadSensorPlugin(
       plugin->filePath(), sConfig.getSensorName());
   if (sensor.isNull()) {
     this->log(QString("No sensor available with the name %1")
@@ -441,7 +441,7 @@ void Controller::removeActiveStationSensor() {
   }
 
   // get and check active station
-  QPointer<Station> station = this->getActiveStation();
+  oi::Guarded<Station> station = this->getActiveStation();
   if (station.isNull()) {
     return;
   }
@@ -484,7 +484,7 @@ void Controller::sensorConfigurationUpdated(
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->getActiveStation();
+  oi::Guarded<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
     this->log("No active station", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -507,7 +507,7 @@ void Controller::measurementConfigurationChanged(
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+  oi::Guarded<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
     this->log("No active geometry selected", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -768,12 +768,12 @@ QJsonObject Controller::getBundleTemplate() {
  * Returns the bundle plugin of the coordinate system defined by bundleId
  * \return
  */
-QPointer<oi::BundleAdjustment> Controller::getBundleAdjustment() {
+oi::Guarded<oi::BundleAdjustment> Controller::getBundleAdjustment() {
   // check job
   if (this->job.isNull()) {
     this->log("No job available", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
-    return QPointer<oi::BundleAdjustment>(nullptr);
+    return oi::Guarded<oi::BundleAdjustment>(nullptr);
   }
   return this->job->getActiveBundleAdjustment();
 }
@@ -794,7 +794,7 @@ void Controller::updateBundleAdjustment(
   }
 
   // get and check bundle plugin
-  QPointer<BundleAdjustment> bundlePlugin = this->getBundleAdjustment();
+  oi::Guarded<BundleAdjustment> bundlePlugin = this->getBundleAdjustment();
   if (bundlePlugin.isNull()) {
     return;
   }
@@ -867,7 +867,8 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
   }
 
   // get bundle system
-  QPointer<CoordinateSystem> bundleSystem = this->job->getActiveBundleSystem();
+  oi::Guarded<CoordinateSystem> bundleSystem =
+      this->job->getActiveBundleSystem();
   if (bundleSystem.isNull()) {
     this->log(QString("No bundle system available"),
               MessageTypes::eErrorMessage,
@@ -892,7 +893,7 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
   }
 
   // load bundle plugin
-  QPointer<BundleAdjustment> bundlePlugin =
+  oi::Guarded<BundleAdjustment> bundlePlugin =
       PluginLoader::loadBundleAdjustmentPlugin(plugin->filePath(), bundleName);
   if (bundlePlugin.isNull()) {
     this->log(QString("Cannot load bundle template %1")
@@ -923,14 +924,16 @@ void Controller::runBundle() {
     return;
   }
 
-  QPointer<oi::BundleAdjustment> bundleAdjustment = this->getBundleAdjustment();
+  oi::Guarded<oi::BundleAdjustment> bundleAdjustment =
+      this->getBundleAdjustment();
   if (bundleAdjustment.isNull()) {
     this->log("No bundle adjustment available", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
     return;
   }
 
-  QPointer<CoordinateSystem> bundleSystem = bundleAdjustment->getBundleSystem();
+  oi::Guarded<CoordinateSystem> bundleSystem =
+      bundleAdjustment->getBundleSystem();
 
   // check bundle plugin
   if (bundleSystem->getBundlePlugin().isNull()) {
@@ -959,7 +962,7 @@ void Controller::runBundle() {
   } catch (BundleException& e) {
     this->featureUpdater.switchCoordinateSystem();
 
-    QPointer<FeatureWrapper> feature =
+    oi::Guarded<FeatureWrapper> feature =
         this->job->getFeatureById(e.getFeatureId());
     QString featureName =
         feature.isNull() ? "" : feature->getFeature()->getFeatureName() + ": ";
@@ -978,7 +981,7 @@ void Controller::runBundle() {
   }
 
   // update station status
-  QPointer<Station> activeStation = job->getActiveStation();
+  oi::Guarded<Station> activeStation = job->getActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1134,7 +1137,7 @@ void Controller::loadProject(const QString& projectName,
   // load the project
   const ProjectExchanger::LoadResult loaded =
       projectExchanger.loadProject(project);
-  QPointer<OiJob> newJob = loaded.job;
+  oi::Guarded<OiJob> newJob = loaded.job;
 
   // check job
   if (newJob.isNull()) {
@@ -1214,10 +1217,10 @@ void Controller::loadProject(const QString& projectName,
               .isNull()) {  // no bundle result was saved
         // load plugin and set plugin to bundle system "Bundle01"
         // see MainWindow::initBundleView()
-        QList<QPointer<FeatureWrapper> > bundleSystems =
+        QList<oi::Guarded<FeatureWrapper> > bundleSystems =
             this->job->getFeaturesByName("Bundle01");
         if (!bundleSystems.isEmpty()) {
-          QPointer<CoordinateSystem> bundleSystem =
+          oi::Guarded<CoordinateSystem> bundleSystem =
               bundleSystems.first()->getCoordinateSystem();
 
           QString bundleName, pluginName;
@@ -1242,7 +1245,7 @@ void Controller::loadProject(const QString& projectName,
           }
 
           // load bundle plugin
-          QPointer<BundleAdjustment> bundlePlugin =
+          oi::Guarded<BundleAdjustment> bundlePlugin =
               PluginLoader::loadBundleAdjustmentPlugin(plugin->filePath(),
                                                        bundleName);
           if (bundlePlugin.isNull()) {
@@ -1267,7 +1270,7 @@ void Controller::loadProject(const QString& projectName,
           // initially add all stations to bundle
           // see void MainWindow::bundleSelectionChanged()
           QList<BundleStation> bundleStations;
-          foreach (const QPointer<Station>& station,
+          foreach (const oi::Guarded<Station>& station,
                    this->job->getStationsList()) {
             // create initial BundleStation
             BundleStation bundleStation;
@@ -1310,19 +1313,19 @@ void Controller::loadProject(const QString& projectName,
  * \brief Controller::createDefaultJob
  * \return
  */
-const QPointer<OiJob>& Controller::createDefaultJob() {
+const oi::Guarded<OiJob>& Controller::createDefaultJob() {
   // create job with a station and a nominal system
-  QPointer<OiJob> job = new OiJob();
+  oi::Guarded<OiJob> job = new OiJob();
   this->setJob(job);
 
-  QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
-  QPointer<Station> station = new Station();
+  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
+  oi::Guarded<Station> station = new Station();
   station->setFeatureName("STATION01");
   station->setGroupName("00_Stations");
   stationFeature->setStation(station);
 
-  QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
-  QPointer<CoordinateSystem> system = new CoordinateSystem();
+  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
+  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
   system->setFeatureName("PART");
   systemFeature->setCoordinateSystem(system);
 
@@ -1348,7 +1351,7 @@ void Controller::startConnect() {
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->getActiveStation();
+  oi::Guarded<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
     this->log("No active station", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1372,7 +1375,7 @@ void Controller::startDisconnect() {
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->getActiveStation();
+  oi::Guarded<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
     this->log("No active station", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1392,13 +1395,13 @@ void Controller::startMeasurement() { this->_startMeasurement(false); }
  * \brief Controller::startMeasurement
  */
 void Controller::_startMeasurement(bool dummyPoint) {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+  oi::Guarded<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
     this->log("No active feature", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1409,7 +1412,7 @@ void Controller::_startMeasurement(bool dummyPoint) {
   //(D17/D19 - a nominal has no fit to measure into, so a read-only
   // actual realising it is created first)
   if (!activeFeature->getGeometry()->getOwnerDescription().has_value()) {
-    QPointer<FeatureWrapper> actual =
+    oi::Guarded<FeatureWrapper> actual =
         this->createActualForNominal(activeFeature->getGeometry());
     if (actual.isNull() || actual->getGeometry().isNull()) {
       this->log("Cannot create actual for nominal", MessageTypes::eErrorMessage,
@@ -1457,13 +1460,13 @@ void Controller::_startMeasurement(bool dummyPoint) {
  * \param reading
  */
 void Controller::startMove(const Reading& reading) {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+  oi::Guarded<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
     this->log("No active feature", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1501,7 +1504,7 @@ void Controller::startAim() {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+  oi::Guarded<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
     this->log("No active feature", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1509,7 +1512,7 @@ void Controller::startAim() {
   }
 
   // get and check active coordinate system
-  QPointer<CoordinateSystem> activeCoordinateSystem =
+  oi::Guarded<CoordinateSystem> activeCoordinateSystem =
       this->job->getActiveCoordinateSystem();
   if (activeCoordinateSystem.isNull()) {
     this->log("No active coordinate system", MessageTypes::eErrorMessage,
@@ -1518,7 +1521,7 @@ void Controller::startAim() {
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->getActiveStation();
+  oi::Guarded<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull() || activeStation->getCoordinateSystem().isNull()) {
     this->log("No active station", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1548,7 +1551,7 @@ void Controller::startAim() {
 
   // transform the active feature into the station coordinate system
   // switch between actual and nominal if the active feature is not solved
-  QPointer<CoordinateSystem> cs =
+  oi::Guarded<CoordinateSystem> cs =
       !activeStation->getCoordinateSystem().isNull() &&
               !activeStation->getCoordinateSystem()->getIsSolved() &&
               !activeStation->getEstimatedCoordinateSystem().isNull()
@@ -1577,7 +1580,7 @@ void Controller::startAim() {
     } else if (activeFeature->getGeometry()->getRealises().has_value() &&
                !activeFeature->getGeometry()->getRealises()->isNull()) {
       // fall back to the nominal this actual realises
-      const QPointer<Geometry> nominal =
+      const oi::Guarded<Geometry> nominal =
           activeFeature->getGeometry()->getRealises().value();
       if (nominal->hasPosition() && trafoController.getTransformationMatrix(
                                         t, nominal->getNominalSystem(), cs)) {
@@ -1605,7 +1608,7 @@ void Controller::startAimAndMeasure() {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
+  oi::Guarded<FeatureWrapper> activeFeature = this->job->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull()) {
     this->log("No active feature", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1613,7 +1616,7 @@ void Controller::startAimAndMeasure() {
   }
 
   // get and check active coordinate system
-  QPointer<CoordinateSystem> activeCoordinateSystem =
+  oi::Guarded<CoordinateSystem> activeCoordinateSystem =
       this->job->getActiveCoordinateSystem();
   if (activeCoordinateSystem.isNull()) {
     this->log("No active coordinate system", MessageTypes::eErrorMessage,
@@ -1622,7 +1625,7 @@ void Controller::startAimAndMeasure() {
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->getActiveStation();
+  oi::Guarded<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull() || activeStation->getCoordinateSystem().isNull()) {
     this->log("No active station", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1675,7 +1678,7 @@ void Controller::startAimAndMeasure() {
     } else if (activeFeature->getGeometry()->getRealises().has_value() &&
                !activeFeature->getGeometry()->getRealises()->isNull()) {
       // fall back to the nominal this actual realises
-      const QPointer<Geometry> nominal =
+      const oi::Guarded<Geometry> nominal =
           activeFeature->getGeometry()->getRealises().value();
       if (nominal->hasPosition() && trafoController.getTransformationMatrix(
                                         t, nominal->getNominalSystem(),
@@ -1701,7 +1704,7 @@ void Controller::startAimAndMeasure() {
  * \brief Controller::startToggleSight
  */
 void Controller::startToggleSight() {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1717,7 +1720,7 @@ void Controller::startToggleSight() {
  * \brief Controller::startInitialize
  */
 void Controller::startInitialize() {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1733,7 +1736,7 @@ void Controller::startInitialize() {
  * \brief Controller::startHome
  */
 void Controller::startHome() {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1749,7 +1752,7 @@ void Controller::startHome() {
  * \brief Controller::startCompensation
  */
 void Controller::startCompensation() {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1765,7 +1768,7 @@ void Controller::startCompensation() {
  * \brief Controller::startChangeMotorState
  */
 void Controller::startChangeMotorState() {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1782,7 +1785,7 @@ void Controller::startChangeMotorState() {
  * \param task
  */
 void Controller::startCustomAction(const QString& task) {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1798,14 +1801,14 @@ void Controller::startCustomAction(const QString& task) {
  * @brief Controller::getConnectedActiveStation
  * @return connected active station or 0
  */
-QPointer<Station> Controller::getConnectedActiveStation() {
+oi::Guarded<Station> Controller::getConnectedActiveStation() {
   // check current job
   if (this->job.isNull()) {
     return nullptr;
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->getActiveStation();
+  oi::Guarded<Station> activeStation = this->getActiveStation();
   if (activeStation.isNull()) {
     this->log("No active station", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
@@ -1823,7 +1826,7 @@ QPointer<Station> Controller::getConnectedActiveStation() {
   return activeStation;
 }
 
-QPointer<Station> Controller::getActiveStation() {
+oi::Guarded<Station> Controller::getActiveStation() {
   return this->job->getActiveStation();
 }
 
@@ -1832,7 +1835,7 @@ QPointer<Station> Controller::getActiveStation() {
  * \param streamFormat
  */
 void Controller::startReadingStream(ReadingTypes streamFormat) {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1846,7 +1849,7 @@ void Controller::startReadingStream(ReadingTypes streamFormat) {
  * \brief Controller::stopReadingStream
  */
 void Controller::stopReadingStream() {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1857,7 +1860,7 @@ void Controller::stopReadingStream() {
 
 void Controller::finishMeasurement() {
   qDebug() << "Controller::finishMeasurement()";
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1905,7 +1908,7 @@ void Controller::activeStationChangedCallback() {
   }
 
   // get and check active station
-  QPointer<Station> activeStation = job->getActiveStation();
+  oi::Guarded<Station> activeStation = job->getActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -1916,8 +1919,8 @@ void Controller::activeStationChangedCallback() {
   emit stationStatus(data);
 
   // disconnect all stations
-  QList<QPointer<Station> > stations = this->job->getStationsList();
-  foreach (const QPointer<Station>& station, stations) {
+  QList<oi::Guarded<Station> > stations = this->job->getStationsList();
+  foreach (const oi::Guarded<Station>& station, stations) {
     // check station
     if (station.isNull()) {
       continue;
@@ -1953,16 +1956,16 @@ void Controller::activeStationChangedCallback() {
  * \param readings
  */
 void Controller::measurementFinished(
-    const int& geomId, const QList<QPointer<Reading> >& readings) {
+    const int& geomId, const QList<oi::Guarded<Reading> >& readings) {
   // check job
   if (this->job.isNull()) {
     return;
   }
 
   // get and check feature with the id geomId
-  QPointer<FeatureWrapper> feature = this->job->getFeatureById(geomId);
+  oi::Guarded<FeatureWrapper> feature = this->job->getFeatureById(geomId);
   if (feature.isNull() || feature->getGeometry().isNull()) {
-    foreach (const QPointer<Reading>& reading, readings) {
+    foreach (const oi::Guarded<Reading>& reading, readings) {
       if (!reading.isNull()) {
         delete reading;
       }
@@ -1978,14 +1981,14 @@ void Controller::measurementFinished(
   int targetId = geomId;
 
   if (!feature->getGeometry()->getOwnerDescription().has_value()) {
-    QPointer<FeatureWrapper> actual =
+    oi::Guarded<FeatureWrapper> actual =
         this->createActualForNominal(feature->getGeometry());
     feature = actual;
 
     // check feature
     if (feature.isNull() || feature->getGeometry().isNull() ||
         !feature->getGeometry()->getOwnerDescription().has_value()) {
-      foreach (const QPointer<Reading>& reading, readings) {
+      foreach (const oi::Guarded<Reading>& reading, readings) {
         if (!reading.isNull()) {
           delete reading;
         }
@@ -2019,7 +2022,7 @@ void Controller::measurementFinished(
  * \brief Controller::setJob
  * \param job
  */
-void Controller::setJob(const QPointer<OiJob>& job) {
+void Controller::setJob(const oi::Guarded<OiJob>& job) {
   // check job
   if (job.isNull()) {
     return;
@@ -2194,7 +2197,7 @@ void Controller::setJob(const QPointer<OiJob>& job) {
  * \brief Controller::getActiveFeature
  * \return
  */
-QPointer<FeatureWrapper> Controller::getActiveFeature() {
+oi::Guarded<FeatureWrapper> Controller::getActiveFeature() {
   return this->job->getActiveFeature();
 }
 
@@ -2288,17 +2291,18 @@ void Controller::registerMetaTypes() {
   qRegisterMetaType<oi::MessageDestinations>("MessageDestinations");
   qRegisterMetaType<oi::MeasurementConfig>("MeasurementConfig");
   qRegisterMetaType<oi::SensorConfiguration>("SensorConfiguration");
-  qRegisterMetaType<QList<QPointer<oi::Reading> > >(
-      "QList<QPointer<Reading> >");
-  qRegisterMetaType<QPointer<oi::Feature> >("QPointer<Feature>");
-  qRegisterMetaType<QPointer<oi::Function> >("QPointer<Function>");
-  qRegisterMetaType<QPointer<oi::FeatureWrapper> >("QPointer<FeatureWrapper>");
-  qRegisterMetaType<QPointer<oi::Observation> >("QPointer<Observation>");
+  qRegisterMetaType<QList<oi::Guarded<oi::Reading> > >(
+      "QList<oi::Guarded<Reading> >");
+  qRegisterMetaType<oi::Guarded<oi::Feature> >("oi::Guarded<Feature>");
+  qRegisterMetaType<oi::Guarded<oi::Function> >("oi::Guarded<Function>");
+  qRegisterMetaType<oi::Guarded<oi::FeatureWrapper> >(
+      "oi::Guarded<FeatureWrapper>");
+  qRegisterMetaType<oi::Guarded<oi::Observation> >("oi::Guarded<Observation>");
   qRegisterMetaType<oi::OiRequestResponse>("OiRequestResponse");
   qRegisterMetaType<ParameterDisplayConfig>("ParameterDisplayConfig");
 
   qRegisterMetaType<oi::Sensor>("Sensor");
-  qRegisterMetaType<QPointer<oi::Sensor> >("QPointer<Sensor>");
+  qRegisterMetaType<oi::Guarded<oi::Sensor> >("oi::Guarded<Sensor>");
   qRegisterMetaType<oi::ReadingTypes>("ReadingTypes");
   qRegisterMetaType<QList<oi::ReadingTypes> >("QList<ReadingTypes>");
   qRegisterMetaType<oi::SensorType>("SensorType");
@@ -2381,12 +2385,12 @@ void Controller::stopServer() {
  * \param nominal
  * \return the new actual, or null on failure
  */
-QPointer<FeatureWrapper> Controller::createActualForNominal(
-    const QPointer<Geometry>& nominal) {
+oi::Guarded<FeatureWrapper> Controller::createActualForNominal(
+    const oi::Guarded<Geometry>& nominal) {
   // check job and nominal
   if (this->job.isNull() || nominal.isNull() ||
       nominal->getFeatureWrapper().isNull()) {
-    return QPointer<FeatureWrapper>(nullptr);
+    return oi::Guarded<FeatureWrapper>(nullptr);
   }
 
   const FeatureTypes type = nominal->getFeatureWrapper()->getFeatureTypeEnum();
@@ -2418,15 +2422,15 @@ QPointer<FeatureWrapper> Controller::createActualForNominal(
       this->measurementConfigManager->getUserConfig(elementConfigName);
 
   // create the actual
-  QList<QPointer<FeatureWrapper> > created = this->job->addFeatures(attr);
+  QList<oi::Guarded<FeatureWrapper> > created = this->job->addFeatures(attr);
   if (created.size() != 1 || created.first().isNull() ||
       created.first()->getGeometry().isNull()) {
-    return QPointer<FeatureWrapper>(nullptr);
+    return oi::Guarded<FeatureWrapper>(nullptr);
   }
-  QPointer<FeatureWrapper> actual = created.first();
+  oi::Guarded<FeatureWrapper> actual = created.first();
 
   // attach its fit function and measurement config
-  QList<QPointer<FeatureWrapper> > actuals;
+  QList<oi::Guarded<FeatureWrapper> > actuals;
   actuals.append(actual);
   sys::Function defaultFunction =
       PluginRepository::getDefaultFunction(type).value_or(sys::Function());
@@ -2449,7 +2453,7 @@ QPointer<FeatureWrapper> Controller::createActualForNominal(
  * \param fName
  */
 void Controller::addFunctionsAndMConfigs(
-    const QList<QPointer<FeatureWrapper> >& actuals,
+    const QList<oi::Guarded<FeatureWrapper> >& actuals,
     const MeasurementConfig& mConfig, const QString& path,
     const QString& fName) {
   // check job
@@ -2457,27 +2461,25 @@ void Controller::addFunctionsAndMConfigs(
     return;
   }
 
-  foreach (const QPointer<FeatureWrapper>& feature, actuals) {
+  foreach (const oi::Guarded<FeatureWrapper>& feature, actuals) {
     // check feature
     if (feature.isNull() || feature->getFeature().isNull()) {
       continue;
     }
 
     // load function plugin
-    QPointer<Function> function(nullptr);
+    oi::Guarded<Function> function(nullptr);
     if (!path.isEmpty() && !fName.isEmpty()) {
       function = PluginLoader::loadFunctionPlugin(path, fName);
     }
 
     // assign function and measurement config to feature
-    this->job->blockSignals(true);
     if (!function.isNull()) {
       feature->getFeature()->addFunction(function);
     }
     if (mConfig.isValid() && !feature->getGeometry().isNull()) {
       feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
     }
-    this->job->blockSignals(false);
   }
 }
 
@@ -2623,7 +2625,7 @@ void Controller::showToolWidget(const QString& pluginName,
 }
 
 void Controller::startSearch() {
-  QPointer<Station> activeStation = getConnectedActiveStation();
+  oi::Guarded<Station> activeStation = getConnectedActiveStation();
   if (activeStation.isNull()) {
     return;
   }
@@ -2675,7 +2677,7 @@ bool Controller::isStationBundled(int id) {
   const QString stationName =
       this->job->getFeatureById(id)->getFeature()->getFeatureName();
 
-  foreach (QPointer<TrafoParam> param,
+  foreach (oi::Guarded<TrafoParam> param,
            this->job->getTransformationParametersList()) {
     if (param->getStartSystem()->getIsBundleSystem() &&
         param->getDestinationSystem()->getIsStationSystem() &&

@@ -1,5 +1,6 @@
 #include "qtfunctionadapter.h"
 
+#include <QCoreApplication>
 #include <QHash>
 #include <QMutex>
 #include <QMutexLocker>
@@ -29,17 +30,20 @@ QtFunctionAdapter* QtFunctionAdapter::of(Function* function) {
     return it.value();
   }
   auto* adapter = new QtFunctionAdapter;
-  // no QObject parent: the function may be used from another thread than the
-  // one asking for the adapter, so move it next to the function instead
-  if (adapter->thread() != function->thread()) {
-    adapter->moveToThread(function->thread());
+  // no QObject parent: the function may be used from any thread, but the
+  // adapter re-emits Qt signals for the UI, so it lives on the application's
+  // thread
+  if (QCoreApplication::instance() != nullptr &&
+      adapter->thread() != QCoreApplication::instance()->thread()) {
+    adapter->moveToThread(QCoreApplication::instance()->thread());
   }
   registry().insert(function, adapter);
   function->setObserver(adapter);
   return adapter;
 }
 
-QtFunctionAdapter* QtFunctionAdapter::of(const QPointer<Function>& function) {
+QtFunctionAdapter* QtFunctionAdapter::of(
+    const oi::Guarded<Function>& function) {
   return of(function.data());
 }
 

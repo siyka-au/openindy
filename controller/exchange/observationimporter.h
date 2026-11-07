@@ -28,8 +28,8 @@ class ObservationImporter : public QObject {
   // get or set general attributes
   // #############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   [[nodiscard]] const QString& getFileName() const;
   void setFileName(const QString& filename);
@@ -60,7 +60,7 @@ class ObservationImporter : public QObject {
   // general attributes
   // ##################
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   QString filename;
 };

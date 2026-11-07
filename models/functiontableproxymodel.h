@@ -34,8 +34,8 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   [[nodiscard]] QVariant data(const QModelIndex& index,
                               int role) const override;
@@ -46,7 +46,7 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   // signals to change job state
   // ###########################
 
-  void startAddFunction(const QPointer<Function>& function);
+  void startAddFunction(const oi::Guarded<Function>& function);
 
   // #########################
   // send messages to OpenIndy
@@ -78,7 +78,7 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   // current job
   // ###########
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 };
 
 #endif  // FUNCTIONTABLEPROXYMODEL_H

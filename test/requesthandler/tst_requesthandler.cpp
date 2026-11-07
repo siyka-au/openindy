@@ -31,17 +31,17 @@ namespace {
 
 // a project needs an active station and coordinate system; same minimal setup
 // as test/projectexchange
-QPointer<OiJob> makeJobWithStationAndSystem() {
-  QPointer<OiJob> job = new OiJob();
+oi::Guarded<OiJob> makeJobWithStationAndSystem() {
+  oi::Guarded<OiJob> job = new OiJob();
 
-  QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
-  QPointer<Station> station = new Station();
+  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
+  oi::Guarded<Station> station = new Station();
   station->setFeatureName("STATION01");
   stationFeature->setStation(station);
   job->addFeature(stationFeature);
 
-  QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
-  QPointer<CoordinateSystem> system = new CoordinateSystem();
+  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
+  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
   system->setFeatureName("PART");
   systemFeature->setCoordinateSystem(system);
   job->addFeature(systemFeature);
@@ -60,11 +60,11 @@ QPointer<OiJob> makeJobWithStationAndSystem() {
   return job;
 }
 
-QPointer<FeatureWrapper> addPoint(const QPointer<OiJob>& job,
-                                  const QString& name, double x, double y,
-                                  double z) {
-  QPointer<FeatureWrapper> wrapper = new FeatureWrapper();
-  QPointer<Point> point = new Point(Position(x, y, z));
+oi::Guarded<FeatureWrapper> addPoint(const oi::Guarded<OiJob>& job,
+                                     const QString& name, double x, double y,
+                                     double z) {
+  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
+  oi::Guarded<Point> point = new Point(Position(x, y, z));
   point->setFeatureName(name);
   point->setIsSolved(true);
   wrapper->setPoint(point);
@@ -169,8 +169,8 @@ class RequestHandlerTest : public QObject {
     QCOMPARE(answer.carrier.requesterId, 7);
   }
 
-  QPointer<OiJob> job;
-  QPointer<FeatureWrapper> point;
+  oi::Guarded<OiJob> job;
+  oi::Guarded<FeatureWrapper> point;
   QPointer<MeasurementConfigManager> configs;
   OiRequestHandler handler;
 };

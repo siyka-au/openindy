@@ -51,8 +51,8 @@ class UsedElementsModel : public QAbstractListModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // ##########
   // set filter
@@ -67,7 +67,7 @@ class UsedElementsModel : public QAbstractListModel {
   // signals to change job state
   // ###########################
 
-  void startRemoveUsedElements(const QPointer<FeatureWrapper>& target,
+  void startRemoveUsedElements(const oi::Guarded<FeatureWrapper>& target,
                                const int& functionPosition,
                                const int& neededElementsIndex,
                                const int& elementId);
@@ -94,7 +94,7 @@ class UsedElementsModel : public QAbstractListModel {
   // current job
   // ###########
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // #################
   // function position
@@ -109,7 +109,7 @@ class UsedElementsModel : public QAbstractListModel {
   // save connected function
   // #######################
 
-  QPointer<Function> connectedFunction;
+  oi::Guarded<Function> connectedFunction;
 };
 
 #endif  // USEDELEMENTSMODEL_H

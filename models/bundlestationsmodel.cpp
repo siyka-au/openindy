@@ -247,7 +247,7 @@ QModelIndex BundleStationsModel::parent(const QModelIndex& index) const {
  * \brief BundleStationsModel::getCurrentJob
  * \return
  */
-const QPointer<oi::OiJob>& BundleStationsModel::getCurrentJob() const {
+const oi::Guarded<oi::OiJob>& BundleStationsModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -255,7 +255,7 @@ const QPointer<oi::OiJob>& BundleStationsModel::getCurrentJob() const {
  * \brief BundleStationsModel::setCurrentJob
  * \param job
  */
-void BundleStationsModel::setCurrentJob(const QPointer<oi::OiJob>& job) {
+void BundleStationsModel::setCurrentJob(const oi::Guarded<oi::OiJob>& job) {
   // disconnect old job
   this->disconnectJob();
 
@@ -334,7 +334,8 @@ void BundleStationsModel::updateModel() {
     bool m = station.value("m").toBool();
 
     // get station name
-    QPointer<oi::FeatureWrapper> feature = this->currentJob->getFeatureById(id);
+    oi::Guarded<oi::FeatureWrapper> feature =
+        this->currentJob->getFeatureById(id);
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
     }
@@ -364,8 +365,9 @@ void BundleStationsModel::updateModel() {
   // add remaining stations
   QJsonArray stationTemplate =
       this->bundleTemplate.value("parameters").toArray();
-  QList<QPointer<oi::Station> > stations = this->currentJob->getStationsList();
-  foreach (const QPointer<oi::Station>& station, stations) {
+  QList<oi::Guarded<oi::Station> > stations =
+      this->currentJob->getStationsList();
+  foreach (const oi::Guarded<oi::Station>& station, stations) {
     // check station
     if (station.isNull()) {
       continue;

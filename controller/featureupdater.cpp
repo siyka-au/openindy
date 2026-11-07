@@ -1,5 +1,6 @@
 #include "featureupdater.h"
 
+#include "jobconnect.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -12,7 +13,7 @@ FeatureUpdater::FeatureUpdater(QObject* parent) : QObject(parent) {}
  * \brief FeatureUpdater::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FeatureUpdater::getCurrentJob() const {
+const oi::Guarded<OiJob>& FeatureUpdater::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -20,7 +21,7 @@ const QPointer<OiJob>& FeatureUpdater::getCurrentJob() const {
  * \brief FeatureUpdater::setCurrentJob
  * \param job
  */
-void FeatureUpdater::setCurrentJob(const QPointer<OiJob>& job) {
+void FeatureUpdater::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -57,7 +58,7 @@ void FeatureUpdater::recalcFeatureSet() {
   // construction chain on every recalc pass including the one that
   // follows every project load - exactly what domain-model.md S1/S6
   // says must not happen.
-  foreach (const QPointer<FeatureWrapper>& feature,
+  foreach (const oi::Guarded<FeatureWrapper>& feature,
            this->currentJob->getFeaturesList()) {
     if (!feature.isNull() && !feature->getFeature().isNull()) {
       if (!feature->getGeometry().isNull() &&
@@ -73,7 +74,7 @@ void FeatureUpdater::recalcFeatureSet() {
   // recalc recursively (block signals during recalculation, one signal for all
   // features is emitted at the end)
   this->blockSignals(true);
-  foreach (const QPointer<FeatureWrapper>& feature,
+  foreach (const oi::Guarded<FeatureWrapper>& feature,
            this->currentJob->getFeaturesList()) {
     // check feature
     if (feature.isNull() || feature->getFeature().isNull()) {
@@ -97,7 +98,7 @@ void FeatureUpdater::recalcFeatureSet() {
  * Recalculates a single feature of an OpenIndy job and all its dependencies
  * \param feature
  */
-void FeatureUpdater::recalcFeature(const QPointer<Feature>& feature) {
+void FeatureUpdater::recalcFeature(const oi::Guarded<Feature>& feature) {
   // check job
   if (this->currentJob.isNull()) {
     return;
@@ -120,7 +121,7 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature>& feature) {
 
   // set all features to not have been updated - except function-owned
   // sub-geometry; see recalcFeatureSet()'s comment
-  foreach (const QPointer<FeatureWrapper>& feature,
+  foreach (const oi::Guarded<FeatureWrapper>& feature,
            this->currentJob->getFeaturesList()) {
     if (!feature.isNull() && !feature->getFeature().isNull()) {
       if (!feature->getGeometry().isNull() &&
@@ -149,7 +150,8 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature>& feature) {
  * Recalculates a transformation parameter feature
  * \param trafoParam
  */
-void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam>& trafoParam) {
+void FeatureUpdater::recalcTrafoParam(
+    const oi::Guarded<TrafoParam>& trafoParam) {
   // check trafo param
   if (trafoParam.isNull() || trafoParam->getStartSystem().isNull() ||
       trafoParam->getDestinationSystem().isNull()) {
@@ -161,7 +163,7 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam>& trafoParam) {
       trafoParam->getFunctions().at(0).isNull()) {
     return;
   }
-  QPointer<SystemTransformation> systemTransformation =
+  oi::Guarded<SystemTransformation> systemTransformation =
       dynamic_cast<SystemTransformation*>(
           trafoParam->getFunctions().at(0).data());
   if (systemTransformation.isNull()) {
@@ -196,7 +198,7 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam>& trafoParam) {
   trafoParam->setIsUpdated(true);
 
   // recalc dependent features
-  foreach (const QPointer<FeatureWrapper>& dependentFeature,
+  foreach (const oi::Guarded<FeatureWrapper>& dependentFeature,
            trafoParam->getUsedFor()) {
     // check feature
     if (dependentFeature.isNull() || dependentFeature->getFeature().isNull() ||
@@ -219,7 +221,7 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam>& trafoParam) {
  * \return
  */
 bool FeatureUpdater::recalcBundle(
-    const QPointer<CoordinateSystem>& bundleSystem) {
+    const oi::Guarded<CoordinateSystem>& bundleSystem) {
   // check job
   if (this->currentJob.isNull()) {
     return false;
@@ -229,12 +231,10 @@ bool FeatureUpdater::recalcBundle(
   if (bundleSystem.isNull() || bundleSystem->getBundlePlugin().isNull()) {
     return false;
   }
-  QPointer<BundleAdjustment> bundlePlugin = bundleSystem->getBundlePlugin();
+  oi::Guarded<BundleAdjustment> bundlePlugin = bundleSystem->getBundlePlugin();
 
   // clear old bundle results
-  this->currentJob->blockSignals(true);
   this->clearBundleResults(bundleSystem);
-  this->currentJob->blockSignals(false);
 
   // check bundle stations
   QList<BundleStation> stations = bundlePlugin->getInputStations();
@@ -246,7 +246,7 @@ bool FeatureUpdater::recalcBundle(
   QList<BundleStation> inputStations;
   foreach (BundleStation inputStation, stations) {
     // get corresponding station feature
-    QPointer<FeatureWrapper> station =
+    oi::Guarded<FeatureWrapper> station =
         this->currentJob->getFeatureById(inputStation.id);
     if (station.isNull() || station->getStation().isNull() ||
         station->getStation()->getCoordinateSystem().isNull()) {
@@ -261,9 +261,9 @@ bool FeatureUpdater::recalcBundle(
 
     // add station geometries
     inputStation.geometries.clear();
-    QList<QPointer<Geometry> > geometries =
+    QList<oi::Guarded<Geometry> > geometries =
         station->getStation()->getTargetGeometries();
-    foreach (const QPointer<Geometry>& geom, geometries) {
+    foreach (const oi::Guarded<Geometry>& geom, geometries) {
       if (!geom.isNull() && geom->getIsCommon() && geom->getIsSolved()) {
         BundleGeometry inputGeometry;
         inputGeometry.id = geom->getId();
@@ -318,9 +318,7 @@ bool FeatureUpdater::recalcBundle(
   }
 
   // save bundle results
-  this->currentJob->blockSignals(true);
   this->saveBundleResults(bundleSystem);
-  this->currentJob->blockSignals(false);
 
   // recalculate all features
   this->switchCoordinateSystem();
@@ -363,15 +361,12 @@ void FeatureUpdater::switchCoordinateSystem() {
  * \brief FeatureUpdater::connectJob
  */
 void FeatureUpdater::connectJob() {
-  QObject::connect(this, &FeatureUpdater::featureRecalculated,
-                   this->currentJob.data(), &OiJob::featureRecalculated,
-                   Qt::AutoConnection);
-  QObject::connect(this, &FeatureUpdater::featuresRecalculated,
-                   this->currentJob.data(), &OiJob::featuresRecalculated,
-                   Qt::AutoConnection);
-  QObject::connect(this, &FeatureUpdater::trafoParamRecalculated,
-                   this->currentJob.data(), &OiJob::trafoParamRecalculated,
-                   Qt::AutoConnection);
+  connectToJob(this, &FeatureUpdater::featureRecalculated, this->currentJob,
+               &OiJob::featureRecalculated);
+  connectToJob(this, &FeatureUpdater::featuresRecalculated, this->currentJob,
+               &OiJob::featuresRecalculated);
+  connectToJob(this, &FeatureUpdater::trafoParamRecalculated, this->currentJob,
+               &OiJob::trafoParamRecalculated);
 
   QObject::connect(QtJobAdapter::of(this->currentJob.data()),
                    &QtJobAdapter::recalcFeature, this,
@@ -394,12 +389,9 @@ void FeatureUpdater::connectJob() {
  * \brief FeatureUpdater::disconnectJob
  */
 void FeatureUpdater::disconnectJob() {
-  QObject::disconnect(this, &FeatureUpdater::featureRecalculated,
-                      this->currentJob.data(), &OiJob::featureRecalculated);
-  QObject::disconnect(this, &FeatureUpdater::featuresRecalculated,
-                      this->currentJob.data(), &OiJob::featuresRecalculated);
-  QObject::disconnect(this, &FeatureUpdater::trafoParamRecalculated,
-                      this->currentJob.data(), &OiJob::trafoParamRecalculated);
+  disconnectFromJob(this);
+  disconnectFromJob(this);
+  disconnectFromJob(this);
 
   QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
                       &QtJobAdapter::recalcFeature, this,
@@ -416,14 +408,14 @@ void FeatureUpdater::disconnectJob() {
  * \param feature
  */
 void FeatureUpdater::recursiveFeatureRecalculation(
-    const QPointer<Feature>& feature) {
+    const oi::Guarded<Feature>& feature) {
   // check wether the feature has already been updated
   if (feature->getIsUpdated()) {
     return;
   }
 
   // recalculate all needed features
-  foreach (QPointer<FeatureWrapper> neededFeature,
+  foreach (oi::Guarded<FeatureWrapper> neededFeature,
            feature->getPreviouslyNeeded()) {
     // check needed feature
     if (neededFeature.isNull() || neededFeature->getFeature().isNull() ||
@@ -445,7 +437,8 @@ void FeatureUpdater::recursiveFeatureRecalculation(
   feature->setIsUpdated(true);
 
   // recalculate dependent features
-  foreach (QPointer<FeatureWrapper> dependentFeature, feature->getUsedFor()) {
+  foreach (oi::Guarded<FeatureWrapper> dependentFeature,
+           feature->getUsedFor()) {
     // check needed feature
     if (dependentFeature.isNull() || dependentFeature->getFeature().isNull() ||
         !dependentFeature->getTrafoParam().isNull()) {
@@ -463,8 +456,8 @@ void FeatureUpdater::recursiveFeatureRecalculation(
  * \param systemTransformation
  */
 void FeatureUpdater::setUpTrafoParamActualActual(
-    const QPointer<TrafoParam>& trafoParam,
-    const QPointer<SystemTransformation>& systemTransformation) {
+    const oi::Guarded<TrafoParam>& trafoParam,
+    const oi::Guarded<SystemTransformation>& systemTransformation) {
   // delete old copy elements
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
@@ -653,8 +646,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(
  * \param systemTransformation
  */
 void FeatureUpdater::setUpTrafoParamActualNominal(
-    const QPointer<TrafoParam>& trafoParam,
-    const QPointer<SystemTransformation>& systemTransformation) {
+    const oi::Guarded<TrafoParam>& trafoParam,
+    const oi::Guarded<SystemTransformation>& systemTransformation) {
   // delete old copy elements
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
@@ -906,8 +899,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
  * \param systemTransformation
  */
 void FeatureUpdater::setUpTrafoParamNominalNominal(
-    const QPointer<TrafoParam>& trafoParam,
-    const QPointer<SystemTransformation>& systemTransformation) {
+    const oi::Guarded<TrafoParam>& trafoParam,
+    const oi::Guarded<SystemTransformation>& systemTransformation) {
   // delete old copy elements
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
@@ -1016,8 +1009,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
  * \param systemTransformation
  */
 void FeatureUpdater::setUpTrafoParamBundleNominal(
-    const QPointer<TrafoParam>& trafoParam,
-    const QPointer<SystemTransformation>& systemTransformation) {
+    const oi::Guarded<TrafoParam>& trafoParam,
+    const oi::Guarded<SystemTransformation>& systemTransformation) {
   // delete old copy elements
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
@@ -1049,13 +1042,13 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
 
   // check if this trafo already exists and temporary de activate the
   // transformation
-  QList<QPointer<TrafoParam> > existingTrafoParams =
+  QList<oi::Guarded<TrafoParam> > existingTrafoParams =
       this->currentJob->getTransformationParametersList();
 
-  QList<QPointer<TrafoParam> > tempUnsolvedTRafoParam;
+  QList<oi::Guarded<TrafoParam> > tempUnsolvedTRafoParam;
 
   // check if trafo param has the same configuration
-  foreach (QPointer<TrafoParam> existingTP, existingTrafoParams) {
+  foreach (oi::Guarded<TrafoParam> existingTP, existingTrafoParams) {
     if ((existingTP->getStartSystem() == trafoParam->getStartSystem() &&
          existingTP->getDestinationSystem() ==
              trafoParam->getDestinationSystem()) ||
@@ -1280,7 +1273,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
 
   // re activate all existing transformations
-  foreach (QPointer<TrafoParam> tp, tempUnsolvedTRafoParam) {
+  foreach (oi::Guarded<TrafoParam> tp, tempUnsolvedTRafoParam) {
     tp->setIsUsed(true);
   }
 
@@ -1289,7 +1282,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
 }
 
 void FeatureUpdater::transformAllObsToDestSystem(
-    const QPointer<CoordinateSystem>& destinationSystem) {
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
   // check current job
   if (this->currentJob.isNull()) {
     return;
@@ -1301,7 +1294,7 @@ void FeatureUpdater::transformAllObsToDestSystem(
   }
 
   // run through all station systems
-  foreach (const QPointer<Station>& station,
+  foreach (const oi::Guarded<Station>& station,
            this->currentJob->getStationsList()) {
     // check station system
     if (station.isNull() || station->getCoordinateSystem().isNull()) {
@@ -1310,7 +1303,7 @@ void FeatureUpdater::transformAllObsToDestSystem(
 
     const bool isSolved = (station->getCoordinateSystem() == destinationSystem);
     // run through all observations of the station system
-    foreach (const QPointer<Observation>& obs,
+    foreach (const oi::Guarded<Observation>& obs,
              station->getCoordinateSystem()->getObservations()) {
       // set observation to solved only if it has been measured in the active
       // coordinate system
@@ -1335,7 +1328,7 @@ void FeatureUpdater::transformAllObsToDestSystem(
  * \param destinationSystem
  */
 void FeatureUpdater::switchCoordinateSystemWithoutTransformation(
-    const QPointer<CoordinateSystem>& destinationSystem) {
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
   // check current job
   if (this->currentJob.isNull()) {
     return;
@@ -1364,7 +1357,7 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(
   // #############################################################################
 
   // run through all nominal systems
-  foreach (const QPointer<CoordinateSystem>& system,
+  foreach (const oi::Guarded<CoordinateSystem>& system,
            this->currentJob->getCoordinateSystemsList()) {
     // check system
     if (system.isNull()) {
@@ -1372,7 +1365,8 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(
     }
 
     // run through all nominals of the system
-    foreach (const QPointer<FeatureWrapper>& feature, system->getNominals()) {
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
+             system->getNominals()) {
       bool isSolved = (system == destinationSystem);
 
       // check feature
@@ -1395,7 +1389,7 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation() {
   // set all features to not have been updated before
   // recalcFeatureWithoutTransformation() - except function-owned
   // sub-geometry; see recalcFeatureSet()'s comment
-  foreach (const QPointer<FeatureWrapper>& feature,
+  foreach (const oi::Guarded<FeatureWrapper>& feature,
            this->currentJob->getFeaturesList()) {
     if (!feature.isNull() && !feature->getFeature().isNull()) {
       if (!feature->getGeometry().isNull() &&
@@ -1409,7 +1403,7 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation() {
   }
 
   // recalc recursively
-  foreach (const QPointer<FeatureWrapper>& feature,
+  foreach (const oi::Guarded<FeatureWrapper>& feature,
            this->currentJob->getFeaturesList()) {
     // check feature
     if (feature.isNull() || feature->getFeature().isNull()) {
@@ -1429,7 +1423,7 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation() {
  * \param feature
  */
 void FeatureUpdater::recalcFeatureWithoutTransformation(
-    const QPointer<Feature>& feature) {
+    const oi::Guarded<Feature>& feature) {
   // check job
   if (this->currentJob.isNull()) {
     return;
@@ -1453,7 +1447,7 @@ void FeatureUpdater::recalcFeatureWithoutTransformation(
  * \param destinationSystem
  */
 void FeatureUpdater::switchCoordinateSystemWithTransformation(
-    const QPointer<CoordinateSystem>& destinationSystem) {
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
   // check current job
   if (this->currentJob.isNull()) {
     return;
@@ -1474,7 +1468,7 @@ void FeatureUpdater::switchCoordinateSystemWithTransformation(
  * \param destinationSystem
  */
 void FeatureUpdater::transformObsAndNominals(
-    const QPointer<CoordinateSystem>& destinationSystem) {
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
   if (destinationSystem.isNull()) {
     return;  // nothing to do
   }
@@ -1484,7 +1478,7 @@ void FeatureUpdater::transformObsAndNominals(
   qDebug() << "transformObsAndNominals: destinationSystem="
            << destinationSystem->getFeatureName();
   // run through all station systems
-  foreach (const QPointer<Station>& station,
+  foreach (const oi::Guarded<Station>& station,
            this->currentJob->getStationsList()) {
     // check station system
     if (station.isNull() || station->getCoordinateSystem().isNull()) {
@@ -1507,7 +1501,7 @@ void FeatureUpdater::transformObsAndNominals(
   // #############################################################################
 
   // run through all nominal systems
-  foreach (const QPointer<CoordinateSystem>& system,
+  foreach (const oi::Guarded<CoordinateSystem>& system,
            this->currentJob->getCoordinateSystemsList()) {
     // check system
     if (system.isNull()) {
@@ -1515,7 +1509,8 @@ void FeatureUpdater::transformObsAndNominals(
     }
 
     // run through all nominals of the system
-    foreach (const QPointer<FeatureWrapper>& feature, system->getNominals()) {
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
+             system->getNominals()) {
       bool isSolved = (system == destinationSystem);
 
       // check feature
@@ -1539,7 +1534,7 @@ void FeatureUpdater::transformObsAndNominals(
  * \param type
  */
 void FeatureUpdater::copyGeometry(InputElement& newElement,
-                                  const QPointer<FeatureWrapper>& oldElement,
+                                  const oi::Guarded<FeatureWrapper>& oldElement,
                                   const ElementTypes& type) {
   // add all elements
   switch (type) {
@@ -1762,9 +1757,9 @@ void FeatureUpdater::copyGeometry(InputElement& newElement,
  * \param bundleSystem
  */
 void FeatureUpdater::clearBundleResults(
-    const QPointer<CoordinateSystem>& bundleSystem) {
+    const oi::Guarded<CoordinateSystem>& bundleSystem) {
   // get and delete nominals in bundle system
-  foreach (const QPointer<FeatureWrapper> nominal,
+  foreach (const oi::Guarded<FeatureWrapper> nominal,
            bundleSystem->getNominals()) {
     if (!nominal.isNull() && !nominal->getGeometry().isNull()) {
       delete nominal->getGeometry().data();
@@ -1773,9 +1768,9 @@ void FeatureUpdater::clearBundleResults(
   }
 
   // get and delete bundle transformations
-  QList<QPointer<TrafoParam> > transformations =
+  QList<oi::Guarded<TrafoParam> > transformations =
       bundleSystem->getTransformationParameters();
-  foreach (const QPointer<TrafoParam>& trafo, transformations) {
+  foreach (const oi::Guarded<TrafoParam>& trafo, transformations) {
     if (!trafo.isNull() && trafo->getIsBundle()) {
       qDebug() << "FeatureUpdater::clearBundleResults transformation "
                << trafo->getId();
@@ -1814,9 +1809,9 @@ void FeatureUpdater::clearBundleResults(
  * \param bundleSystem
  */
 void FeatureUpdater::saveBundleResults(
-    const QPointer<CoordinateSystem>& bundleSystem) {
+    const oi::Guarded<CoordinateSystem>& bundleSystem) {
   // get bundle plugin
-  QPointer<BundleAdjustment> plugin = bundleSystem->getBundlePlugin();
+  oi::Guarded<BundleAdjustment> plugin = bundleSystem->getBundlePlugin();
 
   // get bundle results
   QList<BundleGeometry> geometries = plugin->getOutputGeometries();
@@ -1836,14 +1831,14 @@ void FeatureUpdater::saveBundleResults(
  * \param bundleSystem
  */
 /*void FeatureUpdater::createBundleGeometries(const QList<BundleGeometry>
-&geometries, const QPointer<CoordinateSystem> &bundleSystem){
+&geometries, const oi::Guarded<CoordinateSystem> &bundleSystem){
 
     //create common points as nominals in bundle system
-    QList<QPointer<FeatureWrapper> > features;
+    QList<oi::Guarded<FeatureWrapper> > features;
     foreach(const BundleGeometry &geom, geometries){
 
         //get corresponding actual
-        QPointer<FeatureWrapper> actual =
+        oi::Guarded<FeatureWrapper> actual =
 this->currentJob->getFeatureById(geom.id); if(actual.isNull() ||
 actual->getPoint().isNull()){ continue;
         }
@@ -1851,8 +1846,8 @@ actual->getPoint().isNull()){ continue;
         QString group = actual->getPoint()->getGroupName();
 
         //create point
-        QPointer<FeatureWrapper> feature = new FeatureWrapper();
-        QPointer<Point> point = new Point();
+        oi::Guarded<FeatureWrapper> feature = new FeatureWrapper();
+        oi::Guarded<Point> point = new Point();
         feature->setPoint(point);
 
         //set up point attributes
@@ -1884,19 +1879,19 @@ actual->getPoint().isNull()){ continue;
  */
 void FeatureUpdater::createBundleTransformations(
     QList<BundleTransformation>& transformations,
-    const QPointer<CoordinateSystem>& bundleSystem) {
+    const oi::Guarded<CoordinateSystem>& bundleSystem) {
   // create transformations
   FeatureAttributes fAttr;
   fAttr.typeOfFeature = FeatureTypes::eTrafoParamFeature;
   fAttr.group = bundleSystem->getGroupName();
   fAttr.count = 1;
   fAttr.startSystem = bundleSystem->getFeatureName();
-  QList<QPointer<FeatureWrapper> > features;
+  QList<oi::Guarded<FeatureWrapper> > features;
   foreach (const BundleTransformation& transformation, transformations) {
     qDebug() << "transformation.id=" << transformation.id;
 
     // get station
-    QPointer<FeatureWrapper> feature =
+    oi::Guarded<FeatureWrapper> feature =
         this->currentJob->getFeatureById(transformation.id);
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
@@ -1928,13 +1923,13 @@ void FeatureUpdater::createBundleTransformations(
 
   // set up transformation parameters
   int index = 0;
-  foreach (const QPointer<FeatureWrapper>& feature, features) {
+  foreach (const oi::Guarded<FeatureWrapper>& feature, features) {
     // check feature
     if (feature.isNull() || feature->getTrafoParam().isNull()) {
       index++;
       continue;
     }
-    QPointer<TrafoParam> trafo = feature->getTrafoParam();
+    oi::Guarded<TrafoParam> trafo = feature->getTrafoParam();
 
     // set up parameters
     QMap<TrafoParamParameters, double> parameters =
@@ -1952,20 +1947,20 @@ void FeatureUpdater::createBundleTransformations(
  * \param bundleSystem
  */
 void FeatureUpdater::recalcAllBundleTrafoDependencies(
-    const QPointer<CoordinateSystem>& bundleSystem) {
+    const oi::Guarded<CoordinateSystem>& bundleSystem) {
   // if bundle system
   if (bundleSystem->getIsBundleSystem()) {
     // get all trafo params from job
-    QList<QPointer<TrafoParam> > globalTps =
+    QList<oi::Guarded<TrafoParam> > globalTps =
         this->currentJob->getTransformationParametersList();
 
-    foreach (QPointer<TrafoParam> gTP, globalTps) {
+    foreach (oi::Guarded<TrafoParam> gTP, globalTps) {
       bool recalc = true;
 
       if (gTP->getStartSystem() == bundleSystem ||
           gTP->getDestinationSystem() == bundleSystem) {
         // and check if they are included in bundle trafo
-        foreach (QPointer<TrafoParam> bundleTP,
+        foreach (oi::Guarded<TrafoParam> bundleTP,
                  bundleSystem->getTransformationParameters()) {
           if (gTP->getId() == bundleTP->getId()) {
             recalc = false;

@@ -49,7 +49,7 @@ MeasurementConfigManager& MeasurementConfigManager::operator=(
  * \brief MeasurementConfigManager::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& MeasurementConfigManager::getCurrentJob() const {
+const oi::Guarded<OiJob>& MeasurementConfigManager::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -57,7 +57,7 @@ const QPointer<OiJob>& MeasurementConfigManager::getCurrentJob() const {
  * \brief MeasurementConfigManager::setCurrentJob
  * \param job
  */
-void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob>& job) {
+void MeasurementConfigManager::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {

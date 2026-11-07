@@ -19,7 +19,7 @@ using namespace oi;
  */
 class FunctionStatisticModel : public QAbstractTableModel {
  public:
-  explicit FunctionStatisticModel(const QPointer<Feature>& feature,
+  explicit FunctionStatisticModel(const oi::Guarded<Feature>& feature,
                                   QObject* parent = nullptr);
 
   // ########################################
@@ -41,8 +41,8 @@ class FunctionStatisticModel : public QAbstractTableModel {
   // get or set the current feature
   // ##############################
 
-  [[nodiscard]] const QPointer<Feature>& getFeature() const;
-  void setFeature(const QPointer<Feature>& feature);
+  [[nodiscard]] const oi::Guarded<Feature>& getFeature() const;
+  void setFeature(const oi::Guarded<Feature>& feature);
 
   // #####################################
   // get or set the current function index
@@ -71,7 +71,7 @@ class FunctionStatisticModel : public QAbstractTableModel {
   // current feature and function index
   // ##################################
 
-  QPointer<Feature> feature;
+  oi::Guarded<Feature> feature;
   int functionIndex{-1};
 
   // ##############

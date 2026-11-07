@@ -22,8 +22,8 @@ class FunctionWeightProxyModel : public QSortFilterProxyModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // ###########################################
   // override methods of sort filter proxy model
@@ -43,7 +43,7 @@ class FunctionWeightProxyModel : public QSortFilterProxyModel {
                               const QModelIndex& source_right) const override;
 
  private:
-  QPointer<OiJob> job;
+  oi::Guarded<OiJob> job;
 };
 
 #endif  // FUNCTIONWEIGHTPROXYMODEL_H

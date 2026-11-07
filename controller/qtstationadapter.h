@@ -31,7 +31,7 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   // the adapter of `station` (created and registered on first use), or nullptr
   // for a null station. The adapter lives in the station's thread.
   static QtStationAdapter* of(oi::Station* station);
-  static QtStationAdapter* of(const QPointer<oi::Station>& station);
+  static QtStationAdapter* of(const oi::Guarded<oi::Station>& station);
 
   // number of live adapters (for tests)
   static int registrySize();
@@ -54,7 +54,8 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   // sensor action callbacks
   void commandFinished(bool success, QString msg,
                        oi::SensorAction sensorAction);
-  void measurementFinished(int geomId, QList<QPointer<oi::Reading>> readings);
+  void measurementFinished(int geomId,
+                           QList<oi::Guarded<oi::Reading>> readings);
   void measurementDone(bool success);
 
   // what the driver reports
@@ -74,7 +75,7 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   void onCommandFinished(bool success, const QString& msg,
                          oi::SensorAction sensorAction) override;
   void onMeasurementFinished(
-      int geomId, const QList<QPointer<oi::Reading>>& readings) override;
+      int geomId, const QList<oi::Guarded<oi::Reading>>& readings) override;
   void onMeasurementDone(bool success) override;
   void onSensorMessage(const QString& msg, oi::MessageTypes msgType,
                        oi::MessageDestinations msgDest) override;

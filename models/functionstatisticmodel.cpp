@@ -5,8 +5,8 @@
  * \param feature
  * \param parent
  */
-FunctionStatisticModel::FunctionStatisticModel(const QPointer<Feature>& feature,
-                                               QObject* parent)
+FunctionStatisticModel::FunctionStatisticModel(
+    const oi::Guarded<Feature>& feature, QObject* parent)
     : feature(feature) {}
 
 /*!
@@ -140,7 +140,7 @@ QVariant FunctionStatisticModel::headerData(int section,
  * \brief FunctionStatisticModel::getFeature
  * \return
  */
-const QPointer<Feature>& FunctionStatisticModel::getFeature() const {
+const oi::Guarded<Feature>& FunctionStatisticModel::getFeature() const {
   return this->feature;
 }
 
@@ -148,7 +148,7 @@ const QPointer<Feature>& FunctionStatisticModel::getFeature() const {
  * \brief FunctionStatisticModel::setFeature
  * \param feature
  */
-void FunctionStatisticModel::setFeature(const QPointer<Feature>& feature) {
+void FunctionStatisticModel::setFeature(const oi::Guarded<Feature>& feature) {
   this->feature = feature;
   this->updateModel();
 }

@@ -28,7 +28,7 @@ class QtJobAdapter : public QObject, public oi::JobObserver {
   // the adapter of `job` (created and registered on first use), or nullptr
   // for a null job. The adapter lives in the job's thread.
   static QtJobAdapter* of(oi::OiJob* job);
-  static QtJobAdapter* of(const QPointer<oi::OiJob>& job);
+  static QtJobAdapter* of(const oi::Guarded<oi::OiJob>& job);
 
   // number of live adapters (for tests)
   static int registrySize();
@@ -77,7 +77,7 @@ class QtJobAdapter : public QObject, public oi::JobObserver {
   void sendMessage(const QString& msg, const oi::MessageTypes& msgType,
                    const oi::MessageDestinations& msgDest =
                        oi::MessageDestinations::eConsoleMessage) const;
-  void recalcFeature(const QPointer<oi::Feature>& feature);
+  void recalcFeature(const oi::Guarded<oi::Feature>& feature);
   void recalcFeatureSet();
   void featuresRecalculated();
   void featureRecalculated(const int& featureId);
@@ -128,7 +128,8 @@ class QtJobAdapter : public QObject, public oi::JobObserver {
   void onTrafoParamIsDatumChanged(const int& featureId) override;
   void onSendMessage(const QString& msg, const oi::MessageTypes& msgType,
                      const oi::MessageDestinations& msgDest) override;
-  void onRecalcFeatureRequested(const QPointer<oi::Feature>& feature) override;
+  void onRecalcFeatureRequested(
+      const oi::Guarded<oi::Feature>& feature) override;
   void onRecalcFeatureSetRequested() override;
   void onFeaturesRecalculated() override;
   void onFeatureRecalculated(const int& featureId) override;

@@ -69,7 +69,7 @@ class AvailableFunctionsListModel : public QAbstractListModel {
   // signals to change job state
   // ###########################
 
-  void startRemoveUsedElements(const QPointer<FeatureWrapper>& target,
+  void startRemoveUsedElements(const oi::Guarded<FeatureWrapper>& target,
                                const int& functionPosition,
                                const int& neededElementsIndex,
                                const int& elementId);

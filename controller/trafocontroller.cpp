@@ -9,8 +9,8 @@ TrafoController::TrafoController(QObject* parent) : QObject(parent) {}
  * \param destinationSystem
  */
 void TrafoController::transformObservations(
-    const QPointer<Feature>& feature,
-    const QPointer<CoordinateSystem>& destinationSystem) {
+    const oi::Guarded<Feature>& feature,
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
   // check feature and system
   if (feature.isNull() || feature->getFeatureWrapper().isNull() ||
       feature->getFeatureWrapper()->getGeometry().isNull() ||
@@ -18,10 +18,10 @@ void TrafoController::transformObservations(
     return;
   }
 
-  QList<QPointer<CoordinateSystem> > startSystems;
+  QList<oi::Guarded<CoordinateSystem> > startSystems;
 
   // run through all observations of the feature
-  foreach (const QPointer<Observation>& obs,
+  foreach (const oi::Guarded<Observation>& obs,
            feature->getFeatureWrapper()->getGeometry()->getObservations()) {
     // check observation
     if (obs.isNull() || obs->getStation().isNull() ||
@@ -30,7 +30,7 @@ void TrafoController::transformObservations(
     }
 
     // get the station system from which the observation was made
-    QPointer<CoordinateSystem> startSystem =
+    oi::Guarded<CoordinateSystem> startSystem =
         obs->getStation()->getCoordinateSystem();
 
     // add the start system to the list of start systems
@@ -40,7 +40,7 @@ void TrafoController::transformObservations(
   }
 
   // transform all observations of the start system
-  foreach (const QPointer<CoordinateSystem>& system, startSystems) {
+  foreach (const oi::Guarded<CoordinateSystem>& system, startSystems) {
     this->transformObservations(system, destinationSystem);
   }
 }
@@ -52,8 +52,8 @@ void TrafoController::transformObservations(
  * \param destinationSystem
  */
 void TrafoController::transformObservations(
-    const QPointer<CoordinateSystem>& startSystem,
-    const QPointer<CoordinateSystem>& destinationSystem) {
+    const oi::Guarded<CoordinateSystem>& startSystem,
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
   // check systems
   if (startSystem.isNull() || destinationSystem.isNull()) {
     return;
@@ -61,7 +61,7 @@ void TrafoController::transformObservations(
 
   // check if the systems are identical
   if (startSystem == destinationSystem) {
-    foreach (const QPointer<Observation>& observation,
+    foreach (const oi::Guarded<Observation>& observation,
              startSystem->getObservations()) {
       if (!observation.isNull()) {
         observation->xyz = observation->getOriginalXYZ();
@@ -96,7 +96,8 @@ void TrafoController::transformObservations(
                                   startSystem->getOrigin().getVectorH());
 
     // transform observations
-    foreach (const QPointer<Observation>& obs, startSystem->getObservations()) {
+    foreach (const oi::Guarded<Observation>& obs,
+             startSystem->getObservations()) {
       if (obs->getOriginalXYZ().getSize() == 4) {
         obs->xyz = trafoMat * obs->originalXyz;
         obs->setIsSolved(true);
@@ -124,7 +125,7 @@ void TrafoController::transformObservations(
     startSystem->setIsSolved(false);
 
     // set all observations to not solved
-    foreach (const QPointer<Observation>& observation,
+    foreach (const oi::Guarded<Observation>& observation,
              startSystem->getObservations()) {
       if (!observation.isNull()) {
         observation->setIsSolved(false);
@@ -139,8 +140,8 @@ void TrafoController::transformObservations(
  * \param destinationSystem
  */
 void TrafoController::transformCoordSystems(
-    const QPointer<CoordinateSystem>& startSystem,
-    const QPointer<CoordinateSystem>& destinationSystem, bool isStation) {
+    const oi::Guarded<CoordinateSystem>& startSystem,
+    const oi::Guarded<CoordinateSystem>& destinationSystem, bool isStation) {
   // check systems
   if (startSystem.isNull() || destinationSystem.isNull()) {
     return;
@@ -181,7 +182,7 @@ void TrafoController::transformCoordSystems(
  * position (0,0,0) and default direction / normal (0,0,1)
  */
 void TrafoController::setDefaultOriginAndNormal(
-    const QPointer<CoordinateSystem>& startSystem, bool isStation) {
+    const oi::Guarded<CoordinateSystem>& startSystem, bool isStation) {
   startSystem->resetOriginAndAxis();
 
   if (isStation) {
@@ -197,8 +198,8 @@ void TrafoController::setDefaultOriginAndNormal(
  * \return
  */
 bool TrafoController::getTransformationMatrix(
-    OiMat& trafoMat, const QPointer<CoordinateSystem>& startSystem,
-    const QPointer<CoordinateSystem>& destinationSystem) {
+    OiMat& trafoMat, const oi::Guarded<CoordinateSystem>& startSystem,
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
   // if start and destination system are identical there is no real
   // transformation
   if (startSystem == destinationSystem) {
@@ -212,7 +213,7 @@ bool TrafoController::getTransformationMatrix(
 
   // try to find a corresponding transformation to directly transform between
   // systems
-  QPointer<TrafoParam> trafoParam =
+  oi::Guarded<TrafoParam> trafoParam =
       this->findTransformation(startSystem, destinationSystem);
   if (!trafoParam.isNull() && trafoParam->getIsSolved()) {
     if (trafoParam->getStartSystem() == startSystem) {
@@ -228,7 +229,7 @@ bool TrafoController::getTransformationMatrix(
   bool datumTrafoInChain = false;
 
   // try to find a transformation chain
-  foreach (const QPointer<TrafoParam>& tp,
+  foreach (const oi::Guarded<TrafoParam>& tp,
            startSystem->getTransformationParameters()) {
     // check tp
     if (tp.isNull() || !tp->getIsUsed() || !tp->getIsSolved()) {
@@ -243,7 +244,7 @@ bool TrafoController::getTransformationMatrix(
     }
 
     // search trafo param in tp that are in relation to the target system
-    foreach (const QPointer<TrafoParam>& t,
+    foreach (const oi::Guarded<TrafoParam>& t,
              tp->getStartSystem()->getTransformationParameters()) {
       // check t
       if (t.isNull() || !t->getIsUsed() || !t->getIsSolved() ||
@@ -273,7 +274,7 @@ bool TrafoController::getTransformationMatrix(
     }
 
     // search trafo param in tp that are in relation to the target system
-    foreach (const QPointer<TrafoParam>& t,
+    foreach (const oi::Guarded<TrafoParam>& t,
              tp->getDestinationSystem()->getTransformationParameters()) {
       // check t
       if (t.isNull() || !t->getIsUsed() || !t->getIsSolved() ||
@@ -312,10 +313,10 @@ bool TrafoController::getTransformationMatrix(
  * \param destinationSystem
  * \return
  */
-QPointer<TrafoParam> TrafoController::findTransformation(
-    const QPointer<CoordinateSystem>& startSystem,
-    const QPointer<CoordinateSystem>& destinationSystem) {
-  foreach (const QPointer<TrafoParam> tp,
+oi::Guarded<TrafoParam> TrafoController::findTransformation(
+    const oi::Guarded<CoordinateSystem>& startSystem,
+    const oi::Guarded<CoordinateSystem>& destinationSystem) {
+  foreach (const oi::Guarded<TrafoParam> tp,
            startSystem->getTransformationParameters()) {
     // check trafo param
     if (tp.isNull() || tp->getStartSystem().isNull() ||
@@ -332,5 +333,5 @@ QPointer<TrafoParam> TrafoController::findTransformation(
     }
   }
 
-  return QPointer<TrafoParam>(nullptr);
+  return oi::Guarded<TrafoParam>(nullptr);
 }

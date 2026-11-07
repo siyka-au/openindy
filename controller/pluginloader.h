@@ -60,31 +60,31 @@ class PluginLoader : public QObject {
   // load OpenIndy plugins
   // #####################
 
-  static QPointer<Sensor> loadSensorPlugin(const QString& path,
-                                           const QString& name);
-  static QPointer<Function> loadFunctionPlugin(const QString& path,
-                                               const QString& name);
-  static QPointer<SimulationModel> loadSimulationPlugin(const QString& path,
-                                                        const QString& name);
-  static QPointer<BundleAdjustment> loadBundleAdjustmentPlugin(
+  static oi::Guarded<Sensor> loadSensorPlugin(const QString& path,
+                                              const QString& name);
+  static oi::Guarded<Function> loadFunctionPlugin(const QString& path,
+                                                  const QString& name);
+  static oi::Guarded<SimulationModel> loadSimulationPlugin(const QString& path,
+                                                           const QString& name);
+  static oi::Guarded<BundleAdjustment> loadBundleAdjustmentPlugin(
       const QString& path, const QString& name);
   static QPointer<Tool> loadToolPlugin(const QString& path,
                                        const QString& name);
-  static QPointer<ExchangeSimpleAscii> loadExchangeSimpleAsciiPlugin(
+  static oi::Guarded<ExchangeSimpleAscii> loadExchangeSimpleAsciiPlugin(
       const QString& path, const QString& name);
-  static QPointer<ExchangeDefinedFormat> loadExchangeDefinedFormatPlugin(
+  static oi::Guarded<ExchangeDefinedFormat> loadExchangeDefinedFormatPlugin(
       const QString& path, const QString& name);
 
-  static QList<QPointer<Sensor> > loadSensorPlugins(const QString& path);
-  static QList<QPointer<Function> > loadFunctionPlugins(const QString& path);
-  static QList<QPointer<SimulationModel> > loadSimulationPlugins(
+  static QList<oi::Guarded<Sensor> > loadSensorPlugins(const QString& path);
+  static QList<oi::Guarded<Function> > loadFunctionPlugins(const QString& path);
+  static QList<oi::Guarded<SimulationModel> > loadSimulationPlugins(
       const QString& path);
-  static QList<QPointer<BundleAdjustment> > loadBundleAdjustmentPlugins(
+  static QList<oi::Guarded<BundleAdjustment> > loadBundleAdjustmentPlugins(
       const QString& path);
   static QList<QPointer<Tool> > loadToolPlugins(const QString& path);
-  static QList<QPointer<ExchangeSimpleAscii> > loadExchangeSimpleAsciiPlugins(
-      const QString& path);
-  static QList<QPointer<ExchangeDefinedFormat> >
+  static QList<oi::Guarded<ExchangeSimpleAscii> >
+  loadExchangeSimpleAsciiPlugins(const QString& path);
+  static QList<oi::Guarded<ExchangeDefinedFormat> >
   loadExchangeDefinedFormatPlugins(const QString& path);
 
  signals:

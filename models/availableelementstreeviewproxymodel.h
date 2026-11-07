@@ -28,8 +28,8 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // ##########
   // set filter
@@ -64,18 +64,18 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // signals to change job state
   // ###########################
 
-  void addInputObservation(const QPointer<FeatureWrapper>& target,
+  void addInputObservation(const oi::Guarded<FeatureWrapper>& target,
                            const int& functionPosition,
                            const int& neededElementsIndex,
-                           const QPointer<Observation>& observation);
-  void addInputReading(const QPointer<FeatureWrapper>& target,
+                           const oi::Guarded<Observation>& observation);
+  void addInputReading(const oi::Guarded<FeatureWrapper>& target,
                        const int& functionPosition,
                        const int& neededElementsIndex,
-                       const QPointer<Reading>& reading);
-  void addInputFeature(const QPointer<FeatureWrapper>& target,
+                       const oi::Guarded<Reading>& reading);
+  void addInputFeature(const oi::Guarded<FeatureWrapper>& target,
                        const int& functionPosition,
                        const int& neededElementsIndex,
-                       const QPointer<FeatureWrapper>& feature);
+                       const oi::Guarded<FeatureWrapper>& feature);
 
   // #########################
   // send messages to OpenIndy
@@ -113,7 +113,7 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // current job
   // ###########
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // #################
   // function position
@@ -128,7 +128,7 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
   // save connected function
   // #######################
 
-  QPointer<Function> connectedFunction;
+  oi::Guarded<Function> connectedFunction;
 
   ActualNominalFilter filterActualNominal;
   QString filterGroupName;

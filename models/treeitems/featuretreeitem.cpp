@@ -22,7 +22,7 @@ FeatureTreeItem::FeatureTreeItem(const QVariant& display, QObject* parent)
  * \param feature
  * \param parent
  */
-FeatureTreeItem::FeatureTreeItem(const QPointer<FeatureWrapper>& feature,
+FeatureTreeItem::FeatureTreeItem(const oi::Guarded<FeatureWrapper>& feature,
                                  QObject* parent)
     : QObject(parent), childCount(0), index(-1) {
   // set general tree item attributes
@@ -63,7 +63,7 @@ FeatureTreeItem::FeatureTreeItem(const QPointer<FeatureWrapper>& feature,
  * \param observation
  * \param parent
  */
-FeatureTreeItem::FeatureTreeItem(const QPointer<Observation>& observation,
+FeatureTreeItem::FeatureTreeItem(const oi::Guarded<Observation>& observation,
                                  QObject* parent)
     : QObject(parent), childCount(0), index(-1) {
   // set general tree item attributes
@@ -92,7 +92,7 @@ FeatureTreeItem::FeatureTreeItem(const QPointer<Observation>& observation,
  * \param reading
  * \param parent
  */
-FeatureTreeItem::FeatureTreeItem(const QPointer<Reading>& reading,
+FeatureTreeItem::FeatureTreeItem(const oi::Guarded<Reading>& reading,
                                  QObject* parent)
     : QObject(parent), childCount(0), index(-1) {
   // set general tree item attributes
@@ -152,7 +152,7 @@ const bool& FeatureTreeItem::getIsReading() const { return this->isReading; }
  * \brief FeatureTreeItem::getFeature
  * \return
  */
-const QPointer<FeatureWrapper>& FeatureTreeItem::getFeature() const {
+const oi::Guarded<FeatureWrapper>& FeatureTreeItem::getFeature() const {
   return this->feature;
 }
 
@@ -160,7 +160,7 @@ const QPointer<FeatureWrapper>& FeatureTreeItem::getFeature() const {
  * \brief FeatureTreeItem::getObservation
  * \return
  */
-const QPointer<Observation>& FeatureTreeItem::getObservation() const {
+const oi::Guarded<Observation>& FeatureTreeItem::getObservation() const {
   return this->observation;
 }
 
@@ -168,7 +168,7 @@ const QPointer<Observation>& FeatureTreeItem::getObservation() const {
  * \brief FeatureTreeItem::getReading
  * \return
  */
-const QPointer<Reading>& FeatureTreeItem::getReading() const {
+const oi::Guarded<Reading>& FeatureTreeItem::getReading() const {
   return this->reading;
 }
 
@@ -437,7 +437,7 @@ void FeatureTreeItem::setUpFeature() {
     FeatureTreeItem* itemObservations = new FeatureTreeItem("observations:");
     FeatureTreeItem* itemReadings = new FeatureTreeItem("readings:");
     foreach (
-        const QPointer<Observation>& obs,
+        const oi::Guarded<Observation>& obs,
         this->feature->getStation()->getCoordinateSystem()->getObservations()) {
       if (!obs.isNull() && !obs->getReading().isNull()) {
         FeatureTreeItem* itemObservation = new FeatureTreeItem(obs);
@@ -462,7 +462,7 @@ void FeatureTreeItem::setUpFeature() {
 
     // add nominals as children
     /*FeatureTreeItem *itemNominals = new FeatureTreeItem("nominals:");
-    foreach(const QPointer<FeatureWrapper> &nominal,
+    foreach(const oi::Guarded<FeatureWrapper> &nominal,
     this->feature->getCoordinateSystem()->getNominals()){ if(!nominal.isNull()
     && !nominal->getGeometry().isNull()){ FeatureTreeItem *itemNominal = new
     FeatureTreeItem(nominal); itemNominals->appendChild(itemNominal);
@@ -526,7 +526,7 @@ void FeatureTreeItem::setUpFeature() {
     }
     FeatureTreeItem* itemObservations = new FeatureTreeItem("observations:");
     FeatureTreeItem* itemReadings = new FeatureTreeItem("readings:");
-    foreach (const QPointer<Observation>& obs,
+    foreach (const oi::Guarded<Observation>& obs,
              this->feature->getGeometry()->getObservations()) {
       if (!obs.isNull() && !obs->getReading().isNull()) {
         FeatureTreeItem* itemObservation = new FeatureTreeItem(obs);

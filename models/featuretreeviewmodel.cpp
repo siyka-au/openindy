@@ -7,7 +7,8 @@
  * \param job
  * \param parent
  */
-FeatureTreeViewModel::FeatureTreeViewModel(QPointer<OiJob> job, QObject* parent)
+FeatureTreeViewModel::FeatureTreeViewModel(oi::Guarded<OiJob> job,
+                                           QObject* parent)
     : QAbstractItemModel(parent) {
   this->rootItem = new FeatureTreeItem("features");
   this->setCurrentJob(job);
@@ -137,7 +138,7 @@ QModelIndex FeatureTreeViewModel::parent(const QModelIndex& index) const {
  * \brief FeatureTreeViewModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FeatureTreeViewModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& FeatureTreeViewModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -145,7 +146,7 @@ const QPointer<OiJob>& FeatureTreeViewModel::getCurrentJob() const {
  * \brief FeatureTreeViewModel::setCurrentJob
  * \param job
  */
-void FeatureTreeViewModel::setCurrentJob(const QPointer<OiJob>& job) {
+void FeatureTreeViewModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -185,7 +186,7 @@ void FeatureTreeViewModel::updateModel() {
   if (this->currentJob->getStationsList().size() > 0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eStationElement)));
-    foreach (const QPointer<Station>& station,
+    foreach (const oi::Guarded<Station>& station,
              this->currentJob->getStationsList()) {
       if (!station.isNull() && !station->getFeatureWrapper().isNull()) {
         FeatureTreeItem* itemStation =
@@ -200,7 +201,7 @@ void FeatureTreeViewModel::updateModel() {
   if (this->currentJob->getCoordinateSystemsList().size() > 0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eCoordinateSystemElement)));
-    foreach (const QPointer<CoordinateSystem>& system,
+    foreach (const oi::Guarded<CoordinateSystem>& system,
              this->currentJob->getCoordinateSystemsList()) {
       if (!system.isNull() && !system->getFeatureWrapper().isNull()) {
         FeatureTreeItem* itemSystem =
@@ -215,7 +216,7 @@ void FeatureTreeViewModel::updateModel() {
   if (this->currentJob->getTransformationParametersList().size() > 0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eTrafoParamElement)));
-    foreach (const QPointer<TrafoParam>& trafoParam,
+    foreach (const oi::Guarded<TrafoParam>& trafoParam,
              this->currentJob->getTransformationParametersList()) {
       if (!trafoParam.isNull() && !trafoParam->getFeatureWrapper().isNull()) {
         FeatureTreeItem* itemTrafoParam =
@@ -282,7 +283,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eCircleElement)));
     foreach (
-        const QPointer<FeatureWrapper>& feature,
+        const oi::Guarded<FeatureWrapper>& feature,
         this->currentJob->getFeaturesByType(FeatureTypes::eCircleFeature)) {
       if (!feature.isNull() && !feature->getCircle().isNull()) {
         FeatureTreeItem* itemCircle = new FeatureTreeItem(feature);
@@ -297,7 +298,7 @@ void FeatureTreeViewModel::addGeometries() {
       0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eConeElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(FeatureTypes::eConeFeature)) {
       if (!feature.isNull() && !feature->getCone().isNull()) {
         FeatureTreeItem* itemCone = new FeatureTreeItem(feature);
@@ -313,7 +314,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eCylinderElement)));
     foreach (
-        const QPointer<FeatureWrapper>& feature,
+        const oi::Guarded<FeatureWrapper>& feature,
         this->currentJob->getFeaturesByType(FeatureTypes::eCylinderFeature)) {
       if (!feature.isNull() && !feature->getCylinder().isNull()) {
         FeatureTreeItem* itemCylinder = new FeatureTreeItem(feature);
@@ -329,7 +330,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eEllipseElement)));
     foreach (
-        const QPointer<FeatureWrapper>& feature,
+        const oi::Guarded<FeatureWrapper>& feature,
         this->currentJob->getFeaturesByType(FeatureTypes::eEllipseFeature)) {
       if (!feature.isNull() && !feature->getEllipse().isNull()) {
         FeatureTreeItem* itemEllipse = new FeatureTreeItem(feature);
@@ -345,7 +346,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eEllipsoidElement)));
     foreach (
-        const QPointer<FeatureWrapper>& feature,
+        const oi::Guarded<FeatureWrapper>& feature,
         this->currentJob->getFeaturesByType(FeatureTypes::eEllipsoidFeature)) {
       if (!feature.isNull() && !feature->getEllipsoid().isNull()) {
         FeatureTreeItem* itemEllipsoid = new FeatureTreeItem(feature);
@@ -360,7 +361,7 @@ void FeatureTreeViewModel::addGeometries() {
           .size() > 0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eHyperboloidElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(
                  FeatureTypes::eHyperboloidFeature)) {
       if (!feature.isNull() && !feature->getHyperboloid().isNull()) {
@@ -376,7 +377,7 @@ void FeatureTreeViewModel::addGeometries() {
       0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eLineElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(FeatureTypes::eLineFeature)) {
       if (!feature.isNull() && !feature->getLine().isNull()) {
         FeatureTreeItem* itemLine = new FeatureTreeItem(feature);
@@ -391,7 +392,7 @@ void FeatureTreeViewModel::addGeometries() {
       0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eNurbsElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(FeatureTypes::eNurbsFeature)) {
       if (!feature.isNull() && !feature->getNurbs().isNull()) {
         FeatureTreeItem* itemNurbs = new FeatureTreeItem(feature);
@@ -407,7 +408,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eParaboloidElement)));
     foreach (
-        const QPointer<FeatureWrapper>& feature,
+        const oi::Guarded<FeatureWrapper>& feature,
         this->currentJob->getFeaturesByType(FeatureTypes::eParaboloidFeature)) {
       if (!feature.isNull() && !feature->getParaboloid().isNull()) {
         FeatureTreeItem* itemParaboloid = new FeatureTreeItem(feature);
@@ -422,7 +423,7 @@ void FeatureTreeViewModel::addGeometries() {
       0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::ePlaneElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(FeatureTypes::ePlaneFeature)) {
       if (!feature.isNull() && !feature->getPlane().isNull()) {
         FeatureTreeItem* itemPlane = new FeatureTreeItem(feature);
@@ -437,7 +438,7 @@ void FeatureTreeViewModel::addGeometries() {
       0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::ePointElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(FeatureTypes::ePointFeature)) {
       if (!feature.isNull() && !feature->getPoint().isNull()) {
         FeatureTreeItem* itemPoint = new FeatureTreeItem(feature);
@@ -453,7 +454,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::ePointCloudElement)));
     foreach (
-        const QPointer<FeatureWrapper>& feature,
+        const oi::Guarded<FeatureWrapper>& feature,
         this->currentJob->getFeaturesByType(FeatureTypes::ePointCloudFeature)) {
       if (!feature.isNull() && !feature->getPointCloud().isNull()) {
         FeatureTreeItem* itemCloud = new FeatureTreeItem(feature);
@@ -469,7 +470,7 @@ void FeatureTreeViewModel::addGeometries() {
           .size() > 0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eScalarEntityAngleElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(
                  FeatureTypes::eScalarEntityAngleFeature)) {
       if (!feature.isNull() && !feature->getScalarEntityAngle().isNull()) {
@@ -486,7 +487,7 @@ void FeatureTreeViewModel::addGeometries() {
           .size() > 0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eScalarEntityDistanceElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(
                  FeatureTypes::eScalarEntityDistanceFeature)) {
       if (!feature.isNull() && !feature->getScalarEntityDistance().isNull()) {
@@ -505,7 +506,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item =
         new FeatureTreeItem(QString("%1:").arg(getElementTypePluralName(
             ElementTypes::eScalarEntityMeasurementSeriesElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(
                  FeatureTypes::eScalarEntityMeasurementSeriesFeature)) {
       if (!feature.isNull() &&
@@ -524,7 +525,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item =
         new FeatureTreeItem(QString("%1:").arg(getElementTypePluralName(
             ElementTypes::eScalarEntityTemperatureElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(
                  FeatureTypes::eScalarEntityTemperatureFeature)) {
       if (!feature.isNull() &&
@@ -541,7 +542,7 @@ void FeatureTreeViewModel::addGeometries() {
           .size() > 0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eSlottedHoleElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(
                  FeatureTypes::eSlottedHoleFeature)) {
       if (!feature.isNull() && !feature->getSlottedHole().isNull()) {
@@ -558,7 +559,7 @@ void FeatureTreeViewModel::addGeometries() {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eSphereElement)));
     foreach (
-        const QPointer<FeatureWrapper>& feature,
+        const oi::Guarded<FeatureWrapper>& feature,
         this->currentJob->getFeaturesByType(FeatureTypes::eSphereFeature)) {
       if (!feature.isNull() && !feature->getSphere().isNull()) {
         FeatureTreeItem* itemSphere = new FeatureTreeItem(feature);
@@ -573,7 +574,7 @@ void FeatureTreeViewModel::addGeometries() {
       0) {
     FeatureTreeItem* item = new FeatureTreeItem(QString("%1:").arg(
         getElementTypePluralName(ElementTypes::eTorusElement)));
-    foreach (const QPointer<FeatureWrapper>& feature,
+    foreach (const oi::Guarded<FeatureWrapper>& feature,
              this->currentJob->getFeaturesByType(FeatureTypes::eTorusFeature)) {
       if (!feature.isNull() && !feature->getTorus().isNull()) {
         FeatureTreeItem* itemTorus = new FeatureTreeItem(feature);

@@ -49,8 +49,8 @@ class OiRequestHandler : public QObject {
   // get or set current job
   // ######################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // ##########################
   // get or set config managers
@@ -162,7 +162,7 @@ class OiRequestHandler : public QObject {
 
   // the parameters of a feature as sorted name/value pairs
   [[nodiscard]] static QMap<QString, double> parametersOf(
-      const QPointer<FeatureWrapper>& feature);
+      const oi::Guarded<FeatureWrapper>& feature);
 
   // send an error response (no payload)
   void sendErrorMessage(OiRequestResponse request, int requestId,
@@ -198,7 +198,7 @@ class OiRequestHandler : public QObject {
   ProjectExchanger projectExchanger;
 
   // job
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // feature sorter
   FeatureSorter sorter;

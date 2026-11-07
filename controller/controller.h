@@ -82,7 +82,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // add or remove features
   void addFeatures(const FeatureAttributes& attributes);
   void removeFeatures(const QSet<int>& featureIds);
-  QPointer<FeatureWrapper> getActiveFeature();
+  oi::Guarded<FeatureWrapper> getActiveFeature();
 
   // change feature parameters
   void setNominalParameters(const int& featureId,
@@ -143,7 +143,7 @@ class Controller : public QObject, public ControllerSensorActions {
 
   // load or calculate bundle
   QJsonObject getBundleTemplate();
-  QPointer<BundleAdjustment> getBundleAdjustment();
+  oi::Guarded<BundleAdjustment> getBundleAdjustment();
   void updateBundleAdjustment(const QJsonObject& param);
   void loadBundleTemplate(const QJsonObject& bundleTemplate);
   void runBundle();
@@ -153,7 +153,7 @@ class Controller : public QObject, public ControllerSensorActions {
   void saveProject(const QString& fileName);
   void loadProject(const QString& projectName,
                    const QPointer<QFileDevice>& device);
-  const QPointer<OiJob>& createDefaultJob();
+  const oi::Guarded<OiJob>& createDefaultJob();
 
   // sensor actions
   void startConnect() override;
@@ -256,7 +256,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // whole job instance changed
   void currentJobChanged();
   // set current job to other modules / tools
-  void setCurrentJob(const QPointer<OiJob>& job);
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // #################################
   // import export task status changes
@@ -337,7 +337,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // ################################
 
   void measurementFinished(const int& geomId,
-                           const QList<QPointer<Reading>>& readings);
+                           const QList<oi::Guarded<Reading>>& readings);
 
  private:
   // ##############
@@ -345,7 +345,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // ##############
 
   // set OpenIndy job
-  void setJob(const QPointer<OiJob>& job);
+  void setJob(const oi::Guarded<OiJob>& job);
 
   // init configs and plugins
   void initDisplayConfigs();
@@ -370,11 +370,12 @@ class Controller : public QObject, public ControllerSensorActions {
   // actual referencing this nominal via Geometry::realises - D17
   // deliberately allows many actuals per nominal (re-inspection over
   // time), so this never reuses an existing one.
-  QPointer<FeatureWrapper> createActualForNominal(
-      const QPointer<Geometry>& nominal);
-  void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper>>& actuals,
-                               const MeasurementConfig& mConfig,
-                               const QString& path, const QString& fName);
+  oi::Guarded<FeatureWrapper> createActualForNominal(
+      const oi::Guarded<Geometry>& nominal);
+  void addFunctionsAndMConfigs(
+      const QList<oi::Guarded<FeatureWrapper>>& actuals,
+      const MeasurementConfig& mConfig, const QString& path,
+      const QString& fName);
 
   // shared by generateOwnedNormalLine()/generateOwnedOriginPoint(): creates
   // a bare subType feature with no function attached, then attaches
@@ -399,7 +400,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // general attributes
   // ##################
 
-  QPointer<OiJob> job;
+  oi::Guarded<OiJob> job;
 
   // data exchanger
   DataExchanger exchanger;
@@ -430,9 +431,9 @@ class Controller : public QObject, public ControllerSensorActions {
   // synchronize saveProject calls
   QMutex saveProjectMutex;
 
-  QPointer<Station> getConnectedActiveStation();
+  oi::Guarded<Station> getConnectedActiveStation();
 
-  QPointer<Station> getActiveStation();
+  oi::Guarded<Station> getActiveStation();
 };
 
 #endif  // CONTROLLER_H

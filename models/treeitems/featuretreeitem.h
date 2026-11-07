@@ -23,11 +23,11 @@ class FeatureTreeItem : public QObject {
 
  public:
   explicit FeatureTreeItem(const QVariant& display, QObject* parent = nullptr);
-  explicit FeatureTreeItem(const QPointer<FeatureWrapper>& feature,
+  explicit FeatureTreeItem(const oi::Guarded<FeatureWrapper>& feature,
                            QObject* parent = nullptr);
-  explicit FeatureTreeItem(const QPointer<Observation>& observation,
+  explicit FeatureTreeItem(const oi::Guarded<Observation>& observation,
                            QObject* parent = nullptr);
-  explicit FeatureTreeItem(const QPointer<Reading>& reading,
+  explicit FeatureTreeItem(const oi::Guarded<Reading>& reading,
                            QObject* parent = nullptr);
   ~FeatureTreeItem() override;
 
@@ -42,9 +42,9 @@ class FeatureTreeItem : public QObject {
   [[nodiscard]] const bool& getIsReading() const;
 
   // get pointer to corresponding element
-  [[nodiscard]] const QPointer<FeatureWrapper>& getFeature() const;
-  [[nodiscard]] const QPointer<Observation>& getObservation() const;
-  [[nodiscard]] const QPointer<Reading>& getReading() const;
+  [[nodiscard]] const oi::Guarded<FeatureWrapper>& getFeature() const;
+  [[nodiscard]] const oi::Guarded<Observation>& getObservation() const;
+  [[nodiscard]] const oi::Guarded<Reading>& getReading() const;
 
   int getId();
 
@@ -106,9 +106,9 @@ class FeatureTreeItem : public QObject {
   bool isReading{};
 
   // pointer to the corresponding element
-  QPointer<FeatureWrapper> feature;
-  QPointer<Observation> observation;
-  QPointer<Reading> reading;
+  oi::Guarded<FeatureWrapper> feature;
+  oi::Guarded<Observation> observation;
+  oi::Guarded<Reading> reading;
 
   // all elements that are sub elements of this item
   QList<ElementTypes> containedElementTypes;

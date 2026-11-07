@@ -18,6 +18,7 @@
 #include "sensor.h"
 #include "specialfunction.h"
 #include "systemtransformation.h"
+#include "tool.h"
 #include "totalstation.h"
 #include "types.h"
 

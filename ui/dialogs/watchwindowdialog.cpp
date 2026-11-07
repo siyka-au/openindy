@@ -7,8 +7,9 @@
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job,
-                                     QList<QPointer<FeatureWrapper> > f,
+WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b,
+                                     oi::Guarded<OiJob> job,
+                                     QList<oi::Guarded<FeatureWrapper> > f,
                                      QWidget* parent)
     : QDialog(parent),
       ui(new Ui::WatchWindowDialog),
@@ -285,7 +286,7 @@ void WatchWindowDialog::connectSensor() {
   }
 
   // get and check the active station
-  QPointer<Station> station = this->currentJob->getActiveStation();
+  oi::Guarded<Station> station = this->currentJob->getActiveStation();
   if (station.isNull()) {
     return;
   }
@@ -304,7 +305,7 @@ void WatchWindowDialog::connectSensor() {
                    &WatchWindowDialog::realTimeReading);
 }
 
-QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
+QString WatchWindowDialog::getNameLabel(oi::Guarded<FeatureWrapper> feature) {
   if (feature.isNull()) {
     return "";
   }
@@ -329,7 +330,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap& reading) {
   }
 
   // check and get active coordinate system
-  QPointer<CoordinateSystem> activeSystem =
+  oi::Guarded<CoordinateSystem> activeSystem =
       this->currentJob->getActiveCoordinateSystem();
   if (activeSystem.isNull()) {
     return;
@@ -349,7 +350,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap& reading) {
   trackerXYZ.setAt(3, 1.0);
   trackerXYZ = trafo * trackerXYZ;
 
-  QPointer<FeatureWrapper> feature = getFeature(trackerXYZ);
+  oi::Guarded<FeatureWrapper> feature = getFeature(trackerXYZ);
   // check the active position (geometry, station, coordinate system)
   Result result = util.getPosition(feature, trackerXYZ);
 
@@ -621,7 +622,7 @@ void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked() {
       this->ui->checkBox_showLastMeasurement->isChecked();
 }
 
-QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ) {
+oi::Guarded<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ) {
   switch (this->behavior) {
     case WatchWindowBehavior::eShowAlwaysActiveFeature:
       if (!this->currentJob.isNull()) {
@@ -636,8 +637,8 @@ QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ) {
     case WatchWindowBehavior::eShowNearestNominal:
       if (!this->currentJob.isNull()) {
         double dd = -1.0;
-        QPointer<FeatureWrapper> nearestFeature;
-        for (QPointer<FeatureWrapper> feature :
+        oi::Guarded<FeatureWrapper> nearestFeature;
+        for (oi::Guarded<FeatureWrapper> feature :
              (true ? this->features : this->currentJob->getFeaturesList())) {
           Position pos = util.getPosition(feature, trackerXYZ).position;
           if (!pos.isNull() &&
@@ -656,7 +657,7 @@ QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ) {
       break;
   }
 
-  return QPointer<FeatureWrapper>();
+  return oi::Guarded<FeatureWrapper>();
 }
 
 void WatchWindowDialog::keyPressEvent(QKeyEvent* e) {

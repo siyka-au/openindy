@@ -10,9 +10,8 @@ using namespace oi;
 
 namespace {
 class TestFunction : public ConstructFunction, public Producer<Point> {
-  Q_OBJECT
  public:
-  explicit TestFunction(QObject* parent = nullptr) : ConstructFunction(parent) {
+  explicit TestFunction() : ConstructFunction() {
     this->applicableFor.append(FeatureTypes::ePointFeature);
   }
   std::expected<Point, QString> exec() override { return Point(); }
@@ -42,7 +41,7 @@ void QtFunctionAdapterTest::ofReturnsTheSameAdapterEachTime() {
     QtFunctionAdapter* first = QtFunctionAdapter::of(&function);
     QVERIFY(first != nullptr);
     QCOMPARE(QtFunctionAdapter::of(&function), first);
-    QCOMPARE(QtFunctionAdapter::of(QPointer<Function>(&function)), first);
+    QCOMPARE(QtFunctionAdapter::of(oi::Guarded<Function>(&function)), first);
     QCOMPARE(QtFunctionAdapter::registrySize(), 1);
   }
   QCOMPARE(QtFunctionAdapter::registrySize(), 0);
@@ -50,7 +49,7 @@ void QtFunctionAdapterTest::ofReturnsTheSameAdapterEachTime() {
 
 void QtFunctionAdapterTest::nullFunctionHasNoAdapter() {
   QVERIFY(QtFunctionAdapter::of(static_cast<Function*>(nullptr)) == nullptr);
-  QVERIFY(QtFunctionAdapter::of(QPointer<Function>()) == nullptr);
+  QVERIFY(QtFunctionAdapter::of(oi::Guarded<Function>()) == nullptr);
 }
 
 void QtFunctionAdapterTest::inputElementAndParameterChangesArriveAsSignals() {

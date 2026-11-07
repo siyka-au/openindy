@@ -40,9 +40,9 @@ class WatchwindowTest : public QObject {
   void testCylinder1();
 
  private:
-  QPointer<FeatureWrapper> createFeature(FeatureTypes type, double x, double y,
-                                         double z, double i, double j, double k,
-                                         double radius);
+  oi::Guarded<FeatureWrapper> createFeature(FeatureTypes type, double x,
+                                            double y, double z, double i,
+                                            double j, double k, double radius);
   OiVec createTrackerXYZ(double x, double y, double z);
   void verifyResult(Result result, double x, double y, double z, double dx,
                     double dy, double dz, double d3D, double radius);
@@ -50,12 +50,12 @@ class WatchwindowTest : public QObject {
 
 WatchwindowTest::WatchwindowTest() {}
 
-QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type,
-                                                        double x, double y,
-                                                        double z, double i,
-                                                        double j, double k,
-                                                        double radius) {
-  QPointer<FeatureWrapper> featurewrapper = new FeatureWrapper();
+oi::Guarded<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type,
+                                                           double x, double y,
+                                                           double z, double i,
+                                                           double j, double k,
+                                                           double radius) {
+  oi::Guarded<FeatureWrapper> featurewrapper = new FeatureWrapper();
 
   OiVec xyz = OiVec(3);
   xyz.setAt(0, x);
@@ -76,32 +76,32 @@ QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type,
 
   switch (type) {
     case FeatureTypes::ePointFeature: {
-      QPointer<Point> point = new Point(Position(xyz));
+      oi::Guarded<Point> point = new Point(Position(xyz));
       point->setIsSolved(true);
       featurewrapper->setPoint(point);
       break;
     }
     case FeatureTypes::eLineFeature: {
-      QPointer<Line> line = new Line(Position(xyz), Direction(ijk));
+      oi::Guarded<Line> line = new Line(Position(xyz), Direction(ijk));
       line->setIsSolved(true);
       featurewrapper->setLine(line);
       break;
     }
     case FeatureTypes::ePlaneFeature: {
-      QPointer<Plane> plane = new Plane(Position(xyz), Direction(ijk));
+      oi::Guarded<Plane> plane = new Plane(Position(xyz), Direction(ijk));
       plane->setIsSolved(true);
       featurewrapper->setPlane(plane);
       break;
     }
     case FeatureTypes::eCircleFeature: {
-      QPointer<Circle> circle =
+      oi::Guarded<Circle> circle =
           new Circle(Position(xyz), Direction(ijk), Radius(radius));
       circle->setIsSolved(true);
       featurewrapper->setCircle(circle);
       break;
     }
     case FeatureTypes::eCylinderFeature: {
-      QPointer<Cylinder> cylinder =
+      oi::Guarded<Cylinder> cylinder =
           new Cylinder(Position(xyz), Direction(ijk), Radius(radius));
       cylinder->setIsSolved(true);
       featurewrapper->setCylinder(cylinder);
@@ -145,7 +145,7 @@ void WatchwindowTest::testPoint1() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1.001, 1.002, 1.003);
-  QPointer<FeatureWrapper> featurewrapper = createFeature(
+  oi::Guarded<FeatureWrapper> featurewrapper = createFeature(
       FeatureTypes::ePointFeature, 1.003, 1.005, 1.007, 0, 0, 0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
@@ -161,7 +161,7 @@ void WatchwindowTest::testPoint2() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1000, 2000, 3000);
-  QPointer<FeatureWrapper> featurewrapper = createFeature(
+  oi::Guarded<FeatureWrapper> featurewrapper = createFeature(
       FeatureTypes::ePointFeature, 999.99, 1999.99, 2999.98, 0, 0, 0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
@@ -176,7 +176,7 @@ void WatchwindowTest::testLine1() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(2000.1, 2000.1, 1000.1);
-  QPointer<FeatureWrapper> featurewrapper =
+  oi::Guarded<FeatureWrapper> featurewrapper =
       createFeature(FeatureTypes::eLineFeature, 2979.99, 3019.99, 999.99,
                     0.699995, 0.714147, 0.000000, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
@@ -193,7 +193,7 @@ void WatchwindowTest::testPlane1() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1500.0, 1500.0, 1002.00);
-  QPointer<FeatureWrapper> featurewrapper =
+  oi::Guarded<FeatureWrapper> featurewrapper =
       createFeature(FeatureTypes::ePlaneFeature, 1375.00, 1625.00, 1024.75,
                     0.100818, -0.097854, 0.990081, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
@@ -210,7 +210,7 @@ void WatchwindowTest::testPlane2() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1.0, 1.0, -1.00);
-  QPointer<FeatureWrapper> featurewrapper = createFeature(
+  oi::Guarded<FeatureWrapper> featurewrapper = createFeature(
       FeatureTypes::ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
@@ -225,7 +225,7 @@ void WatchwindowTest::testPlane3() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(1.0, 1.0, 1.00);
-  QPointer<FeatureWrapper> featurewrapper = createFeature(
+  oi::Guarded<FeatureWrapper> featurewrapper = createFeature(
       FeatureTypes::ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
 
@@ -240,7 +240,7 @@ void WatchwindowTest::testCircle1() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(0., 1001., 1000.0);
-  QPointer<FeatureWrapper> featurewrapper =
+  oi::Guarded<FeatureWrapper> featurewrapper =
       createFeature(FeatureTypes::eCircleFeature, 600.01, 500.00, 1000.00,
                     0.000010, 0.000007, -1.000000, 781.03);
   Result result = util.getPosition(featurewrapper, trackerXYZ);
@@ -257,7 +257,7 @@ void WatchwindowTest::testCylinder1() {
   WatchWindowUtil util;
 
   OiVec trackerXYZ = createTrackerXYZ(2, 1002, 1003);
-  QPointer<FeatureWrapper> featurewrapper =
+  oi::Guarded<FeatureWrapper> featurewrapper =
       createFeature(FeatureTypes::eCylinderFeature, -25.00, -25.00, 1142.85,
                     0.000006, -0.000009, 1.000000, 1025.30);
   Result result = util.getPosition(featurewrapper, trackerXYZ);

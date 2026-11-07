@@ -422,7 +422,7 @@ QList<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const {
   }
 
   // load and check sensor plugin
-  QPointer<Sensor> sensor =
+  oi::Guarded<Sensor> sensor =
       PluginLoader::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return types;
@@ -450,7 +450,7 @@ QList<SensorFunctions> SensorTableModel::getSupportedSensorActions() const {
   }
 
   // load and check sensor plugin
-  QPointer<Sensor> sensor =
+  oi::Guarded<Sensor> sensor =
       PluginLoader::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return functions;
@@ -478,7 +478,7 @@ QList<ConnectionKind> SensorTableModel::getSupportedConnectionTypes() const {
   }
 
   // load and check sensor plugin
-  QPointer<Sensor> sensor =
+  oi::Guarded<Sensor> sensor =
       PluginLoader::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return types;
@@ -507,7 +507,7 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const {
   }
 
   // load and check sensor plugin
-  QPointer<Sensor> sensor =
+  oi::Guarded<Sensor> sensor =
       PluginLoader::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return sConfig;

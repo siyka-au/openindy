@@ -13,7 +13,7 @@ FunctionWeightProxyModel::FunctionWeightProxyModel(QObject* parent)
  * \brief FunctionWeightProxyModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FunctionWeightProxyModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& FunctionWeightProxyModel::getCurrentJob() const {
   return this->job;
 }
 
@@ -21,7 +21,7 @@ const QPointer<OiJob>& FunctionWeightProxyModel::getCurrentJob() const {
  * \brief FunctionWeightProxyModel::setCurrentJob
  * \param job
  */
-void FunctionWeightProxyModel::setCurrentJob(const QPointer<OiJob>& job) {
+void FunctionWeightProxyModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     this->job = job;
   }
@@ -94,15 +94,16 @@ bool FunctionWeightProxyModel::filterAcceptsRow(
               ->getFeature()
               ->getFunctions()
               .size() >= 1) {
-    QPointer<Function> function = source_model->getCurrentJob()
-                                      ->getActiveFeature()
-                                      ->getFeature()
-                                      ->getFunctions()
-                                      .at(0);
+    oi::Guarded<Function> function = source_model->getCurrentJob()
+                                         ->getActiveFeature()
+                                         ->getFeature()
+                                         ->getFunctions()
+                                         .at(0);
     QList<InputElement> inputElem = function->getInputElements().value(0);
 
-    QPointer<FeatureWrapper> fw = source_model->getCurrentJob()->getFeatureById(
-        inputElem.at(source_row).id);
+    oi::Guarded<FeatureWrapper> fw =
+        source_model->getCurrentJob()->getFeatureById(
+            inputElem.at(source_row).id);
 
     if (!fw->getGeometry().isNull() &&
         fw->getGeometry()->getOwnerDescription().has_value()) {
@@ -151,17 +152,17 @@ bool FunctionWeightProxyModel::lessThan(const QModelIndex& source_left,
               ->getFeature()
               ->getFunctions()
               .size() >= 1) {
-    QPointer<Function> function = source_model->getCurrentJob()
-                                      ->getActiveFeature()
-                                      ->getFeature()
-                                      ->getFunctions()
-                                      .at(0);
+    oi::Guarded<Function> function = source_model->getCurrentJob()
+                                         ->getActiveFeature()
+                                         ->getFeature()
+                                         ->getFunctions()
+                                         .at(0);
     QList<InputElement> inputElem = function->getInputElements().value(0);
 
-    QPointer<FeatureWrapper> fwRight =
+    oi::Guarded<FeatureWrapper> fwRight =
         source_model->getCurrentJob()->getFeatureById(
             inputElem.at(source_right.row()).id);
-    QPointer<FeatureWrapper> fwLeft =
+    oi::Guarded<FeatureWrapper> fwLeft =
         source_model->getCurrentJob()->getFeatureById(
             inputElem.at(source_left.row()).id);
 

@@ -403,7 +403,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
                                const QStringList& selfDefinedActions);
 
   // magnify
-  void updateMagnifyWindow(const QPointer<FeatureWrapper>& feature);
+  void updateMagnifyWindow(const oi::Guarded<FeatureWrapper>& feature);
 
   // filter
   void updateGroupFilterSize();
@@ -500,7 +500,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   void openWatchWindow(WatchWindowBehavior);
 
   void showFoundFeature(int index);
-  QList<QPointer<FeatureWrapper>> foundFeatures;
+  QList<oi::Guarded<FeatureWrapper>> foundFeatures;
   int showFoundFeatureIndex{};
 
   ClipBoardUtil clipBoardUtil;

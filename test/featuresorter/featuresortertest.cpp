@@ -22,11 +22,8 @@ using namespace oi::math;
 // Producer<T> nor Transform<T> for the feature's type, so a fake with no
 // real exec() would silently fail to become this Point's producer.
 class FakeFit : public FitFunction, public Producer<Point> {
-  Q_OBJECT
  public:
-  explicit FakeFit(QObject* parent = nullptr) : FitFunction(parent) {
-    this->metaData.name = "FakeFit";
-  }
+  explicit FakeFit() : FitFunction() { this->metaData.name = "FakeFit"; }
   std::expected<Point, QString> exec() override { return Point(); }
 };
 
@@ -45,20 +42,20 @@ class FeatureSorterTest : public QObject {
   void testSimpleSortById();
 
  private:
-  QPointer<FeatureWrapper> createPoint(int id, QString name, bool isNominal,
-                                       QString groupname = "");
-  QString asString(QList<QPointer<FeatureWrapper>> features,
+  oi::Guarded<FeatureWrapper> createPoint(int id, QString name, bool isNominal,
+                                          QString groupname = "");
+  QString asString(QList<oi::Guarded<FeatureWrapper>> features,
                    bool withGroup = false);
-  QList<QPointer<FeatureWrapper>> createPoints(QString data);
-  QList<QPointer<FeatureWrapper>> createTestData(bool shuffle = false);
+  QList<oi::Guarded<FeatureWrapper>> createPoints(QString data);
+  QList<oi::Guarded<FeatureWrapper>> createTestData(bool shuffle = false);
 };
 
-QPointer<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name,
-                                                        bool isNominal,
-                                                        QString groupname) {
-  QPointer<FeatureWrapper> featurewrapper = new FeatureWrapper();
+oi::Guarded<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name,
+                                                           bool isNominal,
+                                                           QString groupname) {
+  oi::Guarded<FeatureWrapper> featurewrapper = new FeatureWrapper();
 
-  QPointer<Point> point = new Point(id, Position());
+  oi::Guarded<Point> point = new Point(id, Position());
   point->setFeatureName(name);
   point->setGroupName(groupname);
   if (!isNominal) {
@@ -68,7 +65,7 @@ QPointer<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name,
 
   return featurewrapper;
 }
-QString FeatureSorterTest::asString(QList<QPointer<FeatureWrapper>> features,
+QString FeatureSorterTest::asString(QList<oi::Guarded<FeatureWrapper>> features,
                                     bool withGroup) {
   QString s;
   for (int i = 0; i < features.count(); ++i) {
@@ -93,8 +90,9 @@ QString FeatureSorterTest::asString(QList<QPointer<FeatureWrapper>> features,
   return s;
 }
 
-QList<QPointer<FeatureWrapper>> FeatureSorterTest::createPoints(QString data) {
-  QList<QPointer<FeatureWrapper>> features;
+QList<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createPoints(
+    QString data) {
+  QList<oi::Guarded<FeatureWrapper>> features;
 
   QTextStream stream(data.toUtf8());
   while (!stream.atEnd()) {
@@ -120,7 +118,7 @@ FeatureSorterTest::FeatureSorterTest() {}
 
 // basic test
 void FeatureSorterTest::testSimpleSortByName() {
-  QList<QPointer<FeatureWrapper>> features;
+  QList<oi::Guarded<FeatureWrapper>> features;
   features.append(createPoint(1, "B", false));
   features.append(createPoint(2, "B", true));
   features.append(createPoint(3, "A", false));
@@ -128,8 +126,8 @@ void FeatureSorterTest::testSimpleSortByName() {
   qDebug() << asString(features);
 
   struct {
-    bool operator()(QPointer<FeatureWrapper> a,
-                    QPointer<FeatureWrapper> b) const {
+    bool operator()(oi::Guarded<FeatureWrapper> a,
+                    oi::Guarded<FeatureWrapper> b) const {
       return a->getFeature()->getFeatureName() <
              b->getFeature()->getFeatureName();
     }
@@ -145,7 +143,7 @@ void FeatureSorterTest::testSimpleSortByName() {
 
 // basic test
 void FeatureSorterTest::testSimpleSortById() {
-  QList<QPointer<FeatureWrapper>> features;
+  QList<oi::Guarded<FeatureWrapper>> features;
   features.append(createPoint(4, "B", false));
   features.append(createPoint(5, "B", true));
   features.append(createPoint(3, "A", false));
@@ -153,8 +151,8 @@ void FeatureSorterTest::testSimpleSortById() {
   qDebug() << asString(features);
 
   struct {
-    bool operator()(QPointer<FeatureWrapper> a,
-                    QPointer<FeatureWrapper> b) const {
+    bool operator()(oi::Guarded<FeatureWrapper> a,
+                    oi::Guarded<FeatureWrapper> b) const {
       return a->getFeature()->getId() < b->getFeature()->getId();
     }
   } customLessThan;
@@ -171,7 +169,7 @@ void FeatureSorterTest::testSimpleSortById() {
  * @brief FeatureSorterTest::createTestData
  * @return suffled test features
  */
-QList<QPointer<FeatureWrapper>> FeatureSorterTest::createTestData(
+QList<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createTestData(
     bool shuffle) {
   // colum delim: "\t"
   // line ending: "\n"
@@ -215,7 +213,7 @@ QList<QPointer<FeatureWrapper>> FeatureSorterTest::createTestData(
 134	actual		Y_Achse\n\
 ");
 
-  QList<QPointer<FeatureWrapper>> features = createPoints(data);
+  QList<oi::Guarded<FeatureWrapper>> features = createPoints(data);
 
   qDebug() << asString(features);
 
@@ -229,7 +227,7 @@ QList<QPointer<FeatureWrapper>> FeatureSorterTest::createTestData(
 }
 
 void FeatureSorterTest::testFeatureSorter_eSortStandard() {
-  QList<QPointer<FeatureWrapper>> features = createTestData();
+  QList<oi::Guarded<FeatureWrapper>> features = createTestData();
   qDebug() << asString(features);
 
   FeatureSorter freatureSorter;
@@ -263,7 +261,7 @@ void FeatureSorterTest::testFeatureSorter_eSortStandard() {
 }
 
 void FeatureSorterTest::testFeatureSorter_eSortBy_Name_ActNom() {
-  QList<QPointer<FeatureWrapper>> features = createTestData(true);
+  QList<oi::Guarded<FeatureWrapper>> features = createTestData(true);
   qDebug() << asString(features);
 
   FeatureSorter freatureSorter;
@@ -298,7 +296,7 @@ void FeatureSorterTest::testFeatureSorter_eSortBy_Name_ActNom() {
 }
 
 void FeatureSorterTest::testFeatureSorter_eSortBy_Group_Name_ActNom() {
-  QList<QPointer<FeatureWrapper>> features = createTestData(true);
+  QList<oi::Guarded<FeatureWrapper>> features = createTestData(true);
   qDebug() << asString(features);
 
   FeatureSorter freatureSorter;

@@ -39,8 +39,8 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
   // get or set the current OpenIndy job
   // ###################################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // ##############################
   // get or set measurement configs
@@ -122,7 +122,7 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
   // helper attributes
   // #################
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 };
 
 #endif  // MEASUREMENTCONFIGURATIONMANAGER_H

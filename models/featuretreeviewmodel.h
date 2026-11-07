@@ -21,7 +21,8 @@ class FeatureTreeViewModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
-  explicit FeatureTreeViewModel(QPointer<OiJob> job, QObject* parent = nullptr);
+  explicit FeatureTreeViewModel(oi::Guarded<OiJob> job,
+                                QObject* parent = nullptr);
   explicit FeatureTreeViewModel(QObject* parent = nullptr);
 
   // #######################################
@@ -45,8 +46,8 @@ class FeatureTreeViewModel : public QAbstractItemModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // #############
   // get root item
@@ -86,7 +87,7 @@ class FeatureTreeViewModel : public QAbstractItemModel {
   // current job
   // ###########
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // ##############
   // root tree item

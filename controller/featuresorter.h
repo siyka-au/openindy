@@ -29,8 +29,8 @@ class OI_MAIN_EXPORT FeatureSorter {
   // ##########
 
   bool operator()(const int& left, const int& right);
-  bool operator()(const QPointer<FeatureWrapper>& left,
-                  const QPointer<FeatureWrapper>& right);
+  bool operator()(const oi::Guarded<FeatureWrapper>& left,
+                  const oi::Guarded<FeatureWrapper>& right);
 
   // #############
   // sorting modes
@@ -56,23 +56,23 @@ class OI_MAIN_EXPORT FeatureSorter {
   // get or set the current OpenIndy job
   // ###################################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // ####################
   // comparison functions
   // ####################
 
   [[nodiscard]] bool lessThan(const int& left, const int& right) const;
-  [[nodiscard]] bool lessThan(const QPointer<FeatureWrapper>& left,
-                              const QPointer<FeatureWrapper>& right) const;
+  [[nodiscard]] bool lessThan(const oi::Guarded<FeatureWrapper>& left,
+                              const oi::Guarded<FeatureWrapper>& right) const;
 
  private:
   // #################
   // helper attributes
   // #################
 
-  QPointer<OiJob> job;
+  oi::Guarded<OiJob> job;
 
   // sorting mode and config
   SortingMode mode{SortingMode::eSortStandard};
@@ -82,12 +82,13 @@ class OI_MAIN_EXPORT FeatureSorter {
   // helper methods
   // ##############
 
-  [[nodiscard]] bool sortStandard(QPointer<FeatureWrapper> left,
-                                  QPointer<FeatureWrapper> right) const;
-  [[nodiscard]] bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left,
-                                        QPointer<FeatureWrapper> right) const;
-  [[nodiscard]] bool sortBy_Group_Name(QPointer<FeatureWrapper> left,
-                                       QPointer<FeatureWrapper> right) const;
+  [[nodiscard]] bool sortStandard(oi::Guarded<FeatureWrapper> left,
+                                  oi::Guarded<FeatureWrapper> right) const;
+  [[nodiscard]] bool sortBy_Name_ActNom(
+      oi::Guarded<FeatureWrapper> left,
+      oi::Guarded<FeatureWrapper> right) const;
+  [[nodiscard]] bool sortBy_Group_Name(oi::Guarded<FeatureWrapper> left,
+                                       oi::Guarded<FeatureWrapper> right) const;
 };
 
 #endif  // FEATURESORTER_H

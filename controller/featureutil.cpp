@@ -2,7 +2,7 @@
 
 // adapted from FeatureUpdater::createBundleTransformations
 // create intial bundle transformation (Bundle01_1) to STATION01
-bool FeatureUtil::createInitialBundleTransformation(QPointer<OiJob> job) {
+bool FeatureUtil::createInitialBundleTransformation(oi::Guarded<OiJob> job) {
   FeatureAttributes trafoAttr;
   trafoAttr.typeOfFeature = FeatureTypes::eTrafoParamFeature;
   trafoAttr.group = "";
@@ -11,18 +11,18 @@ bool FeatureUtil::createInitialBundleTransformation(QPointer<OiJob> job) {
   trafoAttr.name = QString("%1_1").arg(trafoAttr.startSystem);
   trafoAttr.destinationSystem = "STATION01";
 
-  QList<QPointer<FeatureWrapper> > features = job->addFeatures(trafoAttr);
+  QList<oi::Guarded<FeatureWrapper> > features = job->addFeatures(trafoAttr);
   if (features.isEmpty()) {
     return false;
   }
-  QPointer<FeatureWrapper> trafoParam = features.first();
+  oi::Guarded<FeatureWrapper> trafoParam = features.first();
 
   // set up transformation parameters
   if (trafoParam.isNull() || trafoParam->getTrafoParam().isNull()) {
     return false;
   }
 
-  QPointer<TrafoParam> trafo = trafoParam->getTrafoParam();
+  oi::Guarded<TrafoParam> trafo = trafoParam->getTrafoParam();
 
   // set up parameters
   QMap<TrafoParamParameters, double> parameters;

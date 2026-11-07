@@ -22,7 +22,7 @@ class ActiveFeatureFunctionsModel : public QAbstractItemModel {
   Q_OBJECT
 
  public:
-  explicit ActiveFeatureFunctionsModel(QPointer<OiJob> job,
+  explicit ActiveFeatureFunctionsModel(oi::Guarded<OiJob> job,
                                        QObject* parent = nullptr);
   explicit ActiveFeatureFunctionsModel(QObject* parent = nullptr);
 
@@ -84,8 +84,8 @@ class ActiveFeatureFunctionsModel : public QAbstractItemModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // #############
   // get root item
@@ -131,7 +131,7 @@ class ActiveFeatureFunctionsModel : public QAbstractItemModel {
   // current job
   // ###########
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // ##############
   // root tree item

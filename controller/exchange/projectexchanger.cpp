@@ -51,7 +51,8 @@ class ApplicationHost : public oi::codec::ProjectHost {
     if (!found.has_value()) {
       return nullptr;
     }
-    QPointer<T> object = load(found->filePath(), QString::fromStdString(name));
+    oi::Guarded<T> object =
+        load(found->filePath(), QString::fromStdString(name));
     return std::unique_ptr<T>(object.data());
   }
 
@@ -68,7 +69,7 @@ QString describeMissing(const std::vector<std::string>& missing) {
 
 }  // namespace
 
-QByteArray ProjectExchanger::saveProject(const QPointer<OiJob>& job) {
+QByteArray ProjectExchanger::saveProject(const oi::Guarded<OiJob>& job) {
   if (job.isNull()) {
     Console::getInstance()->addLine("No project available",
                                     MessageTypes::eErrorMessage);

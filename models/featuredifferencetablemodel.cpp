@@ -12,7 +12,7 @@ inline double rnd(double value, int digits) {
  * \param parent
  */
 FeatureDifferenceTableModel::FeatureDifferenceTableModel(
-    const QPointer<OiJob>& job, QObject* parent)
+    const oi::Guarded<OiJob>& job, QObject* parent)
     : tolerance(0.2) {
   this->setCurrentJob(job);
 }
@@ -63,7 +63,7 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex& index,
     return QVariant();
   }
 
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeaturesList().at(index.row());
 
   // check the feature
@@ -167,7 +167,7 @@ Qt::ItemFlags FeatureDifferenceTableModel::flags(
  * \brief FeatureDifferenceTableModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FeatureDifferenceTableModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& FeatureDifferenceTableModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -175,7 +175,7 @@ const QPointer<OiJob>& FeatureDifferenceTableModel::getCurrentJob() const {
  * \brief FeatureDifferenceTableModel::setCurrentJob
  * \param job
  */
-void FeatureDifferenceTableModel::setCurrentJob(const QPointer<OiJob>& job) {
+void FeatureDifferenceTableModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -320,7 +320,7 @@ void FeatureDifferenceTableModel::disconnectJob() {
  * \return
  */
 QPair<bool, double> FeatureDifferenceTableModel::getDifferenceAsDisplayUnit(
-    QPointer<FeatureWrapper> feature, const QModelIndex index) const {
+    oi::Guarded<FeatureWrapper> feature, const QModelIndex index) const {
   if (feature.isNull() || feature->getGeometry().isNull()) {
     return qMakePair(false, 0.0);
   }
@@ -331,7 +331,7 @@ QPair<bool, double> FeatureDifferenceTableModel::getDifferenceAsDisplayUnit(
   if (feature->getGeometry()->getOwnerDescription().has_value() &&
       feature->getGeometry()->getRealises().has_value() &&
       feature->getGeometry()->hasPosition()) {
-    const QPointer<Geometry> nominal =
+    const oi::Guarded<Geometry> nominal =
         feature->getGeometry()->getRealises().value();
 
     if (!nominal.isNull() && nominal->getIsSolved() &&

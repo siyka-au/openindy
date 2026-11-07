@@ -27,7 +27,7 @@ class OI_MAIN_EXPORT WatchWindowUtil {
  public:
   WatchWindowUtil();
 
-  Result getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ);
+  Result getPosition(oi::Guarded<FeatureWrapper> feature, OiVec trackerXYZ);
 };
 }  // namespace oi
 #endif  // WATCHWINDOWUTIL_H

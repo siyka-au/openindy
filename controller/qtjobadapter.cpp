@@ -1,5 +1,6 @@
 #include "qtjobadapter.h"
 
+#include <QCoreApplication>
 #include <QHash>
 #include <QMutex>
 #include <QMutexLocker>
@@ -29,17 +30,18 @@ QtJobAdapter* QtJobAdapter::of(OiJob* job) {
     return it.value();
   }
   auto* adapter = new QtJobAdapter;
-  // no QObject parent: the job may be used from another thread than the one
-  // asking for the adapter, so move it next to the job instead
-  if (adapter->thread() != job->thread()) {
-    adapter->moveToThread(job->thread());
+  // no QObject parent: the job may be used from any thread, but the adapter
+  // re-emits Qt signals for the UI, so it lives on the application's thread
+  if (QCoreApplication::instance() != nullptr &&
+      adapter->thread() != QCoreApplication::instance()->thread()) {
+    adapter->moveToThread(QCoreApplication::instance()->thread());
   }
   registry().insert(job, adapter);
   job->addObserver(adapter);
   return adapter;
 }
 
-QtJobAdapter* QtJobAdapter::of(const QPointer<OiJob>& job) {
+QtJobAdapter* QtJobAdapter::of(const oi::Guarded<OiJob>& job) {
   return of(job.data());
 }
 
@@ -212,7 +214,8 @@ void QtJobAdapter::onSendMessage(const QString& msg,
   emit this->sendMessage(msg, msgType, msgDest);
 }
 
-void QtJobAdapter::onRecalcFeatureRequested(const QPointer<Feature>& feature) {
+void QtJobAdapter::onRecalcFeatureRequested(
+    const oi::Guarded<Feature>& feature) {
   emit this->recalcFeature(feature);
 }
 

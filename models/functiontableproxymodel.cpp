@@ -1,5 +1,6 @@
 #include "functiontableproxymodel.h"
 
+#include "jobconnect.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -42,7 +43,7 @@ void FunctionTableProxyModel::addFunction(const QModelIndex& index) {
   QString filePath = sourceModel->getPluginFilePath(this->mapToSource(index));
 
   // load and check function
-  QPointer<Function> function =
+  oi::Guarded<Function> function =
       PluginLoader::loadFunctionPlugin(filePath, functionName);
   if (function.isNull()) {
     return;
@@ -56,7 +57,7 @@ void FunctionTableProxyModel::addFunction(const QModelIndex& index) {
  * \brief FunctionTableProxyModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FunctionTableProxyModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& FunctionTableProxyModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -64,7 +65,7 @@ const QPointer<OiJob>& FunctionTableProxyModel::getCurrentJob() const {
  * \brief FunctionTableProxyModel::setCurrentJob
  * \param job
  */
-void FunctionTableProxyModel::setCurrentJob(const QPointer<OiJob>& job) {
+void FunctionTableProxyModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -224,9 +225,8 @@ void FunctionTableProxyModel::connectJob() {
                    &FunctionTableProxyModel::invalidateFilter,
                    Qt::AutoConnection);
 
-  QObject::connect(this, &FunctionTableProxyModel::startAddFunction,
-                   this->currentJob.data(), &OiJob::addFunction,
-                   Qt::AutoConnection);
+  connectToJob(this, &FunctionTableProxyModel::startAddFunction,
+               this->currentJob, &OiJob::addFunction);
 }
 
 /*!
@@ -240,8 +240,7 @@ void FunctionTableProxyModel::disconnectJob() {
                       &QtJobAdapter::featureFunctionsChanged, this,
                       &FunctionTableProxyModel::invalidateFilter);
 
-  QObject::disconnect(this, &FunctionTableProxyModel::startAddFunction,
-                      this->currentJob.data(), &OiJob::addFunction);
+  disconnectFromJob(this);
 }
 
 QVariant FunctionTableProxyModel::data(const QModelIndex& index,

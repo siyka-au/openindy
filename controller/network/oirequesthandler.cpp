@@ -113,7 +113,7 @@ OiRequestHandler::OiRequestHandler(QObject* parent) {
  * \brief OiRequestHandler::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& OiRequestHandler::getCurrentJob() const {
+const oi::Guarded<OiJob>& OiRequestHandler::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -121,7 +121,7 @@ const QPointer<OiJob>& OiRequestHandler::getCurrentJob() const {
  * \brief OiRequestHandler::setCurrentJob
  * \param job
  */
-void OiRequestHandler::setCurrentJob(const QPointer<OiJob>& job) {
+void OiRequestHandler::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     this->currentJob = job;
     sorter.setCurrentJob(job);
@@ -460,7 +460,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::setActiveFeature(
   // set the active feature
   const auto& message = request.set_active_feature();
   if (message.has_id()) {
-    QPointer<FeatureWrapper> myFeature =
+    oi::Guarded<FeatureWrapper> myFeature =
         this->currentJob->getFeatureById(message.id());
     if (!myFeature.isNull() && !myFeature->getFeature().isNull()) {
       myFeature->getFeature()->setActiveFeatureState(true);
@@ -504,7 +504,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::setActiveStation(
   // set the active station
   const auto& message = request.set_active_station();
   if (message.has_id()) {
-    QPointer<FeatureWrapper> myFeature =
+    oi::Guarded<FeatureWrapper> myFeature =
         this->currentJob->getFeatureById(message.id());
     if (!myFeature.isNull() && !myFeature->getStation().isNull()) {
       myFeature->getStation()->setActiveStationState(true);
@@ -546,7 +546,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::setActiveCoordinateSystem(
   // set the active coordinate system
   const auto& message = request.set_active_coordinate_system();
   if (message.has_id()) {
-    QPointer<FeatureWrapper> myFeature =
+    oi::Guarded<FeatureWrapper> myFeature =
         this->currentJob->getFeatureById(message.id());
     if (!myFeature.isNull() && !myFeature->getCoordinateSystem().isNull()) {
       myFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
@@ -592,7 +592,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::aim(const Request& request,
   }
 
   // set the active feature
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
     return ErrorCode::eNoFeatureWithId;
@@ -633,7 +633,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::measure(const Request& request,
   }
 
   // set the active feature
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
     return ErrorCode::eNoFeatureWithId;
@@ -672,7 +672,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::startWatchwindow(
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->currentJob->getActiveStation();
+  oi::Guarded<Station> activeStation = this->currentJob->getActiveStation();
   if (activeStation.isNull()) {
     return ErrorCode::eNoActiveStation;
   }
@@ -710,7 +710,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::stopWatchwindow(
   }
 
   // get and check active station
-  QPointer<Station> activeStation = this->currentJob->getActiveStation();
+  oi::Guarded<Station> activeStation = this->currentJob->getActiveStation();
   if (activeStation.isNull()) {
     return ErrorCode::eNoActiveStation;
   }
@@ -737,7 +737,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::stopWatchwindow(
 OiRequestResponse::ErrorCode OiRequestHandler::getFeatures(
     const Request& /*request*/, Response& response) {
   // get a list of all features
-  QList<QPointer<FeatureWrapper> > features =
+  QList<oi::Guarded<FeatureWrapper> > features =
       this->currentJob->getFeaturesList();
 
   // sort the list according to the current sorting mode
@@ -745,7 +745,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::getFeatures(
 
   // describe the features
   auto* payload = response.mutable_get_features();
-  foreach (const QPointer<FeatureWrapper>& feature, features) {
+  foreach (const oi::Guarded<FeatureWrapper>& feature, features) {
     // check feature
     if (feature.isNull() || feature->getFeature().isNull()) {
       continue;
@@ -801,7 +801,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::addFeatures(
   }
 
   // add features
-  QList<QPointer<FeatureWrapper> > features =
+  QList<oi::Guarded<FeatureWrapper> > features =
       this->currentJob->addFeatures(attr);
 
   // get and check measurement config
@@ -813,7 +813,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::addFeatures(
   }
 
   // pass measurement config to features
-  foreach (const QPointer<FeatureWrapper>& feature, features) {
+  foreach (const oi::Guarded<FeatureWrapper>& feature, features) {
     if (!feature.isNull() && !feature->getGeometry().isNull() &&
         feature->getGeometry()->getOwnerDescription().has_value()) {
       feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
@@ -836,7 +836,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::getObservations(
   }
 
   // get and check feature by id
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
     return ErrorCode::eNoFeatureWithId;
@@ -846,7 +846,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::getObservations(
   payload->set_id(message.id());
 
   // describe the observations
-  foreach (const QPointer<Observation>& obs,
+  foreach (const oi::Guarded<Observation>& obs,
            feature->getGeometry()->getObservations()) {
     // check observation
     if (obs.isNull()) {
@@ -864,7 +864,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::getObservations(
     if (feature->getGeometry()->getFunctions().size() > 0 &&
         !feature->getGeometry()->getFunctions().at(0).isNull()) {
       // get function and statistic
-      QPointer<Function> function =
+      oi::Guarded<Function> function =
           feature->getGeometry()->getFunctions().at(0);
       const Statistic& statistic = function->getStatistic();
       Residual residual = statistic.getDisplayResidual(obs->getId());
@@ -908,16 +908,16 @@ OiRequestResponse::ErrorCode OiRequestHandler::removeObservations(
   }
 
   // get and check feature
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
     return ErrorCode::eNoFeatureWithId;
   }
 
   // get a list of observations and functions of the feature
-  QList<QPointer<Observation> > featureObservations =
+  QList<oi::Guarded<Observation> > featureObservations =
       feature->getGeometry()->getObservations();
-  QList<QPointer<Function> > featureFunctions =
+  QList<oi::Guarded<Function> > featureFunctions =
       feature->getGeometry()->getFunctions();
 
   // get a list of observation id's that shall be removed
@@ -927,14 +927,14 @@ OiRequestResponse::ErrorCode OiRequestHandler::removeObservations(
   }
 
   // run through all observations and remove the marked ones
-  foreach (const QPointer<Observation>& obs, featureObservations) {
+  foreach (const oi::Guarded<Observation>& obs, featureObservations) {
     // check observation
     if (obs.isNull() || !obs2Remove.contains(obs->getId())) {
       continue;
     }
 
     // remove observation from functions
-    foreach (const QPointer<Function>& function, featureFunctions) {
+    foreach (const oi::Guarded<Function>& function, featureFunctions) {
       if (!function.isNull()) {
         function->removeInputElement(obs->getId());
       }
@@ -960,7 +960,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::getParameters(
   }
 
   // get and check feature by id
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getFeature().isNull()) {
     return ErrorCode::eNoFeatureWithId;
@@ -1028,7 +1028,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::getMeasurementConfig(
   }
 
   // get and check feature by id
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
     return ErrorCode::eNoFeatureWithId;
@@ -1061,7 +1061,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::setMeasurementConfig(
   }
 
   // get and check feature by id
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
     return ErrorCode::eNoFeatureWithId;
@@ -1092,15 +1092,15 @@ OiRequestResponse::ErrorCode OiRequestHandler::setMeasurementConfig(
 OiRequestResponse::ErrorCode OiRequestHandler::getCoordinateSystems(
     const Request& /*request*/, Response& response) {
   // get all coordinate systems
-  QList<QPointer<CoordinateSystem> > systems =
+  QList<oi::Guarded<CoordinateSystem> > systems =
       this->currentJob->getCoordinateSystemsList();
-  QList<QPointer<CoordinateSystem> > stations =
+  QList<oi::Guarded<CoordinateSystem> > stations =
       this->currentJob->getStationSystemsList();
 
   // describe the coordinate systems, then the station systems
   auto* payload = response.mutable_get_coordinate_systems();
   for (const auto* list : {&systems, &stations}) {
-    foreach (const QPointer<CoordinateSystem>& system, *list) {
+    foreach (const oi::Guarded<CoordinateSystem>& system, *list) {
       // check coordinate system
       if (system.isNull()) {
         continue;
@@ -1122,7 +1122,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::getCoordinateSystems(
  * \param feature
  */
 QMap<QString, double> OiRequestHandler::parametersOf(
-    const QPointer<FeatureWrapper>& feature) {
+    const oi::Guarded<FeatureWrapper>& feature) {
   QMap<QString, double> values;
 
   // get parameter/value pairs
@@ -1513,21 +1513,22 @@ bool OiRequestHandler::buildWatchWindowMessage(
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> activeFeature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> activeFeature =
+      this->currentJob->getActiveFeature();
   if (activeFeature.isNull() || activeFeature->getGeometry().isNull() ||
       !activeFeature->getGeometry()->getIsSolved()) {
     return false;
   }
 
   // get and check active coordinate system
-  QPointer<CoordinateSystem> activeSystem =
+  oi::Guarded<CoordinateSystem> activeSystem =
       this->currentJob->getActiveCoordinateSystem();
   if (activeSystem.isNull()) {
     return false;
   }
 
   // get and check station
-  QPointer<Station> activeStation = this->currentJob->getActiveStation();
+  oi::Guarded<Station> activeStation = this->currentJob->getActiveStation();
   if (activeStation.isNull() || activeStation->getCoordinateSystem().isNull()) {
     return false;
   }

@@ -13,7 +13,7 @@ class FeatureUtil {
  public:
   // adapted from FeatureUpdater::createBundleTransformations
   // create intial bundle transformation (Bundle01_1) to STATION01
-  bool createInitialBundleTransformation(QPointer<OiJob> job);
+  bool createInitialBundleTransformation(oi::Guarded<OiJob> job);
 };
 
 #endif  // FEATUREUTIL_H

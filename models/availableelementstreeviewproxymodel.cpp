@@ -1,5 +1,6 @@
 #include "availableelementstreeviewproxymodel.h"
 
+#include "jobconnect.h"
 #include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
 
@@ -35,7 +36,7 @@ QVariant AvailableElementsTreeViewProxyModel::headerData(
  * \brief AvailableElementsTreeViewProxyModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& AvailableElementsTreeViewProxyModel::getCurrentJob()
+const oi::Guarded<OiJob>& AvailableElementsTreeViewProxyModel::getCurrentJob()
     const {
   return this->currentJob;
 }
@@ -45,7 +46,7 @@ const QPointer<OiJob>& AvailableElementsTreeViewProxyModel::getCurrentJob()
  * \param job
  */
 void AvailableElementsTreeViewProxyModel::setCurrentJob(
-    const QPointer<OiJob>& job) {
+    const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -241,7 +242,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
       neededElementType == ElementTypes::eRadiusElement) {  // feature
 
     // temporary save all feature pointers
-    QList<QPointer<FeatureWrapper> > features;
+    QList<oi::Guarded<FeatureWrapper> > features;
     foreach (FeatureTreeItem* item, inputElements) {
       if (!item->getFeature().isNull() &&
           !item->getFeature()->getFeature().isNull()) {
@@ -252,7 +253,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
     // add all features as input elements
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(true);
     QtFunctionAdapter::of(function)->blockSignals(true);
-    foreach (const QPointer<FeatureWrapper>& feature, features) {
+    foreach (const oi::Guarded<FeatureWrapper>& feature, features) {
       emit this->addInputFeature(this->currentJob->getActiveFeature(),
                                  this->functionPosition, inputElementKey,
                                  feature);
@@ -265,7 +266,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
              ElementTypes::eObservationElement) {  // observation
 
     // temporary save all observation pointers
-    QList<QPointer<Observation> > observations;
+    QList<oi::Guarded<Observation> > observations;
     foreach (FeatureTreeItem* item, inputElements) {
       if (!item->getObservation().isNull()) {
         observations.append(item->getObservation());
@@ -275,7 +276,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
     // add all observations as input elements
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(true);
     QtFunctionAdapter::of(function)->blockSignals(true);
-    foreach (const QPointer<Observation>& observation, observations) {
+    foreach (const oi::Guarded<Observation>& observation, observations) {
       emit this->addInputObservation(this->currentJob->getActiveFeature(),
                                      this->functionPosition, inputElementKey,
                                      observation);
@@ -292,7 +293,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
   } else if (getIsReading(neededElementType)) {  // reading
 
     // temporary save all reading pointers
-    QList<QPointer<Reading> > readings;
+    QList<oi::Guarded<Reading> > readings;
     foreach (FeatureTreeItem* item, inputElements) {
       if (!item->getReading().isNull()) {
         readings.append(item->getReading());
@@ -302,7 +303,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
     // add all readings as input elements
     this->currentJob->getActiveFeature()->getFeature()->blockSignals(true);
     QtFunctionAdapter::of(function)->blockSignals(true);
-    foreach (const QPointer<Reading>& reading, readings) {
+    foreach (const oi::Guarded<Reading>& reading, readings) {
       emit this->addInputReading(this->currentJob->getActiveFeature(),
                                  this->functionPosition, inputElementKey,
                                  reading);
@@ -407,7 +408,7 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(
     bool accept = true;
     if (item->getIsFeature() && !item->getFeature().isNull() &&
         !item->getFeature()->getFeature().isNull()) {
-      QPointer<Feature> feature = item->getFeature()->getFeature();
+      oi::Guarded<Feature> feature = item->getFeature()->getFeature();
       if (!this->filterFeatureName.isEmpty() &&
           !feature->getFeatureName().startsWith(
               this->filterFeatureName,
@@ -474,15 +475,12 @@ void AvailableElementsTreeViewProxyModel::connectJob() {
       &AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition,
       Qt::AutoConnection);
 
-  QObject::connect(this, &AvailableElementsTreeViewProxyModel::addInputFeature,
-                   this->currentJob.data(), &OiJob::addInputFeature,
-                   Qt::AutoConnection);
-  QObject::connect(
-      this, &AvailableElementsTreeViewProxyModel::addInputObservation,
-      this->currentJob.data(), &OiJob::addInputObservation, Qt::AutoConnection);
-  QObject::connect(this, &AvailableElementsTreeViewProxyModel::addInputReading,
-                   this->currentJob.data(), &OiJob::addInputReading,
-                   Qt::AutoConnection);
+  connectToJob(this, &AvailableElementsTreeViewProxyModel::addInputFeature,
+               this->currentJob, &OiJob::addInputFeature);
+  connectToJob(this, &AvailableElementsTreeViewProxyModel::addInputObservation,
+               this->currentJob, &OiJob::addInputObservation);
+  connectToJob(this, &AvailableElementsTreeViewProxyModel::addInputReading,
+               this->currentJob, &OiJob::addInputReading);
 }
 
 /*!
@@ -499,15 +497,9 @@ void AvailableElementsTreeViewProxyModel::disconnectJob() {
       &QtJobAdapter::activeFeatureChanged, this,
       &AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition);
 
-  QObject::disconnect(this,
-                      &AvailableElementsTreeViewProxyModel::addInputFeature,
-                      this->currentJob.data(), &OiJob::addInputFeature);
-  QObject::disconnect(this,
-                      &AvailableElementsTreeViewProxyModel::addInputObservation,
-                      this->currentJob.data(), &OiJob::addInputObservation);
-  QObject::disconnect(this,
-                      &AvailableElementsTreeViewProxyModel::addInputReading,
-                      this->currentJob.data(), &OiJob::addInputReading);
+  disconnectFromJob(this);
+  disconnectFromJob(this);
+  disconnectFromJob(this);
 }
 
 /*!
@@ -523,7 +515,7 @@ void AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition() {
     QObject::disconnect(QtFunctionAdapter::of(this->connectedFunction),
                         &QtFunctionAdapter::inputElementsChanged, this,
                         &AvailableElementsTreeViewProxyModel::invalidateFilter);
-    this->connectedFunction = QPointer<Function>(nullptr);
+    this->connectedFunction = oi::Guarded<Function>(nullptr);
   }
 }
 
@@ -577,7 +569,7 @@ void AvailableElementsTreeViewProxyModel::addInputElement(
     }
 
     // check if function already contains the element
-    QPointer<Function> function =
+    oi::Guarded<Function> function =
         this->currentJob->getActiveFeature()->getFeature()->getFunctions().at(
             this->functionPosition);
     NeededElement neededElement =

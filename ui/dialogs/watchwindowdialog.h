@@ -76,8 +76,9 @@ class WatchWindowDialog : public QDialog {
   Q_DISABLE_COPY_MOVE(WatchWindowDialog)
 
  public:
-  explicit WatchWindowDialog(WatchWindowBehavior behavior, QPointer<OiJob> job,
-                             QList<QPointer<FeatureWrapper> > features,
+  explicit WatchWindowDialog(WatchWindowBehavior behavior,
+                             oi::Guarded<OiJob> job,
+                             QList<oi::Guarded<FeatureWrapper> > features,
                              QWidget* parent = nullptr);
   ~WatchWindowDialog() override;
 
@@ -161,10 +162,10 @@ class WatchWindowDialog : public QDialog {
   // current job and active sensor
   // #############################
   WatchWindowBehavior behavior;
-  QPointer<OiJob> currentJob;
-  QList<QPointer<FeatureWrapper> > features;
+  oi::Guarded<OiJob> currentJob;
+  QList<oi::Guarded<FeatureWrapper> > features;
   // save active station here, to be able to disconnect it
-  QPointer<Station> activeStation;
+  oi::Guarded<Station> activeStation;
 
   // ####################
   // dynamic GUI elements
@@ -201,9 +202,9 @@ class WatchWindowDialog : public QDialog {
   void addLabel(DisplayAttributes att, QFont f);
   void setDisplayValue(DisplayAttributes attr, QString name,
                        std::function<double()> v);
-  QString getNameLabel(QPointer<FeatureWrapper> feature);
+  QString getNameLabel(oi::Guarded<FeatureWrapper> feature);
 
-  QPointer<FeatureWrapper> getFeature(OiVec trackerXYZ);
+  oi::Guarded<FeatureWrapper> getFeature(OiVec trackerXYZ);
   void setVisibility();
 
   WatchWindowUtil util;

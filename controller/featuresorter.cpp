@@ -18,8 +18,8 @@ bool FeatureSorter::operator()(const int& left, const int& right) {
  * \param right
  * \return
  */
-bool FeatureSorter::operator()(const QPointer<FeatureWrapper>& left,
-                               const QPointer<FeatureWrapper>& right) {
+bool FeatureSorter::operator()(const oi::Guarded<FeatureWrapper>& left,
+                               const oi::Guarded<FeatureWrapper>& right) {
   return this->lessThan(left, right);
 }
 
@@ -59,7 +59,7 @@ void FeatureSorter::setSortingConfig(const FeatureTableSortingConfig& config) {
  * \brief FeatureSorter::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FeatureSorter::getCurrentJob() const {
+const oi::Guarded<OiJob>& FeatureSorter::getCurrentJob() const {
   return this->job;
 }
 
@@ -67,7 +67,7 @@ const QPointer<OiJob>& FeatureSorter::getCurrentJob() const {
  * \brief FeatureSorter::setCurrentJob
  * \param job
  */
-void FeatureSorter::setCurrentJob(const QPointer<OiJob>& job) {
+void FeatureSorter::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     this->job = job;
   }
@@ -86,8 +86,8 @@ bool FeatureSorter::lessThan(const int& left, const int& right) const {
   }
 
   // get features by id
-  QPointer<FeatureWrapper> leftFeature = this->job->getFeatureById(left);
-  QPointer<FeatureWrapper> rightFeature = this->job->getFeatureById(right);
+  oi::Guarded<FeatureWrapper> leftFeature = this->job->getFeatureById(left);
+  oi::Guarded<FeatureWrapper> rightFeature = this->job->getFeatureById(right);
 
   return this->lessThan(leftFeature, rightFeature);
 }
@@ -98,8 +98,8 @@ bool FeatureSorter::lessThan(const int& left, const int& right) const {
  * \param right
  * \return
  */
-bool FeatureSorter::lessThan(const QPointer<FeatureWrapper>& left,
-                             const QPointer<FeatureWrapper>& right) const {
+bool FeatureSorter::lessThan(const oi::Guarded<FeatureWrapper>& left,
+                             const oi::Guarded<FeatureWrapper>& right) const {
   // check features
   if (left.isNull() || left->getFeature().isNull() || right.isNull() ||
       right->getFeature().isNull()) {
@@ -125,7 +125,7 @@ bool FeatureSorter::lessThan(const QPointer<FeatureWrapper>& left,
  * sorting purposes is read from ownership (D19) - a user-owned geometry
  * (no fit) sorts as nominal, a fit-owned one as actual.
  */
-static bool isNominalLike(const QPointer<FeatureWrapper>& fw) {
+static bool isNominalLike(const oi::Guarded<FeatureWrapper>& fw) {
   return !fw.isNull() && !fw->getGeometry().isNull() &&
          !fw->getGeometry()->getOwnerDescription().has_value();
 }
@@ -140,13 +140,13 @@ static bool isNominalLike(const QPointer<FeatureWrapper>& fw) {
  * \param right
  * \return
  */
-bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left,
-                                 QPointer<FeatureWrapper> right) const {
+bool FeatureSorter::sortStandard(oi::Guarded<FeatureWrapper> left,
+                                 oi::Guarded<FeatureWrapper> right) const {
   return left->getFeature()->getId() < right->getFeature()->getId();
 }
 
-bool FeatureSorter::sortBy_Name_ActNom(QPointer<FeatureWrapper> left,
-                                       QPointer<FeatureWrapper> right) const {
+bool FeatureSorter::sortBy_Name_ActNom(
+    oi::Guarded<FeatureWrapper> left, oi::Guarded<FeatureWrapper> right) const {
   if (left->getFeature()->getFeatureName().compare(
           right->getFeature()->getFeatureName(), Qt::CaseInsensitive) < 0) {
     return true;
@@ -159,8 +159,8 @@ bool FeatureSorter::sortBy_Name_ActNom(QPointer<FeatureWrapper> left,
   return false;
 }
 
-bool FeatureSorter::sortBy_Group_Name(QPointer<FeatureWrapper> left,
-                                      QPointer<FeatureWrapper> right) const {
+bool FeatureSorter::sortBy_Group_Name(oi::Guarded<FeatureWrapper> left,
+                                      oi::Guarded<FeatureWrapper> right) const {
   if (left->getFeature()->getGroupName().compare(
           right->getFeature()->getGroupName(), Qt::CaseInsensitive) < 0) {
     return true;

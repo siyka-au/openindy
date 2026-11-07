@@ -24,10 +24,8 @@ namespace {
 // Needed to prove the owned line tracks its owner on recompute, not just
 // at creation time.
 class SetPlaneFunction : public ConstructFunction, public Producer<Plane> {
-  Q_OBJECT
  public:
-  explicit SetPlaneFunction(QObject* parent = nullptr)
-      : ConstructFunction(parent) {
+  explicit SetPlaneFunction() : ConstructFunction() {
     this->metaData.name = "SetPlaneFunction";
     this->applicableFor.append(FeatureTypes::ePlaneFeature);
   }
@@ -75,15 +73,14 @@ class OwnedSubGeometryUiTest : public QObject {
   // createDefaultJob(), then adds its own feature into the job that
   // returns. Sets up a real station+system, which this test doesn't need
   // but costs nothing to have.
-  QPointer<OiJob> makeJobWithPlane(Controller& controller,
-                                   QPointer<FeatureWrapper>& outPlaneWrapper,
-                                   QPointer<SetPlaneFunction>& outPlaneFn,
-                                   const Position& position,
-                                   const Direction& normal);
-  QPointer<Line> findOnlyLine(const QPointer<OiJob>& job);
-  QPointer<Point> findOnlyGeneratedPoint(
-      const QPointer<OiJob>& job,
-      const QPointer<FeatureWrapper>& excludingOwner);
+  oi::Guarded<OiJob> makeJobWithPlane(
+      Controller& controller, oi::Guarded<FeatureWrapper>& outPlaneWrapper,
+      oi::Guarded<SetPlaneFunction>& outPlaneFn, const Position& position,
+      const Direction& normal);
+  oi::Guarded<Line> findOnlyLine(const oi::Guarded<OiJob>& job);
+  oi::Guarded<Point> findOnlyGeneratedPoint(
+      const oi::Guarded<OiJob>& job,
+      const oi::Guarded<FeatureWrapper>& excludingOwner);
 };
 
 void OwnedSubGeometryUiTest::initTestCase() {
@@ -100,19 +97,19 @@ void OwnedSubGeometryUiTest::initTestCase() {
   PluginRepository::init();
 }
 
-QPointer<OiJob> OwnedSubGeometryUiTest::makeJobWithPlane(
-    Controller& controller, QPointer<FeatureWrapper>& outPlaneWrapper,
-    QPointer<SetPlaneFunction>& outPlaneFn, const Position& position,
+oi::Guarded<OiJob> OwnedSubGeometryUiTest::makeJobWithPlane(
+    Controller& controller, oi::Guarded<FeatureWrapper>& outPlaneWrapper,
+    oi::Guarded<SetPlaneFunction>& outPlaneFn, const Position& position,
     const Direction& normal) {
-  const QPointer<OiJob>& job = controller.createDefaultJob();
+  const oi::Guarded<OiJob>& job = controller.createDefaultJob();
 
-  QPointer<Plane> plane = new Plane();
-  QPointer<FeatureWrapper> planeWrapper = new FeatureWrapper();
+  oi::Guarded<Plane> plane = new Plane();
+  oi::Guarded<FeatureWrapper> planeWrapper = new FeatureWrapper();
   planeWrapper->setPlane(plane);
   plane->setFeatureName("Plane1");
   job->addFeature(planeWrapper);
 
-  QPointer<SetPlaneFunction> planeFn = new SetPlaneFunction();
+  oi::Guarded<SetPlaneFunction> planeFn = new SetPlaneFunction();
   planeFn->position = position;
   planeFn->direction = normal;
   plane->addFunction(planeFn);
@@ -128,10 +125,11 @@ QPointer<OiJob> OwnedSubGeometryUiTest::makeJobWithPlane(
   return job;
 }
 
-QPointer<Line> OwnedSubGeometryUiTest::findOnlyLine(
-    const QPointer<OiJob>& job) {
-  QPointer<Line> found;
-  foreach (const QPointer<FeatureWrapper>& wrapper, job->getGeometriesList()) {
+oi::Guarded<Line> OwnedSubGeometryUiTest::findOnlyLine(
+    const oi::Guarded<OiJob>& job) {
+  oi::Guarded<Line> found;
+  foreach (const oi::Guarded<FeatureWrapper>& wrapper,
+           job->getGeometriesList()) {
     if (!wrapper.isNull() && !wrapper->getLine().isNull()) {
       found = wrapper->getLine();
     }
@@ -139,11 +137,12 @@ QPointer<Line> OwnedSubGeometryUiTest::findOnlyLine(
   return found;
 }
 
-QPointer<Point> OwnedSubGeometryUiTest::findOnlyGeneratedPoint(
-    const QPointer<OiJob>& job,
-    const QPointer<FeatureWrapper>& excludingOwner) {
-  QPointer<Point> found;
-  foreach (const QPointer<FeatureWrapper>& wrapper, job->getGeometriesList()) {
+oi::Guarded<Point> OwnedSubGeometryUiTest::findOnlyGeneratedPoint(
+    const oi::Guarded<OiJob>& job,
+    const oi::Guarded<FeatureWrapper>& excludingOwner) {
+  oi::Guarded<Point> found;
+  foreach (const oi::Guarded<FeatureWrapper>& wrapper,
+           job->getGeometriesList()) {
     if (!wrapper.isNull() && !wrapper->getPoint().isNull() &&
         wrapper != excludingOwner) {
       found = wrapper->getPoint();
@@ -155,16 +154,16 @@ QPointer<Point> OwnedSubGeometryUiTest::findOnlyGeneratedPoint(
 void OwnedSubGeometryUiTest::
     generateNormalLineActionCreatesBoundReadOnlyLine() {
   Controller controller;
-  QPointer<FeatureWrapper> planeWrapper;
-  QPointer<SetPlaneFunction> planeFn;
-  QPointer<OiJob> job =
+  oi::Guarded<FeatureWrapper> planeWrapper;
+  oi::Guarded<SetPlaneFunction> planeFn;
+  oi::Guarded<OiJob> job =
       this->makeJobWithPlane(controller, planeWrapper, planeFn,
                              Position(1.0, 2.0, 3.0), Direction(0.0, 0.0, 1.0));
 
   // the real, production entry point the new context-menu action calls
   controller.generateOwnedNormalLine();
 
-  QPointer<Line> line = this->findOnlyLine(job);
+  oi::Guarded<Line> line = this->findOnlyLine(job);
   QVERIFY2(!line.isNull(),
            "generateOwnedNormalLine() must create a new Line feature");
 
@@ -186,15 +185,15 @@ void OwnedSubGeometryUiTest::
 void OwnedSubGeometryUiTest::
     generateOriginPointActionCreatesBoundReadOnlyPoint() {
   Controller controller;
-  QPointer<FeatureWrapper> planeWrapper;
-  QPointer<SetPlaneFunction> planeFn;
-  QPointer<OiJob> job =
+  oi::Guarded<FeatureWrapper> planeWrapper;
+  oi::Guarded<SetPlaneFunction> planeFn;
+  oi::Guarded<OiJob> job =
       this->makeJobWithPlane(controller, planeWrapper, planeFn,
                              Position(4.0, 5.0, 6.0), Direction(0.0, 1.0, 0.0));
 
   controller.generateOwnedOriginPoint();
 
-  QPointer<Point> point = this->findOnlyGeneratedPoint(job, planeWrapper);
+  oi::Guarded<Point> point = this->findOnlyGeneratedPoint(job, planeWrapper);
   QVERIFY2(!point.isNull(),
            "generateOwnedOriginPoint() must create a new Point feature");
 
@@ -209,15 +208,15 @@ void OwnedSubGeometryUiTest::
 
 void OwnedSubGeometryUiTest::ownedLineTracksItsOwnerOnRecompute() {
   Controller controller;
-  QPointer<FeatureWrapper> planeWrapper;
-  QPointer<SetPlaneFunction> planeFn;
-  QPointer<OiJob> job =
+  oi::Guarded<FeatureWrapper> planeWrapper;
+  oi::Guarded<SetPlaneFunction> planeFn;
+  oi::Guarded<OiJob> job =
       this->makeJobWithPlane(controller, planeWrapper, planeFn,
                              Position(0.0, 0.0, 0.0), Direction(0.0, 0.0, 1.0));
 
   controller.generateOwnedNormalLine();
 
-  QPointer<Line> line = this->findOnlyLine(job);
+  oi::Guarded<Line> line = this->findOnlyLine(job);
   QVERIFY(!line.isNull());
   QCOMPARE(line->getDirection().getVector().getAt(0), 0.0);
 
@@ -235,15 +234,15 @@ void OwnedSubGeometryUiTest::ownedLineTracksItsOwnerOnRecompute() {
 void OwnedSubGeometryUiTest::actionDoesNothingWithoutASolvedActivePlane() {
   // no active feature at all
   Controller controller;
-  const QPointer<OiJob>& job = controller.createDefaultJob();
+  const oi::Guarded<OiJob>& job = controller.createDefaultJob();
   controller.generateOwnedNormalLine();
   QVERIFY2(job->getGeometriesList().isEmpty(),
            "no active feature - the action must be a silent no-op");
 
   // an active feature that is not a solved Plane
-  QPointer<Point> point = new Point();
+  oi::Guarded<Point> point = new Point();
   point->setFeatureName("SomePoint");
-  QPointer<FeatureWrapper> pointWrapper = new FeatureWrapper();
+  oi::Guarded<FeatureWrapper> pointWrapper = new FeatureWrapper();
   pointWrapper->setPoint(point);
   job->addFeature(pointWrapper);
   point->setActiveFeatureState(true);

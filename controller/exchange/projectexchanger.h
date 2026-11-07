@@ -20,14 +20,14 @@ using namespace oi;
 class ProjectExchanger {
  public:
   struct LoadResult {
-    QPointer<OiJob> job;  //!< null if the project could not be loaded
-    QString error;        //!< why, for the user
+    oi::Guarded<OiJob> job;  //!< null if the project could not be loaded
+    QString error;           //!< why, for the user
   };
 
   ProjectExchanger() = default;
 
   //! the project as bytes; empty if there is no job
-  QByteArray saveProject(const QPointer<OiJob>& job);
+  QByteArray saveProject(const oi::Guarded<OiJob>& job);
 
   //! the caller owns the job
   LoadResult loadProject(const QByteArray& project);

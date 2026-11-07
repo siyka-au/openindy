@@ -6,7 +6,7 @@
 QPointer<ModelManager> ModelManager::myInstance = new ModelManager();
 
 // init static variables
-QPointer<OiJob> ModelManager::currentJob;
+oi::Guarded<OiJob> ModelManager::currentJob;
 FeatureTableModel ModelManager::featureTableModel;
 FeatureTableProxyModel ModelManager::featureTableProxyModel;
 FeatureTableColumnConfig ModelManager::featureTableColumnConfig;
@@ -109,7 +109,7 @@ void ModelManager::testInit(
  * \brief ModelManager::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& ModelManager::getCurrentJob() {
+const oi::Guarded<OiJob>& ModelManager::getCurrentJob() {
   return ModelManager::currentJob;
 }
 
@@ -117,7 +117,7 @@ const QPointer<OiJob>& ModelManager::getCurrentJob() {
  * \brief ModelManager::setCurrentJob
  * \param job
  */
-void ModelManager::setCurrentJob(const QPointer<OiJob>& job) {
+void ModelManager::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     ModelManager::currentJob = job;
     ModelManager::updateJob();
@@ -652,7 +652,7 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(
   }
 
   // get and check exchange plugin
-  QPointer<ExchangeSimpleAscii> exchange =
+  oi::Guarded<ExchangeSimpleAscii> exchange =
       PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
   if (!exchange.isNull()) {
     delimiters = exchange->getSupportedDelimiters();
@@ -684,7 +684,7 @@ ModelManager::getExchangeSimpleAsciiSupportedGeometries(
   }
 
   // get and check exchange plugin
-  QPointer<ExchangeSimpleAscii> exchange =
+  oi::Guarded<ExchangeSimpleAscii> exchange =
       PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
   if (!exchange.isNull()) {
     foreach (const GeometryTypes& type, exchange->getSupportedGeometries()) {
@@ -722,7 +722,7 @@ QPointer<FunctionStatisticModel> ModelManager::getFunctionStatisticModel() {
     return QPointer<FunctionStatisticModel>();
   }
 
-  QPointer<Feature> activeFeature =
+  oi::Guarded<Feature> activeFeature =
       ModelManager::currentJob->getActiveFeature()->getFeature();
 
   QPointer<FunctionStatisticModel> model =
@@ -894,7 +894,7 @@ void ModelManager::featureNameChanged(const int& featureId,
 
   // update coordinate systems model if the name of a coordinate system has been
   // changed
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       ModelManager::currentJob->getFeatureById(featureId);
   if (!feature.isNull() && (!feature->getCoordinateSystem().isNull() ||
                             !feature->getStation().isNull())) {
@@ -1042,7 +1042,7 @@ void ModelManager::updateCoordinateSystemsModel() {
   }
 
   // add all nominal systems
-  foreach (const QPointer<CoordinateSystem>& system,
+  foreach (const oi::Guarded<CoordinateSystem>& system,
            ModelManager::currentJob->getCoordinateSystemsList()) {
     // check system
     if (system.isNull()) {
@@ -1054,7 +1054,7 @@ void ModelManager::updateCoordinateSystemsModel() {
   }
 
   // add all station systems
-  foreach (const QPointer<CoordinateSystem>& system,
+  foreach (const oi::Guarded<CoordinateSystem>& system,
            ModelManager::currentJob->getStationSystemsList()) {
     // check system
     if (system.isNull()) {
@@ -1080,7 +1080,7 @@ void ModelManager::updateNominalSystemsModel() {
   }
 
   // add all nominal systems
-  foreach (const QPointer<CoordinateSystem>& system,
+  foreach (const oi::Guarded<CoordinateSystem>& system,
            ModelManager::currentJob->getCoordinateSystemsList()) {
     // check system
     if (system.isNull()) {

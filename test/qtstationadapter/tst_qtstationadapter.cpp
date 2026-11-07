@@ -19,7 +19,7 @@ using namespace oi;
 Q_DECLARE_METATYPE(oi::SensorAction)
 Q_DECLARE_METATYPE(oi::MessageTypes)
 Q_DECLARE_METATYPE(oi::MessageDestinations)
-Q_DECLARE_METATYPE(QList<QPointer<oi::Reading>>)
+Q_DECLARE_METATYPE(QList<oi::Guarded<oi::Reading>>)
 
 namespace {
 
@@ -32,8 +32,8 @@ class FakeSensor : public Sensor {
   bool getIsReadyForMeasurement() override { return true; }
   bool getIsBusy() override { return false; }
   QMap<QString, QString> getSensorStatus() override { return {{"a", "b"}}; }
-  QList<QPointer<Reading>> measure(const MeasurementConfig&) override {
-    QList<QPointer<Reading>> result;
+  QList<oi::Guarded<Reading>> measure(const MeasurementConfig&) override {
+    QList<oi::Guarded<Reading>> result;
     for (int i = 0; i < 2; ++i) {
       ReadingCartesian r;
       r.isValid = true;
@@ -77,8 +77,8 @@ void QtStationAdapterTest::initTestCase() {
   qRegisterMetaType<oi::SensorAction>("oi::SensorAction");
   qRegisterMetaType<oi::MessageTypes>("oi::MessageTypes");
   qRegisterMetaType<oi::MessageDestinations>("oi::MessageDestinations");
-  qRegisterMetaType<QList<QPointer<oi::Reading>>>(
-      "QList<QPointer<oi::Reading>>");
+  qRegisterMetaType<QList<oi::Guarded<oi::Reading>>>(
+      "QList<oi::Guarded<oi::Reading>>");
 }
 
 void QtStationAdapterTest::ofReturnsTheSameAdapterEachTime() {
@@ -87,7 +87,7 @@ void QtStationAdapterTest::ofReturnsTheSameAdapterEachTime() {
     QtStationAdapter* first = QtStationAdapter::of(&station);
     QVERIFY(first != nullptr);
     QCOMPARE(QtStationAdapter::of(&station), first);
-    QCOMPARE(QtStationAdapter::of(QPointer<Station>(&station)), first);
+    QCOMPARE(QtStationAdapter::of(oi::Guarded<Station>(&station)), first);
     QCOMPARE(QtStationAdapter::registrySize(), 1);
     QCOMPARE(station.getStationObserver(),
              static_cast<StationObserver*>(first));
@@ -97,7 +97,7 @@ void QtStationAdapterTest::ofReturnsTheSameAdapterEachTime() {
 
 void QtStationAdapterTest::nullStationHasNoAdapter() {
   QVERIFY(QtStationAdapter::of(static_cast<Station*>(nullptr)) == nullptr);
-  QVERIFY(QtStationAdapter::of(QPointer<Station>()) == nullptr);
+  QVERIFY(QtStationAdapter::of(oi::Guarded<Station>()) == nullptr);
 }
 
 void QtStationAdapterTest::adapterIsCleanedUpWithTheStation() {
@@ -114,8 +114,8 @@ void QtStationAdapterTest::resultsArriveAsSignalsOnTheUiThreadInOrder() {
   QtExecutor executor;
   OiJob job;
   job.setExecutor(&executor);
-  QPointer<Station> station = new Station("S1");
-  QPointer<FeatureWrapper> feature = new FeatureWrapper();
+  oi::Guarded<Station> station = new Station("S1");
+  oi::Guarded<FeatureWrapper> feature = new FeatureWrapper();
   feature->setStation(station);
   job.addFeature(feature);
   station->setActiveStationState(true);
@@ -135,7 +135,7 @@ void QtStationAdapterTest::resultsArriveAsSignalsOnTheUiThreadInOrder() {
                      note(QString("finished:%1").arg(ok));
                    });
   QObject::connect(adapter, &QtStationAdapter::measurementFinished, this,
-                   [&](int geomId, QList<QPointer<Reading>> readings) {
+                   [&](int geomId, QList<oi::Guarded<Reading>> readings) {
                      note(QString("measurementFinished:%1:%2")
                               .arg(geomId)
                               .arg(readings.size()));

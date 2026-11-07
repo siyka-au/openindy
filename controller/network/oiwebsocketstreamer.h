@@ -21,8 +21,8 @@ class OiWebSocketStreamer : public QObject {
   // get or set current job
   // ######################
 
-  [[nodiscard]] const QPointer<oi::OiJob>& getJob() const;
-  void setJob(const QPointer<oi::OiJob>& job);
+  [[nodiscard]] const oi::Guarded<oi::OiJob>& getJob() const;
+  void setJob(const oi::Guarded<oi::OiJob>& job);
 
  public slots:
 
@@ -37,7 +37,7 @@ class OiWebSocketStreamer : public QObject {
   // helper attributes
   // #################
 
-  QPointer<oi::OiJob> currentJob;
+  oi::Guarded<oi::OiJob> currentJob;
 
   // ##############
   // helper methods

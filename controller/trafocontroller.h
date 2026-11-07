@@ -28,29 +28,29 @@ class TrafoController : public QObject {
   // ######################
 
   void transformObservations(
-      const QPointer<Feature>& feature,
-      const QPointer<CoordinateSystem>& destinationSystem);
+      const oi::Guarded<Feature>& feature,
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
   void transformObservations(
-      const QPointer<CoordinateSystem>& startSystem,
-      const QPointer<CoordinateSystem>& destinationSystem);
+      const oi::Guarded<CoordinateSystem>& startSystem,
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
   void transformCoordSystems(
-      const QPointer<CoordinateSystem>& startSystem,
-      const QPointer<CoordinateSystem>& destinationSystem, bool isStation);
+      const oi::Guarded<CoordinateSystem>& startSystem,
+      const oi::Guarded<CoordinateSystem>& destinationSystem, bool isStation);
 
   bool getTransformationMatrix(
-      OiMat& trafoMat, const QPointer<CoordinateSystem>& startSystem,
-      const QPointer<CoordinateSystem>& destinationSystem);
+      OiMat& trafoMat, const oi::Guarded<CoordinateSystem>& startSystem,
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
 
  private:
   // ##############
   // helper methods
   // ##############
 
-  QPointer<TrafoParam> findTransformation(
-      const QPointer<CoordinateSystem>& startSystem,
-      const QPointer<CoordinateSystem>& destinationSystem);
-  void setDefaultOriginAndNormal(const QPointer<CoordinateSystem>& startSystem,
-                                 bool isStation);
+  oi::Guarded<TrafoParam> findTransformation(
+      const oi::Guarded<CoordinateSystem>& startSystem,
+      const oi::Guarded<CoordinateSystem>& destinationSystem);
+  void setDefaultOriginAndNormal(
+      const oi::Guarded<CoordinateSystem>& startSystem, bool isStation);
 };
 
 #endif  // TRAFOCONTROLLER_H

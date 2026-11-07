@@ -88,7 +88,7 @@ bool BundleParameterTableProxyModel::filterAcceptsRow(
   }
 
   // get and check the feature
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       source_model->getCurrentJob()->getFeaturesList().at(source_row);
   if (feature.isNull() || feature->getFeature().isNull()) {
     return false;
@@ -137,7 +137,7 @@ bool BundleParameterTableProxyModel::filterAcceptsColumn(
  * \return
  */
 bool BundleParameterTableProxyModel::isBundleStationTrafo(
-    const QPointer<TrafoParam>& param) const {
+    const oi::Guarded<TrafoParam>& param) const {
   return (param->getStartSystem()->getIsStationSystem() &&
           param->getDestinationSystem()->getIsBundleSystem()) ||
          (param->getStartSystem()->getIsBundleSystem() &&

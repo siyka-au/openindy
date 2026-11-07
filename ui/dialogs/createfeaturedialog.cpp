@@ -42,7 +42,7 @@ bool CreateFeatureDialog::featureCreated(bool created) {
  * \brief CreateFeatureDialog::setCurrentJob
  * \param job
  */
-void CreateFeatureDialog::setCurrentJob(const QPointer<OiJob>& job) {
+void CreateFeatureDialog::setCurrentJob(const oi::Guarded<OiJob>& job) {
   this->currentJob = job;
 }
 
@@ -314,7 +314,7 @@ void CreateFeatureDialog::initMeasurementConfigModel() {
       this->ui->comboBox_function->currentIndex());
 
   SensorType activeSensorType;
-  const QPointer<OiJob> job = ModelManager::getCurrentJob();
+  const oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (!job.isNull() && !job->getActiveStation().isNull()) {
     activeSensorType = job->getActiveStation()->getActiveSensorType();
   }

@@ -4,6 +4,7 @@
 #include "chooselalib.h"
 #include "oijob.h"
 #include "point.h"
+#include "qtexecutor.h"
 #include "qtjobadapter.h"
 #include "station.h"
 
@@ -35,7 +36,7 @@ void QtJobAdapterTest::ofReturnsTheSameAdapterEachTime() {
     QtJobAdapter* first = QtJobAdapter::of(&job);
     QVERIFY(first != nullptr);
     QCOMPARE(QtJobAdapter::of(&job), first);
-    QCOMPARE(QtJobAdapter::of(QPointer<OiJob>(&job)), first);
+    QCOMPARE(QtJobAdapter::of(oi::Guarded<OiJob>(&job)), first);
     QCOMPARE(QtJobAdapter::registrySize(), 1);
   }
   QCOMPARE(QtJobAdapter::registrySize(), 0);
@@ -43,7 +44,7 @@ void QtJobAdapterTest::ofReturnsTheSameAdapterEachTime() {
 
 void QtJobAdapterTest::nullJobHasNoAdapter() {
   QVERIFY(QtJobAdapter::of(static_cast<OiJob*>(nullptr)) == nullptr);
-  QVERIFY(QtJobAdapter::of(QPointer<OiJob>()) == nullptr);
+  QVERIFY(QtJobAdapter::of(oi::Guarded<OiJob>()) == nullptr);
   QCOMPARE(QtJobAdapter::registrySize(), 0);
 }
 
@@ -107,7 +108,9 @@ void QtJobAdapterTest::messagesAndRecalculationArriveAsSignals() {
 }
 
 void QtJobAdapterTest::deferredIsSolvedStaysDeferred() {
+  QtExecutor executor;
   OiJob job;
+  job.setExecutor(&executor);
   QSignalSpy spy(QtJobAdapter::of(&job), &QtJobAdapter::featureIsSolvedChanged);
   Point point;
   point.setFeatureName("P");
@@ -142,8 +145,7 @@ void QtJobAdapterTest::jobDeletedLaterLeavesNothingBehind() {
   point->setFeatureName("P");
   QVERIFY(job->addFeature(point->getFeatureWrapper()));
   QCOMPARE(notified, 1);
-  job->deleteLater();
-  QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+  delete job;
   QCOMPARE(QtJobAdapter::registrySize(), 0);
 }
 

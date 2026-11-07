@@ -60,7 +60,7 @@ class BundleParameterTableProxyModel : public QSortFilterProxyModel {
   // #############
 
   [[nodiscard]] bool isBundleStationTrafo(
-      const QPointer<TrafoParam>& param) const;
+      const oi::Guarded<TrafoParam>& param) const;
 };
 
 #endif  // BUNDLEPARAMETERTABLEPROXYMODEL_H

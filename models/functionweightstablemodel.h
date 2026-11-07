@@ -18,7 +18,7 @@ using namespace oi;
 class FunctionWeightsTableModel : public QAbstractTableModel {
   Q_OBJECT
  public:
-  explicit FunctionWeightsTableModel(QPointer<OiJob> job,
+  explicit FunctionWeightsTableModel(oi::Guarded<OiJob> job,
                                      QObject* parent = nullptr);
   explicit FunctionWeightsTableModel(QObject* parent = nullptr);
 
@@ -26,8 +26,8 @@ class FunctionWeightsTableModel : public QAbstractTableModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   [[nodiscard]] int rowCount(
       const QModelIndex& parent = QModelIndex()) const override;
@@ -56,7 +56,7 @@ class FunctionWeightsTableModel : public QAbstractTableModel {
   void updateModel();
 
  private:
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   int functionPosition;
 

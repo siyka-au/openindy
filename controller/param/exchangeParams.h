@@ -32,7 +32,7 @@ class ExchangeParams {
                            // false if it is a simple ascii one
 
   // general exchange parameters
-  QList<QPointer<FeatureWrapper> >
+  QList<oi::Guarded<FeatureWrapper> >
       exportFeatures;         // features that shall be exported
   bool exportObservations{};  // true if observations shall be exported
   QString groupName;

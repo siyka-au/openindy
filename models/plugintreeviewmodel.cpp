@@ -1,5 +1,7 @@
 #include "plugintreeviewmodel.h"
 
+#include <QFont>
+
 PluginTreeViewModel::PluginTreeViewModel(QObject* parent) {
   this->rootItem = new PluginTreeItem("available plugins");
 }

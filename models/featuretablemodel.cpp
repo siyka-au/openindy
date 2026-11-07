@@ -1,5 +1,6 @@
 #include "featuretablemodel.h"
 
+#include "jobconnect.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -7,7 +8,7 @@
  * \param job
  * \param parent
  */
-FeatureTableModel::FeatureTableModel(const QPointer<OiJob>& job,
+FeatureTableModel::FeatureTableModel(const oi::Guarded<OiJob>& job,
                                      QObject* parent)
     : QAbstractTableModel(parent) {
   this->setCurrentJob(job);
@@ -61,7 +62,7 @@ QVariant FeatureTableModel::data(const QModelIndex& index, int role) const {
   if (this->currentJob->getFeatureCount() <= rowIndex) {
     return QVariant();
   }
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeaturesList().at(rowIndex);
 
   // check the feature
@@ -356,7 +357,7 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex& index) const {
   if (this->currentJob->getFeatureCount() <= rowIndex) {
     return myFlags;
   }
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeaturesList().at(rowIndex);
 
   // check the feature
@@ -427,7 +428,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
   if (this->currentJob->getFeatureCount() <= index.row()) {
     return false;
   }
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeaturesList().at(index.row());
 
   // check the feature
@@ -476,7 +477,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
         }
 
         // get the feature to copy measurement config from
-        QPointer<FeatureWrapper> copyFeature =
+        oi::Guarded<FeatureWrapper> copyFeature =
             this->currentJob->getFeatureById(value.toInt());
         // 0. precondition: function(s) available ?
         if (!copyFeature.isNull() && !copyFeature->getFeature().isNull() &&
@@ -511,7 +512,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
         }
 
         // get the feature to copy functions from
-        QPointer<FeatureWrapper> copyFeature =
+        oi::Guarded<FeatureWrapper> copyFeature =
             this->currentJob->getFeatureById(value.toInt());
 
         // 0. precondition: function(s) available ?
@@ -552,9 +553,9 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
 
           // 3.1 loop over all copy / source function
           bool result = false;
-          foreach (QPointer<Function> copyFunction,
+          foreach (oi::Guarded<Function> copyFunction,
                    copyFeature->getFeature()->getFunctions()) {
-            QPointer<Function> function =
+            oi::Guarded<Function> function =
                 loadFunctionByName(copyFunction->getMetaData().name);
 
             if (!function.isNull()) {
@@ -572,7 +573,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
                     copyFunction->getScalarInputParams());
               }  // <- copy scalar input params
 
-              QPointer<Geometry> geometry = feature->getGeometry();
+              oi::Guarded<Geometry> geometry = feature->getGeometry();
               // 3.3.2 copy used elements
               if (editMode.testFlag(EditMode::eFunctionCopyUsedElements)) {
                 QMap<int, QList<InputElement> > inputElements =
@@ -582,7 +583,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
                 if (!geometry.isNull() &&
                     !inputElements.isEmpty()) {  // remove existing observation
                                                  // references
-                  for (QPointer<Observation> obs :
+                  for (oi::Guarded<Observation> obs :
                        geometry->getObservations()) {
                     geometry->removeObservation(obs);
                   }
@@ -730,12 +731,13 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
     switch ((TrafoParamDisplayAttributes)attr) {
       case eTrafoParamDisplayIsUsed: {
         bool isUsed = value.toBool();
-        QPointer<TrafoParam> curTrafoParam = feature->getTrafoParam();
+        oi::Guarded<TrafoParam> curTrafoParam = feature->getTrafoParam();
 
         if (isUsed) {  // first uncheck other
-          for (QPointer<FeatureWrapper> f : this->currentJob->getFeaturesByType(
+          for (oi::Guarded<FeatureWrapper> f :
+               this->currentJob->getFeaturesByType(
                    FeatureTypes::eTrafoParamFeature)) {
-            QPointer<TrafoParam> trafoParam = f->getTrafoParam();
+            oi::Guarded<TrafoParam> trafoParam = f->getTrafoParam();
             if (trafoParam.isNull() ||
                 !trafoParam->getIsUsed()  // is already false
                 || curTrafoParam->getId() == trafoParam->getId()  // it's me
@@ -770,14 +772,14 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
   return false;
 }
 
-QPointer<Function> FeatureTableModel::loadFunctionByName(QString name) {
+oi::Guarded<Function> FeatureTableModel::loadFunctionByName(QString name) {
   //*******************************************************
   // work around : get all functions and compare the names. then get the
   // function plugin path to create the function. the plugin path is not stored
   // correctly in the metadata of the functions (It is a bug!!), thats why this
   // workaraound is needed
   //*******************************************************
-  QPointer<Function> function(nullptr);
+  oi::Guarded<Function> function(nullptr);
 
   foreach (const sys::Function& f, PluginRepository::getAllFunctions()) {
     if (f.name() == name) {
@@ -830,10 +832,10 @@ int FeatureTableModel::getFeatureIdAtIndex(const QModelIndex& index) {
  * \brief FeatureTableModel::getActiveFeature
  * \return
  */
-QPointer<FeatureWrapper> FeatureTableModel::getActiveFeature() const {
+oi::Guarded<FeatureWrapper> FeatureTableModel::getActiveFeature() const {
   // check current job
   if (this->currentJob.isNull()) {
-    return QPointer<FeatureWrapper>(nullptr);
+    return oi::Guarded<FeatureWrapper>(nullptr);
   }
 
   return this->currentJob->getActiveFeature();
@@ -886,7 +888,7 @@ void FeatureTableModel::setActiveFeature(const int& id) {
   }
 
   // get and check feature with the given id
-  QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
   if (feature.isNull() || feature->getFeature().isNull()) {
     return;
   }
@@ -899,10 +901,10 @@ void FeatureTableModel::setActiveFeature(const int& id) {
  * \brief FeatureTableModel::getActiveStation
  * \return
  */
-QPointer<Station> FeatureTableModel::getActiveStation() const {
+oi::Guarded<Station> FeatureTableModel::getActiveStation() const {
   // check current job
   if (this->currentJob.isNull()) {
-    return QPointer<Station>(nullptr);
+    return oi::Guarded<Station>(nullptr);
   }
 
   return this->currentJob->getActiveStation();
@@ -929,7 +931,7 @@ void FeatureTableModel::setActiveStation(const QModelIndex& index) {
   }
 
   // check feature at index
-  QPointer<FeatureWrapper> feature =
+  oi::Guarded<FeatureWrapper> feature =
       this->currentJob->getFeaturesList().at(index.row());
   if (feature.isNull() || feature->getStation().isNull()) {
     emit this->sendMessage("No station selected",
@@ -952,7 +954,7 @@ void FeatureTableModel::setActiveStation(const int& id) {
   }
 
   // get and check feature with the given id
-  QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getFeatureById(id);
   if (feature.isNull() || feature->getStation().isNull()) {
     emit this->sendMessage("No station selected",
                            MessageTypes::eWarningMessage);
@@ -967,11 +969,11 @@ void FeatureTableModel::setActiveStation(const int& id) {
  * \brief FeatureTableModel::getActiveCoordinateSystem
  * \return
  */
-QPointer<CoordinateSystem> FeatureTableModel::getActiveCoordinateSystem()
+oi::Guarded<CoordinateSystem> FeatureTableModel::getActiveCoordinateSystem()
     const {
   // check current job
   if (this->currentJob.isNull()) {
-    return QPointer<CoordinateSystem>(nullptr);
+    return oi::Guarded<CoordinateSystem>(nullptr);
   }
 
   return this->currentJob->getActiveCoordinateSystem();
@@ -988,15 +990,15 @@ void FeatureTableModel::setActiveCoordinateSystem(const QString& name) {
   }
 
   // get and check feature with the given name
-  QList<QPointer<FeatureWrapper> > features =
+  QList<oi::Guarded<FeatureWrapper> > features =
       this->currentJob->getFeaturesByName(name);
   if (features.size() != 1) {
     return;
   }
-  QPointer<FeatureWrapper> feature = features.at(0);
+  oi::Guarded<FeatureWrapper> feature = features.at(0);
 
   // get and check coordinate system
-  QPointer<CoordinateSystem> system(nullptr);
+  oi::Guarded<CoordinateSystem> system(nullptr);
   if (!feature->getStation().isNull() && !feature->getStation()
                                               ->getCoordinateSystem()
                                               .isNull()) {  // station system
@@ -1060,7 +1062,7 @@ void FeatureTableModel::setActualNominalFilter(
  * \brief FeatureTableModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FeatureTableModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& FeatureTableModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -1068,7 +1070,7 @@ const QPointer<OiJob>& FeatureTableModel::getCurrentJob() const {
  * \brief FeatureTableModel::setCurrentJob
  * \param job
  */
-void FeatureTableModel::setCurrentJob(const QPointer<OiJob>& job) {
+void FeatureTableModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -1147,7 +1149,7 @@ void FeatureTableModel::updateModel() {
  * \return
  */
 QVariant FeatureTableModel::getDisplayValue(
-    const QPointer<FeatureWrapper>& feature, const int& column) const {
+    const oi::Guarded<FeatureWrapper>& feature, const int& column) const {
   // check if the column exists in available display attributes
   if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
     return QVariant();
@@ -1380,7 +1382,7 @@ QVariant FeatureTableModel::getDisplayValue(
  * \return
  */
 QVariant FeatureTableModel::getBackgroundValue(
-    const QPointer<FeatureWrapper>& feature, const int& column) const {
+    const oi::Guarded<FeatureWrapper>& feature, const int& column) const {
   // check if the column exists in available display attributes
   if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
     return QVariant();
@@ -1504,7 +1506,7 @@ QVariant FeatureTableModel::getBackgroundValue(
  * \return
  */
 QVariant FeatureTableModel::getForegroundValue(
-    const QPointer<FeatureWrapper>& feature, const int& column) const {
+    const oi::Guarded<FeatureWrapper>& feature, const int& column) const {
   QVariant background = this->getBackgroundValue(feature, column);
   if (!background.canConvert<QColor>()) {
     return QVariant();
@@ -1555,9 +1557,8 @@ void FeatureTableModel::connectJob() {
                    &QtJobAdapter::trafoParamIsDatumChanged, this,
                    &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
 
-  QObject::connect(this, &FeatureTableModel::sendMessage,
-                   this->currentJob.data(), &OiJob::sendMessage,
-                   Qt::AutoConnection);
+  connectToJob(this, &FeatureTableModel::sendMessage, this->currentJob,
+               &OiJob::sendMessage);
 }
 
 /*!
@@ -1598,6 +1599,5 @@ void FeatureTableModel::disconnectJob() {
                       &QtJobAdapter::trafoParamIsDatumChanged, this,
                       &FeatureTableModel::requestUpdateModel);
 
-  QObject::disconnect(this, &FeatureTableModel::sendMessage,
-                      this->currentJob.data(), &OiJob::sendMessage);
+  disconnectFromJob(this);
 }

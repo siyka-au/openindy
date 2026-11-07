@@ -20,7 +20,7 @@ class FeatureDifferenceTableModel : public QAbstractTableModel {
   Q_OBJECT
 
  public:
-  explicit FeatureDifferenceTableModel(const QPointer<OiJob>& job,
+  explicit FeatureDifferenceTableModel(const oi::Guarded<OiJob>& job,
                                        QObject* parent = nullptr);
   explicit FeatureDifferenceTableModel(QObject* parent = nullptr);
 
@@ -45,8 +45,8 @@ class FeatureDifferenceTableModel : public QAbstractTableModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // #########################
   // get or set display config
@@ -86,9 +86,9 @@ class FeatureDifferenceTableModel : public QAbstractTableModel {
   void disconnectJob();
 
   [[nodiscard]] QPair<bool, double> getDifferenceAsDisplayUnit(
-      QPointer<FeatureWrapper> feature, const QModelIndex index) const;
+      oi::Guarded<FeatureWrapper> feature, const QModelIndex index) const;
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // ##############
   // display config

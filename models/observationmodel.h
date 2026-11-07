@@ -45,8 +45,8 @@ class ObservationModel : public QAbstractTableModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   // #########################
   // get or set display config
@@ -74,7 +74,7 @@ class ObservationModel : public QAbstractTableModel {
   // use or unuse observations
   // #########################
 
-  void setShouldBeUsed(const QPointer<FeatureWrapper>& target,
+  void setShouldBeUsed(const oi::Guarded<FeatureWrapper>& target,
                        const int& functionIndex, const int& neededElementIndex,
                        const int& elementId, const bool& use,
                        const bool& recalc);
@@ -103,7 +103,7 @@ class ObservationModel : public QAbstractTableModel {
   // current job
   // ###########
 
-  QPointer<OiJob> currentJob;
+  oi::Guarded<OiJob> currentJob;
 
   // ##############
   // display config
@@ -111,7 +111,7 @@ class ObservationModel : public QAbstractTableModel {
 
   ParameterDisplayConfig parameterDisplayConfig;
 
-  QPointer<Observation> getObservation(const QModelIndex& index);
+  oi::Guarded<Observation> getObservation(const QModelIndex& index);
 };
 
 #endif  // OBSERVATIONMODEL_H

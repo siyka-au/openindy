@@ -1,5 +1,6 @@
 #include "observationmodel.h"
 
+#include "jobconnect.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -20,13 +21,13 @@ int ObservationModel::rowCount(const QModelIndex& parent) const {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return 0;
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(nullptr);
+  oi::Guarded<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
@@ -68,13 +69,13 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return QVariant();
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(nullptr);
+  oi::Guarded<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
@@ -90,7 +91,7 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
   int columnIndex = index.column();
 
   // get and check observation
-  QPointer<Observation> observation(nullptr);
+  oi::Guarded<Observation> observation(nullptr);
   if (rowIndex < geometry->getObservations().size()) {
     observation = geometry->getObservations().at(rowIndex);
   }
@@ -190,7 +191,7 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
       case eObservationDisplayIsUsed:
         if (geometry->getFunctions().size() > 0 &&
             !geometry->getFunctions().at(0).isNull()) {
-          QPointer<Function> function = geometry->getFunctions()[0];
+          oi::Guarded<Function> function = geometry->getFunctions()[0];
 
           bool checked = false;
           foreach (int key, function->getInputElements().keys()) {
@@ -304,13 +305,13 @@ bool ObservationModel::setData(const QModelIndex& index, const QVariant& value,
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return false;
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(nullptr);
+  oi::Guarded<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
@@ -326,7 +327,7 @@ bool ObservationModel::setData(const QModelIndex& index, const QVariant& value,
   int columnIndex = index.column();
 
   // get and check observation
-  QPointer<Observation> observation(nullptr);
+  oi::Guarded<Observation> observation(nullptr);
   if (rowIndex < geometry->getObservations().size()) {
     observation = geometry->getObservations().at(rowIndex);
   }
@@ -354,7 +355,7 @@ bool ObservationModel::setData(const QModelIndex& index, const QVariant& value,
  * \brief ObservationModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& ObservationModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& ObservationModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -362,7 +363,7 @@ const QPointer<OiJob>& ObservationModel::getCurrentJob() const {
  * \brief ObservationModel::setCurrentJob
  * \param job
  */
-void ObservationModel::setCurrentJob(const QPointer<OiJob>& job) {
+void ObservationModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -399,22 +400,22 @@ void ObservationModel::setParameterDisplayConfig(
  * \param index
  * \return
  */
-QPointer<Observation> ObservationModel::getObservation(
+oi::Guarded<Observation> ObservationModel::getObservation(
     const QModelIndex& index) {
-  QPointer<Observation> observation(nullptr);
+  oi::Guarded<Observation> observation(nullptr);
   // check current job and model index
   if (this->currentJob.isNull() || !index.isValid()) {
     return observation;
   }
 
   // get and check active feature
-  QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getActiveFeature();
   if (feature.isNull() || feature->getFeature().isNull()) {
     return observation;
   }
 
   // get and check active geometry
-  QPointer<Geometry> geometry(nullptr);
+  oi::Guarded<Geometry> geometry(nullptr);
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
     geometry = feature->getGeometry();
   } else if (feature->getFeatureTypeEnum() == FeatureTypes::eStationFeature &&
@@ -443,7 +444,7 @@ QPointer<Observation> ObservationModel::getObservation(
  */
 void ObservationModel::setObservationUseStateByContextmenu(
     bool use, const QModelIndex& index) {
-  QPointer<Observation> observation = this->getObservation(index);
+  oi::Guarded<Observation> observation = this->getObservation(index);
   if (observation.isNull()) {
     return;
   }
@@ -456,7 +457,7 @@ void ObservationModel::setObservationUseStateByContextmenu(
  * \return
  */
 int ObservationModel::getObservationIdByIndex(const QModelIndex& index) {
-  QPointer<Observation> observation = this->getObservation(index);
+  oi::Guarded<Observation> observation = this->getObservation(index);
   if (observation.isNull()) {
     return -1;
   }
@@ -505,9 +506,8 @@ void ObservationModel::connectJob() {
                    &QtJobAdapter::featureRecalculated, this,
                    &ObservationModel::featureRecalculated, Qt::AutoConnection);
 
-  QObject::connect(this, &ObservationModel::setShouldBeUsed,
-                   this->currentJob.data(), &OiJob::setShouldBeUsed,
-                   Qt::AutoConnection);
+  connectToJob(this, &ObservationModel::setShouldBeUsed, this->currentJob,
+               &OiJob::setShouldBeUsed);
 }
 
 /*!
@@ -529,6 +529,5 @@ void ObservationModel::disconnectJob() {
                       &QtJobAdapter::featureRecalculated, this,
                       &ObservationModel::featureRecalculated);
 
-  QObject::disconnect(this, &ObservationModel::setShouldBeUsed,
-                      this->currentJob.data(), &OiJob::setShouldBeUsed);
+  disconnectFromJob(this);
 }

@@ -1,5 +1,6 @@
 #include "activefeaturefunctionsmodel.h"
 
+#include "jobconnect.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -7,7 +8,7 @@
  * \param job
  * \param parent
  */
-ActiveFeatureFunctionsModel::ActiveFeatureFunctionsModel(QPointer<OiJob> job,
+ActiveFeatureFunctionsModel::ActiveFeatureFunctionsModel(oi::Guarded<OiJob> job,
                                                          QObject* parent)
     : QAbstractItemModel(parent) {
   this->rootItem = new FunctionTreeItem("functions");
@@ -498,7 +499,7 @@ QMultiMap<QString, QString> ActiveFeatureFunctionsModel::getStringParameter(
  * \brief ActiveFeatureFunctionsModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& ActiveFeatureFunctionsModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& ActiveFeatureFunctionsModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -506,7 +507,7 @@ const QPointer<OiJob>& ActiveFeatureFunctionsModel::getCurrentJob() const {
  * \brief ActiveFeatureFunctionsModel::setCurrentJob
  * \param job
  */
-void ActiveFeatureFunctionsModel::setCurrentJob(const QPointer<OiJob>& job) {
+void ActiveFeatureFunctionsModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -551,7 +552,7 @@ void ActiveFeatureFunctionsModel::updateModel() {
   this->rootItem->deleteChildren();
 
   // add all functions of the active feature to the tree hierarchy
-  foreach (const QPointer<Function>& function, feature->getFunctions()) {
+  foreach (const oi::Guarded<Function>& function, feature->getFunctions()) {
     // check function
     if (function.isNull()) {
       this->rootItem->deleteChildren();
@@ -598,9 +599,8 @@ void ActiveFeatureFunctionsModel::connectJob() {
                    &ActiveFeatureFunctionsModel::updateModel,
                    Qt::AutoConnection);
 
-  QObject::connect(this, &ActiveFeatureFunctionsModel::startRemoveFunction,
-                   this->currentJob.data(), &OiJob::removeFunction,
-                   Qt::AutoConnection);
+  connectToJob(this, &ActiveFeatureFunctionsModel::startRemoveFunction,
+               this->currentJob, &OiJob::removeFunction);
 }
 
 /*!
@@ -614,6 +614,5 @@ void ActiveFeatureFunctionsModel::disconnectJob() {
                       &QtJobAdapter::featureFunctionsChanged, this,
                       &ActiveFeatureFunctionsModel::updateModel);
 
-  QObject::disconnect(this, &ActiveFeatureFunctionsModel::startRemoveFunction,
-                      this->currentJob.data(), &OiJob::removeFunction);
+  disconnectFromJob(this);
 }

@@ -6,7 +6,7 @@ using namespace oi;
 
 WatchWindowUtil::WatchWindowUtil() {}
 
-Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
+Result WatchWindowUtil::getPosition(oi::Guarded<FeatureWrapper> feature,
                                     OiVec trackerXYZ) {
   Result result;
   result.position = Position::NullObject;
@@ -33,7 +33,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature,
     }
 
     // get position
-    QPointer<Geometry> geometry = feature->getGeometry();
+    oi::Guarded<Geometry> geometry = feature->getGeometry();
     switch (feature->getFeatureTypeEnum()) {
       case FeatureTypes::ePlaneFeature: {
         double dot = NAN;

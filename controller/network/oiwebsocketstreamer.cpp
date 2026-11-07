@@ -12,7 +12,7 @@ OiWebSocketStreamer::OiWebSocketStreamer(QObject* parent) {}
  * \brief OiWebSocketStreamer::getJob
  * \return
  */
-const QPointer<OiJob>& OiWebSocketStreamer::getJob() const {
+const oi::Guarded<OiJob>& OiWebSocketStreamer::getJob() const {
   return this->currentJob;
 }
 
@@ -20,7 +20,7 @@ const QPointer<OiJob>& OiWebSocketStreamer::getJob() const {
  * \brief OiWebSocketStreamer::setJob
  * \param job
  */
-void OiWebSocketStreamer::setJob(const QPointer<OiJob>& job) {
+void OiWebSocketStreamer::setJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     this->currentJob = job;
   }

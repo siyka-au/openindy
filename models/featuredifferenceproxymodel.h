@@ -23,8 +23,8 @@ class FeatureDifferenceProxyModel : public QSortFilterProxyModel {
   // get or set current OpenIndy job
   // ###############################
 
-  [[nodiscard]] const QPointer<OiJob>& getCurrentJob() const;
-  void setCurrentJob(const QPointer<OiJob>& job);
+  [[nodiscard]] const oi::Guarded<OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<OiJob>& job);
 
   void setSortingMode(FeatureSorter::SortingMode mode);
 
@@ -52,7 +52,7 @@ class FeatureDifferenceProxyModel : public QSortFilterProxyModel {
   // current job
   // ###########
 
-  QPointer<OiJob> job;
+  oi::Guarded<OiJob> job;
 
   FeatureSorter sorter;
 };

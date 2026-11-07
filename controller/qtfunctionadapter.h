@@ -5,6 +5,7 @@
 #include <QPointer>
 
 #include "functionobserver.h"
+#include "guarded.h"
 
 namespace oi {
 class Function;
@@ -28,7 +29,7 @@ class QtFunctionAdapter : public QObject, public oi::FunctionObserver {
   // the adapter of `function` (created and registered on first use), or
   // nullptr for a null function. The adapter lives in the function's thread.
   static QtFunctionAdapter* of(oi::Function* function);
-  static QtFunctionAdapter* of(const QPointer<oi::Function>& function);
+  static QtFunctionAdapter* of(const oi::Guarded<oi::Function>& function);
 
   // number of live adapters (for tests)
   static int registrySize();

@@ -19,7 +19,7 @@ class BundleOverviewDelegate : public QAbstractItemDelegate {
   void paint(QPainter* painter, const QStyleOptionViewItem& option,
              const QModelIndex& index) const override;
   [[nodiscard]] bool isBundleStationTrafo(
-      const QPointer<TrafoParam>& param) const;
+      const oi::Guarded<TrafoParam>& param) const;
   [[nodiscard]] QSize sizeHint(const QStyleOptionViewItem& option,
                                const QModelIndex& index) const override;
 

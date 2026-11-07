@@ -6,7 +6,7 @@
  * \brief FunctionWeightsTableModel::FunctionWeightsTableModel
  * \param parent
  */
-FunctionWeightsTableModel::FunctionWeightsTableModel(QPointer<OiJob> job,
+FunctionWeightsTableModel::FunctionWeightsTableModel(oi::Guarded<OiJob> job,
                                                      QObject* parent)
     : QAbstractTableModel(parent), functionPosition(-1) {
   this->setCurrentJob(job);
@@ -23,7 +23,7 @@ FunctionWeightsTableModel::FunctionWeightsTableModel(QObject* parent)
  * \brief FunctionWeightsTableModel::getCurrentJob
  * \return
  */
-const QPointer<OiJob>& FunctionWeightsTableModel::getCurrentJob() const {
+const oi::Guarded<OiJob>& FunctionWeightsTableModel::getCurrentJob() const {
   return this->currentJob;
 }
 
@@ -31,7 +31,7 @@ const QPointer<OiJob>& FunctionWeightsTableModel::getCurrentJob() const {
  * \brief FunctionWeightsTableModel::setCurrentJob
  * \param job
  */
-void FunctionWeightsTableModel::setCurrentJob(const QPointer<OiJob>& job) {
+void FunctionWeightsTableModel::setCurrentJob(const oi::Guarded<OiJob>& job) {
   if (!job.isNull()) {
     // disconnect current job
     if (!this->currentJob.isNull()) {
@@ -61,7 +61,7 @@ int FunctionWeightsTableModel::rowCount(const QModelIndex& parent) const {
     return 0;
   }
   // check feature for valid trafo param
-  QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+  oi::Guarded<FeatureWrapper> feature = this->currentJob->getActiveFeature();
   if (feature.isNull() || feature->getTrafoParam().isNull()) {
     return 0;
   }
@@ -112,7 +112,7 @@ QVariant FunctionWeightsTableModel::data(const QModelIndex& index,
       this->currentJob->getActiveFeature()->getFeature().isNull()) {
     return QVariant();
   }
-  QPointer<Feature> feature =
+  oi::Guarded<Feature> feature =
       this->currentJob->getActiveFeature()->getFeature();
 
   // check selected function position
@@ -253,7 +253,7 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
       this->currentJob->getActiveFeature()->getFeature().isNull()) {
     return false;
   }
-  QPointer<Feature> feature =
+  oi::Guarded<Feature> feature =
       this->currentJob->getActiveFeature()->getFeature();
 
   // check selected function position
