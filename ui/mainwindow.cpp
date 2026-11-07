@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -3345,7 +3346,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed() {
 }
 
 void MainWindow::showFoundFeature(int index) {
-  if (!foundFeatures.empty() && foundFeatures.size() > index) {
+  if (!foundFeatures.empty() && std::cmp_greater(foundFeatures.size(), index)) {
     oi::Guarded<FeatureWrapper> feature = foundFeatures.at(index);
 
     if (!feature.isNull()) {
@@ -3382,7 +3383,7 @@ void MainWindow::showFoundFeature(int index) {
 void MainWindow::on_pushButton_showNextFoundFeature_clicked() {
   showFoundFeatureIndex++;
   if (foundFeatures.empty() ||
-      showFoundFeatureIndex > (foundFeatures.size() - 1)) {
+      std::cmp_greater_equal(showFoundFeatureIndex, foundFeatures.size())) {
     showFoundFeatureIndex = 0;  // wrap around
   }
   showFoundFeature(showFoundFeatureIndex);

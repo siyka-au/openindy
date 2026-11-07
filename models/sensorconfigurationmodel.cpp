@@ -1,6 +1,7 @@
 #include "sensorconfigurationmodel.h"
 
 #include <QFont>
+#include <utility>
 
 /*!
  * \brief SensorConfigurationModel::ActiveFeatureFunctionsModel
@@ -47,8 +48,9 @@ QVariant SensorConfigurationModel::data(const QModelIndex& index,
   // check role
   if (role == Qt::DisplayRole) {
     // check if the index is a saved config
-    if (index.row() <
-        this->sensorConfigManager.getSavedSensorConfigs().size()) {
+    if (std::cmp_less(
+            index.row(),
+            this->sensorConfigManager.getSavedSensorConfigs().size())) {
       return this->sensorConfigManager.getSavedSensorConfigs()
           .at(index.row())
           .getName();
@@ -66,8 +68,9 @@ QVariant SensorConfigurationModel::data(const QModelIndex& index,
   } else if (role == Qt::FontRole) {
     // check wether index represents the active config
     bool isActiveConfig = false;
-    if (index.row() <
-        this->sensorConfigManager.getSavedSensorConfigs().size()) {
+    if (std::cmp_less(
+            index.row(),
+            this->sensorConfigManager.getSavedSensorConfigs().size())) {
       if (this->sensorConfigManager.getSavedSensorConfigs().at(index.row()) ==
           this->sensorConfigManager.getActiveSensorConfig()) {
         isActiveConfig = true;
@@ -142,7 +145,8 @@ bool SensorConfigurationModel::setData(const QModelIndex& index,
   }
 
   // check if the index is a saved config
-  if (rowIndex < this->sensorConfigManager.getSavedSensorConfigs().size()) {
+  if (std::cmp_less(rowIndex,
+                    this->sensorConfigManager.getSavedSensorConfigs().size())) {
     // check if there already is a sensor config with the new name
     SensorConfiguration sConfig =
         this->sensorConfigManager.getSavedSensorConfig(value.toString());
@@ -235,7 +239,8 @@ bool SensorConfigurationModel::removeSensorConfiguration(
   SensorConfiguration sConfig;
 
   // check if the index is a saved config or a project config
-  if (rowIndex < this->sensorConfigManager.getSavedSensorConfigs().size()) {
+  if (std::cmp_less(rowIndex,
+                    this->sensorConfigManager.getSavedSensorConfigs().size())) {
     sConfig = this->sensorConfigManager.getSavedSensorConfigs().at(rowIndex);
   } else if (rowIndex < this->rowCount(index.parent())) {
     sConfig = this->sensorConfigManager.getProjectSensorConfigs().at(
@@ -370,8 +375,8 @@ QModelIndex SensorConfigurationModel::getActiveSensorConfigIndex() const {
 
   // get index of the active sensor config
   int rowIndex = 0;
-  for (rowIndex = 0;
-       rowIndex < this->sensorConfigManager.getSavedSensorConfigs().size();
+  for (rowIndex = 0; std::cmp_less(
+           rowIndex, this->sensorConfigManager.getSavedSensorConfigs().size());
        rowIndex++) {
     // compare sensor configs
     if (sConfig.getIsSaved() &&
@@ -380,9 +385,9 @@ QModelIndex SensorConfigurationModel::getActiveSensorConfigIndex() const {
       return this->index(rowIndex, 0);
     }
   }
-  for (int i = 0;
-       i <
-       (this->sensorConfigManager.getProjectSensorConfigs().size() + rowIndex);
+  for (int i = 0; std::cmp_less(
+           i, this->sensorConfigManager.getProjectSensorConfigs().size() +
+                  rowIndex);
        i++) {
     // compare sensor configs
     if (!sConfig.getIsSaved() &&
@@ -423,13 +428,16 @@ void SensorConfigurationModel::setActiveSensorConfig(const QModelIndex& index) {
 
   // get sensor config
   SensorConfiguration sConfig;
-  if (rowIndex < this->sensorConfigManager.getSavedSensorConfigs().size()) {
+  if (std::cmp_less(rowIndex,
+                    this->sensorConfigManager.getSavedSensorConfigs().size())) {
     sConfig = this->sensorConfigManager.getSavedSensorConfigs().at(rowIndex);
   } else {
     rowIndex =
         rowIndex - this->sensorConfigManager.getSavedSensorConfigs().size();
     if (rowIndex >= 0 &&
-        rowIndex < this->sensorConfigManager.getProjectSensorConfigs().size()) {
+        std::cmp_less(
+            rowIndex,
+            this->sensorConfigManager.getProjectSensorConfigs().size())) {
       sConfig =
           this->sensorConfigManager.getProjectSensorConfigs().at(rowIndex);
     }

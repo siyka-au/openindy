@@ -1,5 +1,7 @@
 #include "featuredifferenceproxymodel.h"
 
+#include <utility>
+
 /*!
  * \brief FeatureDifferenceProxyModel::FeatureDifferenceProxyModel
  * \param parent
@@ -123,8 +125,11 @@ bool FeatureDifferenceProxyModel::lessThan(const QModelIndex& left,
   // get and check row index for each model index
   int leftIndex = left.row();
   int rightIndex = right.row();
-  if (source_model->getCurrentJob()->getFeaturesList().size() <= leftIndex ||
-      source_model->getCurrentJob()->getFeaturesList().size() <= rightIndex) {
+  if (std::cmp_less_equal(
+          source_model->getCurrentJob()->getFeaturesList().size(), leftIndex) ||
+      std::cmp_less_equal(
+          source_model->getCurrentJob()->getFeaturesList().size(),
+          rightIndex)) {
     return false;
   }
 

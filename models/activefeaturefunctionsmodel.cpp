@@ -1,6 +1,7 @@
 #include "activefeaturefunctionsmodel.h"
 
 #include <map>
+#include <utility>
 
 #include "jobconnect.h"
 #include "qtjobadapter.h"
@@ -166,7 +167,7 @@ bool ActiveFeatureFunctionsModel::canRemoveFunction(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return false;
   }
@@ -202,7 +203,7 @@ void ActiveFeatureFunctionsModel::removeFunction(const QModelIndex& index) {
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return;
   }
@@ -237,7 +238,7 @@ QString ActiveFeatureFunctionsModel::getFunctionDescription(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return "";
   }
@@ -271,14 +272,16 @@ QString ActiveFeatureFunctionsModel::getInputElementDescription(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.parent().row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.parent().row(),
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(index.parent().row()).isNull()) {
     return "";
   }
   Function* function = feature->getFunctions().at(index.parent().row());
 
   // check and get needed element
-  if (index.row() >= function->getNeededElements().size()) {
+  if (std::cmp_greater_equal(index.row(),
+                             function->getNeededElements().size())) {
     return "";
   }
   NeededElement element = function->getNeededElements().at(index.row());
@@ -306,7 +309,8 @@ bool ActiveFeatureFunctionsModel::getSupportsWeights(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.parent().row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.parent().row(),
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(index.parent().row()).isNull()) {
     return false;
   }
@@ -341,7 +345,7 @@ std::map<QString, int> ActiveFeatureFunctionsModel::getIntegerParameter(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return std::map<QString, int>();
   }
@@ -375,7 +379,7 @@ std::map<QString, double> ActiveFeatureFunctionsModel::getDoubleParameter(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return std::map<QString, double>();
   }
@@ -410,7 +414,7 @@ ActiveFeatureFunctionsModel::getStringParameterSelection(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return std::map<QString, QString>();
   }
@@ -448,7 +452,7 @@ void ActiveFeatureFunctionsModel::setScalarInputParameters(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return;
   }
@@ -489,7 +493,7 @@ std::multimap<QString, QString> ActiveFeatureFunctionsModel::getStringParameter(
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
-  if (index.row() >= feature->getFunctions().size() ||
+  if (std::cmp_greater_equal(index.row(), feature->getFunctions().size()) ||
       feature->getFunctions().at(index.row()).isNull()) {
     return std::multimap<QString, QString>();
   }

@@ -1,5 +1,7 @@
 #include "bundlestationitem.h"
 
+#include <utility>
+
 #include "containers.h"
 
 /*!
@@ -49,7 +51,7 @@ void BundleStationItem::removeAllChildren() {
  * \return
  */
 BundleStationItem* BundleStationItem::child(int row) {
-  if (this->m_childItems.size() > row) {
+  if (std::cmp_greater(this->m_childItems.size(), row)) {
     return oi::value(this->m_childItems, row);
   }
   return nullptr;

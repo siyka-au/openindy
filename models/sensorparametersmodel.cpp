@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <map>
+#include <utility>
 
 #include "containers.h"
 
@@ -54,9 +55,9 @@ QVariant SensorParametersModel::data(const QModelIndex& index, int role) const {
       return oi::value(
           this->sConfig.getStringParameter(),
           oi::keys(this->sConfig.getStringParameter()).at(rowIndex));
-    } else if (rowIndex <
-               this->sConfig.getDoubleParameter().size() +
-                   std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+    } else if (std::cmp_less(rowIndex,
+                             this->sConfig.getDoubleParameter().size()) +
+               std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
       rowIndex =
           rowIndex - std::ssize(oi::keys(this->sConfig.getStringParameter()));
       return QString::number(
@@ -87,9 +88,9 @@ QVariant SensorParametersModel::headerData(int section,
       (0 <= section) && (section < rowCount())) {
     if (section < std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
       return oi::keys(this->sConfig.getStringParameter()).at(section);
-    } else if (section <
-               this->sConfig.getDoubleParameter().size() +
-                   std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+    } else if (std::cmp_less(section,
+                             this->sConfig.getDoubleParameter().size()) +
+               std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
       section =
           section - std::ssize(oi::keys(this->sConfig.getStringParameter()));
       return oi::keys(this->sConfig.getDoubleParameter()).at(section);
@@ -178,9 +179,9 @@ bool SensorParametersModel::setData(const QModelIndex& index,
           oi::keys(this->sConfig.getStringParameter()).at(rowIndex),
           value.toString());
       this->sConfig.setStringParameter(params);
-    } else if (rowIndex <
-               this->sConfig.getDoubleParameter().size() +
-                   std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+    } else if (std::cmp_less(rowIndex,
+                             this->sConfig.getDoubleParameter().size()) +
+               std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
       rowIndex =
           rowIndex - std::ssize(oi::keys(this->sConfig.getStringParameter()));
       std::map<QString, double> params = this->sConfig.getDoubleParameter();

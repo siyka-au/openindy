@@ -1,5 +1,7 @@
 #include "featuretabledelegate.h"
 
+#include <utility>
+
 /*!
  * \brief FeatureTableDelegate::FeatureTableDelegate
  * \param parent
@@ -34,7 +36,8 @@ QWidget* FeatureTableDelegate::createEditor(QWidget* parent,
 
   // get and check column index
   int column = model->mapToSource(index).column();
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return editor;
   }
 
@@ -112,7 +115,8 @@ void FeatureTableDelegate::setEditorData(QWidget* editor,
 
   // get and check column index
   int column = model->mapToSource(index).column();
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return;
   }
 
@@ -218,7 +222,8 @@ void FeatureTableDelegate::setModelData(QWidget* editor,
 
   // get and check column index
   int column = featureTableProxyModel->mapToSource(index).column();
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return;
   }
 

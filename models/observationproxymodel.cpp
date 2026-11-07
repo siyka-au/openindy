@@ -1,5 +1,6 @@
 #include "observationproxymodel.h"
 
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -95,8 +96,8 @@ bool ObservationProxyModel::lessThan(const QModelIndex& source_left,
         oi::value(function->getInputElements(), 0);
 
     if (source_right.isValid() && source_left.isValid() &&
-        source_right.row() < inputElem.size() &&
-        source_left.row() < inputElem.size() &&
+        std::cmp_less(source_right.row(), inputElem.size()) &&
+        std::cmp_less(source_left.row(), inputElem.size()) &&
         !inputElem.at(source_right.row()).observation.isNull() &&
         !inputElem.at(source_left.row()).observation.isNull()) {
       int fwRight = inputElem.at(source_right.row()).observation->getId();

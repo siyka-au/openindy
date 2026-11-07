@@ -1,5 +1,7 @@
 #include "functionstatisticmodel.h"
 
+#include <utility>
+
 #include "containers.h"
 
 /*!
@@ -19,7 +21,8 @@ FunctionStatisticModel::FunctionStatisticModel(
 int FunctionStatisticModel::rowCount(const QModelIndex& parent) const {
   // check feature and function index
   if (this->feature.isNull() || this->functionIndex < 0 ||
-      this->functionIndex >= this->feature->getFunctions().size()) {
+      std::cmp_greater_equal(this->functionIndex,
+                             this->feature->getFunctions().size())) {
     return 0;
   }
 
@@ -42,7 +45,8 @@ int FunctionStatisticModel::rowCount(const QModelIndex& parent) const {
 int FunctionStatisticModel::columnCount(const QModelIndex& parent) const {
   // check feature and function index
   if (this->feature.isNull() || this->functionIndex < 0 ||
-      this->functionIndex >= this->feature->getFunctions().size()) {
+      std::cmp_greater_equal(this->functionIndex,
+                             this->feature->getFunctions().size())) {
     return 0;
   }
 
@@ -81,7 +85,8 @@ QVariant FunctionStatisticModel::data(const QModelIndex& index,
 
   // check feature and function index
   if (this->feature.isNull() || this->functionIndex < 0 ||
-      this->functionIndex >= this->feature->getFunctions().size()) {
+      std::cmp_greater_equal(this->functionIndex,
+                             this->feature->getFunctions().size())) {
     return QVariant();
   }
 
@@ -93,9 +98,11 @@ QVariant FunctionStatisticModel::data(const QModelIndex& index,
   // check display residuals
   const Statistic& statistic =
       this->feature->getFunctions()[this->functionIndex]->getStatistic();
-  if (index.row() >= statistic.getDisplayResiduals().size() ||
-      statistic.getDisplayResiduals()[index.row()].corrections.size() + 1 <=
-          index.column()) {
+  if (std::cmp_greater_equal(index.row(),
+                             statistic.getDisplayResiduals().size()) ||
+      std::cmp_less_equal(
+          statistic.getDisplayResiduals()[index.row()].corrections.size() + 1,
+          index.column())) {
     return QVariant();
   }
 

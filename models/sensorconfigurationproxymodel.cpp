@@ -1,5 +1,7 @@
 #include "sensorconfigurationproxymodel.h"
 
+#include <utility>
+
 /*!
  * \brief SensorConfigurationProxyModel::SensorConfigurationProxyModel
  * \param parent
@@ -49,9 +51,9 @@ bool SensorConfigurationProxyModel::filterAcceptsRow(
   }
 
   // check if the index is a saved config
-  if (source_row < sourceModel->getSensorConfigurationManager()
-                       .getSavedSensorConfigs()
-                       .size()) {
+  if (std::cmp_less(source_row, sourceModel->getSensorConfigurationManager()
+                                    .getSavedSensorConfigs()
+                                    .size())) {
     return true;
   }
 

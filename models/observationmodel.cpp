@@ -1,5 +1,6 @@
 #include "observationmodel.h"
 
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -95,7 +96,7 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
 
   // get and check observation
   oi::Guarded<Observation> observation(nullptr);
-  if (rowIndex < geometry->getObservations().size()) {
+  if (std::cmp_less(rowIndex, geometry->getObservations().size())) {
     observation = geometry->getObservations().at(rowIndex);
   }
   if (observation.isNull()) {
@@ -331,7 +332,7 @@ bool ObservationModel::setData(const QModelIndex& index, const QVariant& value,
 
   // get and check observation
   oi::Guarded<Observation> observation(nullptr);
-  if (rowIndex < geometry->getObservations().size()) {
+  if (std::cmp_less(rowIndex, geometry->getObservations().size())) {
     observation = geometry->getObservations().at(rowIndex);
   }
   if (observation.isNull()) {
@@ -434,7 +435,7 @@ oi::Guarded<Observation> ObservationModel::getObservation(
 
   // get and check observation
 
-  if (rowIndex < geometry->getObservations().size()) {
+  if (std::cmp_less(rowIndex, geometry->getObservations().size())) {
     observation = geometry->getObservations().at(rowIndex);
   }
   return observation;

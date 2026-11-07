@@ -1,5 +1,6 @@
 #include "usedelementsmodel.h"
 
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -36,7 +37,8 @@ int UsedElementsModel::rowCount(const QModelIndex& parent) const {
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull()) {
     return 0;
   }
@@ -88,7 +90,8 @@ QVariant UsedElementsModel::data(const QModelIndex& index, int role) const {
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull()) {
     return QVariant();
   }
@@ -283,7 +286,8 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList& selection) {
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull()) {
     return;
   }
@@ -305,7 +309,8 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList& selection) {
   // remove all selected elements
   foreach (const QModelIndex& index, selection) {
     // check index
-    if (!index.isValid() || index.row() >= inputElements.size()) {
+    if (!index.isValid() ||
+        std::cmp_greater_equal(index.row(), inputElements.size())) {
       return;
     }
 
@@ -363,7 +368,8 @@ void UsedElementsModel::setSelectedFunctionPosition(
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull()) {
     return;
   }

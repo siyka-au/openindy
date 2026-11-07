@@ -1,5 +1,6 @@
 #include "measurementconfigurationmodel.h"
 
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -60,7 +61,7 @@ QVariant MeasurementConfigurationModel::data(const QModelIndex& index,
 
   const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
-  if (index.row() < configs.size()) {
+  if (std::cmp_less(index.row(), configs.size())) {
     return configs.at(index.row()).getName();
   }
 
@@ -121,7 +122,7 @@ bool MeasurementConfigurationModel::setData(const QModelIndex& index,
 
   const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
-  if (index.row() < configs.size()) {
+  if (std::cmp_less(index.row(), configs.size())) {
     // check if there already is a measurement config with the new name
     MeasurementConfig mConfig =
         this->measurementConfigManager->getUserConfig(value.toString());
@@ -180,7 +181,7 @@ MeasurementConfig MeasurementConfigurationModel::getMeasurementConfig(
   // check if the index is a measurement config
   const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
-  if (index.row() < configs.size()) {
+  if (std::cmp_less(index.row(), configs.size())) {
     return configs.at(index.row());
   }
 
@@ -201,7 +202,7 @@ bool MeasurementConfigurationModel::isUserConfig(
 
   const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
-  if (index.row() < configs.size()) {
+  if (std::cmp_less(index.row(), configs.size())) {
     return configs.at(index.row()).isUserConfig();
   }
 
@@ -234,7 +235,7 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(
   // get all saved measurement configs
   const std::vector<MeasurementConfig> userConfigs =
       this->measurementConfigManager->getConfigs();
-  for (int i = 0; i < userConfigs.size(); i++) {
+  for (int i = 0; std::cmp_less(i, userConfigs.size()); i++) {
     if (userConfigs.at(i).getName().compare(mConfig.getName()) == 0) {
       return this->createIndex(i, 0);
     }
@@ -260,7 +261,8 @@ void MeasurementConfigurationModel::removeMeasurementConfig(
   }
 
   // check if the index is a saved config
-  if (index.row() < this->measurementConfigManager->getConfigs().size()) {
+  if (std::cmp_less(index.row(),
+                    this->measurementConfigManager->getConfigs().size())) {
     this->measurementConfigManager->removeUserConfig(
         getMeasurementConfig(index).getName());
   }

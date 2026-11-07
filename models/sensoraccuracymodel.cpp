@@ -1,5 +1,7 @@
 #include "sensoraccuracymodel.h"
 
+#include <utility>
+
 #include "containers.h"
 
 using namespace oi;
@@ -132,7 +134,8 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
       default:
         int index = rowIndex - 15;
         if (index >= 0 &&
-            index < this->sConfig.getAccuracy().sigmaUndefined.size()) {
+            std::cmp_less(index,
+                          this->sConfig.getAccuracy().sigmaUndefined.size())) {
           return QString::number(
               oi::values(this->sConfig.getAccuracy().sigmaUndefined).at(index),
               'f', 6);
@@ -194,7 +197,8 @@ QVariant SensorAccuracyModel::headerData(int section,
       default:
         int index = section - 15;
         if (index >= 0 &&
-            index < this->sConfig.getAccuracy().sigmaUndefined.size()) {
+            std::cmp_less(index,
+                          this->sConfig.getAccuracy().sigmaUndefined.size())) {
           return oi::keys(this->sConfig.getAccuracy().sigmaUndefined).at(index);
         }
     }
@@ -334,7 +338,8 @@ bool SensorAccuracyModel::setData(const QModelIndex& index,
       default:
         int index = rowIndex - 15;
         if (index >= 0 &&
-            index < this->sConfig.getAccuracy().sigmaUndefined.size()) {
+            std::cmp_less(index,
+                          this->sConfig.getAccuracy().sigmaUndefined.size())) {
           accuracy.sigmaUndefined.insert_or_assign(
               oi::keys(this->sConfig.getAccuracy().sigmaUndefined).at(index),
               value.toDouble());

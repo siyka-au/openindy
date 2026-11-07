@@ -341,7 +341,7 @@ void SettingsDialog::on_toolButton_down_clicked()
         return;
     }
     QModelIndex idx = ui->listView_displayedFeatureAttributes->currentIndex();
-    if(idx.row()<displayedFeatureAttributes.size()-1){
+    if(idx.row() + 1 < displayedFeatureAttributes.size()){
         displayedFeatureAttributes.swap(idx.row(),idx.row()+1);
         m_displayedFeatureAttributes = new
 QStringListModel(displayedFeatureAttributes);

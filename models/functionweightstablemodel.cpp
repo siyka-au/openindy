@@ -1,5 +1,6 @@
 #include "functionweightstablemodel.h"
 
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -71,8 +72,8 @@ int FunctionWeightsTableModel::rowCount(const QModelIndex& parent) const {
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >=
-          feature->getTrafoParam()->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getTrafoParam()->getFunctions().size()) ||
       feature->getTrafoParam()
           ->getFunctions()
           .at(this->functionPosition)
@@ -120,7 +121,8 @@ QVariant FunctionWeightsTableModel::data(const QModelIndex& index,
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull()) {
     return QVariant();
   }
@@ -259,7 +261,8 @@ bool FunctionWeightsTableModel::setData(const QModelIndex& index,
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull()) {
     return false;
   }

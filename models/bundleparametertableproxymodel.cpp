@@ -1,5 +1,7 @@
 #include "bundleparametertableproxymodel.h"
 
+#include <utility>
+
 #include "containers.h"
 
 /*!
@@ -118,7 +120,7 @@ bool BundleParameterTableProxyModel::filterAcceptsRow(
 bool BundleParameterTableProxyModel::filterAcceptsColumn(
     int source_column, const QModelIndex& source_parent) const {
   // get and check display attribute
-  if (getFeatureDisplayAttributes().size() < source_column) {
+  if (std::cmp_less(getFeatureDisplayAttributes().size(), source_column)) {
     return false;
   }
   int attr = getFeatureDisplayAttributes().at(source_column);

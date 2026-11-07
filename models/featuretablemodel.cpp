@@ -1,6 +1,7 @@
 #include "featuretablemodel.h"
 
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -442,7 +443,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
 
   // get and check column index
   int column = index.column();
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return false;
   }
 
@@ -1155,7 +1157,8 @@ void FeatureTableModel::updateModel() {
 QVariant FeatureTableModel::getDisplayValue(
     const oi::Guarded<FeatureWrapper>& feature, const int& column) const {
   // check if the column exists in available display attributes
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return QVariant();
   }
 
@@ -1388,7 +1391,8 @@ QVariant FeatureTableModel::getDisplayValue(
 QVariant FeatureTableModel::getBackgroundValue(
     const oi::Guarded<FeatureWrapper>& feature, const int& column) const {
   // check if the column exists in available display attributes
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return QVariant();
   }
 

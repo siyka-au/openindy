@@ -1,5 +1,7 @@
 #include "trafoparamtablecolumnconfig.h"
 
+#include <utility>
+
 #include "containers.h"
 
 /*!
@@ -58,7 +60,7 @@ int TrafoParamTableColumnConfig::getColumnPosition(
 void TrafoParamTableColumnConfig::setColumnPosition(
     const TrafoParamDisplayAttributes& column, const int& index) {
   if (oi::contains(this->displayColumns, column) && index >= 0 &&
-      index < this->displayColumns.size()) {
+      std::cmp_less(index, this->displayColumns.size())) {
     oi::removeOne(this->displayColumns, column);
     oi::insertAt(this->displayColumns, index, column);
   }
@@ -71,7 +73,7 @@ void TrafoParamTableColumnConfig::setColumnPosition(
  */
 TrafoParamDisplayAttributes TrafoParamTableColumnConfig::getDisplayAttributeAt(
     const int& column) const {
-  if (this->displayColumns.size() > column) {
+  if (std::cmp_greater(this->displayColumns.size(), column)) {
     return this->displayColumns.at(column);
   }
   return eTrafoParamDisplayType;

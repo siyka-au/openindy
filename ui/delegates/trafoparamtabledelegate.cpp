@@ -1,5 +1,7 @@
 #include "trafoparamtabledelegate.h"
 
+#include <utility>
+
 TrafoParamDelegate::TrafoParamDelegate(QObject* parent)
     : QItemDelegate(parent) {}
 
@@ -30,7 +32,8 @@ QWidget* TrafoParamDelegate::createEditor(QWidget* parent,
 
   // get and check column index
   int column = model->mapToSource(index).column();
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return editor;
   }
 
@@ -90,7 +93,8 @@ void TrafoParamDelegate::setEditorData(QWidget* editor,
 
   // get and check column index
   int column = model->mapToSource(index).column();
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return;
   }
 
@@ -152,7 +156,8 @@ void TrafoParamDelegate::setModelData(QWidget* editor,
 
   // get and check column index
   int column = trafoModel->mapToSource(index).column();
-  if (column < 0 || getFeatureDisplayAttributes().size() <= column) {
+  if (column < 0 ||
+      std::cmp_less_equal(getFeatureDisplayAttributes().size(), column)) {
     return;
   }
 

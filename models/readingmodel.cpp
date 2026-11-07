@@ -1,5 +1,7 @@
 #include "readingmodel.h"
 
+#include <utility>
+
 #include "qtjobadapter.h"
 
 /*!
@@ -90,7 +92,7 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
 
   // get and check reading
   oi::Guarded<Reading> reading(nullptr);
-  if (rowIndex < geometry->getObservations().size() &&
+  if (std::cmp_less(rowIndex, geometry->getObservations().size()) &&
       !geometry->getObservations().at(rowIndex).isNull()) {
     reading = geometry->getObservations().at(rowIndex)->getReading();
   }

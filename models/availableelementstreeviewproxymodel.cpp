@@ -1,6 +1,7 @@
 #include "availableelementstreeviewproxymodel.h"
 
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "containers.h"
@@ -90,7 +91,8 @@ void AvailableElementsTreeViewProxyModel::setSelectedFunctionPosition(
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull()) {
     return;
   }
@@ -126,13 +128,15 @@ bool AvailableElementsTreeViewProxyModel::validateSelection(
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull() ||
       this->neededElementIndex < 0 ||
-      this->neededElementIndex >= feature->getFunctions()
-                                      .at(this->functionPosition)
-                                      ->getNeededElements()
-                                      .size()) {
+      std::cmp_greater_equal(this->neededElementIndex,
+                             feature->getFunctions()
+                                 .at(this->functionPosition)
+                                 ->getNeededElements()
+                                 .size())) {
     return false;
   }
 
@@ -190,13 +194,15 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull() ||
       this->neededElementIndex < 0 ||
-      this->neededElementIndex >= feature->getFunctions()
-                                      .at(this->functionPosition)
-                                      ->getNeededElements()
-                                      .size()) {
+      std::cmp_greater_equal(this->neededElementIndex,
+                             feature->getFunctions()
+                                 .at(this->functionPosition)
+                                 ->getNeededElements()
+                                 .size())) {
     return;
   }
   Function* function = feature->getFunctions().at(this->functionPosition);
@@ -340,13 +346,15 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(
 
   // check selected function position
   if (this->functionPosition < 0 ||
-      this->functionPosition >= feature->getFunctions().size() ||
+      std::cmp_greater_equal(this->functionPosition,
+                             feature->getFunctions().size()) ||
       feature->getFunctions().at(this->functionPosition).isNull() ||
       this->neededElementIndex < 0 ||
-      this->neededElementIndex >= feature->getFunctions()
-                                      .at(this->functionPosition)
-                                      ->getNeededElements()
-                                      .size()) {
+      std::cmp_greater_equal(this->neededElementIndex,
+                             feature->getFunctions()
+                                 .at(this->functionPosition)
+                                 ->getNeededElements()
+                                 .size())) {
     return false;
   }
   Function* function = feature->getFunctions().at(this->functionPosition);

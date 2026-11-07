@@ -1,5 +1,7 @@
 #include "readingtablecolumnconfig.h"
 
+#include <utility>
+
 #include "containers.h"
 
 /*!
@@ -54,7 +56,7 @@ int ReadingTableColumnConfig::getColumnPosition(
 void ReadingTableColumnConfig::setColumnPosition(
     const ReadingDisplayAttributes& column, const int& index) {
   if (oi::contains(this->displayColumns, column) && index >= 0 &&
-      index < this->displayColumns.size()) {
+      std::cmp_less(index, this->displayColumns.size())) {
     oi::removeOne(this->displayColumns, column);
     oi::insertAt(this->displayColumns, index, column);
   }

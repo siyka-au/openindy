@@ -1,5 +1,6 @@
 #include "measurementconfigurationproxymodel.h"
 
+#include <utility>
 #include <vector>
 
 /*!
@@ -104,7 +105,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(
 
   const std::vector<MeasurementConfig> configs =
       sourceModel->getMeasurementConfigurationManager()->getConfigs();
-  if (source_row < 0 || source_row >= configs.size()) {
+  if (source_row < 0 || std::cmp_greater_equal(source_row, configs.size())) {
     return false;
   }
 

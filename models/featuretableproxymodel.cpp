@@ -1,5 +1,7 @@
 #include "featuretableproxymodel.h"
 
+#include <utility>
+
 #include "containers.h"
 
 FeatureTableProxyModel::FeatureTableProxyModel(QObject* parent)
@@ -176,7 +178,7 @@ bool FeatureTableProxyModel::filterAcceptsRow(
 bool FeatureTableProxyModel::filterAcceptsColumn(
     int source_column, const QModelIndex& source_parent) const {
   // get and check display attribute
-  if (getFeatureDisplayAttributes().size() < source_column) {
+  if (std::cmp_less(getFeatureDisplayAttributes().size(), source_column)) {
     return false;
   }
   int attr = getFeatureDisplayAttributes().at(source_column);
@@ -215,8 +217,11 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex& left,
   // get and check row index for each model index
   int leftIndex = left.row();
   int rightIndex = right.row();
-  if (source_model->getCurrentJob()->getFeaturesList().size() <= leftIndex ||
-      source_model->getCurrentJob()->getFeaturesList().size() <= rightIndex) {
+  if (std::cmp_less_equal(
+          source_model->getCurrentJob()->getFeaturesList().size(), leftIndex) ||
+      std::cmp_less_equal(
+          source_model->getCurrentJob()->getFeaturesList().size(),
+          rightIndex)) {
     return false;
   }
 
