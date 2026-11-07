@@ -483,8 +483,6 @@ add_custom_command(TARGET openIndy POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/config" "$<TARGET_FILE_DIR:openIndy>/config"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/example" "$<TARGET_FILE_DIR:openIndy>/example"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/res-rt/plugins" "$<TARGET_FILE_DIR:openIndy>/plugins"
     # package each plugin itself - PluginRepository scans plugins/
     # directly, no separate registration step needed
