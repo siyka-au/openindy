@@ -4,7 +4,104 @@
 
 #include <algorithm>
 
-// QPointer<OiRequestHandler> OiRequestHandler::myRequestHandler(NULL);
+#include "convert.h"
+#include "network_convert.h"
+#include "openindy/network.pb.h"
+
+namespace oipb = openindy::v1;
+
+namespace {
+
+// The feature types a client may create, in the order the first protocol
+// versions numbered them. Group, point group and level are not creatable
+// over the network.
+std::optional<FeatureTypes> creatableType(oipb::FeatureKind kind) {
+  const auto type = oi::codec::fromProto(kind);
+  if (!type.has_value()) {
+    return std::nullopt;
+  }
+  switch (*type) {
+    case FeatureTypes::eUndefinedFeature:
+    case FeatureTypes::eLevelFeature:
+    case FeatureTypes::eGroupFeature:
+    case FeatureTypes::ePointGroupFeature:
+      return std::nullopt;
+    default:
+      return type;
+  }
+}
+
+OiRequestResponse::RequestType requestTypeOf(
+    oipb::Request::PayloadCase payload) {
+  using Case = oipb::Request;
+  using Type = OiRequestResponse::RequestType;
+  switch (payload) {
+    case Case::kGetProject:
+      return Type::eGetProject;
+    case Case::kGetActiveFeature:
+      return Type::eGetActiveFeature;
+    case Case::kSetActiveFeature:
+      return Type::eSetActiveFeature;
+    case Case::kGetActiveStation:
+      return Type::eGetActiveStation;
+    case Case::kSetActiveStation:
+      return Type::eSetActiveStation;
+    case Case::kGetActiveCoordinateSystem:
+      return Type::eGetActiveCoordinateSystem;
+    case Case::kSetActiveCoordinateSystem:
+      return Type::eSetActiveCoordinateSystem;
+    case Case::kAim:
+      return Type::eAim;
+    case Case::kMeasure:
+      return Type::eMeasure;
+    case Case::kStartWatchwindow:
+      return Type::eStartWatchwindow;
+    case Case::kStopWatchwindow:
+      return Type::eStopWatchwindow;
+    case Case::kTool:
+      return Type::eOiToolRequest;
+    case Case::kGetFeatures:
+      return Type::eGetFeatures;
+    case Case::kAddFeatures:
+      return Type::eAddFeatures;
+    case Case::kGetObservations:
+      return Type::eGetObservations;
+    case Case::kRemoveObservations:
+      return Type::eRemoveObservations;
+    case Case::kGetParameters:
+      return Type::eGetParameters;
+    case Case::kGetMeasurementConfigs:
+      return Type::eGetMeasurementConfigs;
+    case Case::kGetMeasurementConfig:
+      return Type::eGetMeasurementConfig;
+    case Case::kSetMeasurementConfig:
+      return Type::eSetMeasurementConfig;
+    case Case::kGetCoordinateSystems:
+      return Type::eGetCoordinateSystems;
+    case Case::PAYLOAD_NOT_SET:
+      break;
+  }
+  return Type::eUnknownRequest;
+}
+
+QByteArray serialize(const oipb::Envelope& envelope) {
+  const std::string bytes = envelope.SerializeAsString();
+  return QByteArray(bytes.data(), static_cast<qsizetype>(bytes.size()));
+}
+
+int idOf(const Feature* feature) {
+  return feature != nullptr ? feature->getId() : 0;
+}
+
+oipb::MeasurementConfigEntry configEntry(const MeasurementConfig& config,
+                                         bool saved) {
+  oipb::MeasurementConfigEntry entry;
+  *entry.mutable_config() = oi::codec::toProto(config);
+  entry.set_saved(saved);
+  return entry;
+}
+
+}  // namespace
 
 OiRequestHandler::OiRequestHandler(QObject* parent) {
   // initially no watch window task in process
@@ -69,102 +166,147 @@ void OiRequestHandler::setMeasurementConfigManager(
 
 /*!
  * \brief OiRequestHandler::receiveRequest
- * Parses a XML request and calls the corresponding method to do the requested
- * task
+ * Parses a serialized request envelope and calls the corresponding method to
+ * do the requested task. Whatever the input, exactly one response is sent
+ * (except for tool requests, which are not answered).
  * \param request
  * \return
  */
 bool OiRequestHandler::receiveRequest(OiRequestResponse request) {
-  // check request
-  if (request.request.isNull() || request.request.documentElement().isNull() ||
-      request.request.documentElement().tagName().compare("OiRequest") != 0 ||
-      !request.request.documentElement().hasAttribute("id")) {
-    this->sendErrorMessage(request, OiRequestResponse::RequestType::eGetProject,
-                           OiRequestResponse::ErrorCode::eWrongFormat);
+  using Type = OiRequestResponse::RequestType;
+  using Error = OiRequestResponse::ErrorCode;
+
+  // check request: it must be an envelope holding a request
+  oipb::Envelope envelope;
+  if (!envelope.ParseFromArray(request.request.constData(),
+                               static_cast<int>(request.request.size())) ||
+      envelope.content_case() != oipb::Envelope::kRequest) {
+    this->sendErrorMessage(request, 0, Type::eUnknownRequest,
+                           Error::eWrongFormat);
     return false;
   }
+  const int requestId = envelope.request_id();
+  const oipb::Request& message = envelope.request();
 
-  // get request type
-  int id = request.request.documentElement().attribute("id").toInt();
-  OiRequestResponse::RequestType type = this->getRequestType(id);
+  // a request without a payload is malformed; one with a payload this version
+  // does not know (a field from a newer protocol) is an unknown request
+  const Type type = requestTypeOf(message.payload_case());
+  if (type == Type::eUnknownRequest &&
+      message.GetReflection()->GetUnknownFields(message).empty()) {
+    this->sendErrorMessage(request, requestId, type, Error::eWrongFormat);
+    return false;
+  }
 
   // check current job
   if (this->currentJob.isNull()) {
-    this->sendErrorMessage(request, type, OiRequestResponse::ErrorCode::eNoJob);
+    this->sendErrorMessage(request, requestId, type, Error::eNoJob);
     return false;
   }
 
+  // tool requests are not answered
+  if (type == Type::eOiToolRequest) {
+    return true;
+  }
+
   // perform the task defined by type
-  switch (type) {
-    case OiRequestResponse::RequestType::eGetProject:
-      this->getProject(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetActiveFeature:
-      this->getActiveFeature(request);
-      return true;
-    case OiRequestResponse::RequestType::eSetActiveFeature:
-      this->setActiveFeature(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetActiveStation:
-      this->getActiveStation(request);
-      return true;
-    case OiRequestResponse::RequestType::eSetActiveStation:
-      this->setActiveStation(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetActiveCoordinateSystem:
-      this->getActiveCoordinateSystem(request);
-      return true;
-    case OiRequestResponse::RequestType::eSetActiveCoordinateSystem:
-      this->setActiveCoordinateSystem(request);
-      return true;
-    case OiRequestResponse::RequestType::eAim:
-      this->aim(request);
-      return true;
-    case OiRequestResponse::RequestType::eMeasure:
-      this->measure(request);
-      return true;
-    case OiRequestResponse::RequestType::eStartWatchwindow:
-      this->startWatchwindow(request);
-      return true;
-    case OiRequestResponse::RequestType::eStopWatchwindow:
-      this->stopWatchwindow(request);
-      return true;
-    case OiRequestResponse::RequestType::eOiToolRequest:
-      // emit this->sendOiToolRequest(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetFeatures:
-      this->getFeatures(request);
-      return true;
-    case OiRequestResponse::RequestType::eAddFeatures:
-      this->addFeatures(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetObservations:
-      this->getObservations(request);
-      return true;
-    case OiRequestResponse::RequestType::eRemoveObservations:
-      this->removeObservations(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetParameters:
-      this->getParameters(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetMeasurementConfigs:
-      this->getMeasurementConfigs(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetMeasurementConfig:
-      this->getMeasurementConfig(request);
-      return true;
-    case OiRequestResponse::RequestType::eSetMeasurementConfig:
-      this->setMeasurementConfig(request);
-      return true;
-    case OiRequestResponse::RequestType::eGetCoordinateSystems:
-      this->getCoordinateSystems(request);
-      return true;
-    default:
-      this->sendErrorMessage(request,
-                             OiRequestResponse::RequestType::eGetProject,
-                             OiRequestResponse::ErrorCode::eUnknownRequestType);
+  oipb::Response response;
+  response.set_request(oi::codec::toProto(type));
+  Error error = Error::eNoError;
+  switch (message.payload_case()) {
+    case oipb::Request::kGetProject:
+      error = this->getProject(message, response);
+      break;
+    case oipb::Request::kGetActiveFeature:
+      error = this->getActiveFeature(message, response);
+      break;
+    case oipb::Request::kSetActiveFeature:
+      error = this->setActiveFeature(message, response);
+      break;
+    case oipb::Request::kGetActiveStation:
+      error = this->getActiveStation(message, response);
+      break;
+    case oipb::Request::kSetActiveStation:
+      error = this->setActiveStation(message, response);
+      break;
+    case oipb::Request::kGetActiveCoordinateSystem:
+      error = this->getActiveCoordinateSystem(message, response);
+      break;
+    case oipb::Request::kSetActiveCoordinateSystem:
+      error = this->setActiveCoordinateSystem(message, response);
+      break;
+    case oipb::Request::kAim:
+      error = this->aim(message, response);
+      break;
+    case oipb::Request::kMeasure:
+      error = this->measure(message, response);
+      break;
+    case oipb::Request::kStartWatchwindow:
+      error = this->startWatchwindow(message, response, request);
+      break;
+    case oipb::Request::kStopWatchwindow:
+      error = this->stopWatchwindow(message, response);
+      break;
+    case oipb::Request::kGetFeatures:
+      error = this->getFeatures(message, response);
+      break;
+    case oipb::Request::kAddFeatures:
+      error = this->addFeatures(message, response);
+      break;
+    case oipb::Request::kGetObservations:
+      error = this->getObservations(message, response);
+      break;
+    case oipb::Request::kRemoveObservations:
+      error = this->removeObservations(message, response);
+      break;
+    case oipb::Request::kGetParameters:
+      error = this->getParameters(message, response);
+      break;
+    case oipb::Request::kGetMeasurementConfigs:
+      error = this->getMeasurementConfigs(message, response);
+      break;
+    case oipb::Request::kGetMeasurementConfig:
+      error = this->getMeasurementConfig(message, response);
+      break;
+    case oipb::Request::kSetMeasurementConfig:
+      error = this->setMeasurementConfig(message, response);
+      break;
+    case oipb::Request::kGetCoordinateSystems:
+      error = this->getCoordinateSystems(message, response);
+      break;
+    case oipb::Request::kTool:
+    case oipb::Request::PAYLOAD_NOT_SET:
+      this->sendErrorMessage(request, requestId, type,
+                             Error::eUnknownRequestType);
       return false;
   }
+
+  // answer
+  response.set_error(oi::codec::toProto(error));
+  oipb::Envelope answer;
+  answer.set_request_id(requestId);
+  *answer.mutable_response() = std::move(response);
+  request.myRequestType = type;
+  request.errorCode = error;
+  request.response = serialize(answer);
+  emit this->sendResponse(request);
+  return true;
+}
+
+/*!
+ * \brief OiRequestHandler::sendNotification
+ * Sends a notification to one requester or, with -1, to everybody
+ */
+void OiRequestHandler::sendNotification(
+    OiRequestResponse::RequestType type,
+    const openindy::v1::Notification& notification, int requesterId) {
+  oipb::Envelope envelope;
+  *envelope.mutable_notification() = notification;
+
+  OiRequestResponse request;
+  request.requesterId = requesterId;
+  request.myRequestType = type;
+  request.response = serialize(envelope);
+  emit this->sendResponse(request);
 }
 
 /*!
@@ -172,18 +314,10 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse request) {
  * \param name
  */
 void OiRequestHandler::sensorActionStarted(const QString& name) {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType = OiRequestResponse::RequestType::eSensorActionStarted;
-  this->prepareResponse(request);
-
-  // set up action
-  QDomElement response = request.response.createElement("action");
-  response.setAttribute("name", name);
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  notification.mutable_sensor_action_started()->set_name(name.toStdString());
+  this->sendNotification(OiRequestResponse::RequestType::eSensorActionStarted,
+                         notification);
 }
 
 /*!
@@ -193,19 +327,12 @@ void OiRequestHandler::sensorActionStarted(const QString& name) {
  */
 void OiRequestHandler::sensorActionFinished(const bool& success,
                                             const QString& msg) {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType = OiRequestResponse::RequestType::eSensorActionFinished;
-  this->prepareResponse(request);
-
-  // set up action
-  QDomElement response = request.response.createElement("action");
-  response.setAttribute("success", success ? "1" : "0");
-  response.setAttribute("message", msg);
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  auto* finished = notification.mutable_sensor_action_finished();
+  finished->set_success(success);
+  finished->set_message(msg.toStdString());
+  this->sendNotification(OiRequestResponse::RequestType::eSensorActionFinished,
+                         notification);
 }
 
 /*!
@@ -214,19 +341,12 @@ void OiRequestHandler::sensorActionFinished(const bool& success,
  * \param msgType
  */
 void OiRequestHandler::log(const QString& msg, const MessageTypes& msgType) {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType = OiRequestResponse::RequestType::eMessageBox;
-  this->prepareResponse(request);
-
-  // set up message
-  QDomElement response = request.response.createElement("message");
-  response.setAttribute("text", msg);
-  response.setAttribute("type", QString::number(static_cast<int>(msgType)));
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  auto* box = notification.mutable_message_box();
+  box->set_text(msg.toStdString());
+  box->set_kind(oi::codec::toProto(msgType));
+  this->sendNotification(OiRequestResponse::RequestType::eMessageBox,
+                         notification);
 }
 
 /*!
@@ -234,518 +354,331 @@ void OiRequestHandler::log(const QString& msg, const MessageTypes& msgType) {
  * \param reading
  */
 void OiRequestHandler::realTimeReading(const QVariantMap& reading) {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType = OiRequestResponse::RequestType::eRealTimeReading;
-  this->prepareResponse(request);
-
   // check watch window task
   if (!this->watchWindowTask.taskInProgress) {
     return;
   }
-  request.requesterId = this->watchWindowTask.request.requesterId;
 
   // set up real time data
-  QDomElement measurement = request.response.createElement("measurement");
-  if (!this->buildWatchWindowMessage(measurement, reading)) {
+  oipb::Notification notification;
+  if (!this->buildWatchWindowMessage(*notification.mutable_real_time_reading(),
+                                     reading)) {
     return;
   }
-  request.response.documentElement().appendChild(measurement);
 
-  emit this->sendResponse(request);
+  // only the client that started the watch window gets the readings
+  this->sendNotification(OiRequestResponse::RequestType::eRealTimeReading,
+                         notification,
+                         this->watchWindowTask.request.requesterId);
 }
 
 /*!
  * \brief OiRequestHandler::activeFeatureChanged
  */
 void OiRequestHandler::activeFeatureChanged() {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType = OiRequestResponse::RequestType::eActiveFeatureChanged;
-  this->prepareResponse(request);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  notification.mutable_active_feature_changed();
+  this->sendNotification(OiRequestResponse::RequestType::eActiveFeatureChanged,
+                         notification);
 }
 
 /*!
  * \brief OiRequestHandler::activeStationChanged
  */
 void OiRequestHandler::activeStationChanged() {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType = OiRequestResponse::RequestType::eActiveStationChanged;
-  this->prepareResponse(request);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  notification.mutable_active_station_changed();
+  this->sendNotification(OiRequestResponse::RequestType::eActiveStationChanged,
+                         notification);
 }
 
 /*!
  * \brief OiRequestHandler::activeCoordinateSystemChanged
  */
 void OiRequestHandler::activeCoordinateSystemChanged() {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType =
-      OiRequestResponse::RequestType::eActiveCoordinateSystemChanged;
-  this->prepareResponse(request);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  notification.mutable_active_coordinate_system_changed();
+  this->sendNotification(
+      OiRequestResponse::RequestType::eActiveCoordinateSystemChanged,
+      notification);
 }
 
 /*!
  * \brief OiRequestHandler::featureSetChanged
  */
 void OiRequestHandler::featureSetChanged() {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType = OiRequestResponse::RequestType::eFeatureSetChanged;
-  this->prepareResponse(request);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  notification.mutable_feature_set_changed();
+  this->sendNotification(OiRequestResponse::RequestType::eFeatureSetChanged,
+                         notification);
 }
 
 /*!
  * \brief OiRequestHandler::featureAttributesChanged
  */
 void OiRequestHandler::featureAttributesChanged() {
-  // set up request
-  OiRequestResponse request;
-  request.requesterId = -1;
-  request.myRequestType =
-      OiRequestResponse::RequestType::eFeatureAttributesChanged;
-  this->prepareResponse(request);
-
-  emit this->sendResponse(request);
+  oipb::Notification notification;
+  notification.mutable_feature_attributes_changed();
+  this->sendNotification(
+      OiRequestResponse::RequestType::eFeatureAttributesChanged, notification);
 }
 
 /*!
  * \brief OiRequestHandler::getProject
- * \param request
  */
-void OiRequestHandler::getProject(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetProject;
-  this->prepareResponse(request);
-
-  // The network protocol is still XML (it moves to protobuf with the rest of
-  // the wire format); until then the project travels as its protobuf bytes,
-  // base64 encoded, in a single element.
+OiRequestResponse::ErrorCode OiRequestHandler::getProject(
+    const Request& /*request*/, Response& response) {
   const QByteArray project = projectExchanger.saveProject(this->currentJob);
-  if (!project.isEmpty()) {
-    QDomElement element = request.response.createElement("project");
-    element.setAttribute("encoding", "base64");
-    element.appendChild(request.response.createTextNode(
-        QString::fromLatin1(project.toBase64())));
-    request.response.documentElement().appendChild(element);
-  }
-
-  emit this->sendResponse(request);
+  response.mutable_get_project()->set_project(
+      project.constData(), static_cast<size_t>(project.size()));
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::getActiveFeature
- * \param request
  */
-void OiRequestHandler::getActiveFeature(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetActiveFeature;
-  this->prepareResponse(request);
-
-  // get and set active feature
-  QDomElement response = request.response.createElement("activeFeature");
+OiRequestResponse::ErrorCode OiRequestHandler::getActiveFeature(
+    const Request& /*request*/, Response& response) {
+  auto* payload = response.mutable_get_active_feature();
   if (!this->currentJob->getActiveFeature().isNull() &&
       !this->currentJob->getActiveFeature()->getFeature().isNull()) {
-    response.setAttribute(
-        "ref", this->currentJob->getActiveFeature()->getFeature()->getId());
-  } else {
-    response.setAttribute("ref", -1);
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoActiveFeature));
+    payload->set_id(
+        this->currentJob->getActiveFeature()->getFeature()->getId());
+    return ErrorCode::eNoError;
   }
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return ErrorCode::eNoActiveFeature;
 }
 
 /*!
  * \brief OiRequestHandler::setActiveFeature
- * \param request
  */
-void OiRequestHandler::setActiveFeature(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eSetActiveFeature;
-  this->prepareResponse(request);
-
-  int errorCode = static_cast<int>(OiRequestResponse::ErrorCode::eNoError);
+OiRequestResponse::ErrorCode OiRequestHandler::setActiveFeature(
+    const Request& request, Response& response) {
+  ErrorCode errorCode = ErrorCode::eNoError;
 
   // set the active feature
-  QDomElement activeFeature =
-      request.request.documentElement().firstChildElement("activeFeature");
-  if (!activeFeature.isNull() && activeFeature.hasAttribute("ref")) {
-    QPointer<FeatureWrapper> myFeature = this->currentJob->getFeatureById(
-        activeFeature.attribute("ref").toInt());
+  const auto& message = request.set_active_feature();
+  if (message.has_id()) {
+    QPointer<FeatureWrapper> myFeature =
+        this->currentJob->getFeatureById(message.id());
     if (!myFeature.isNull() && !myFeature->getFeature().isNull()) {
       myFeature->getFeature()->setActiveFeatureState(true);
     } else {
-      errorCode =
-          static_cast<int>(OiRequestResponse::ErrorCode::eNoFeatureWithId);
+      errorCode = ErrorCode::eNoFeatureWithId;
     }
   } else {
-    errorCode = static_cast<int>(OiRequestResponse::ErrorCode::eWrongFormat);
+    errorCode = ErrorCode::eWrongFormat;
   }
 
-  // add the new active feature to XML response
-  QDomElement response = request.response.createElement("activeFeature");
+  // report the new active feature
+  auto* payload = response.mutable_set_active_feature();
   if (!this->currentJob->getActiveFeature().isNull() &&
       !this->currentJob->getActiveFeature()->getFeature().isNull()) {
-    response.setAttribute(
-        "ref", this->currentJob->getActiveFeature()->getFeature()->getId());
-  } else {
-    response.setAttribute("ref", -1);
+    payload->set_id(
+        this->currentJob->getActiveFeature()->getFeature()->getId());
   }
-  request.response.documentElement().setAttribute("errorCode",
-                                                  static_cast<int>(errorCode));
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return errorCode;
 }
 
 /*!
  * \brief OiRequestHandler::getActiveStation
- * \param request
  */
-void OiRequestHandler::getActiveStation(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetActiveStation;
-  this->prepareResponse(request);
-
-  // get and set active station
-  QDomElement response = request.response.createElement("activeStation");
+OiRequestResponse::ErrorCode OiRequestHandler::getActiveStation(
+    const Request& /*request*/, Response& response) {
+  auto* payload = response.mutable_get_active_station();
   if (!this->currentJob->getActiveStation().isNull()) {
-    response.setAttribute("ref", this->currentJob->getActiveStation()->getId());
-  } else {
-    response.setAttribute("ref", -1);
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoActiveStation));
+    payload->set_id(this->currentJob->getActiveStation()->getId());
+    return ErrorCode::eNoError;
   }
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return ErrorCode::eNoActiveStation;
 }
 
 /*!
  * \brief OiRequestHandler::setActiveStation
- * \param request
  */
-void OiRequestHandler::setActiveStation(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eSetActiveStation;
-  this->prepareResponse(request);
-
-  int errorCode = static_cast<int>(OiRequestResponse::ErrorCode::eNoError);
+OiRequestResponse::ErrorCode OiRequestHandler::setActiveStation(
+    const Request& request, Response& response) {
+  ErrorCode errorCode = ErrorCode::eNoError;
 
   // set the active station
-  QDomElement activeStation =
-      request.request.documentElement().firstChildElement("activeStation");
-  if (!activeStation.isNull() && activeStation.hasAttribute("ref")) {
-    QPointer<FeatureWrapper> myFeature = this->currentJob->getFeatureById(
-        activeStation.attribute("ref").toInt());
+  const auto& message = request.set_active_station();
+  if (message.has_id()) {
+    QPointer<FeatureWrapper> myFeature =
+        this->currentJob->getFeatureById(message.id());
     if (!myFeature.isNull() && !myFeature->getStation().isNull()) {
       myFeature->getStation()->setActiveStationState(true);
     } else {
-      errorCode =
-          static_cast<int>(OiRequestResponse::ErrorCode::eNoFeatureWithId);
+      errorCode = ErrorCode::eNoFeatureWithId;
     }
   } else {
-    errorCode = static_cast<int>(OiRequestResponse::ErrorCode::eWrongFormat);
+    errorCode = ErrorCode::eWrongFormat;
   }
 
-  // add the new active station to XML response
-  QDomElement response = request.response.createElement("activeStation");
+  // report the new active station
+  auto* payload = response.mutable_set_active_station();
   if (!this->currentJob->getActiveStation().isNull()) {
-    response.setAttribute("ref", this->currentJob->getActiveStation()->getId());
-  } else {
-    response.setAttribute("ref", -1);
+    payload->set_id(this->currentJob->getActiveStation()->getId());
   }
-  request.response.documentElement().setAttribute("errorCode",
-                                                  static_cast<int>(errorCode));
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return errorCode;
 }
 
 /*!
  * \brief OiRequestHandler::getActiveCoordinateSystem
- * \param request
  */
-void OiRequestHandler::getActiveCoordinateSystem(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType =
-      OiRequestResponse::RequestType::eGetActiveCoordinateSystem;
-  this->prepareResponse(request);
-
-  // get and set active coordinate system
-  QDomElement response =
-      request.response.createElement("activeCoordinateSystem");
+OiRequestResponse::ErrorCode OiRequestHandler::getActiveCoordinateSystem(
+    const Request& /*request*/, Response& response) {
+  auto* payload = response.mutable_get_active_coordinate_system();
   if (!this->currentJob->getActiveCoordinateSystem().isNull()) {
-    response.setAttribute(
-        "ref", this->currentJob->getActiveCoordinateSystem()->getId());
-  } else {
-    response.setAttribute("ref", -1);
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(
-            OiRequestResponse::ErrorCode::eNoActiveCoordinateSystem));
+    payload->set_id(this->currentJob->getActiveCoordinateSystem()->getId());
+    return ErrorCode::eNoError;
   }
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return ErrorCode::eNoActiveCoordinateSystem;
 }
 
 /*!
  * \brief OiRequestHandler::setActiveCoordinateSystem
- * \param request
  */
-void OiRequestHandler::setActiveCoordinateSystem(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType =
-      OiRequestResponse::RequestType::eSetActiveCoordinateSystem;
-  this->prepareResponse(request);
-
-  int errorCode = static_cast<int>(OiRequestResponse::ErrorCode::eNoError);
+OiRequestResponse::ErrorCode OiRequestHandler::setActiveCoordinateSystem(
+    const Request& request, Response& response) {
+  ErrorCode errorCode = ErrorCode::eNoError;
 
   // set the active coordinate system
-  QDomElement activeCoordinateSystem =
-      request.request.documentElement().firstChildElement(
-          "activeCoordinateSystem");
-  if (!activeCoordinateSystem.isNull() &&
-      activeCoordinateSystem.hasAttribute("ref")) {
-    QPointer<FeatureWrapper> myFeature = this->currentJob->getFeatureById(
-        activeCoordinateSystem.attribute("ref").toInt());
+  const auto& message = request.set_active_coordinate_system();
+  if (message.has_id()) {
+    QPointer<FeatureWrapper> myFeature =
+        this->currentJob->getFeatureById(message.id());
     if (!myFeature.isNull() && !myFeature->getCoordinateSystem().isNull()) {
       myFeature->getCoordinateSystem()->setActiveCoordinateSystemState(true);
     } else {
-      errorCode =
-          static_cast<int>(OiRequestResponse::ErrorCode::eNoFeatureWithId);
+      errorCode = ErrorCode::eNoFeatureWithId;
     }
   } else {
-    errorCode = static_cast<int>(OiRequestResponse::ErrorCode::eWrongFormat);
+    errorCode = ErrorCode::eWrongFormat;
   }
 
-  // add the new active coordinate system to XML response
-  QDomElement response =
-      request.response.createElement("activeCoordinateSystem");
+  // report the new active coordinate system
+  auto* payload = response.mutable_set_active_coordinate_system();
   if (!this->currentJob->getActiveCoordinateSystem().isNull()) {
-    response.setAttribute(
-        "ref", this->currentJob->getActiveCoordinateSystem()->getId());
-  } else {
-    response.setAttribute("ref", -1);
+    payload->set_id(this->currentJob->getActiveCoordinateSystem()->getId());
   }
-  request.response.documentElement().setAttribute("errorCode",
-                                                  static_cast<int>(errorCode));
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return errorCode;
 }
 
 /*!
  * \brief OiRequestHandler::aim
- * \param request
  */
-void OiRequestHandler::aim(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eAim;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::aim(const Request& request,
+                                                   Response& response) {
   // get feature id
-  QDomElement id =
-      request.request.documentElement().firstChildElement("feature");
-  if (id.isNull() || !id.hasAttribute("ref")) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eWrongFormat));
-    emit this->sendResponse(request);
-    return;
+  const auto& message = request.aim();
+  if (!message.has_id()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // check if active station is valid
   if (this->currentJob->getActiveStation().isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoActiveStation));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoActiveStation;
   }
 
   // check if there is a sensor connected
   if (!this->currentJob->getActiveStation()->getIsSensorConnected()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoSensorConnected));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoSensorConnected;
   }
 
   // check if active coordinate system is valid
   if (this->currentJob->getActiveCoordinateSystem().isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(
-            OiRequestResponse::ErrorCode::eNoActiveCoordinateSystem));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoActiveCoordinateSystem;
   }
 
   // set the active feature
   QPointer<FeatureWrapper> feature =
-      this->currentJob->getFeatureById(id.attribute("ref").toInt());
+      this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoFeatureWithId));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoFeatureWithId;
   }
   feature->getGeometry()->setActiveFeatureState(true);
 
   // start aiming the active feature
   emit this->startAim();
 
-  emit this->sendResponse(request);
+  response.mutable_aim();
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::measure
- * \param request
  */
-void OiRequestHandler::measure(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eMeasure;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::measure(const Request& request,
+                                                       Response& response) {
   // get feature id
-  QDomElement id =
-      request.request.documentElement().firstChildElement("feature");
-  if (id.isNull() || !id.hasAttribute("ref")) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eWrongFormat));
-    emit this->sendResponse(request);
-    return;
+  const auto& message = request.measure();
+  if (!message.has_id()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // check if active station is valid
   if (this->currentJob->getActiveStation().isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoActiveStation));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoActiveStation;
   }
 
   // check if there is a sensor connected
   if (!this->currentJob->getActiveStation()->getIsSensorConnected()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoSensorConnected));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoSensorConnected;
   }
 
   // check if active coordinate system is valid
   if (this->currentJob->getActiveCoordinateSystem().isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(
-            OiRequestResponse::ErrorCode::eNoActiveCoordinateSystem));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoActiveCoordinateSystem;
   }
 
   // set the active feature
   QPointer<FeatureWrapper> feature =
-      this->currentJob->getFeatureById(id.attribute("ref").toInt());
+      this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoFeatureWithId));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoFeatureWithId;
   }
   feature->getGeometry()->setActiveFeatureState(true);
 
   // start measurement
   emit this->startMeasurement();
 
-  emit this->sendResponse(request);
+  response.mutable_measure();
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::startWatchwindow
- * \param request
  */
-void OiRequestHandler::startWatchwindow(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eStartWatchwindow;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::startWatchwindow(
+    const Request& request, Response& response,
+    const OiRequestResponse& carrier) {
   // only one watch window task should be open at once
   if (this->watchWindowTask.taskInProgress) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eTaskInProcess));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eTaskInProcess;
   }
 
   // get requested reading type
-  ReadingTypes myReadingType;
-  QDomElement readingType =
-      request.request.documentElement().firstChildElement("readingType");
-  if (!readingType.isNull() && readingType.hasAttribute("type")) {
-    myReadingType = (ReadingTypes)readingType.attribute("type").toInt();
-  } else {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eWrongFormat));
-    emit this->sendResponse(request);
-    return;
+  const auto myReadingType =
+      oi::codec::fromProto(request.start_watchwindow().reading());
+  if (!myReadingType.has_value()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // check active feature
   if (this->currentJob->getActiveFeature().isNull() ||
       this->currentJob->getActiveFeature()->getFeature().isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoActiveFeature));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoActiveFeature;
   }
 
   // get and check active station
   QPointer<Station> activeStation = this->currentJob->getActiveStation();
   if (activeStation.isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoActiveStation));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoActiveStation;
   }
 
   // check sensor
   if (!activeStation->getIsSensorConnected()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoSensorConnected));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoSensorConnected;
   }
 
   // connect the reading stream to the request handler
@@ -753,41 +686,31 @@ void OiRequestHandler::startWatchwindow(OiRequestResponse& request) {
                    &OiRequestHandler::realTimeReading, Qt::AutoConnection);
 
   // start watch window
-  emit this->startReadingStream(myReadingType);
+  emit this->startReadingStream(*myReadingType);
 
   // save active watch window task
   this->watchWindowTask.taskInProgress = true;
-  this->watchWindowTask.type = myReadingType;
-  this->watchWindowTask.request = request;
+  this->watchWindowTask.type = *myReadingType;
+  this->watchWindowTask.request = carrier;
 
-  emit this->sendResponse(request);
+  response.mutable_start_watchwindow();
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::stopWatchwindow
- * \param request
  */
-void OiRequestHandler::stopWatchwindow(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eStopWatchwindow;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::stopWatchwindow(
+    const Request& /*request*/, Response& response) {
   // if no task is in process, no task has to be stopped
   if (!this->watchWindowTask.taskInProgress) {
-    request.response.documentElement().setAttribute(
-        "errorCode", static_cast<int>(OiRequestResponse::ErrorCode::eNoTask));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoTask;
   }
 
   // get and check active station
   QPointer<Station> activeStation = this->currentJob->getActiveStation();
   if (activeStation.isNull()) {
-    request.response.documentElement().setAttribute(
-        "errorCode",
-        static_cast<int>(OiRequestResponse::ErrorCode::eNoActiveStation));
-    emit this->sendResponse(request);
-    return;
+    return ErrorCode::eNoActiveStation;
   }
 
   // disconnect the reading stream from the request handler
@@ -801,24 +724,15 @@ void OiRequestHandler::stopWatchwindow(OiRequestResponse& request) {
   this->watchWindowTask.taskInProgress = false;
   this->watchWindowTask.request = OiRequestResponse();
 
-  emit this->sendResponse(request);
+  response.mutable_stop_watchwindow();
+  return ErrorCode::eNoError;
 }
 
 /*!
- * \brief OiRequestHandler::toolRequest
- * \param request
- */
-void OiRequestHandler::toolRequest(OiRequestResponse& request) {}
-
-/*!
  * \brief OiRequestHandler::getFeatures
- * \param request
  */
-void OiRequestHandler::getFeatures(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetFeatures;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::getFeatures(
+    const Request& /*request*/, Response& response) {
   // get a list of all features
   QList<QPointer<FeatureWrapper> > features =
       this->currentJob->getFeaturesList();
@@ -826,111 +740,61 @@ void OiRequestHandler::getFeatures(OiRequestResponse& request) {
   // sort the list according to the current sorting mode
   std::sort(features.begin(), features.end(), this->sorter);
 
-  // create and add features
-  QDomElement response = request.response.createElement("features");
+  // describe the features
+  auto* payload = response.mutable_get_features();
   foreach (const QPointer<FeatureWrapper>& feature, features) {
     // check feature
     if (feature.isNull() || feature->getFeature().isNull()) {
       continue;
     }
 
-    // create feature element
-    QDomElement featureTag = request.response.createElement("feature");
-    featureTag.setAttribute("type",
-                            static_cast<int>(feature->getFeatureTypeEnum()));
-
-    // add feature information
-    QDomElement id = request.response.createElement("id");
-    QDomText idText = request.response.createTextNode(
-        QString::number(feature->getFeature()->getId()));
-    id.appendChild(idText);
-    featureTag.appendChild(id);
-    QDomElement name = request.response.createElement("name");
-    QDomText nameText = request.response.createTextNode(
-        feature->getFeature()->getFeatureName());
-    name.appendChild(nameText);
-    featureTag.appendChild(name);
-    QDomElement group = request.response.createElement("group");
-    QDomText groupText =
-        request.response.createTextNode(feature->getFeature()->getGroupName());
-    group.appendChild(groupText);
-    featureTag.appendChild(group);
-    QDomElement isSolved = request.response.createElement("isSolved");
-    QDomText isSolvedText = request.response.createTextNode(
-        feature->getFeature()->getIsSolved() ? "1" : "0");
-    isSolved.appendChild(isSolvedText);
-    featureTag.appendChild(isSolved);
-    QDomElement isNominal = request.response.createElement("isNominal");
-    QDomText isNominalText = request.response.createTextNode(
-        (feature->getGeometry().isNull() ||
-         feature->getGeometry()->getOwnerDescription().has_value())
-            ? "0"
-            : "1");
-    isNominal.appendChild(isNominalText);
-    featureTag.appendChild(isNominal);
-
-    // add feature
-    response.appendChild(featureTag);
+    auto* summary = payload->add_features();
+    summary->set_id(feature->getFeature()->getId());
+    summary->set_kind(oi::codec::toProto(feature->getFeatureTypeEnum()));
+    summary->set_name(feature->getFeature()->getFeatureName().toStdString());
+    summary->set_group(feature->getFeature()->getGroupName().toStdString());
+    summary->set_solved(feature->getFeature()->getIsSolved());
+    summary->set_nominal(
+        !(feature->getGeometry().isNull() ||
+          feature->getGeometry()->getOwnerDescription().has_value()));
   }
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::addFeatures
- * \param request
  */
-void OiRequestHandler::addFeatures(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eAddFeatures;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::addFeatures(
+    const Request& request, Response& response) {
   // check measurement config manager
   if (this->measurementConfigManager.isNull()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eGetMeasurementConfigs,
-        OiRequestResponse::ErrorCode::eNoMeasurementConfigManager);
-    return;
+    return ErrorCode::eNoMeasurementConfigManager;
   }
 
   // check request
-  QDomElement type =
-      request.request.documentElement().firstChildElement("type");
-  QDomElement name =
-      request.request.documentElement().firstChildElement("name");
-  QDomElement group =
-      request.request.documentElement().firstChildElement("group");
-  QDomElement count =
-      request.request.documentElement().firstChildElement("count");
-  QDomElement nominalSystem =
-      request.request.documentElement().firstChildElement("nominalSystem");
-  QDomElement measurementConfig =
-      request.request.documentElement().firstChildElement("measurementConfig");
-  if (type.isNull() || name.isNull() || group.isNull() || count.isNull() ||
-      this->getFeatureType(type.text().toInt()) ==
-          FeatureTypes::eUndefinedFeature) {
-    this->sendErrorMessage(request,
-                           OiRequestResponse::RequestType::eAddFeatures,
-                           OiRequestResponse::ErrorCode::eWrongFormat);
-    return;
+  const auto& message = request.add_features();
+  const auto type = creatableType(message.kind());
+  if (!message.has_name() || !message.has_group() || !message.has_count() ||
+      !type.has_value()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // set up feature attributes
   FeatureAttributes attr;
-  attr.typeOfFeature = this->getFeatureType(type.text().toInt());
-  attr.name = name.text();
-  attr.group = group.text();
-  attr.count = count.text().toInt();
+  attr.typeOfFeature = *type;
+  attr.name = QString::fromStdString(message.name());
+  attr.group = QString::fromStdString(message.group());
+  attr.count = message.count();
   // D17: isActual/isNominal are no longer settable attributes - whether
   // a created geometry ends up nominal or actual now falls out of the
   // producer function attached to it, which this legacy network request
   // never specified in the first place
-  if (!nominalSystem.isNull()) {
-    attr.nominalSystem = nominalSystem.text();
+  if (message.has_nominal_system()) {
+    attr.nominalSystem = QString::fromStdString(message.nominal_system());
   }
-  if (!measurementConfig.isNull()) {
-    attr.measurementConfigName = measurementConfig.text();
+  if (message.has_measurement_config()) {
+    attr.measurementConfigName =
+        QString::fromStdString(message.measurement_config());
   }
 
   // add features
@@ -953,43 +817,32 @@ void OiRequestHandler::addFeatures(OiRequestResponse& request) {
     }
   }
 
-  emit this->sendResponse(request);
+  response.mutable_add_features();
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::getObservations
- * \param request
  */
-void OiRequestHandler::getObservations(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetObservations;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::getObservations(
+    const Request& request, Response& response) {
   // check request
-  QDomElement id = request.request.documentElement().firstChildElement("id");
-  if (id.isNull()) {
-    this->sendErrorMessage(request,
-                           OiRequestResponse::RequestType::eGetObservations,
-                           OiRequestResponse::ErrorCode::eWrongFormat);
-    return;
+  const auto& message = request.get_observations();
+  if (!message.has_id()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // get and check feature by id
   QPointer<FeatureWrapper> feature =
-      this->currentJob->getFeatureById(id.text().toInt());
+      this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
-    this->sendErrorMessage(request,
-                           OiRequestResponse::RequestType::eGetObservations,
-                           OiRequestResponse::ErrorCode::eNoFeatureWithId);
-    return;
+    return ErrorCode::eNoFeatureWithId;
   }
 
-  // add id
-  request.response.documentElement().appendChild(
-      request.response.importNode(id, true));
+  auto* payload = response.mutable_get_observations();
+  payload->set_id(message.id());
 
-  // create and add observations
-  QDomElement response = request.response.createElement("observations");
+  // describe the observations
   foreach (const QPointer<Observation>& obs,
            feature->getGeometry()->getObservations()) {
     // check observation
@@ -997,35 +850,12 @@ void OiRequestHandler::getObservations(OiRequestResponse& request) {
       continue;
     }
 
-    // create observation element
-    QDomElement observation = request.response.createElement("observation");
-
-    // add observation information
-    QDomElement id = request.response.createElement("id");
-    QDomText idText =
-        request.response.createTextNode(QString::number(obs->getId()));
-    id.appendChild(idText);
-    observation.appendChild(id);
-    QDomElement x = request.response.createElement("x");
-    QDomText xText = request.response.createTextNode(
-        QString::number(obs->getXYZ().getAt(0), 'f', 7));
-    x.appendChild(xText);
-    observation.appendChild(x);
-    QDomElement y = request.response.createElement("y");
-    QDomText yText = request.response.createTextNode(
-        QString::number(obs->getXYZ().getAt(1), 'f', 7));
-    y.appendChild(yText);
-    observation.appendChild(y);
-    QDomElement z = request.response.createElement("z");
-    QDomText zText = request.response.createTextNode(
-        QString::number(obs->getXYZ().getAt(2), 'f', 7));
-    z.appendChild(zText);
-    observation.appendChild(z);
-    QDomElement isValid = request.response.createElement("isValid");
-    QDomText isValidText =
-        request.response.createTextNode(obs->getIsValid() ? "1" : "0");
-    isValid.appendChild(isValidText);
-    observation.appendChild(isValid);
+    auto* observation = payload->add_observations();
+    observation->set_id(obs->getId());
+    observation->mutable_xyz()->set_x(obs->getXYZ().getAt(0));
+    observation->mutable_xyz()->set_y(obs->getXYZ().getAt(1));
+    observation->mutable_xyz()->set_z(obs->getXYZ().getAt(2));
+    observation->set_valid(obs->getIsValid());
 
     // add deviations and use state
     if (feature->getGeometry()->getFunctions().size() > 0 &&
@@ -1049,73 +879,36 @@ void OiRequestHandler::getObservations(OiRequestResponse& request) {
           residual.corrections.contains(attrVy) &&
           residual.corrections.contains(attrVz) &&
           residual.corrections.contains(attrV)) {
-        // set up deviations
-        QDomElement vx = request.response.createElement("vx");
-        QDomText vxText = request.response.createTextNode(
-            QString::number(residual.corrections[attrVx], 'f', 7));
-        vx.appendChild(vxText);
-        observation.appendChild(vx);
-        QDomElement vy = request.response.createElement("vy");
-        QDomText vyText = request.response.createTextNode(
-            QString::number(residual.corrections[attrVy], 'f', 7));
-        vy.appendChild(vyText);
-        observation.appendChild(vy);
-        QDomElement vz = request.response.createElement("vz");
-        QDomText vzText = request.response.createTextNode(
-            QString::number(residual.corrections[attrVz], 'f', 7));
-        vz.appendChild(vzText);
-        observation.appendChild(vz);
-        QDomElement v = request.response.createElement("v");
-        QDomText vText = request.response.createTextNode(
-            QString::number(residual.corrections[attrV], 'f', 7));
-        v.appendChild(vText);
-        observation.appendChild(v);
+        auto* deviation = observation->mutable_deviation();
+        deviation->set_vx(residual.corrections[attrVx]);
+        deviation->set_vy(residual.corrections[attrVy]);
+        deviation->set_vz(residual.corrections[attrVz]);
+        deviation->set_v(residual.corrections[attrV]);
       }
 
       // set up use state
-      QDomElement isUsed = request.response.createElement("isUsed");
-      QDomText isUsedText = request.response.createTextNode(
-          function->getIsUsed(0, obs->getId()) ? "1" : "0");
-      isUsed.appendChild(isUsedText);
-      observation.appendChild(isUsed);
+      observation->set_used(function->getIsUsed(0, obs->getId()));
     }
-
-    // add observation
-    response.appendChild(observation);
   }
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::removeObservations
- * \param request
  */
-void OiRequestHandler::removeObservations(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eRemoveObservations;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::removeObservations(
+    const Request& request, Response& response) {
   // check request
-  QDomElement id = request.request.documentElement().firstChildElement("id");
-  QDomElement observations =
-      request.request.documentElement().firstChildElement("observations");
-  if (id.isNull() || observations.isNull()) {
-    this->sendErrorMessage(request,
-                           OiRequestResponse::RequestType::eRemoveObservations,
-                           OiRequestResponse::ErrorCode::eWrongFormat);
-    return;
+  const auto& message = request.remove_observations();
+  if (!message.has_id() || !message.has_observations()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // get and check feature
   QPointer<FeatureWrapper> feature =
-      this->currentJob->getFeatureById(id.text().toInt());
+      this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
-    this->sendErrorMessage(request,
-                           OiRequestResponse::RequestType::eRemoveObservations,
-                           OiRequestResponse::ErrorCode::eNoFeatureWithId);
-    return;
+    return ErrorCode::eNoFeatureWithId;
   }
 
   // get a list of observations and functions of the feature
@@ -1126,15 +919,8 @@ void OiRequestHandler::removeObservations(OiRequestResponse& request) {
 
   // get a list of observation id's that shall be removed
   QList<int> obs2Remove;
-  QDomNodeList observationList = observations.childNodes();
-  for (int i = 0; i < observationList.size(); i++) {
-    // parse node to element
-    QDomElement elem = observationList.at(i).toElement();
-    if (elem.isNull() || !elem.hasAttribute("id")) {
-      continue;
-    }
-
-    obs2Remove.append(elem.attribute("id").toInt());
+  for (const int id : message.observations().ids()) {
+    obs2Remove.append(id);
   }
 
   // run through all observations and remove the marked ones
@@ -1155,486 +941,192 @@ void OiRequestHandler::removeObservations(OiRequestResponse& request) {
     obs->removeTargetGeometry(feature->getGeometry()->getId());
   }
 
-  emit this->sendResponse(request);
+  response.mutable_remove_observations();
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::getParameters
- * \param request
  */
-void OiRequestHandler::getParameters(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetParameters;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::getParameters(
+    const Request& request, Response& response) {
   // check request
-  QDomElement id = request.request.documentElement().firstChildElement("id");
-  if (id.isNull()) {
-    this->sendErrorMessage(request,
-                           OiRequestResponse::RequestType::eGetParameters,
-                           OiRequestResponse::ErrorCode::eWrongFormat);
-    return;
+  const auto& message = request.get_parameters();
+  if (!message.has_id()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // get and check feature by id
   QPointer<FeatureWrapper> feature =
-      this->currentJob->getFeatureById(id.text().toInt());
+      this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getFeature().isNull()) {
-    this->sendErrorMessage(request,
-                           OiRequestResponse::RequestType::eGetParameters,
-                           OiRequestResponse::ErrorCode::eNoFeatureWithId);
-    return;
+    return ErrorCode::eNoFeatureWithId;
   }
 
-  // add id
-  request.response.documentElement().appendChild(
-      request.response.importNode(id, true));
-
   // add feature information
-  QDomElement name = request.response.createElement("name");
-  QDomText nameText =
-      request.response.createTextNode(feature->getFeature()->getFeatureName());
-  name.appendChild(nameText);
-  request.response.documentElement().appendChild(name);
-  QDomElement type = request.response.createElement("type");
-  QDomText typeText = request.response.createTextNode(
-      QString::number(static_cast<int>(feature->getFeatureTypeEnum())));
-  type.appendChild(typeText);
-  request.response.documentElement().appendChild(type);
-  QDomElement group = request.response.createElement("group");
-  QDomText groupText =
-      request.response.createTextNode(feature->getFeature()->getGroupName());
-  group.appendChild(groupText);
-  request.response.documentElement().appendChild(group);
-  QDomElement isSolved = request.response.createElement("isSolved");
-  QDomText isSolvedText = request.response.createTextNode(
-      feature->getFeature()->getIsSolved() ? "1" : "0");
-  isSolved.appendChild(isSolvedText);
-  request.response.documentElement().appendChild(isSolved);
-  QDomElement isNominal = request.response.createElement("isNominal");
-  QDomText isNominalText = request.response.createTextNode(
-      (feature->getGeometry().isNull() ||
-       feature->getGeometry()->getOwnerDescription().has_value())
-          ? "0"
-          : "1");
-  isNominal.appendChild(isNominalText);
-  request.response.documentElement().appendChild(isNominal);
+  auto* payload = response.mutable_get_parameters();
+  payload->set_id(message.id());
+  payload->set_name(feature->getFeature()->getFeatureName().toStdString());
+  payload->set_kind(oi::codec::toProto(feature->getFeatureTypeEnum()));
+  payload->set_group(feature->getFeature()->getGroupName().toStdString());
+  payload->set_solved(feature->getFeature()->getIsSolved());
+  payload->set_nominal(
+      !(feature->getGeometry().isNull() ||
+        feature->getGeometry()->getOwnerDescription().has_value()));
 
   // add parameters
-  QDomElement parameters = request.response.createElement("parameters");
-  this->addParameters(request.response, parameters, feature);
-  request.response.documentElement().appendChild(parameters);
+  const QMap<QString, double> values = parametersOf(feature);
+  for (auto it = values.cbegin(); it != values.cend(); ++it) {
+    auto* parameter = payload->add_parameters();
+    parameter->set_name(it.key().toStdString());
+    parameter->set_value(it.value());
+  }
 
   // add standard deviation
   if (getIsGeometry(feature->getFeatureTypeEnum())) {
-    QDomElement stdev = request.response.createElement("stdev");
-    QDomText stdevText = request.response.createTextNode(QString::number(
-        feature->getGeometry()->getStatistic().getStdev(), 'f', 7));
-    stdev.appendChild(stdevText);
-    request.response.documentElement().appendChild(stdev);
+    payload->set_stdev(feature->getGeometry()->getStatistic().getStdev());
   }
-
-  emit this->sendResponse(request);
-}
-
-QDomElement OiRequestHandler::toXML(const MeasurementConfig& mConfig,
-                                    const bool isUserConfig,
-                                    QDomDocument& response) {
-  QDomElement config = response.createElement("measurementConfig");
-
-  QDomElement name = response.createElement("name");
-  QDomText nameText = response.createTextNode(mConfig.getName());
-  name.appendChild(nameText);
-  config.appendChild(name);
-
-  QDomElement isSaved = response.createElement("isSaved");
-  QDomText isSavedText = response.createTextNode(isUserConfig ? "1" : "0");
-  isSaved.appendChild(isSavedText);
-  config.appendChild(isSaved);
-
-  QDomElement measurementType = response.createElement("measurementType");
-  QDomText measurementTypeText = response.createTextNode(
-      QString::number(static_cast<int>(mConfig.getMeasurementType())));
-  measurementType.appendChild(measurementTypeText);
-  config.appendChild(measurementType);
-
-  QDomElement measurementMode = response.createElement("measurementMode");
-  QDomText measurementModeText = response.createTextNode(
-      QString::number(static_cast<int>(mConfig.getMeasurementMode())));
-  measurementMode.appendChild(measurementModeText);
-  config.appendChild(measurementMode);
-
-  QDomElement maxObservations = response.createElement("maxObservations");
-  QDomText maxObservationsText =
-      response.createTextNode(QString::number(mConfig.getMaxObservations()));
-  maxObservations.appendChild(maxObservationsText);
-  config.appendChild(maxObservations);
-
-  QDomElement measureTwoSides = response.createElement("measureTwoSides");
-  QDomText measureTwoSidesText =
-      response.createTextNode(mConfig.getMeasureTwoSides() ? "1" : "0");
-  measureTwoSides.appendChild(measureTwoSidesText);
-  config.appendChild(measureTwoSides);
-
-  QDomElement timeInterval = response.createElement("timeInterval");
-  QDomText timeIntervalText =
-      response.createTextNode(QString::number(mConfig.getTimeInterval()));
-  timeInterval.appendChild(timeIntervalText);
-  config.appendChild(timeInterval);
-
-  QDomElement distanceInterval = response.createElement("distanceInterval");
-  QDomText distanceIntervalText =
-      response.createTextNode(QString::number(mConfig.getDistanceInterval()));
-  distanceInterval.appendChild(distanceIntervalText);
-  config.appendChild(distanceInterval);
-
-  return config;
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::getMeasurementConfigs
- * \param request
  */
-void OiRequestHandler::getMeasurementConfigs(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType =
-      OiRequestResponse::RequestType::eGetMeasurementConfigs;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::getMeasurementConfigs(
+    const Request& /*request*/, Response& response) {
   // check measurement config manager
   if (this->measurementConfigManager.isNull()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eGetMeasurementConfigs,
-        OiRequestResponse::ErrorCode::eNoMeasurementConfigManager);
-    return;
+    return ErrorCode::eNoMeasurementConfigManager;
   }
 
   // add configs
-  QDomElement configs = request.response.createElement("measurementConfigs");
+  auto* payload = response.mutable_get_measurement_configs();
   foreach (const MeasurementConfig& mConfig,
            this->measurementConfigManager->getConfigs()) {
-    configs.appendChild(
-        toXML(mConfig, mConfig.isUserConfig(), request.response));
+    *payload->add_configs() = configEntry(mConfig, mConfig.isUserConfig());
   }
-  request.response.documentElement().appendChild(configs);
-
-  emit this->sendResponse(request);
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::getMeasurementConfig
- * \param request
  */
-void OiRequestHandler::getMeasurementConfig(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetMeasurementConfig;
-  this->prepareResponse(request);
+OiRequestResponse::ErrorCode OiRequestHandler::getMeasurementConfig(
+    const Request& request, Response& response) {
+  // check measurement config manager
+  if (this->measurementConfigManager.isNull()) {
+    return ErrorCode::eNoMeasurementConfigManager;
+  }
 
   // check request
-  QDomElement id = request.request.documentElement().firstChildElement("id");
-  if (id.isNull()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eGetMeasurementConfig,
-        OiRequestResponse::ErrorCode::eWrongFormat);
-    return;
+  const auto& message = request.get_measurement_config();
+  if (!message.has_id()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // get and check feature by id
   QPointer<FeatureWrapper> feature =
-      this->currentJob->getFeatureById(id.text().toInt());
+      this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eGetMeasurementConfig,
-        OiRequestResponse::ErrorCode::eNoFeatureWithId);
-    return;
+    return ErrorCode::eNoFeatureWithId;
   }
-
-  // add id
-  request.response.documentElement().appendChild(
-      request.response.importNode(id, true));
 
   // add config
   MeasurementConfig mConfig = this->measurementConfigManager->getConfig(
       feature->getGeometry()->getMeasurementConfig());
 
-  request.response.documentElement().appendChild(
-      toXML(mConfig, false, request.response));
-
-  emit this->sendResponse(request);
+  auto* payload = response.mutable_get_measurement_config();
+  payload->set_id(message.id());
+  *payload->mutable_config() = configEntry(mConfig, false);
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::setMeasurementConfig
- * \param request
  */
-void OiRequestHandler::setMeasurementConfig(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eSetMeasurementConfig;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::setMeasurementConfig(
+    const Request& request, Response& response) {
   // check measurement config manager
   if (this->measurementConfigManager.isNull()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eSetMeasurementConfig,
-        OiRequestResponse::ErrorCode::eNoMeasurementConfigManager);
-    return;
+    return ErrorCode::eNoMeasurementConfigManager;
   }
 
   // check request
-  QDomElement id = request.request.documentElement().firstChildElement("id");
-  QDomElement measurementConfig =
-      request.request.documentElement().firstChildElement("measurementConfig");
-  QDomElement isSaved =
-      request.request.documentElement().firstChildElement("isSaved");
-  if (id.isNull() || measurementConfig.isNull() || isSaved.isNull()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eSetMeasurementConfig,
-        OiRequestResponse::ErrorCode::eWrongFormat);
-    return;
+  const auto& message = request.set_measurement_config();
+  if (!message.has_id() || !message.has_config_name() || !message.has_saved()) {
+    return ErrorCode::eWrongFormat;
   }
 
   // get and check feature by id
   QPointer<FeatureWrapper> feature =
-      this->currentJob->getFeatureById(id.text().toInt());
+      this->currentJob->getFeatureById(message.id());
   if (feature.isNull() || feature->getGeometry().isNull()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eSetMeasurementConfig,
-        OiRequestResponse::ErrorCode::eNoFeatureWithId);
-    return;
+    return ErrorCode::eNoFeatureWithId;
   }
 
   // get and check measurement config
+  const QString name = QString::fromStdString(message.config_name());
   MeasurementConfig mConfig;
-  bool userConfig = (bool)isSaved.text().toInt();
-  if (userConfig) {
-    mConfig =
-        this->measurementConfigManager->getUserConfig(measurementConfig.text());
+  if (message.saved()) {
+    mConfig = this->measurementConfigManager->getUserConfig(name);
   } else {
-    mConfig = this->measurementConfigManager->getProjectConfig(
-        measurementConfig.text());
+    mConfig = this->measurementConfigManager->getProjectConfig(name);
   }
   if (!mConfig.isValid()) {
-    this->sendErrorMessage(
-        request, OiRequestResponse::RequestType::eSetMeasurementConfig,
-        OiRequestResponse::ErrorCode::eNoMeasurementConfig);
-    return;
+    return ErrorCode::eNoMeasurementConfig;
   }
 
   // pass measurement config to feature
   feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
 
-  emit this->sendResponse(request);
+  response.mutable_set_measurement_config();
+  return ErrorCode::eNoError;
 }
 
 /*!
  * \brief OiRequestHandler::getCoordinateSystems
- * \param request
  */
-void OiRequestHandler::getCoordinateSystems(OiRequestResponse& request) {
-  // set up request
-  request.myRequestType = OiRequestResponse::RequestType::eGetCoordinateSystems;
-  this->prepareResponse(request);
-
+OiRequestResponse::ErrorCode OiRequestHandler::getCoordinateSystems(
+    const Request& /*request*/, Response& response) {
   // get all coordinate systems
   QList<QPointer<CoordinateSystem> > systems =
       this->currentJob->getCoordinateSystemsList();
   QList<QPointer<CoordinateSystem> > stations =
       this->currentJob->getStationSystemsList();
 
-  // create and add coordinate systems
-  QDomElement response = request.response.createElement("systems");
-  foreach (const QPointer<CoordinateSystem>& system, systems) {
-    // check coordinate system
-    if (system.isNull()) {
-      continue;
+  // describe the coordinate systems, then the station systems
+  auto* payload = response.mutable_get_coordinate_systems();
+  for (const auto* list : {&systems, &stations}) {
+    foreach (const QPointer<CoordinateSystem>& system, *list) {
+      // check coordinate system
+      if (system.isNull()) {
+        continue;
+      }
+
+      auto* summary = payload->add_systems();
+      summary->set_id(system->getId());
+      summary->set_name(system->getFeatureName().toStdString());
+      summary->set_group(system->getGroupName().toStdString());
     }
-
-    // create coordinate system element
-    QDomElement systemTag = request.response.createElement("system");
-
-    // add coordinate system information
-    QDomElement id = request.response.createElement("id");
-    QDomText idText =
-        request.response.createTextNode(QString::number(system->getId()));
-    id.appendChild(idText);
-    systemTag.appendChild(id);
-    QDomElement name = request.response.createElement("name");
-    QDomText nameText =
-        request.response.createTextNode(system->getFeatureName());
-    name.appendChild(nameText);
-    systemTag.appendChild(name);
-    QDomElement group = request.response.createElement("group");
-    QDomText groupText =
-        request.response.createTextNode(system->getGroupName());
-    group.appendChild(groupText);
-    systemTag.appendChild(group);
-
-    // add coordinate system
-    response.appendChild(systemTag);
   }
-  foreach (const QPointer<CoordinateSystem>& system, stations) {
-    // check coordinate system
-    if (system.isNull()) {
-      continue;
-    }
-
-    // create coordinate system element
-    QDomElement systemTag = request.response.createElement("system");
-
-    // add coordinate system information
-    QDomElement id = request.response.createElement("id");
-    QDomText idText =
-        request.response.createTextNode(QString::number(system->getId()));
-    id.appendChild(idText);
-    systemTag.appendChild(id);
-    QDomElement name = request.response.createElement("name");
-    QDomText nameText =
-        request.response.createTextNode(system->getFeatureName());
-    name.appendChild(nameText);
-    systemTag.appendChild(name);
-    QDomElement group = request.response.createElement("group");
-    QDomText groupText =
-        request.response.createTextNode(system->getGroupName());
-    group.appendChild(groupText);
-    systemTag.appendChild(group);
-
-    // add coordinate system
-    response.appendChild(systemTag);
-  }
-  request.response.documentElement().appendChild(response);
-
-  emit this->sendResponse(request);
+  return ErrorCode::eNoError;
 }
 
 /*!
- * \brief OiRequestHandler::getRequestType
- * Converts the given id to the corresponding request type
- * \param id
- * \return
- */
-OiRequestResponse::RequestType OiRequestHandler::getRequestType(int id) const {
-  switch (id) {
-    case 0:
-      return OiRequestResponse::RequestType::eGetProject;
-    case 1:
-      return OiRequestResponse::RequestType::eGetActiveFeature;
-    case 2:
-      return OiRequestResponse::RequestType::eSetActiveFeature;
-    case 3:
-      return OiRequestResponse::RequestType::eGetActiveStation;
-    case 4:
-      return OiRequestResponse::RequestType::eSetActiveStation;
-    case 5:
-      return OiRequestResponse::RequestType::eGetActiveCoordinateSystem;
-    case 6:
-      return OiRequestResponse::RequestType::eSetActiveCoordinateSystem;
-    case 7:
-      return OiRequestResponse::RequestType::eAim;
-    case 8:
-      return OiRequestResponse::RequestType::eMeasure;
-    case 9:
-      return OiRequestResponse::RequestType::eStartWatchwindow;
-    case 10:
-      return OiRequestResponse::RequestType::eStopWatchwindow;
-    case 11:
-      return OiRequestResponse::RequestType::eOiToolRequest;
-    case 12:
-      return OiRequestResponse::RequestType::eGetFeatures;
-    case 13:
-      return OiRequestResponse::RequestType::eAddFeatures;
-    case 14:
-      return OiRequestResponse::RequestType::eGetObservations;
-    case 15:
-      return OiRequestResponse::RequestType::eRemoveObservations;
-    case 16:
-      return OiRequestResponse::RequestType::eGetParameters;
-    case 17:
-      return OiRequestResponse::RequestType::eGetMeasurementConfigs;
-    case 18:
-      return OiRequestResponse::RequestType::eGetMeasurementConfig;
-    case 19:
-      return OiRequestResponse::RequestType::eSetMeasurementConfig;
-    case 20:
-      return OiRequestResponse::RequestType::eGetCoordinateSystems;
-  }
-
-  return OiRequestResponse::RequestType::eUnknownRequest;
-}
-
-/*!
- * \brief OiRequestHandler::getFeatureType
- * \param type
- * \return
- */
-FeatureTypes OiRequestHandler::getFeatureType(int type) const {
-  switch (type) {
-    case 0:
-      return FeatureTypes::eCircleFeature;
-    case 1:
-      return FeatureTypes::eConeFeature;
-    case 2:
-      return FeatureTypes::eCylinderFeature;
-    case 3:
-      return FeatureTypes::eEllipseFeature;
-    case 4:
-      return FeatureTypes::eEllipsoidFeature;
-    case 5:
-      return FeatureTypes::eHyperboloidFeature;
-    case 6:
-      return FeatureTypes::eLineFeature;
-    case 7:
-      return FeatureTypes::eNurbsFeature;
-    case 8:
-      return FeatureTypes::eParaboloidFeature;
-    case 9:
-      return FeatureTypes::ePlaneFeature;
-    case 10:
-      return FeatureTypes::ePointFeature;
-    case 11:
-      return FeatureTypes::ePointCloudFeature;
-    case 12:
-      return FeatureTypes::eScalarEntityAngleFeature;
-    case 13:
-      return FeatureTypes::eScalarEntityDistanceFeature;
-    case 14:
-      return FeatureTypes::eScalarEntityMeasurementSeriesFeature;
-    case 15:
-      return FeatureTypes::eScalarEntityTemperatureFeature;
-    case 16:
-      return FeatureTypes::eSlottedHoleFeature;
-    case 17:
-      return FeatureTypes::eSphereFeature;
-    case 18:
-      return FeatureTypes::eTorusFeature;
-    case 19:
-      return FeatureTypes::eCoordinateSystemFeature;
-    case 20:
-      return FeatureTypes::eStationFeature;
-    case 21:
-      return FeatureTypes::eTrafoParamFeature;
-  }
-
-  return FeatureTypes::eUndefinedFeature;
-}
-
-/*!
- * \brief OiRequestHandler::addParameters
- * Adds parameter elements the the parameters tag depending on the type of
- * feature
- * \param document
- * \param parameters
+ * \brief OiRequestHandler::parametersOf
+ * The parameters of a feature, depending on its type, as name/value pairs
+ * sorted by name
  * \param feature
  */
-void OiRequestHandler::addParameters(QDomDocument& document,
-                                     QDomElement& parameters,
-                                     const QPointer<FeatureWrapper>& feature) {
+QMap<QString, double> OiRequestHandler::parametersOf(
+    const QPointer<FeatureWrapper>& feature) {
   QMap<QString, double> values;
 
   // get parameter/value pairs
   switch (feature->getFeatureTypeEnum()) {
     case FeatureTypes::eCircleFeature:
       if (feature->getCircle().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getCircle()->getPosition().getVector().getAt(0));
@@ -1652,7 +1144,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eConeFeature:
       if (feature->getCone().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getCone()->getPosition().getVector().getAt(0));
@@ -1670,7 +1162,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eCylinderFeature:
       if (feature->getCylinder().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getCylinder()->getPosition().getVector().getAt(0));
@@ -1688,7 +1180,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eEllipseFeature:
       if (feature->getEllipse().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getEllipse()->getPosition().getVector().getAt(0));
@@ -1719,7 +1211,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eEllipsoidFeature:
       if (feature->getEllipsoid().isNull()) {
-        return;
+        return values;
       }
       values.insert(
           "x", feature->getEllipsoid()->getPosition().getVector().getAt(0));
@@ -1738,7 +1230,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eHyperboloidFeature:
       if (feature->getHyperboloid().isNull()) {
-        return;
+        return values;
       }
       values.insert(
           "x", feature->getHyperboloid()->getPosition().getVector().getAt(0));
@@ -1757,7 +1249,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eLineFeature:
       if (feature->getLine().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getLine()->getPosition().getVector().getAt(0));
@@ -1776,7 +1268,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eParaboloidFeature:
       if (feature->getParaboloid().isNull()) {
-        return;
+        return values;
       }
       values.insert(
           "x", feature->getParaboloid()->getPosition().getVector().getAt(0));
@@ -1794,7 +1286,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::ePlaneFeature:
       if (feature->getPlane().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getPlane()->getPosition().getVector().getAt(0));
@@ -1811,7 +1303,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::ePointFeature:
       if (feature->getPoint().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getPoint()->getPosition().getVector().getAt(0));
@@ -1823,20 +1315,20 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eScalarEntityAngleFeature:
       if (feature->getScalarEntityAngle().isNull()) {
-        return;
+        return values;
       }
       values.insert("angle", feature->getScalarEntityAngle()->getAngle());
       break;
     case FeatureTypes::eScalarEntityDistanceFeature:
       if (feature->getScalarEntityDistance().isNull()) {
-        return;
+        return values;
       }
       values.insert("distance",
                     feature->getScalarEntityDistance()->getDistance());
       break;
     case FeatureTypes::eScalarEntityMeasurementSeriesFeature:
       if (feature->getScalarEntityMeasurementSeries().isNull()) {
-        return;
+        return values;
       }
       values.insert(
           "measurement series",
@@ -1844,14 +1336,14 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eScalarEntityTemperatureFeature:
       if (feature->getScalarEntityTemperature().isNull()) {
-        return;
+        return values;
       }
       values.insert("temperature",
                     feature->getScalarEntityTemperature()->getTemperature());
       break;
     case FeatureTypes::eSlottedHoleFeature:
       if (feature->getSlottedHole().isNull()) {
-        return;
+        return values;
       }
       values.insert(
           "x", feature->getSlottedHole()->getPosition().getVector().getAt(0));
@@ -1877,7 +1369,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eSphereFeature:
       if (feature->getSphere().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getSphere()->getPosition().getVector().getAt(0));
@@ -1885,11 +1377,11 @@ void OiRequestHandler::addParameters(QDomDocument& document,
                     feature->getSphere()->getPosition().getVector().getAt(1));
       values.insert("z",
                     feature->getSphere()->getPosition().getVector().getAt(2));
-      values.insert("radius", feature->getCircle()->getRadius().getRadius());
+      values.insert("radius", feature->getSphere()->getRadius().getRadius());
       break;
     case FeatureTypes::eTorusFeature:
       if (feature->getTorus().isNull()) {
-        return;
+        return values;
       }
       values.insert("x",
                     feature->getTorus()->getPosition().getVector().getAt(0));
@@ -1909,7 +1401,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eCoordinateSystemFeature:
       if (feature->getCoordinateSystem().isNull()) {
-        return;
+        return values;
       }
       values.insert(
           "x",
@@ -1947,7 +1439,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eStationFeature:
       if (feature->getStation().isNull()) {
-        return;
+        return values;
       }
       values.insert(
           "x",
@@ -1964,7 +1456,7 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       break;
     case FeatureTypes::eTrafoParamFeature:
       if (feature->getTrafoParam().isNull()) {
-        return;
+        return values;
       }
       values.insert("tx", feature->getTrafoParam()->getTranslation().getAt(0));
       values.insert("ty", feature->getTrafoParam()->getTranslation().getAt(1));
@@ -1977,56 +1469,41 @@ void OiRequestHandler::addParameters(QDomDocument& document,
       values.insert("sz", feature->getTrafoParam()->getScale().getAt(2));
       break;
   }
-
-  // add the parameters
-  QStringList keys = values.keys();
-  foreach (const QString& key, keys) {
-    QDomElement parameter = document.createElement("parameter");
-    parameter.setAttribute("name", key);
-    parameter.setAttribute("value", QString::number(values.value(key), 'f', 7));
-    parameters.appendChild(parameter);
-  }
+  return values;
 }
 
 /*!
  * \brief OiRequestHandler::sendErrorMessage
+ * Answers with an error and no payload
  * \param request
+ * \param requestId the id of the request, echoed to the client
  * \param type
  * \param error
  */
 void OiRequestHandler::sendErrorMessage(OiRequestResponse request,
+                                        int requestId,
                                         OiRequestResponse::RequestType type,
                                         OiRequestResponse::ErrorCode error) {
-  // set up error message
-  request.myRequestType = type;
-  this->prepareResponse(request);
-  request.response.documentElement().setAttribute("errorCode",
-                                                  static_cast<int>(error));
+  oipb::Envelope envelope;
+  envelope.set_request_id(requestId);
+  auto* response = envelope.mutable_response();
+  response->set_request(oi::codec::toProto(type));
+  response->set_error(oi::codec::toProto(error));
 
+  request.myRequestType = type;
+  request.errorCode = error;
+  request.response = serialize(envelope);
   emit this->sendResponse(request);
 }
 
 /*!
- * \brief OiRequestHandler::prepareResponse
- * Creates a QDomElement for response and sets its attributes
- * \param request
- */
-void OiRequestHandler::prepareResponse(OiRequestResponse& request) const {
-  request.response.appendChild(request.response.createElement("OiResponse"));
-  request.response.documentElement().setAttribute(
-      "ref", static_cast<int>(request.myRequestType));
-  request.response.documentElement().setAttribute(
-      "errorCode", static_cast<int>(OiRequestResponse::ErrorCode::eNoError));
-}
-
-/*!
  * \brief OiRequestHandler::buildWatchWindowMessage
- * \param wwTag: the XML tag that shall be filled
+ * \param reading: the notification payload that shall be filled
  * \param streamData: the sensor stream data
  * \return
  */
-bool OiRequestHandler::buildWatchWindowMessage(QDomElement& wwTag,
-                                               const QVariantMap& streamData) {
+bool OiRequestHandler::buildWatchWindowMessage(
+    openindy::v1::RealTimeReading& reading, const QVariantMap& streamData) {
   // check current job
   if (this->currentJob.isNull()) {
     return false;
@@ -2085,11 +1562,11 @@ bool OiRequestHandler::buildWatchWindowMessage(QDomElement& wwTag,
       // build difference sensor - feature
       OiVec diff = streamXyz - xyz;
 
-      // fill watch window tag
-      wwTag.setTagName("cartesian");
-      wwTag.setAttribute("x", QString::number(diff.getAt(0)));
-      wwTag.setAttribute("y", QString::number(diff.getAt(1)));
-      wwTag.setAttribute("z", QString::number(diff.getAt(2)));
+      // fill the reading
+      auto* offset = reading.mutable_cartesian();
+      offset->set_x(diff.getAt(0));
+      offset->set_y(diff.getAt(1));
+      offset->set_z(diff.getAt(2));
 
       return true;
     }
@@ -2130,11 +1607,11 @@ bool OiRequestHandler::buildWatchWindowMessage(QDomElement& wwTag,
       // build difference sensor - feature
       OiVec diff = streamPolar - featurePolar;
 
-      // fill watch window tag
-      wwTag.setTagName("polar");
-      wwTag.setAttribute("azimuth", QString::number(diff.getAt(0)));
-      wwTag.setAttribute("zenith", QString::number(diff.getAt(1)));
-      wwTag.setAttribute("distance", QString::number(diff.getAt(2)));
+      // fill the reading
+      auto* offset = reading.mutable_polar();
+      offset->set_azimuth(diff.getAt(0));
+      offset->set_zenith(diff.getAt(1));
+      offset->set_distance(diff.getAt(2));
 
       return true;
     }

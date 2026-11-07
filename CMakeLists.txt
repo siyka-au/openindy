@@ -12,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SerialPort Network Xml WebSockets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SerialPort Network WebSockets LinguistTools)
 
 # --- version, derived from this repo's own git describe ---
 
@@ -447,7 +447,6 @@ target_link_libraries(OpenIndyApp
         Qt6::Svg
         Qt6::SerialPort
         Qt6::Network
-        Qt6::Xml
         Qt6::WebSockets
         OpenIndyCore
         OpenIndyMath
@@ -546,6 +545,12 @@ set_tests_properties(dialogs PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 add_executable(tst_projectexchange test/projectexchange/tst_projectexchange.cpp)
 target_link_libraries(tst_projectexchange PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME projectexchange COMMAND tst_projectexchange)
+
+# websocket remote-control protocol (protobuf): requests go into
+# OiRequestHandler as bytes, the answers are decoded from what it sends back
+add_executable(tst_requesthandler test/requesthandler/tst_requesthandler.cpp)
+target_link_libraries(tst_requesthandler PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyCodec)
+add_test(NAME requesthandler COMMAND tst_requesthandler)
 
 # config files (JSON): the shipped ones load and say what the old XML said;
 # bad files fall back

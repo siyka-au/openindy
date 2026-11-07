@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QPointer>
-#include <QtXml>
 
 #include "oijob.h"
 #include "oirequestresponse.h"

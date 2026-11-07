@@ -32,7 +32,7 @@ bool OiWebSocket::setSocket(const QPointer<QWebSocket>& mySocket) {
   this->socket = mySocket;
 
   // connect socket
-  QObject::connect(this->socket, &QWebSocket::textMessageReceived, this,
+  QObject::connect(this->socket, &QWebSocket::binaryMessageReceived, this,
                    &OiWebSocket::readMessage, Qt::AutoConnection);
   QObject::connect(this->socket, &QWebSocket::connected, this,
                    &OiWebSocket::connected, Qt::AutoConnection);
@@ -64,8 +64,11 @@ void OiWebSocket::close() {
  */
 void OiWebSocket::receiveResponse(const oi::OiRequestResponse& response) {
   // send response to client
+  if (this->socket.isNull()) {
+    return;
+  }
   if (this->internalRef == response.requesterId || response.requesterId == -1) {
-    this->socket->sendTextMessage(response.response.toByteArray());
+    this->socket->sendBinaryMessage(response.response);
   }
 }
 
@@ -73,11 +76,11 @@ void OiWebSocket::receiveResponse(const oi::OiRequestResponse& response) {
  * \brief OiNetworkConnection::readMessage
  * Is called whenever a client has sent a message to OpenIndy
  */
-void OiWebSocket::readMessage(const QString& msg) {
-  // create new xml request
+void OiWebSocket::readMessage(const QByteArray& msg) {
+  // pass the serialized request on; the request handler decodes it
   OiRequestResponse request;
   request.requesterId = this->internalRef;
-  request.request.setContent(msg);
+  request.request = msg;
 
   emit this->sendRequest(request);
 }

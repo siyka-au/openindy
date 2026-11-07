@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QPointer>
 #include <QWebSocket>
-#include <QtXml>
 
 #include "oirequestresponse.h"
 #include "types.h"
@@ -68,7 +67,7 @@ class OiWebSocket : public QObject {
   // helper methods
   // ##############
 
-  void readMessage(const QString& msg);
+  void readMessage(const QByteArray& msg);
 
  private:
   // #################

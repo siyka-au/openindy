@@ -1,10 +1,11 @@
 #ifndef OIREQUESTHANDLER_H
 #define OIREQUESTHANDLER_H
 
+#include <QMap>
 #include <QObject>
 #include <QPointer>
 #include <QThread>
-#include <QtXml>
+#include <QVariantMap>
 
 #include "featuresorter.h"
 #include "featureupdater.h"
@@ -25,9 +26,18 @@ struct WatchWindowTask {
   OiRequestResponse request;
 };
 
+namespace openindy::v1 {
+class Request;
+class Response;
+class RealTimeReading;
+class Notification;
+}  // namespace openindy::v1
+
 /*!
  * \brief The OiRequestHandler class
- * Receives XML based requests and emits the corresponding response as XML
+ * Receives remote-control requests (a serialized openindy.v1.Envelope, see
+ * proto/openindy/network.proto) and emits the corresponding response and the
+ * server-pushed notifications as serialized Envelopes
  */
 class OiRequestHandler : public QObject {
   Q_OBJECT
@@ -120,53 +130,53 @@ class OiRequestHandler : public QObject {
   // helper methods
   // ##############
 
-  // request processing
-  void getProject(OiRequestResponse& request);
-  void getActiveFeature(OiRequestResponse& request);
-  void setActiveFeature(OiRequestResponse& request);
-  void getActiveStation(OiRequestResponse& request);
-  void setActiveStation(OiRequestResponse& request);
-  void getActiveCoordinateSystem(OiRequestResponse& request);
-  void setActiveCoordinateSystem(OiRequestResponse& request);
-  void aim(OiRequestResponse& request);
-  void measure(OiRequestResponse& request);
-  void startWatchwindow(OiRequestResponse& request);
-  void stopWatchwindow(OiRequestResponse& request);
-  void toolRequest(OiRequestResponse& request);
-  void getFeatures(OiRequestResponse& request);
-  void addFeatures(OiRequestResponse& request);
-  void getObservations(OiRequestResponse& request);
-  void removeObservations(OiRequestResponse& request);
-  void getParameters(OiRequestResponse& request);
-  void getMeasurementConfigs(OiRequestResponse& request);
-  void getMeasurementConfig(OiRequestResponse& request);
-  void setMeasurementConfig(OiRequestResponse& request);
-  void getCoordinateSystems(OiRequestResponse& request);
+  // request processing: each fills the response payload and returns the
+  // error code of the request
+  using ErrorCode = OiRequestResponse::ErrorCode;
+  using Request = openindy::v1::Request;
+  using Response = openindy::v1::Response;
 
-  // parse request type id
-  [[nodiscard]] OiRequestResponse::RequestType getRequestType(int id) const;
+  ErrorCode getProject(const Request& request, Response& response);
+  ErrorCode getActiveFeature(const Request& request, Response& response);
+  ErrorCode setActiveFeature(const Request& request, Response& response);
+  ErrorCode getActiveStation(const Request& request, Response& response);
+  ErrorCode setActiveStation(const Request& request, Response& response);
+  ErrorCode getActiveCoordinateSystem(const Request& request,
+                                      Response& response);
+  ErrorCode setActiveCoordinateSystem(const Request& request,
+                                      Response& response);
+  ErrorCode aim(const Request& request, Response& response);
+  ErrorCode measure(const Request& request, Response& response);
+  ErrorCode startWatchwindow(const Request& request, Response& response,
+                             const OiRequestResponse& carrier);
+  ErrorCode stopWatchwindow(const Request& request, Response& response);
+  ErrorCode getFeatures(const Request& request, Response& response);
+  ErrorCode addFeatures(const Request& request, Response& response);
+  ErrorCode getObservations(const Request& request, Response& response);
+  ErrorCode removeObservations(const Request& request, Response& response);
+  ErrorCode getParameters(const Request& request, Response& response);
+  ErrorCode getMeasurementConfigs(const Request& request, Response& response);
+  ErrorCode getMeasurementConfig(const Request& request, Response& response);
+  ErrorCode setMeasurementConfig(const Request& request, Response& response);
+  ErrorCode getCoordinateSystems(const Request& request, Response& response);
 
-  // parse feature type
-  [[nodiscard]] FeatureTypes getFeatureType(int type) const;
+  // the parameters of a feature as sorted name/value pairs
+  [[nodiscard]] static QMap<QString, double> parametersOf(
+      const QPointer<FeatureWrapper>& feature);
 
-  // add feature parameters
-  void addParameters(QDomDocument& document, QDomElement& parameters,
-                     const QPointer<FeatureWrapper>& feature);
-
-  // send an error messages
-  void sendErrorMessage(OiRequestResponse request,
+  // send an error response (no payload)
+  void sendErrorMessage(OiRequestResponse request, int requestId,
                         OiRequestResponse::RequestType type,
                         OiRequestResponse::ErrorCode error);
 
-  // prepare response to client
-  void prepareResponse(OiRequestResponse& request) const;
+  // send a server-pushed notification to the given requester (-1: everyone)
+  void sendNotification(OiRequestResponse::RequestType type,
+                        const openindy::v1::Notification& notification,
+                        int requesterId = -1);
 
   // set up watch window data
-  bool buildWatchWindowMessage(QDomElement& wwTag,
+  bool buildWatchWindowMessage(openindy::v1::RealTimeReading& reading,
                                const QVariantMap& streamData);
-
-  QDomElement toXML(const MeasurementConfig& config, const bool saved,
-                    QDomDocument& response);
 
  private slots:
 
