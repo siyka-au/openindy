@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief MeasurementConfigurationModel::MeasurementConfigurationModel
@@ -62,7 +63,7 @@ QVariant MeasurementConfigurationModel::data(const QModelIndex& index,
   const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
   if (std::cmp_less(index.row(), configs.size())) {
-    return configs.at(index.row()).getName();
+    return toQString(configs.at(index.row()).getName());
   }
 
   return QVariant();
@@ -129,7 +130,7 @@ bool MeasurementConfigurationModel::setData(const QModelIndex& index,
     if (!mConfig.isValid()) {
       mConfig = configs.at(index.row());
       MeasurementConfigKey oldKey = mConfig.getKey();
-      mConfig.setName(value.toString());
+      mConfig.setName(toStd(value.toString()));
       this->measurementConfigManager->replaceMeasurementConfig(oldKey, mConfig);
       emit this->measurementConfigNameChanged(mConfig);
       emit this->updateModel();  // force update: filter & sort model
@@ -222,7 +223,8 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(
   }
 
   // check mConfig
-  if (this->measurementConfigManager->getUserConfig(mConfig.getName())
+  if (this->measurementConfigManager
+          ->getUserConfig(toQString(mConfig.getName()))
           .isValid()) {
     return QModelIndex();
   }
@@ -264,7 +266,7 @@ void MeasurementConfigurationModel::removeMeasurementConfig(
   if (std::cmp_less(index.row(),
                     this->measurementConfigManager->getConfigs().size())) {
     this->measurementConfigManager->removeUserConfig(
-        getMeasurementConfig(index).getName());
+        toQString(getMeasurementConfig(index).getName()));
   }
 
   this->updateModel();
@@ -310,14 +312,14 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(
   }
 
   // find usable name
-  QString name = mConfig.getName();
+  QString name = toQString(mConfig.getName());
   while (measurementConfigManager->findConfig(name).isValid()) {
     name += ".";
   }
 
   // add the measurement config
   MeasurementConfig userConfig = mConfig;
-  userConfig.setName(name);
+  userConfig.setName(toStd(name));
   userConfig.makeUserConfig();
   this->measurementConfigManager->saveUserConfig(userConfig);
 

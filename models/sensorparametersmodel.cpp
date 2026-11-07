@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief SensorParametersModel::SensorParametersModel
@@ -52,12 +53,13 @@ QVariant SensorParametersModel::data(const QModelIndex& index, int role) const {
 
   if (role == Qt::DisplayRole) {
     if (rowIndex < std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
-      return oi::value(
-          this->sConfig.getStringParameter(),
-          oi::keys(this->sConfig.getStringParameter()).at(rowIndex));
+      return toQString(
+          oi::value(this->sConfig.getStringParameter(),
+                    oi::keys(this->sConfig.getStringParameter()).at(rowIndex)));
     } else if (std::cmp_less(rowIndex,
-                             this->sConfig.getDoubleParameter().size()) +
-               std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+                             this->sConfig.getDoubleParameter().size() +
+                                 std::ssize(oi::keys(
+                                     this->sConfig.getStringParameter())))) {
       rowIndex =
           rowIndex - std::ssize(oi::keys(this->sConfig.getStringParameter()));
       return QString::number(
@@ -87,18 +89,22 @@ QVariant SensorParametersModel::headerData(int section,
   if ((Qt::DisplayRole == role) && (Qt::Vertical == orientation) &&
       (0 <= section) && (section < rowCount())) {
     if (section < std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
-      return oi::keys(this->sConfig.getStringParameter()).at(section);
+      return toQString(
+          oi::keys(this->sConfig.getStringParameter()).at(section));
     } else if (std::cmp_less(section,
-                             this->sConfig.getDoubleParameter().size()) +
-               std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+                             this->sConfig.getDoubleParameter().size() +
+                                 std::ssize(oi::keys(
+                                     this->sConfig.getStringParameter())))) {
       section =
           section - std::ssize(oi::keys(this->sConfig.getStringParameter()));
-      return oi::keys(this->sConfig.getDoubleParameter()).at(section);
+      return toQString(
+          oi::keys(this->sConfig.getDoubleParameter()).at(section));
     } else {
       section = section -
                 std::ssize(oi::keys(this->sConfig.getStringParameter())) -
                 this->sConfig.getDoubleParameter().size();
-      return oi::keys(this->sConfig.getIntegerParameter()).at(section);
+      return toQString(
+          oi::keys(this->sConfig.getIntegerParameter()).at(section));
     }
 
   } else if ((Qt::DisplayRole == role) && (Qt::Horizontal == orientation) &&
@@ -174,17 +180,19 @@ bool SensorParametersModel::setData(const QModelIndex& index,
 
   if (rowIndex < rowCount()) {
     if (rowIndex < std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
-      std::map<QString, QString> params = this->sConfig.getStringParameter();
+      std::map<std::string, std::string> params =
+          this->sConfig.getStringParameter();
       params.insert_or_assign(
           oi::keys(this->sConfig.getStringParameter()).at(rowIndex),
-          value.toString());
+          toStd(value.toString()));
       this->sConfig.setStringParameter(params);
     } else if (std::cmp_less(rowIndex,
-                             this->sConfig.getDoubleParameter().size()) +
-               std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+                             this->sConfig.getDoubleParameter().size() +
+                                 std::ssize(oi::keys(
+                                     this->sConfig.getStringParameter())))) {
       rowIndex =
           rowIndex - std::ssize(oi::keys(this->sConfig.getStringParameter()));
-      std::map<QString, double> params = this->sConfig.getDoubleParameter();
+      std::map<std::string, double> params = this->sConfig.getDoubleParameter();
       params.insert_or_assign(
           oi::keys(this->sConfig.getDoubleParameter()).at(rowIndex),
           value.toDouble());
@@ -193,7 +201,7 @@ bool SensorParametersModel::setData(const QModelIndex& index,
       rowIndex = rowIndex -
                  std::ssize(oi::keys(this->sConfig.getStringParameter())) -
                  this->sConfig.getDoubleParameter().size();
-      std::map<QString, int> params = this->sConfig.getIntegerParameter();
+      std::map<std::string, int> params = this->sConfig.getIntegerParameter();
       params.insert_or_assign(
           oi::keys(this->sConfig.getIntegerParameter()).at(rowIndex),
           value.toInt());

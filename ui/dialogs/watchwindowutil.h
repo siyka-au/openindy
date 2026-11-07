@@ -1,6 +1,8 @@
 #ifndef WATCHWINDOWUTIL_H
 #define WATCHWINDOWUTIL_H
 
+#include <QtCore>
+
 #include "feature.h"
 #include "featurewrapper.h"
 #include "geometry.h"

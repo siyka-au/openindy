@@ -1,6 +1,7 @@
 #include "observationimporter.h"
 
 #include <QRegularExpression>
+#include <QtCore>
 #include <array>
 #include <vector>
 

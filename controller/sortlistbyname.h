@@ -1,8 +1,10 @@
 #ifndef SORTLISTBYNAME_H
 #define SORTLISTBYNAME_H
 
-#include <QMap>
 #include <QPointer>
+#include <QtCore>
+#include <map>
+#include <string>
 
 #include "line.h"
 #include "plane.h"
@@ -56,22 +58,22 @@ class SortListByName {
  private:
   QList<Point> refPoints;
   QList<Point> locPoints;
-  QMap<QString, LocRefBool> point;
+  std::map<std::string, LocRefBool> point;
   QList<Line> refLines;
   QList<Line> locLines;
-  QMap<QString, LocRefBool> line;
+  std::map<std::string, LocRefBool> line;
   QList<Plane> refPlanes;
   QList<Plane> locPlanes;
-  QMap<QString, LocRefBool> plane;
+  std::map<std::string, LocRefBool> plane;
   QList<Sphere> refSpheres;
   QList<Sphere> locSpheres;
-  QMap<QString, LocRefBool> sphere;
+  std::map<std::string, LocRefBool> sphere;
   QList<ScalarEntityDistance> refScalarEntityDistances;
   QList<ScalarEntityDistance> locScalarEntityDistances;
-  QMap<QString, LocRefBool> scalarEntityDistance;
+  std::map<std::string, LocRefBool> scalarEntityDistance;
   QList<ScalarEntityAngle> refScalarEntityAngles;
   QList<ScalarEntityAngle> locScalarEntityAngles;
-  QMap<QString, LocRefBool> scalarEntityAngle;
+  std::map<std::string, LocRefBool> scalarEntityAngle;
 };
 
 #endif  // SORTLISTBYNAME_H

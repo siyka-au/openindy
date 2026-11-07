@@ -1,5 +1,6 @@
 #include "pluginloaderdialog.h"
 
+#include "qtconvert.h"
 #include "ui_pluginloaderdialog.h"
 
 /*!
@@ -43,20 +44,21 @@ void PluginLoaderDialog::on_toolButton_Path_clicked() {
   }
 
   // show meta info in GUI
-  this->ui->lineEdit_Path->setText(metaData.path);
-  this->ui->lineEdit_Name->setText(metaData.name);
-  this->ui->lineEdit_pluginType->setText(metaData.iid);
+  this->ui->lineEdit_Path->setText(toQString(metaData.path));
+  this->ui->lineEdit_Name->setText(toQString(metaData.name));
+  this->ui->lineEdit_pluginType->setText(toQString(metaData.iid));
 
   this->ui->textBrowser_description->clear();
-  this->ui->textBrowser_description->append("<b>name</b>: " + metaData.name);
+  this->ui->textBrowser_description->append("<b>name</b>: " +
+                                            toQString(metaData.name));
   this->ui->textBrowser_description->append("<b>author</b>: " +
-                                            metaData.author);
+                                            toQString(metaData.author));
   this->ui->textBrowser_description->append("<b>version</b>: " +
-                                            metaData.pluginVersion);
-  this->ui->textBrowser_description->append("<b>operating system</b>: " +
-                                            metaData.operatingSystem);
+                                            toQString(metaData.pluginVersion));
   this->ui->textBrowser_description->append(
-      "<b>compiler</b>: " + metaData.compiler + "<hr /><p />");
+      "<b>operating system</b>: " + toQString(metaData.operatingSystem));
+  this->ui->textBrowser_description->append(
+      toQString("<b>compiler</b>: " + metaData.compiler + "<hr /><p />"));
 
   this->ui->progressBar->setMinimum(0);
   this->ui->progressBar->setMaximum(100);
@@ -70,11 +72,9 @@ void PluginLoaderDialog::on_toolButton_Path_clicked() {
     this->ui->textBrowser_description->append("<b>dependencies</b>: none");
   }
 
-  for (int i = 0; i < metaData.dependenciesPath.size(); i++) {
-    QJsonObject v = metaData.dependenciesPath.at(i).toObject();
-
-    QString depName = v.value("name").toString();
-    QString depPath = v.value("path").toString();
+  for (const oi::PluginDependency& dependency : metaData.dependenciesPath) {
+    QString depName = toQString(dependency.name);
+    QString depPath = toQString(dependency.path);
 
     QString tmpText(QString("   -" + depName + ": " + depPath));
 

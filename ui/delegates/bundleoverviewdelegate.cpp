@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "qtconvert.h"
+
 BundleOverviewDelegate::BundleOverviewDelegate(QObject* parent)
     : QAbstractItemDelegate(parent) {}
 void BundleOverviewDelegate::paint(QPainter* painter,
@@ -17,7 +19,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
   }
 
   std::vector<oi::Guarded<FeatureWrapper> > stations =
-      job->getFeaturesByName(stationName);
+      job->getFeaturesByName(toStd(stationName));
   if (stations.empty()) {
     return;
   }
@@ -35,7 +37,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
     if (isBundleStationTrafo(tp) &&
         tp->getDestinationSystem()->getFeatureName() == stationName &&
         tp->getStartSystem()->getFeatureName() == "Bundle01") {
-      scaleS = tp->getDisplayScaleX(6);
+      scaleS = toQString(tp->getDisplayScaleX(6));
       scale = tp->getScale().getAt(0);  // X
       isSolved = tp->getIsSolved();
       break;
@@ -75,7 +77,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
 
               if (v > maxError) {
                 maxError = v;
-                maxErrorGeometry = tg->getFeatureName();
+                maxErrorGeometry = toQString(tg->getFeatureName());
               }
 
               sum_vv += v * v;

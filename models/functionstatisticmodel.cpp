@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief FunctionStatisticModel::FunctionStatisticModel
@@ -134,13 +135,14 @@ QVariant FunctionStatisticModel::headerData(int section,
     if (section == 0) {
       return "id";
     } else {
-      return oi::keys(this->feature->getFunctions()
-                          .at(static_cast<std::size_t>(this->functionIndex))
-                          ->getStatistic()
-                          .getDisplayResiduals()
-                          .at(0)
-                          .corrections)
-          .at(static_cast<std::size_t>(section - 1));
+      return toQString(
+          oi::keys(this->feature->getFunctions()
+                       .at(static_cast<std::size_t>(this->functionIndex))
+                       ->getStatistic()
+                       .getDisplayResiduals()
+                       .at(0)
+                       .corrections)
+              .at(static_cast<std::size_t>(section - 1)));
     }
   }
 

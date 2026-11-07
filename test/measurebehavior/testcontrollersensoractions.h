@@ -1,6 +1,8 @@
 #ifndef TESTCONTROLLERSENSORACTIONS_H
 #define TESTCONTROLLERSENSORACTIONS_H
 
+#include <QtCore>
+
 #include "controllersensoractions.h"
 
 class TestControllerSensorActions : public ControllerSensorActions {

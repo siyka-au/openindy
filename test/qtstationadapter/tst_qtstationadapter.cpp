@@ -32,7 +32,9 @@ class FakeSensor : public Sensor {
   bool getConnectionState() override { return true; }
   bool getIsReadyForMeasurement() override { return true; }
   bool getIsBusy() override { return false; }
-  std::map<QString, QString> getSensorStatus() override { return {{"a", "b"}}; }
+  std::map<std::string, std::string> getSensorStatus() override {
+    return {{"a", "b"}};
+  }
   std::vector<oi::Guarded<Reading>> measure(const MeasurementConfig&) override {
     std::vector<oi::Guarded<Reading>> result;
     for (int i = 0; i < 2; ++i) {
@@ -42,9 +44,9 @@ class FakeSensor : public Sensor {
     }
     return result;
   }
-  std::map<QString, QVariant> readingStream(const ReadingTypes&) override {
+  oi::ValueMap readingStream(const ReadingTypes&) override {
     QThread::msleep(1);
-    std::map<QString, QVariant> m;
+    oi::ValueMap m;
     m["n"] = ++this->streamCounter;
     return m;
   }

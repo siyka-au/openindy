@@ -7,6 +7,7 @@
 #include <QThread>
 
 #include "oijob.h"
+#include "qtconvert.h"
 
 using namespace oi;
 
@@ -108,13 +109,13 @@ void QtJobAdapter::onFeatureAttributesChanged() {
 }
 
 void QtJobAdapter::onFeatureNameChanged(const int& featureId,
-                                        const QString& oldName) {
-  emit this->featureNameChanged(featureId, oldName);
+                                        const std::string& oldName) {
+  emit this->featureNameChanged(featureId, toQString(oldName));
 }
 
 void QtJobAdapter::onFeatureGroupChanged(const int& featureId,
-                                         const QString& oldGroup) {
-  emit this->featureGroupChanged(featureId, oldGroup);
+                                         const std::string& oldGroup) {
+  emit this->featureGroupChanged(featureId, toQString(oldGroup));
 }
 
 void QtJobAdapter::onFeatureCommentChanged(const int& featureId) {
@@ -170,9 +171,10 @@ void QtJobAdapter::onGeometrySimulationDataChanged(const int& featureId) {
 }
 
 void QtJobAdapter::onGeometryMeasurementConfigChanged(
-    const int& featureId, const QString& oldMConfig,
+    const int& featureId, const std::string& oldMConfig,
     const MeasurementConfigKey oldKey) {
-  emit this->geometryMeasurementConfigChanged(featureId, oldMConfig, oldKey);
+  emit this->geometryMeasurementConfigChanged(featureId, toQString(oldMConfig),
+                                              oldKey);
 }
 
 void QtJobAdapter::onSystemObservationsChanged(const int& featureId,
@@ -208,10 +210,10 @@ void QtJobAdapter::onTrafoParamIsDatumChanged(const int& featureId) {
   emit this->trafoParamIsDatumChanged(featureId);
 }
 
-void QtJobAdapter::onSendMessage(const QString& msg,
+void QtJobAdapter::onSendMessage(const std::string& msg,
                                  const MessageTypes& msgType,
                                  const MessageDestinations& msgDest) {
-  emit this->sendMessage(msg, msgType, msgDest);
+  emit this->sendMessage(toQString(msg), msgType, msgDest);
 }
 
 void QtJobAdapter::onRecalcFeatureRequested(

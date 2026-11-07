@@ -7,6 +7,7 @@
 
 #include "configfile.h"
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief MeasurementConfigManager::MeasurementConfigManager
@@ -74,22 +75,22 @@ void MeasurementConfigManager::setCurrentJob(const oi::Guarded<OiJob>& job) {
 MeasurementConfig MeasurementConfigManager::getUserConfig(
     const QString& name) const {
   return oi::value(configs,
-                   MeasurementConfigKey(name, ConfigTypes::eUserConfig),
+                   MeasurementConfigKey(toStd(name), ConfigTypes::eUserConfig),
                    MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getProjectConfig(
     const QString& name) const {
-  return oi::value(configs,
-                   MeasurementConfigKey(name, ConfigTypes::eProjectConfig),
-                   MeasurementConfig());
+  return oi::value(
+      configs, MeasurementConfigKey(toStd(name), ConfigTypes::eProjectConfig),
+      MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getStandardConfig(
     const QString& name) const {
-  return oi::value(configs,
-                   MeasurementConfigKey(name, ConfigTypes::eStandardConfig),
-                   MeasurementConfig());
+  return oi::value(
+      configs, MeasurementConfigKey(toStd(name), ConfigTypes::eStandardConfig),
+      MeasurementConfig());
 }
 
 /**
@@ -150,7 +151,7 @@ const std::vector<QString> MeasurementConfigManager::getUserConfigNames()
   std::vector<QString> l;
   for (const auto& [key, c] : configs) {
     if (c.isUserConfig()) {
-      l.push_back(c.getName());
+      l.push_back(toQString(c.getName()));
     }
   }
   return l;
@@ -165,7 +166,7 @@ const std::vector<QString> MeasurementConfigManager::getProjectConfigNames()
   std::vector<QString> l;
   for (const auto& [key, c] : configs) {
     if (c.isProjectConfig()) {
-      l.push_back(c.getName());
+      l.push_back(toQString(c.getName()));
     }
   }
   return l;
@@ -295,7 +296,7 @@ void MeasurementConfigManager::removeUserConfig(const QString& name) {
  * \param name
  */
 void MeasurementConfigManager::removeProjectConfig(const QString& name) {
-  MeasurementConfigKey key(name, ConfigTypes::eProjectConfig);
+  MeasurementConfigKey key(toStd(name), ConfigTypes::eProjectConfig);
   if (this->configs.contains(key)) {
     this->configs.erase(key);
 
@@ -317,7 +318,7 @@ void MeasurementConfigManager::replaceMeasurementConfig(
 
   // write user config as json file
   if (mConfig.isUserConfig()) {
-    this->saveToConfigFolder(oldConfig.getName(), mConfig);
+    this->saveToConfigFolder(toQString(oldConfig.getName()), mConfig);
   }
 
   // replace mConfig in map
@@ -341,8 +342,9 @@ void MeasurementConfigManager::saveToConfigFolder(
   }
 
   // save mConfig to json file
-  configfile::write(mConfigFolder.absoluteFilePath(mConfig.getName() + ".json"),
-                    oi::codec::encodeMeasurementConfig(mConfig));
+  configfile::write(
+      mConfigFolder.absoluteFilePath(toQString(mConfig.getName() + ".json")),
+      oi::codec::encodeMeasurementConfig(mConfig));
 }
 
 /*!
@@ -394,7 +396,7 @@ void MeasurementConfigManager::loadFromConfigFolder() {
       QFile::remove(filePath);
       continue;
     }
-    mConfigNames.append(userConfig.getName());
+    mConfigNames.append(toQString(userConfig.getName()));
 
     this->saveUserConfig(userConfig);
 
@@ -425,7 +427,7 @@ void MeasurementConfigManager::loadFromConfigFolder() {
       if (userMConfigNames.contains(userConfig.getName())) {
         continue;
       }
-      userMConfigNames.append(userConfig.getName());
+      userMConfigNames.append(toQString(userConfig.getName()));
 
       // shadow a same-named system-tier entry, if any
       foreach (const MeasurementConfigKey& key, oi::keys(this->configs)) {
@@ -491,8 +493,9 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig& mConfig) {
   }
 
   // save mConfig to json file
-  configfile::write(mConfigFolder.absoluteFilePath(mConfig.getName() + ".json"),
-                    oi::codec::encodeMeasurementConfig(mConfig));
+  configfile::write(
+      mConfigFolder.absoluteFilePath(toQString(mConfig.getName() + ".json")),
+      oi::codec::encodeMeasurementConfig(mConfig));
 
   // ########################################
   // add mConfig to the list of saved configs
@@ -533,7 +536,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString& name) {
   // remove mConfig from the list of saved configs
   // #############################################
 
-  MeasurementConfigKey key(name, ConfigTypes::eUserConfig);
+  MeasurementConfigKey key(toStd(name), ConfigTypes::eUserConfig);
   this->configs.erase(key);
 
   emit this->measurementConfigurationsChanged();

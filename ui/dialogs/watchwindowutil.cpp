@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#include <QtCore>
+
 using namespace oi;
 
 WatchWindowUtil::WatchWindowUtil() {}

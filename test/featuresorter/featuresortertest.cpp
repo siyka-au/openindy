@@ -10,6 +10,7 @@
 #include "featuresorter.h"
 #include "featurewrapper.h"
 #include "fitfunction.h"
+#include "qtconvert.h"
 
 using namespace oi;
 using namespace oi::math;
@@ -25,7 +26,7 @@ using namespace oi::math;
 class FakeFit : public FitFunction, public Producer<Point> {
  public:
   explicit FakeFit() : FitFunction() { this->metaData.name = "FakeFit"; }
-  std::expected<Point, QString> exec() override { return Point(); }
+  std::expected<Point, std::string> exec() override { return Point(); }
 };
 
 class FeatureSorterTest : public QObject {
@@ -57,8 +58,8 @@ oi::Guarded<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name,
   oi::Guarded<FeatureWrapper> featurewrapper = new FeatureWrapper();
 
   oi::Guarded<Point> point = new Point(id, Position());
-  point->setFeatureName(name);
-  point->setGroupName(groupname);
+  point->setFeatureName(toStd(name));
+  point->setGroupName(toStd(groupname));
   if (!isNominal) {
     point->addFunction(new FakeFit());
   }

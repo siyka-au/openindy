@@ -48,8 +48,11 @@ void ScalarParameterWidget::setStringParameter(
     const std::map<QString, QString>& defaultSelection) {
   this->stringParameter.clear();
   foreach (const QString& key, oi::keys(stringParameter)) {
-    this->stringParameter.insert(
-        key, toQStringList(oi::values(stringParameter, key)));
+    QStringList values;
+    for (const QString& value : oi::values(stringParameter, key)) {
+      values.append(value);
+    }
+    this->stringParameter.insert(key, values);
   }
   this->stringParameterSelection = defaultSelection;
   this->setUpGui();

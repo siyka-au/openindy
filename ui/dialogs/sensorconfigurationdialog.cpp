@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "qtconvert.h"
 #include "ui_sensorconfigurationdialog.h"
 
 /*!
@@ -226,19 +227,19 @@ void SensorConfigurationDialog::sensorConnectionChanged() {
     const QString currentText =
         this->ui->comboBox_typeOfConnection->currentText();
     foreach (const ConnectionKind& kind, ConnectionKind::knownKinds()) {
-      if (kind.displayName().compare(currentText) == 0) {
+      if (kind.displayName().compare(toStd(currentText)) == 0) {
         cConfig.typeOfConnection = kind;
         break;
       }
     }
   }
-  cConfig.ip = this->ui->comboBox_ip->currentText();
-  cConfig.port = this->ui->lineEdit_port->text();
+  cConfig.ip = toStd(this->ui->comboBox_ip->currentText());
+  cConfig.port = toStd(this->ui->lineEdit_port->text());
   cConfig.baudRate = static_cast<oi::BaudRate>(
       this->ui->comboBox_baudrate
           ->itemData(ui->comboBox_baudrate->currentIndex())
           .toInt());
-  cConfig.comPort = this->ui->comboBox_comPort->currentText();
+  cConfig.comPort = toStd(this->ui->comboBox_comPort->currentText());
   ;
   cConfig.dataBits = static_cast<oi::DataBits>(
       this->ui->comboBox_databits
@@ -316,7 +317,7 @@ void SensorConfigurationDialog::sensorPluginChanged() {
 void SensorConfigurationDialog::
     on_comboBox_availableSensorTypes_currentTextChanged(const QString& arg1) {
   foreach (const SensorType& type, SensorTypeRegistry::all()) {
-    if (type.displayName().compare(arg1) == 0) {
+    if (type.displayName().compare(toStd(arg1)) == 0) {
       ModelManager::getSensorTableProxyModel().setSensorType(type);
       break;
     }
@@ -393,10 +394,10 @@ void SensorConfigurationDialog::updateGuiFromSensorConfig(
       ModelManager::getSensorTableModel().getSupportedConnectionTypes();
   this->ui->comboBox_typeOfConnection->clear();
   foreach (const ConnectionKind& kind, supportedConnections) {
-    this->ui->comboBox_typeOfConnection->addItem(kind.displayName());
+    this->ui->comboBox_typeOfConnection->addItem(toQString(kind.displayName()));
   }
   this->ui->comboBox_typeOfConnection->setCurrentText(
-      sConfig.getConnectionConfig().typeOfConnection.displayName());
+      toQString(sConfig.getConnectionConfig().typeOfConnection.displayName()));
 
   // set up connection parameters
   const ConnectionConfig& cConfig = sConfig.getConnectionConfig();
@@ -425,13 +426,13 @@ void SensorConfigurationDialog::updateGuiFromSensorConfig(
   if (stopBitsIndex >= 0) {
     this->ui->comboBox_stopbits->setCurrentIndex(stopBitsIndex);
   }
-  int comPortIndex =
-      this->ui->comboBox_comPort->findData(cConfig.comPort, Qt::UserRole);
+  int comPortIndex = this->ui->comboBox_comPort->findData(
+      toQString(cConfig.comPort), Qt::UserRole);
   if (comPortIndex >= 0) {
     this->ui->comboBox_comPort->setCurrentIndex(comPortIndex);
   }
-  this->ui->comboBox_ip->setCurrentText(cConfig.ip);
-  this->ui->lineEdit_port->setText(cConfig.port);
+  this->ui->comboBox_ip->setCurrentText(toQString(cConfig.ip));
+  this->ui->lineEdit_port->setText(toQString(cConfig.port));
 
   // from now on trigger edits
   this->ui->comboBox_typeOfConnection->blockSignals(false);
@@ -447,7 +448,7 @@ void SensorConfigurationDialog::updateGuiFromSensorConfig(
   // select the correct sensor type
   this->ui->comboBox_availableSensorTypes->blockSignals(true);
   this->ui->comboBox_availableSensorTypes->setCurrentText(
-      sConfig.getTypeOfSensor().displayName());
+      toQString(sConfig.getTypeOfSensor().displayName()));
   this->ui->comboBox_availableSensorTypes->blockSignals(false);
   ModelManager::getSensorTableProxyModel().setSensorType(
       sConfig.getTypeOfSensor());

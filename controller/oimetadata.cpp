@@ -1,5 +1,7 @@
 #include "oimetadata.h"
 
+#include "qtconvert.h"
+
 // define version of the main program (src)
 QString OiMetaData::version = "0.0.1";
 
@@ -70,7 +72,7 @@ bool OiMetaData::findIID(const QString& iid) {
 SensorType OiMetaData::getSensorType(const QString& iid) {
   // derived from the interface id itself, so a plugin can introduce a sensor
   // type the core has never heard of without a core change
-  return SensorType::fromInterfaceId(iid);
+  return SensorType::fromInterfaceId(toStd(iid));
 }
 
 /*!

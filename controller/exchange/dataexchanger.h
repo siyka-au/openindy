@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QtCore>
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -72,9 +73,9 @@ class DataExchanger : public QObject,
   // is turned into signals and slots. Public so they are the seam tests use.
   // ##############################################################
 
-  void onMessage(const QString& msg, const MessageTypes& type,
+  void onMessage(const std::string& msg, const MessageTypes& type,
                  const MessageDestinations& dest) override;
-  void onProgress(int percent, const QString& message) override;
+  void onProgress(int percent, const std::string& message) override;
   void onImportFinished(bool success) override;
   void onExportFinished(bool success) override;
 

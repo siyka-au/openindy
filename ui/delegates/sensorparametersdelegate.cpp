@@ -56,8 +56,9 @@ QWidget* SensorParametersDelegate::createEditor(
         editor);
     static_cast<QComboBox*>(editor)->setModel(model);
 
-  } else if (std::cmp_less(rowIndex, sConfig.getDoubleParameter().size()) +
-             std::ssize(oi::keys(sConfig.getStringParameter()))) {
+  } else if (std::cmp_less(rowIndex, sConfig.getDoubleParameter().size() +
+                                         std::ssize(oi::keys(
+                                             sConfig.getStringParameter())))) {
     rowIndex = rowIndex - std::ssize(oi::keys(sConfig.getStringParameter()));
     editor = new QLineEdit(parent);
   } else {
@@ -104,8 +105,9 @@ void SensorParametersDelegate::setEditorData(QWidget* editor,
       customEditor->setCurrentText(index.data().toString());
     }
 
-  } else if (std::cmp_less(rowIndex, sConfig.getDoubleParameter().size()) +
-             std::ssize(oi::keys(sConfig.getStringParameter()))) {
+  } else if (std::cmp_less(rowIndex, sConfig.getDoubleParameter().size() +
+                                         std::ssize(oi::keys(
+                                             sConfig.getStringParameter())))) {
     rowIndex = rowIndex - std::ssize(oi::keys(sConfig.getStringParameter()));
     QLineEdit* customEditor = nullptr;
     customEditor = qobject_cast<QLineEdit*>(editor);
@@ -161,8 +163,9 @@ void SensorParametersDelegate::setModelData(QWidget* editor,
       model->setData(index, customEditor->currentText());
     }
 
-  } else if (std::cmp_less(rowIndex, sConfig.getDoubleParameter().size()) +
-             std::ssize(oi::keys(sConfig.getStringParameter()))) {
+  } else if (std::cmp_less(rowIndex, sConfig.getDoubleParameter().size() +
+                                         std::ssize(oi::keys(
+                                             sConfig.getStringParameter())))) {
     rowIndex = rowIndex - std::ssize(oi::keys(sConfig.getStringParameter()));
     QLineEdit* customEditor = qobject_cast<QLineEdit*>(editor);
     if (customEditor != nullptr) {

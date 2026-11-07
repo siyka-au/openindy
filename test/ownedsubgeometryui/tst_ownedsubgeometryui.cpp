@@ -32,7 +32,7 @@ class SetPlaneFunction : public ConstructFunction, public Producer<Plane> {
   }
   Position position;
   Direction direction;
-  std::expected<Plane, QString> exec() override {
+  std::expected<Plane, std::string> exec() override {
     Plane plane;
     plane.setPlane(position, direction);
     return plane;

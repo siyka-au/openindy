@@ -9,6 +9,7 @@
 
 #include "containers.h"
 #include "controller/qtconvert.h"
+#include "qtconvert.h"
 #include "ui_mainwindow.h"
 
 /*!
@@ -230,7 +231,7 @@ void MainWindow::activeCoordinateSystemChanged() {
   // update combo box with active coordinate system
   if (!job->getActiveCoordinateSystem().isNull()) {
     this->ui->comboBox_activeCoordSystem->setCurrentText(
-        job->getActiveCoordinateSystem()->getFeatureName());
+        toQString(job->getActiveCoordinateSystem()->getFeatureName()));
   }
 }
 
@@ -336,7 +337,7 @@ void MainWindow::currentJobChanged() {
 
   // set window title
   if (!job.isNull()) {
-    this->setWindowTitle(job->getJobName());
+    this->setWindowTitle(toQString(job->getJobName()));
   } else {
     this->setWindowTitle("");
   }
@@ -808,7 +809,8 @@ void MainWindow::on_tableView_features_customContextMenuRequested(
     return;
   }
 
-  QString featureName = selectedFeature->getFeature()->getFeatureName();
+  QString featureName =
+      toQString(selectedFeature->getFeature()->getFeatureName());
   QString labelSuffix =
       multipleFeaturesSelected ? "ALL selected features" : featureName;
 
@@ -1269,7 +1271,7 @@ void MainWindow::on_comboBox_activeCoordSystem_currentTextChanged(
         sourceModel->getActiveCoordinateSystem();
     if (!activeSystem.isNull()) {
       this->ui->comboBox_activeCoordSystem->setCurrentText(
-          activeSystem->getFeatureName());
+          toQString(activeSystem->getFeatureName()));
     }
   } else {
     sourceModel->setActiveCoordinateSystem(arg1);
@@ -1297,7 +1299,7 @@ void MainWindow::on_comboBox_actualNominal_currentTextChanged(
   }
 
   // update actual nominal filter
-  sourceModel->setActualNominalFilter(getActualNominalFilterEnum(arg1));
+  sourceModel->setActualNominalFilter(getActualNominalFilterEnum(toStd(arg1)));
 
   updateCompleter();
 }
@@ -1588,14 +1590,16 @@ void MainWindow::showFeatureProperties(bool checked) {
       !feature->getGeometry()->getOwnerDescription().has_value() &&
       feature->getGeometry()->getIsSolved()) {
     this->nominalPropertiesDialog.setCurrentNominal(
-        feature->getFeature()->getId(), feature->getFeature()->getFeatureName(),
+        feature->getFeature()->getId(),
+        toQString(feature->getFeature()->getFeatureName()),
         feature->getFeatureTypeEnum());
 
     std::map<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
     std::map<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
     std::map<GeometryParameters, QString> parameters =
-        feature->getGeometry()->getUnknownParameters(displayUnits,
-                                                     displayDigits);
+        convertMap<std::map<GeometryParameters, QString>>(
+            feature->getGeometry()->getUnknownParameters(displayUnits,
+                                                         displayDigits));
     this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
 
     showCentered(this->nominalPropertiesDialog);
@@ -1617,13 +1621,14 @@ void MainWindow::showFeatureProperties(bool checked) {
   if (!feature->getTrafoParam().isNull()) {
     this->trafoParamPropertiesDialog.setCurrentTrafoParam(
         feature->getFeature()->getId(),
-        feature->getFeature()->getFeatureName());
+        toQString(feature->getFeature()->getFeatureName()));
 
     std::map<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
     std::map<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
     std::map<TrafoParamParameters, QString> parameters =
-        feature->getTrafoParam()->getUnknownParameters(displayUnits,
-                                                       displayDigits);
+        convertMap<std::map<TrafoParamParameters, QString>>(
+            feature->getTrafoParam()->getUnknownParameters(displayUnits,
+                                                           displayDigits));
     this->trafoParamPropertiesDialog.setUnknownTrafoParamParameters(parameters);
 
     showCentered(this->trafoParamPropertiesDialog);
@@ -1993,12 +1998,12 @@ void MainWindow::updateStatusBar() {
       ModelManager::getParameterDisplayConfig();
 
   // update units
-  this->label_statusUnitMetric->setText(
-      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eMetric)));
-  this->label_statusUnitAngular->setText(
-      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eAngular)));
-  this->label_statusUnitTemperature->setText(
-      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eTemperature)));
+  this->label_statusUnitMetric->setText(toQString(
+      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eMetric))));
+  this->label_statusUnitAngular->setText(toQString(
+      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eAngular))));
+  this->label_statusUnitTemperature->setText(toQString(
+      getUnitTypeName(pConfig.getDisplayUnit(DimensionType::eTemperature))));
 
   // update sensor status
 }
@@ -2028,11 +2033,14 @@ void MainWindow::bundleSelectionChanged() {
   ScalarInputParams scalarParams = bundlePlugin->getScalarInputParams();
   if (!this->bundleParameterWidget.isNull()) {
     this->bundleParameterWidget->setEnabled(true);
-    this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
+    this->bundleParameterWidget->setIntParameter(
+        convertMap<std::map<QString, int>>(scalarParams.intParameter));
     this->bundleParameterWidget->setDoubleParameter(
-        scalarParams.doubleParameter);
+        convertMap<std::map<QString, double>>(scalarParams.doubleParameter));
     this->bundleParameterWidget->setStringParameter(
-        bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+        convertMap<std::multimap<QString, QString>>(
+            bundlePlugin->getStringParameter()),
+        convertMap<std::map<QString, QString>>(scalarParams.stringParameter));
   }
 
   // set up input stations
@@ -2045,7 +2053,7 @@ void MainWindow::bundleSelectionChanged() {
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
     }
-    QString name = feature->getStation()->getFeatureName();
+    QString name = toQString(feature->getStation()->getFeatureName());
 
     // create json object
     QJsonObject inputStation;
@@ -2600,7 +2608,7 @@ void MainWindow::initSensorPad() {
  */
 void MainWindow::initToolMenus() {
   // get all available tool plugins
-  const QList<QPointer<Tool> >& tools = this->control.getAvailableTools();
+  const QList<QPointer<Tool>>& tools = this->control.getAvailableTools();
 
   // add each tool as menu entry
   foreach (const QPointer<Tool>& tool, tools) {
@@ -2611,9 +2619,9 @@ void MainWindow::initToolMenus() {
     // create an action and add it to the corresponding menu item
     ToolAction* action = nullptr;
     action = new ToolAction();
-    action->setToolName(tool->getMetaData().name);
-    action->setPluginName(tool->getMetaData().pluginName);
-    action->setText(tool->getMetaData().name);
+    action->setToolName(toQString(tool->getMetaData().name));
+    action->setPluginName(toQString(tool->getMetaData().pluginName));
+    action->setText(toQString(tool->getMetaData().name));
     switch (tool->getToolType()) {
       case ToolTypes::eReportTool:
         this->ui->menuReport->addAction(action);
@@ -2831,7 +2839,8 @@ void MainWindow::activeSensorTypeChanged(
 void MainWindow::updateMagnifyWindow(
     const oi::Guarded<FeatureWrapper>& feature) {
   // update contents
-  this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
+  this->ui->label_magnifyName->setText(
+      toQString(feature->getFeature()->getFeatureName()));
   if (!feature->getGeometry().isNull()) {
     this->ui->label_magnifyActualNominal->setText(
         !feature->getGeometry()->getOwnerDescription().has_value() ? "nom"
@@ -3190,7 +3199,7 @@ void MainWindow::on_actionNew_watch_window_triggered() {
 void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
   oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (!job.isNull()) {
-    std::vector<oi::Guarded<FeatureWrapper> > features;
+    std::vector<oi::Guarded<FeatureWrapper>> features;
     QVariant watchWindowKey;
     QString windowTitleSuffix;
 
@@ -3332,7 +3341,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed() {
   oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (!job.isNull()) {
     foundFeatures = job->getFeaturesByName(
-        this->ui->lineEdit_searchFeatureName->text(), true);
+        toStd(this->ui->lineEdit_searchFeatureName->text()), true);
 
     this->ui->pushButton_showNextFoundFeature->setEnabled(foundFeatures.size() >
                                                           1);

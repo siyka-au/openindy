@@ -1,5 +1,6 @@
 #include "controller.h"
 
+#include <format>
 #include <map>
 #include <set>
 #include <vector>
@@ -160,12 +161,12 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
   // check if there is at least a function or a measurement config that shall be
   // set
   if (attributes.measurementConfig.isValid() ||
-      (!attributes.functionPlugin.first.isEmpty() &&
-       !attributes.functionPlugin.second.isEmpty())) {
+      (!attributes.functionPlugin.first.empty() &&
+       !attributes.functionPlugin.second.empty())) {
     // create functions and measurement configs for the created features
     this->addFunctionsAndMConfigs(features, attributes.measurementConfig,
-                                  attributes.functionPlugin.second,
-                                  attributes.functionPlugin.first);
+                                  toQString(attributes.functionPlugin.second),
+                                  toQString(attributes.functionPlugin.first));
   }
 
   foreach (oi::Guarded<FeatureWrapper> feature, features) {
@@ -354,7 +355,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   FeatureAttributes subAttributes;
   subAttributes.typeOfFeature = subType;
   subAttributes.name =
-      QString("%1_%2").arg(namePrefix).arg(owner->getFeature()->getId());
+      std::format("{}_{}", toStd(namePrefix), owner->getFeature()->getId());
   subAttributes.count = 1;
   std::vector<oi::Guarded<FeatureWrapper> > created =
       this->job->addFeatures(subAttributes);
@@ -398,7 +399,7 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
 
   // get and check plugin information
   std::optional<sys::Plugin> plugin =
-      PluginRepository::getByName(sConfig.getPluginName());
+      PluginRepository::getByName(toQString(sConfig.getPluginName()));
   if (!plugin.has_value()) {
     this->log(QString("No plugin available with the name %1")
                   .arg(sConfig.getPluginName()),
@@ -409,7 +410,7 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
 
   // create sensor instance and assign it to the active station
   oi::Guarded<Sensor> sensor = PluginLoader::loadSensorPlugin(
-      plugin->filePath(), sConfig.getSensorName());
+      plugin->filePath(), toQString(sConfig.getSensorName()));
   if (sensor.isNull()) {
     this->log(QString("No sensor available with the name %1")
                   .arg(sConfig.getSensorName()),
@@ -726,7 +727,7 @@ void Controller::addBundleSystem() {  // TODO OI-932 remove method / OI-1009
   FeatureAttributes bundleAttr;
   bundleAttr.count = 1;
   bundleAttr.typeOfFeature = FeatureTypes::eCoordinateSystemFeature;
-  bundleAttr.name = bundleName;
+  bundleAttr.name = toStd(bundleName);
   bundleAttr.isBundleSystem = true;
 
   // add feature
@@ -766,7 +767,7 @@ QJsonObject Controller::getBundleTemplate() {
               MessageDestinations::eMessageBoxMessage);
     return QJsonObject();
   }
-  return this->job->getActiveBundleTemplate();
+  return toBundleTemplate(this->job->getActiveBundleTemplate());
 }
 
 /*!
@@ -910,7 +911,7 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
   }
 
   // set up bundle plugin
-  bundleSystem->setBundleTemplate(bundleTemplate);
+  bundleSystem->setBundleTemplate(fromBundleTemplate(bundleTemplate));
   bundleSystem->setBundlePlugin(bundlePlugin);
 
   this->log(QString("Bundle template %1 loaded successfully")
@@ -970,8 +971,8 @@ void Controller::runBundle() {
 
     oi::Guarded<FeatureWrapper> feature =
         this->job->getFeatureById(e.getFeatureId());
-    QString featureName =
-        feature.isNull() ? "" : feature->getFeature()->getFeatureName() + ": ";
+    QString featureName = toQString(
+        feature.isNull() ? "" : feature->getFeature()->getFeatureName() + ": ");
     this->log(featureName.append(e.what()), MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
   } catch (std::exception& e) {
@@ -994,7 +995,7 @@ void Controller::runBundle() {
 
   StationStatusData data;
   data.id = activeStation->getId();
-  data.name = activeStation->getFeatureName();
+  data.name = toQString(activeStation->getFeatureName());
   emit stationStatus(data);
 }
 
@@ -1005,7 +1006,7 @@ bool Controller::hasProjectDigestChanged() {
   if (this->job.isNull()) {
     return false;
   }
-  QString preDigest = this->job->getDigest();
+  QString preDigest = toQString(this->job->getDigest());
   projectExchanger.saveProject(this->job);
   return preDigest !=
          job->getDigest();  // not equal, that means project data changed
@@ -1036,7 +1037,7 @@ void Controller::saveProject() {
   }
 
   // get and check name and file path
-  QString name = this->job->getJobName();
+  QString name = toQString(this->job->getJobName());
   const QString filePath = fromPath(this->job->getJobFile());
   if (name.compare("") == 0 || filePath.isEmpty()) {
     emit this->saveAsTriggered();
@@ -1103,7 +1104,7 @@ void Controller::saveProject(const QString& fileName) {
               MessageDestinations::eMessageBoxMessage);
     return;
   }
-  this->job->setJobName(fileName);
+  this->job->setJobName(toStd(fileName));
 
   // set device
   this->job->setJobFile(toPath(fileName));
@@ -1192,7 +1193,7 @@ void Controller::loadProject(const QString& projectName,
        QMessageBox::Yes)) {
     // set project meta data
     newJob->setJobFile(toPath(filePath));
-    newJob->setJobName(projectName);
+    newJob->setJobName(toStd(projectName));
 
     // delete old job
     if (!this->job.isNull()) {
@@ -1264,7 +1265,7 @@ void Controller::loadProject(const QString& projectName,
             return;
           }
           // set up bundle plugin
-          bundleSystem->setBundleTemplate(bundleTemplate);
+          bundleSystem->setBundleTemplate(fromBundleTemplate(bundleTemplate));
           bundleSystem->setBundlePlugin(bundlePlugin);
 
           // initially add all stations to bundle
@@ -1293,17 +1294,17 @@ void Controller::loadProject(const QString& projectName,
 
       } else {
         // load template
-        this->job->getActiveBundleSystem()->setBundleTemplate(bundleTemplate);
+        this->job->getActiveBundleSystem()->setBundleTemplate(
+            fromBundleTemplate(bundleTemplate));
       }
     }
 
-    this->log(QString("OpenIndy project \"%1\" successfully loaded.")
-                  .arg(filePath),
-              MessageTypes::eInformationMessage,
-              MessageDestinations::eConsoleMessage);
+    this->log(
+        QString("OpenIndy project \"%1\" successfully loaded.").arg(filePath),
+        MessageTypes::eInformationMessage,
+        MessageDestinations::eConsoleMessage);
   } else {
-    this->log(QString("OpenIndy project \"%1\" was not loaded.")
-                  .arg(filePath),
+    this->log(QString("OpenIndy project \"%1\" was not loaded.").arg(filePath),
               MessageTypes::eInformationMessage,
               MessageDestinations::eConsoleMessage);
   }
@@ -1794,7 +1795,7 @@ void Controller::startCustomAction(const QString& task) {
   emit this->sensorActionStarted(QString("custom action: %1 ...").arg(task));
 
   // do self defined action
-  activeStation->selfDefinedAction(task);
+  activeStation->selfDefinedAction(toStd(task));
 }
 
 /**
@@ -1915,7 +1916,7 @@ void Controller::activeStationChangedCallback() {
 
   StationStatusData data;
   data.id = activeStation->getId();
-  data.name = activeStation->getFeatureName();
+  data.name = toQString(activeStation->getFeatureName());
   emit stationStatus(data);
 
   // disconnect all stations
@@ -2405,7 +2406,7 @@ oi::Guarded<FeatureWrapper> Controller::createActualForNominal(
   QString baseName = QString("%1 actual").arg(nominal->getFeatureName());
   QString name = baseName;
   int suffix = 2;
-  while (!this->job->validateFeatureName(name, type)) {
+  while (!this->job->validateFeatureName(toStd(name), type)) {
     name = QString("%1 (%2)").arg(baseName).arg(suffix);
     suffix++;
   }
@@ -2414,7 +2415,7 @@ oi::Guarded<FeatureWrapper> Controller::createActualForNominal(
   FeatureAttributes attr;
   attr.count = 1;
   attr.typeOfFeature = type;
-  attr.name = name;
+  attr.name = toStd(name);
   attr.group = nominal->getGroupName();
 
   // get measurement config
@@ -2620,8 +2621,8 @@ void Controller::showToolWidget(const QString& pluginName,
       continue;
     }
 
-    if (tool->getMetaData().pluginName.compare(pluginName) == 0 &&
-        tool->getMetaData().name.compare(toolName) == 0) {
+    if (tool->getMetaData().pluginName.compare(toStd(pluginName)) == 0 &&
+        tool->getMetaData().name.compare(toStd(toolName)) == 0) {
       tool->setJob(this->job);
       tool->show();
       break;
@@ -2664,8 +2665,7 @@ void Controller::createNewStation() {
 
   FeatureAttributes attributes;
   attributes.typeOfFeature = FeatureTypes::eStationFeature;
-  attributes.name =
-      QStringLiteral("STATION%1").arg(count + 1, 2, 10, QLatin1Char('0'));
+  attributes.name = std::format("STATION{:02}", count + 1);
   attributes.group = "00_Stations";
   attributes.count = 1;
 
@@ -2680,7 +2680,7 @@ void Controller::createNewStation() {
 
 bool Controller::isStationBundled(int id) {
   const QString stationName =
-      this->job->getFeatureById(id)->getFeature()->getFeatureName();
+      toQString(this->job->getFeatureById(id)->getFeature()->getFeatureName());
 
   foreach (oi::Guarded<TrafoParam> param,
            this->job->getTransformationParametersList()) {

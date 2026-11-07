@@ -1,5 +1,7 @@
 #include "featuresorter.h"
 
+#include "stringutil.h"
+
 FeatureSorter::FeatureSorter() {}
 
 /*!
@@ -147,11 +149,11 @@ bool FeatureSorter::sortStandard(oi::Guarded<FeatureWrapper> left,
 
 bool FeatureSorter::sortBy_Name_ActNom(
     oi::Guarded<FeatureWrapper> left, oi::Guarded<FeatureWrapper> right) const {
-  if (left->getFeature()->getFeatureName().compare(
-          right->getFeature()->getFeatureName(), Qt::CaseInsensitive) < 0) {
+  if (oi::compareIgnoreCase(left->getFeature()->getFeatureName(),
+                            right->getFeature()->getFeatureName()) < 0) {
     return true;
-  } else if (left->getFeature()->getFeatureName().compare(
-                 right->getFeature()->getFeatureName(), Qt::CaseInsensitive) ==
+  } else if (oi::compareIgnoreCase(left->getFeature()->getFeatureName(),
+                                   right->getFeature()->getFeatureName()) ==
              0) {
     return isNominalLike(left) < isNominalLike(right);
   }
@@ -161,18 +163,17 @@ bool FeatureSorter::sortBy_Name_ActNom(
 
 bool FeatureSorter::sortBy_Group_Name(oi::Guarded<FeatureWrapper> left,
                                       oi::Guarded<FeatureWrapper> right) const {
-  if (left->getFeature()->getGroupName().compare(
-          right->getFeature()->getGroupName(), Qt::CaseInsensitive) < 0) {
+  if (oi::compareIgnoreCase(left->getFeature()->getGroupName(),
+                            right->getFeature()->getGroupName()) < 0) {
     return true;
-  } else if (left->getFeature()->getGroupName().compare(
-                 right->getFeature()->getGroupName(), Qt::CaseInsensitive) ==
-             0) {
-    if (left->getFeature()->getFeatureName().compare(
-            right->getFeature()->getFeatureName(), Qt::CaseInsensitive) < 0) {
+  } else if (oi::compareIgnoreCase(left->getFeature()->getGroupName(),
+                                   right->getFeature()->getGroupName()) == 0) {
+    if (oi::compareIgnoreCase(left->getFeature()->getFeatureName(),
+                              right->getFeature()->getFeatureName()) < 0) {
       return true;
-    } else if (left->getFeature()->getFeatureName().compare(
-                   right->getFeature()->getFeatureName(),
-                   Qt::CaseInsensitive) == 0) {
+    } else if (oi::compareIgnoreCase(left->getFeature()->getFeatureName(),
+                                     right->getFeature()->getFeatureName()) ==
+               0) {
       return isNominalLike(left) < isNominalLike(right);
     }
   }

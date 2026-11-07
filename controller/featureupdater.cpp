@@ -1,5 +1,6 @@
 #include "featureupdater.h"
 
+#include <format>
 #include <map>
 #include <vector>
 
@@ -1918,7 +1919,7 @@ void FeatureUpdater::createBundleTransformations(
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
     }
-    QString stationName = feature->getStation()->getFeatureName();
+    QString stationName = toQString(feature->getStation()->getFeatureName());
 
     qDebug() << "feature->getStation()->getFeatureName() " << stationName;
 
@@ -1927,13 +1928,12 @@ void FeatureUpdater::createBundleTransformations(
     int index = 1;
     while (!this->currentJob->validateFeatureName(fAttr.name,
                                                   fAttr.typeOfFeature)) {
-      fAttr.name =
-          QString("%1_%2").arg(bundleSystem->getFeatureName()).arg(index);
+      fAttr.name = std::format("{}_{}", bundleSystem->getFeatureName(), index);
       index++;
     }
 
     // create trafo param feature
-    fAttr.destinationSystem = stationName;
+    fAttr.destinationSystem = toStd(stationName);
     oi::appendAll(features, this->currentJob->addFeatures(fAttr));
   }
 

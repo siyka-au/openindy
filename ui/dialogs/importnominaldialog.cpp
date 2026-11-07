@@ -1,5 +1,6 @@
 #include "importnominaldialog.h"
 
+#include "qtconvert.h"
 #include "ui_importnominaldialog.h"
 
 /*!
@@ -115,11 +116,11 @@ void ImportNominalDialog::initModels() {
 
   // set unit type defaults
   this->ui->comboBox_distance_sa->setCurrentText(
-      getUnitTypeName(UnitType::eUnitMilliMeter));
+      toQString(getUnitTypeName(UnitType::eUnitMilliMeter)));
   this->ui->comboBox_angle_sa->setCurrentText(
-      getUnitTypeName(UnitType::eUnitDecimalDegree));
+      toQString(getUnitTypeName(UnitType::eUnitDecimalDegree)));
   this->ui->comboBox_temperature_sa->setCurrentText(
-      getUnitTypeName(UnitType::eUnitGrad));
+      toQString(getUnitTypeName(UnitType::eUnitGrad)));
 
   // assign plugin model
   this->ui->comboBox_plugin_sa->setModel(&ModelManager::getPluginNamesModel());
@@ -184,13 +185,13 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked() {
       this->ui->comboBox_geometry_sa->currentData(Qt::UserRole).toInt());
   params.units.insert_or_assign(
       DimensionType::eMetric,
-      getUnitTypeEnum(this->ui->comboBox_distance_sa->currentText()));
+      getUnitTypeEnum(toStd(this->ui->comboBox_distance_sa->currentText())));
   params.units.insert_or_assign(
       DimensionType::eAngular,
-      getUnitTypeEnum(this->ui->comboBox_angle_sa->currentText()));
+      getUnitTypeEnum(toStd(this->ui->comboBox_angle_sa->currentText())));
   params.units.insert_or_assign(
       DimensionType::eTemperature,
-      getUnitTypeEnum(this->ui->comboBox_temperature_sa->currentText()));
+      getUnitTypeEnum(toStd(this->ui->comboBox_temperature_sa->currentText())));
   params.createActual = this->ui->checkBox_createActual->isChecked();
   params.overwrite = this->ui->checkBox_overwriteExisting->isChecked();
   params.importMeasurements =

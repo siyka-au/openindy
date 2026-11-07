@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "containers.h"
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -138,7 +139,7 @@ QVariant FunctionWeightsTableModel::data(const QModelIndex& index,
   if (role == Qt::DisplayRole) {
     switch (index.column()) {
       case 0:
-        return fw->getFeature()->getFeatureName();
+        return toQString(fw->getFeature()->getFeatureName());
     }
 
   } else if (role == Qt::CheckStateRole) {

@@ -1,7 +1,10 @@
 #include "featureutil.h"
 
+#include <format>
 #include <map>
 #include <vector>
+
+#include "qtconvert.h"
 
 // adapted from FeatureUpdater::createBundleTransformations
 // create intial bundle transformation (Bundle01_1) to STATION01
@@ -11,7 +14,7 @@ bool FeatureUtil::createInitialBundleTransformation(oi::Guarded<OiJob> job) {
   trafoAttr.group = "";
   trafoAttr.count = 1;
   trafoAttr.startSystem = "Bundle01";
-  trafoAttr.name = QString("%1_1").arg(trafoAttr.startSystem);
+  trafoAttr.name = std::format("{}_1", trafoAttr.startSystem);
   trafoAttr.destinationSystem = "STATION01";
 
   std::vector<oi::Guarded<FeatureWrapper> > features =

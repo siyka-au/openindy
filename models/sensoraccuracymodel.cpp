@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "containers.h"
+#include "qtconvert.h"
 
 using namespace oi;
 
@@ -199,7 +200,8 @@ QVariant SensorAccuracyModel::headerData(int section,
         if (index >= 0 &&
             std::cmp_less(index,
                           this->sConfig.getAccuracy().sigmaUndefined.size())) {
-          return oi::keys(this->sConfig.getAccuracy().sigmaUndefined).at(index);
+          return toQString(
+              oi::keys(this->sConfig.getAccuracy().sigmaUndefined).at(index));
         }
     }
 

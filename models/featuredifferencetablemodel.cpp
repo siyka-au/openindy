@@ -1,5 +1,6 @@
 #include "featuredifferencetablemodel.h"
 
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 inline double rnd(double value, int digits) {
@@ -80,7 +81,7 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex& index,
 
   if (role == Qt::DisplayRole) {
     if (index.column() == 0) {
-      return feature->getFeature()->getFeatureName();
+      return toQString(feature->getFeature()->getFeatureName());
     } else {
       QPair<bool, double> result =
           this->getDifferenceAsDisplayUnit(feature, index);
@@ -133,15 +134,15 @@ QVariant FeatureDifferenceTableModel::headerData(int section,
       case 0:
         return "feature name";
       case 1:
-        return QString(
+        return toQString(
             "dX" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
                        DimensionType::eMetric)));
       case 2:
-        return QString(
+        return toQString(
             "dY" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
                        DimensionType::eMetric)));
       case 3:
-        return QString(
+        return toQString(
             "dZ" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
                        DimensionType::eMetric)));
       default:

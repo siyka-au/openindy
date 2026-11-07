@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -341,7 +342,7 @@ void BundleStationsModel::updateModel() {
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
     }
-    QString name = feature->getStation()->getFeatureName();
+    QString name = toQString(feature->getStation()->getFeatureName());
 
     // create station items
     BundleStationItem* stationItem = new BundleStationItem(name, used, id);
@@ -386,7 +387,7 @@ void BundleStationsModel::updateModel() {
     if (id == -1) {
       continue;
     }
-    QString name = station->getFeatureName();
+    QString name = toQString(station->getFeatureName());
 
     // create station items
     BundleStationItem* stationItem = new BundleStationItem(name, true, id);

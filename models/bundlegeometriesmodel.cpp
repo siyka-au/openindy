@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -238,7 +239,7 @@ void BundleGeometriesModel::updateModel() {
     if (feature.isNull() || feature->getStation().isNull()) {
       continue;
     }
-    QString name = feature->getStation()->getFeatureName();
+    QString name = toQString(feature->getStation()->getFeatureName());
 
     // create station item
     BundleGeometryItem* stationItem = new BundleGeometryItem(name);
@@ -257,7 +258,7 @@ void BundleGeometriesModel::updateModel() {
     foreach (const oi::Guarded<oi::Geometry>& geom, geometries) {
       if (!geom.isNull() && geom->getIsCommon()) {
         BundleGeometryItem* geomItem =
-            new BundleGeometryItem(geom->getFeatureName());
+            new BundleGeometryItem(toQString(geom->getFeatureName()));
         stationItem->appendChild(geomItem);
       }
     }

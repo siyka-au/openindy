@@ -4,6 +4,7 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <QtCore>
 #include <vector>
 
 #include "featurewrapper.h"

@@ -1,6 +1,7 @@
 #include "featuretreeitem.h"
 
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief FeatureTreeItem::FeatureTreeItem
@@ -433,7 +434,8 @@ void FeatureTreeItem::setUpFeature() {
     }
 
     // set display value
-    this->displayValue = this->feature->getStation()->getFeatureName();
+    this->displayValue =
+        toQString(this->feature->getStation()->getFeatureName());
 
     // add observations and readings as children
     FeatureTreeItem* itemObservations = new FeatureTreeItem("observations:");
@@ -460,7 +462,8 @@ void FeatureTreeItem::setUpFeature() {
     }
 
     // set display value
-    this->displayValue = this->feature->getCoordinateSystem()->getFeatureName();
+    this->displayValue =
+        toQString(this->feature->getCoordinateSystem()->getFeatureName());
 
     // add nominals as children
     /*FeatureTreeItem *itemNominals = new FeatureTreeItem("nominals:");
@@ -480,7 +483,8 @@ void FeatureTreeItem::setUpFeature() {
     }
 
     // set display value
-    this->displayValue = this->feature->getTrafoParam()->getFeatureName();
+    this->displayValue =
+        toQString(this->feature->getTrafoParam()->getFeatureName());
 
     // add start and destination system as children
     if (this->feature->getTrafoParam()->getStartSystem().isNull() ||
@@ -561,11 +565,12 @@ void FeatureTreeItem::setUpObservation() {
   if (!this->observation->getMeasuredTargetGeometry().isNull()) {
     this->displayValue =
         "id:" + QString::number(this->observation->getId()) + " " +
-        this->observation->getMeasuredTargetGeometry()->getFeatureName();
+        toQString(
+            this->observation->getMeasuredTargetGeometry()->getFeatureName());
   } else {
-    this->displayValue = "id:" + QString::number(this->observation->getId()) +
-                         " " +
-                         this->observation->getStation()->getFeatureName();
+    this->displayValue =
+        "id:" + QString::number(this->observation->getId()) + " " +
+        toQString(this->observation->getStation()->getFeatureName());
   }
 }
 
@@ -575,7 +580,7 @@ void FeatureTreeItem::setUpObservation() {
  */
 void FeatureTreeItem::setUpReading() {
   // set display value
-  this->displayValue = this->reading->getDisplayTime();
+  this->displayValue = toQString(this->reading->getDisplayTime());
   /*if(this->reading->getObservation()->getTargetGeometries().size() > 0){
       this->displayValue = "id:" + QString::number(this->reading->getId()) +
   this->reading->getObservation()->getTargetGeometries().at(0)->getFeatureName();
@@ -585,13 +590,14 @@ void FeatureTreeItem::setUpReading() {
   }*/
   if (!this->reading->getObservation()->getMeasuredTargetGeometry().isNull()) {
     this->displayValue = "id:" + QString::number(this->reading->getId()) +
-                         this->reading->getObservation()
-                             ->getMeasuredTargetGeometry()
-                             ->getFeatureName();
+                         toQString(this->reading->getObservation()
+                                       ->getMeasuredTargetGeometry()
+                                       ->getFeatureName());
   } else {
     this->displayValue =
         "id:" + QString::number(this->reading->getId()) +
-        this->reading->getObservation()->getStation()->getFeatureName();
+        toQString(
+            this->reading->getObservation()->getStation()->getFeatureName());
   }
 }
 

@@ -3,6 +3,7 @@
 #include <QAbstractItemView>
 
 #include "containers.h"
+#include "qtconvert.h"
 #include "ui_createfeaturedialog.h"
 
 /*!
@@ -334,17 +335,18 @@ void CreateFeatureDialog::featureAttributesFromGUI(
   // fill general attributes
   attributes.typeOfFeature = this->typeOfFeature;
   attributes.count = this->ui->spinBox_count->value();
-  attributes.name = this->ui->lineEdit_name->text();
-  attributes.group = this->ui->comboBox_group->currentText();
+  attributes.name = toStd(this->ui->lineEdit_name->text());
+  attributes.group = toStd(this->ui->comboBox_group->currentText());
   if (attributes.group.compare("All Groups") == 0) {
     attributes.group = "";
   }
 
   // fill feature type specific attributes
   if (this->typeOfFeature == FeatureTypes::eTrafoParamFeature) {
-    attributes.startSystem = this->ui->comboBox_startSystem->currentText();
+    attributes.startSystem =
+        toStd(this->ui->comboBox_startSystem->currentText());
     attributes.destinationSystem =
-        this->ui->comboBox_destinationSystem->currentText();
+        toStd(this->ui->comboBox_destinationSystem->currentText());
 
   } else if (getIsScalarEntity(this->typeOfFeature)) {
     attributes.typeOfFeature = static_cast<FeatureTypes>(
@@ -352,7 +354,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(
     attributes.isCommon = this->ui->checkBox_common->isChecked();
     if (this->ui->comboBox_nominalSystem->isVisible()) {
       attributes.nominalSystem =
-          this->ui->comboBox_nominalSystem->currentText();
+          toStd(this->ui->comboBox_nominalSystem->currentText());
     }
 
   } else if (this->typeOfFeature != FeatureTypes::eCoordinateSystemFeature &&
@@ -360,7 +362,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(
     attributes.isCommon = this->ui->checkBox_common->isChecked();
     if (this->ui->comboBox_nominalSystem->isVisible()) {
       attributes.nominalSystem =
-          this->ui->comboBox_nominalSystem->currentText();
+          toStd(this->ui->comboBox_nominalSystem->currentText());
     }
     if (!this->neededElements.empty()) {
       attributes.measurementConfig =
@@ -378,13 +380,14 @@ void CreateFeatureDialog::featureAttributesFromGUI(
       getIsScalarEntity(attributes.typeOfFeature)) {
     sys::Function function = this->functionListModel->getFunctionAtIndex(
         this->ui->comboBox_function->currentIndex());
-    attributes.functionPlugin.first = function.name();
-    attributes.functionPlugin.second = function.plugin().filePath();
+    attributes.functionPlugin.first = toStd(function.name());
+    attributes.functionPlugin.second = toStd(function.plugin().filePath());
   }
 }
 
 void CreateFeatureDialog::setDialogName() {
-  QString title = "create " + getFeatureTypeDisplayName(typeOfFeature);
+  QString title =
+      toQString("create " + getFeatureTypeDisplayName(typeOfFeature));
   this->setWindowTitle(title);
 }
 

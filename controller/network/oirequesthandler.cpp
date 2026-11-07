@@ -10,6 +10,7 @@
 #include "convert.h"
 #include "network_convert.h"
 #include "openindy/network.pb.h"
+#include "qtconvert.h"
 #include "qtstationadapter.h"
 
 namespace oipb = openindy::v1;
@@ -88,9 +89,8 @@ OiRequestResponse::RequestType requestTypeOf(
   return Type::eUnknownRequest;
 }
 
-QByteArray serialize(const oipb::Envelope& envelope) {
-  const std::string bytes = envelope.SerializeAsString();
-  return QByteArray(bytes.data(), static_cast<qsizetype>(bytes.size()));
+std::string serialize(const oipb::Envelope& envelope) {
+  return envelope.SerializeAsString();
 }
 
 int idOf(const Feature* feature) {
@@ -182,7 +182,7 @@ bool OiRequestHandler::receiveRequest(OiRequestResponse request) {
 
   // check request: it must be an envelope holding a request
   oipb::Envelope envelope;
-  if (!envelope.ParseFromArray(request.request.constData(),
+  if (!envelope.ParseFromArray(request.request.data(),
                                static_cast<int>(request.request.size())) ||
       envelope.content_case() != oipb::Envelope::kRequest) {
     this->sendErrorMessage(request, 0, Type::eUnknownRequest,
@@ -757,8 +757,8 @@ OiRequestResponse::ErrorCode OiRequestHandler::getFeatures(
     auto* summary = payload->add_features();
     summary->set_id(feature->getFeature()->getId());
     summary->set_kind(oi::codec::toProto(feature->getFeatureTypeEnum()));
-    summary->set_name(feature->getFeature()->getFeatureName().toStdString());
-    summary->set_group(feature->getFeature()->getGroupName().toStdString());
+    summary->set_name(feature->getFeature()->getFeatureName());
+    summary->set_group(feature->getFeature()->getGroupName());
     summary->set_solved(feature->getFeature()->getIsSolved());
     summary->set_nominal(
         !(feature->getGeometry().isNull() ||
@@ -788,19 +788,18 @@ OiRequestResponse::ErrorCode OiRequestHandler::addFeatures(
   // set up feature attributes
   FeatureAttributes attr;
   attr.typeOfFeature = *type;
-  attr.name = QString::fromStdString(message.name());
-  attr.group = QString::fromStdString(message.group());
+  attr.name = message.name();
+  attr.group = message.group();
   attr.count = message.count();
   // D17: isActual/isNominal are no longer settable attributes - whether
   // a created geometry ends up nominal or actual now falls out of the
   // producer function attached to it, which this legacy network request
   // never specified in the first place
   if (message.has_nominal_system()) {
-    attr.nominalSystem = QString::fromStdString(message.nominal_system());
+    attr.nominalSystem = message.nominal_system();
   }
   if (message.has_measurement_config()) {
-    attr.measurementConfigName =
-        QString::fromStdString(message.measurement_config());
+    attr.measurementConfigName = message.measurement_config();
   }
 
   // add features
@@ -808,11 +807,11 @@ OiRequestResponse::ErrorCode OiRequestHandler::addFeatures(
       this->currentJob->addFeatures(attr);
 
   // get and check measurement config
-  MeasurementConfig mConfig =
-      this->measurementConfigManager->getUserConfig(attr.measurementConfigName);
+  MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(
+      toQString(attr.measurementConfigName));
   if (!mConfig.isValid()) {
     mConfig = this->measurementConfigManager->getProjectConfig(
-        attr.measurementConfigName);
+        toQString(attr.measurementConfigName));
   }
 
   // pass measurement config to features
@@ -873,13 +872,14 @@ OiRequestResponse::ErrorCode OiRequestHandler::getObservations(
       Residual residual = statistic.getDisplayResidual(obs->getId());
 
       // get deviation attributes
-      QString attrVx =
+      std::string attrVx =
           getObservationDisplayAttributesName(eObservationDisplayVX);
-      QString attrVy =
+      std::string attrVy =
           getObservationDisplayAttributesName(eObservationDisplayVY);
-      QString attrVz =
+      std::string attrVz =
           getObservationDisplayAttributesName(eObservationDisplayVZ);
-      QString attrV = getObservationDisplayAttributesName(eObservationDisplayV);
+      std::string attrV =
+          getObservationDisplayAttributesName(eObservationDisplayV);
       if (residual.elementId == obs->getId() &&
           residual.corrections.contains(attrVx) &&
           residual.corrections.contains(attrVy) &&
@@ -972,9 +972,9 @@ OiRequestResponse::ErrorCode OiRequestHandler::getParameters(
   // add feature information
   auto* payload = response.mutable_get_parameters();
   payload->set_id(message.id());
-  payload->set_name(feature->getFeature()->getFeatureName().toStdString());
+  payload->set_name(feature->getFeature()->getFeatureName());
   payload->set_kind(oi::codec::toProto(feature->getFeatureTypeEnum()));
-  payload->set_group(feature->getFeature()->getGroupName().toStdString());
+  payload->set_group(feature->getFeature()->getGroupName());
   payload->set_solved(feature->getFeature()->getIsSolved());
   payload->set_nominal(
       !(feature->getGeometry().isNull() ||
@@ -1071,7 +1071,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::setMeasurementConfig(
   }
 
   // get and check measurement config
-  const QString name = QString::fromStdString(message.config_name());
+  const QString name = toQString(message.config_name());
   MeasurementConfig mConfig;
   if (message.saved()) {
     mConfig = this->measurementConfigManager->getUserConfig(name);
@@ -1111,8 +1111,8 @@ OiRequestResponse::ErrorCode OiRequestHandler::getCoordinateSystems(
 
       auto* summary = payload->add_systems();
       summary->set_id(system->getId());
-      summary->set_name(system->getFeatureName().toStdString());
-      summary->set_group(system->getGroupName().toStdString());
+      summary->set_name(system->getFeatureName());
+      summary->set_group(system->getGroupName());
     }
   }
   return ErrorCode::eNoError;

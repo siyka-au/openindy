@@ -7,6 +7,7 @@
 
 #include "configfile.h"
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief SensorConfigurationManager::SensorConfigurationManager
@@ -50,7 +51,7 @@ SensorConfigurationManager& SensorConfigurationManager::operator=(
  * \return
  */
 bool SensorConfigurationManager::hasSavedSensorConfig(const QString& name) {
-  return this->savedSensorConfigsMap.contains(name);
+  return this->savedSensorConfigsMap.contains(toStd(name));
 }
 
 /*!
@@ -60,7 +61,7 @@ bool SensorConfigurationManager::hasSavedSensorConfig(const QString& name) {
  * \return
  */
 bool SensorConfigurationManager::hasProjectSensorConfig(const QString& name) {
-  return this->projectSensorConfigsMap.contains(name);
+  return this->projectSensorConfigsMap.contains(toStd(name));
 }
 
 /*!
@@ -111,7 +112,8 @@ bool SensorConfigurationManager::hasProjectSensorConfig(
  */
 SensorConfiguration SensorConfigurationManager::getSavedSensorConfig(
     const QString& name) const {
-  return oi::value(this->savedSensorConfigsMap, name, SensorConfiguration());
+  return oi::value(this->savedSensorConfigsMap, toStd(name),
+                   SensorConfiguration());
 }
 
 /*!
@@ -121,7 +123,8 @@ SensorConfiguration SensorConfigurationManager::getSavedSensorConfig(
  */
 SensorConfiguration SensorConfigurationManager::getProjectSensorConfig(
     const QString& name) const {
-  return oi::value(this->projectSensorConfigsMap, name, SensorConfiguration());
+  return oi::value(this->projectSensorConfigsMap, toStd(name),
+                   SensorConfiguration());
 }
 
 /*!
@@ -234,7 +237,7 @@ void SensorConfigurationManager::removeSavedSensorConfig(const QString& name,
   }
 
   // check if the sensor config exists
-  if (!this->savedSensorConfigsMap.contains(name)) {
+  if (!this->savedSensorConfigsMap.contains(toStd(name))) {
     emit this->sendMessage(
         QString("A sensor configuration with the name %1 does not exist")
             .arg(name),
@@ -253,7 +256,7 @@ void SensorConfigurationManager::removeSavedSensorConfig(const QString& name,
 void SensorConfigurationManager::removeProjectSensorConfig(
     const QString& name) {
   // check if the sensor config exists
-  if (!this->projectSensorConfigsMap.contains(name)) {
+  if (!this->projectSensorConfigsMap.contains(toStd(name))) {
     emit this->sendMessage(
         QString("A sensor configuration with the name %1 does not exist")
             .arg(name),
@@ -262,8 +265,9 @@ void SensorConfigurationManager::removeProjectSensorConfig(
   }
 
   // remove sensor config
-  SensorConfiguration sConfig = oi::value(this->projectSensorConfigsMap, name);
-  this->projectSensorConfigsMap.erase(name);
+  SensorConfiguration sConfig =
+      oi::value(this->projectSensorConfigsMap, toStd(name));
+  this->projectSensorConfigsMap.erase(toStd(name));
   oi::removeOne(this->projectSensorConfigsList, sConfig);
 }
 
@@ -276,7 +280,7 @@ void SensorConfigurationManager::removeAllSavedSensorConfigs(bool save) {
 
   // remove sensor configs
   foreach (const SensorConfiguration& sConfig, configs) {
-    this->deleteSensorConfig(sConfig.getName(), save);
+    this->deleteSensorConfig(toQString(sConfig.getName()), save);
   }
 }
 
@@ -300,15 +304,16 @@ void SensorConfigurationManager::removeAllProjectSensorConfigs() {
 void SensorConfigurationManager::replaceSensorConfig(
     const QString& name, const SensorConfiguration& sConfig, bool save) {
   // get the old sensor config
-  if (!this->savedSensorConfigsMap.contains(name)) {
+  if (!this->savedSensorConfigsMap.contains(toStd(name))) {
     return;
   }
-  SensorConfiguration oldConfig = oi::value(this->savedSensorConfigsMap, name);
+  SensorConfiguration oldConfig =
+      oi::value(this->savedSensorConfigsMap, toStd(name));
 
   // check active config
   bool isActive = false;
   if (this->activeSensorConfig.getIsSaved() &&
-      this->activeSensorConfig.getName().compare(name) == 0) {
+      this->activeSensorConfig.getName().compare(toStd(name)) == 0) {
     isActive = true;
   }
 
@@ -332,7 +337,7 @@ void SensorConfigurationManager::replaceSensorConfig(
 
     // save sConfig to json file
     configfile::write(
-        sConfigFolder.absoluteFilePath(sConfig.getName() + ".json"),
+        sConfigFolder.absoluteFilePath(toQString(sConfig.getName() + ".json")),
         oi::codec::encodeSensorConfiguration(sConfig));
   }
 
@@ -341,7 +346,7 @@ void SensorConfigurationManager::replaceSensorConfig(
   // ###############################
 
   // replace sConfig in map
-  this->savedSensorConfigsMap.erase(name);
+  this->savedSensorConfigsMap.erase(toStd(name));
   this->savedSensorConfigsMap.insert_or_assign(sConfig.getName(), sConfig);
 
   // replace sConfig in list
@@ -404,7 +409,7 @@ void SensorConfigurationManager::loadFromConfigFolder() {
       QFile::remove(filePath);
       continue;
     }
-    sConfigNames.append(userConfig.getName());
+    sConfigNames.append(toQString(userConfig.getName()));
     this->addSavedSensorConfig(userConfig);
 
     // add the loaded sensor config to the list of saved configs
@@ -449,9 +454,9 @@ void SensorConfigurationManager::loadFromConfigFolder() {
 
   // get default sensor config
   QString sConfigName = Settings::get("defaultMeasurementDevice");
-  if (this->savedSensorConfigsMap.contains(sConfigName)) {
+  if (this->savedSensorConfigsMap.contains(toStd(sConfigName))) {
     this->activeSensorConfig =
-        oi::value(this->savedSensorConfigsMap, sConfigName);
+        oi::value(this->savedSensorConfigsMap, toStd(sConfigName));
     emit this->activeSensorConfigurationChanged();
   }
 
@@ -510,7 +515,7 @@ void SensorConfigurationManager::saveSensorConfig(
 
     // save sConfig to json file
     configfile::write(
-        sConfigFolder.absoluteFilePath(sConfig.getName() + ".json"),
+        sConfigFolder.absoluteFilePath(toQString(sConfig.getName() + ".json")),
         oi::codec::encodeSensorConfiguration(sConfig));
   }
 
@@ -558,12 +563,13 @@ void SensorConfigurationManager::deleteSensorConfig(const QString& name,
   // remove sConfig from the list of saved configs
   // #############################################
 
-  SensorConfiguration sConfig = oi::value(this->savedSensorConfigsMap, name);
-  this->savedSensorConfigsMap.erase(name);
+  SensorConfiguration sConfig =
+      oi::value(this->savedSensorConfigsMap, toStd(name));
+  this->savedSensorConfigsMap.erase(toStd(name));
   oi::removeOne(this->savedSensorConfigsList, sConfig);
 
   // reset active sensor config
-  if (name.compare(this->activeSensorConfig.getName()) == 0 &&
+  if (name.compare(toQString(this->activeSensorConfig.getName())) == 0 &&
       this->activeSensorConfig.getIsSaved()) {
     this->activeSensorConfig = SensorConfiguration();
     emit this->activeSensorConfigurationChanged();
@@ -620,8 +626,9 @@ bool SensorConfigurationManager::equals(const SensorConfiguration& sConfigA,
   }
 
   // compare undefined accuracies
-  std::vector<QString> keys = oi::keys(sConfigA.getAccuracy().sigmaUndefined);
-  foreach (const QString& key, keys) {
+  std::vector<std::string> keys =
+      oi::keys(sConfigA.getAccuracy().sigmaUndefined);
+  foreach (const std::string& key, keys) {
     if (!almostEqual(oi::value(sConfigA.getAccuracy().sigmaUndefined, key),
                      oi::value(sConfigB.getAccuracy().sigmaUndefined, key),
                      8)) {
@@ -639,8 +646,8 @@ bool SensorConfigurationManager::equals(const SensorConfiguration& sConfigA,
       oi::keys(sConfigB.getDoubleParameter())) {
     return false;
   } else {
-    std::vector<QString> keys = oi::keys(sConfigA.getDoubleParameter());
-    foreach (const QString& key, keys) {
+    std::vector<std::string> keys = oi::keys(sConfigA.getDoubleParameter());
+    foreach (const std::string& key, keys) {
       if (!almostEqual(oi::value(sConfigA.getDoubleParameter(), key),
                        oi::value(sConfigB.getDoubleParameter(), key), 8)) {
         return false;

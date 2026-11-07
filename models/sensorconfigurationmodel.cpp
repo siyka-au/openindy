@@ -3,6 +3,8 @@
 #include <QFont>
 #include <utility>
 
+#include "qtconvert.h"
+
 /*!
  * \brief SensorConfigurationModel::ActiveFeatureFunctionsModel
  * \param parent
@@ -51,17 +53,18 @@ QVariant SensorConfigurationModel::data(const QModelIndex& index,
     if (std::cmp_less(
             index.row(),
             this->sensorConfigManager.getSavedSensorConfigs().size())) {
-      return this->sensorConfigManager.getSavedSensorConfigs()
-          .at(index.row())
-          .getName();
+      return toQString(this->sensorConfigManager.getSavedSensorConfigs()
+                           .at(index.row())
+                           .getName());
     }
 
     // check if the index is a project sensor config
     if (index.row() < this->rowCount(index.parent())) {
-      return this->sensorConfigManager.getProjectSensorConfigs()
-                 .at(index.row() -
-                     this->sensorConfigManager.getSavedSensorConfigs().size())
-                 .getName() +
+      return toQString(this->sensorConfigManager.getProjectSensorConfigs()
+                           .at(index.row() -
+                               this->sensorConfigManager.getSavedSensorConfigs()
+                                   .size())
+                           .getName()) +
              " (project)";
     }
 
@@ -152,8 +155,8 @@ bool SensorConfigurationModel::setData(const QModelIndex& index,
         this->sensorConfigManager.getSavedSensorConfig(value.toString());
     if (!sConfig.getIsValid()) {
       sConfig = this->sensorConfigManager.getSavedSensorConfigs().at(rowIndex);
-      QString oldName = sConfig.getName();
-      sConfig.setName(value.toString());
+      QString oldName = toQString(sConfig.getName());
+      sConfig.setName(toStd(value.toString()));
       this->sensorConfigManager.replaceSensorConfig(oldName, sConfig, false);
       emit this->sensorConfigRenamed();
       return true;
@@ -207,10 +210,11 @@ SensorConfiguration SensorConfigurationModel::addSensorConfiguration() {
   sConfig.setTypeOfSensor(SensorType());
   sConfig.setIsSaved(true);
   int index = 0;
-  while (this->sensorConfigManager.hasSavedSensorConfig(sConfig.getName())) {
+  while (this->sensorConfigManager.hasSavedSensorConfig(
+      toQString(sConfig.getName()))) {
     index++;
-    sConfig.setName(
-        QString("%1%2").arg(sConfig.getName()).arg(QString::number(index)));
+    sConfig.setName(toStd(
+        QString("%1%2").arg(sConfig.getName()).arg(QString::number(index))));
   }
 
   // add config
@@ -247,7 +251,8 @@ bool SensorConfigurationModel::removeSensorConfiguration(
         rowIndex - this->sensorConfigManager.getSavedSensorConfigs().size());
   }
 
-  this->sensorConfigManager.removeSavedSensorConfig(sConfig.getName(), false);
+  this->sensorConfigManager.removeSavedSensorConfig(
+      toQString(sConfig.getName()), false);
   return true;
 }
 
@@ -269,8 +274,8 @@ void SensorConfigurationModel::updateSensorAccuracy(
   activeConfig.setAccuracy(sConfig.getAccuracy());
 
   // replace the old config
-  this->sensorConfigManager.replaceSensorConfig(activeConfig.getName(),
-                                                activeConfig, false);
+  this->sensorConfigManager.replaceSensorConfig(
+      toQString(activeConfig.getName()), activeConfig, false);
 }
 
 /*!
@@ -293,8 +298,8 @@ void SensorConfigurationModel::updateSensorParameters(
   activeConfig.setStringParameter(sConfig.getStringParameter());
 
   // replace the old config
-  this->sensorConfigManager.replaceSensorConfig(activeConfig.getName(),
-                                                activeConfig, false);
+  this->sensorConfigManager.replaceSensorConfig(
+      toQString(activeConfig.getName()), activeConfig, false);
 }
 
 /*!
@@ -324,8 +329,8 @@ void SensorConfigurationModel::updateSensorPlugin(
       sConfig.getAvailableStringParameter());
 
   // replace the old config
-  this->sensorConfigManager.replaceSensorConfig(activeConfig.getName(),
-                                                activeConfig, false);
+  this->sensorConfigManager.replaceSensorConfig(
+      toQString(activeConfig.getName()), activeConfig, false);
 
   emit this->activeSensorConfigChanged();
 }
@@ -348,8 +353,8 @@ void SensorConfigurationModel::updateSensorConnection(
   activeConfig.setConnectionConfig(sConfig.getConnectionConfig());
 
   // replace the old config
-  this->sensorConfigManager.replaceSensorConfig(activeConfig.getName(),
-                                                activeConfig, false);
+  this->sensorConfigManager.replaceSensorConfig(
+      toQString(activeConfig.getName()), activeConfig, false);
 }
 
 /*!

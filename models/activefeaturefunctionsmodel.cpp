@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "jobconnect.h"
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -244,7 +245,7 @@ QString ActiveFeatureFunctionsModel::getFunctionDescription(
   }
   Function* function = feature->getFunctions().at(index.row());
 
-  return function->getMetaData().description;
+  return toQString(function->getMetaData().description);
 }
 
 /*!
@@ -286,7 +287,7 @@ QString ActiveFeatureFunctionsModel::getInputElementDescription(
   }
   NeededElement element = function->getNeededElements().at(index.row());
 
-  return element.description;
+  return toQString(element.description);
 }
 
 bool ActiveFeatureFunctionsModel::getSupportsWeights(
@@ -351,7 +352,8 @@ std::map<QString, int> ActiveFeatureFunctionsModel::getIntegerParameter(
   }
   Function* function = feature->getFunctions().at(index.row());
 
-  return function->getScalarInputParams().intParameter;
+  return convertMap<std::map<QString, int>>(
+      function->getScalarInputParams().intParameter);
 }
 
 /*!
@@ -385,7 +387,8 @@ std::map<QString, double> ActiveFeatureFunctionsModel::getDoubleParameter(
   }
   Function* function = feature->getFunctions().at(index.row());
 
-  return function->getScalarInputParams().doubleParameter;
+  return convertMap<std::map<QString, double>>(
+      function->getScalarInputParams().doubleParameter);
 }
 
 /*!
@@ -420,7 +423,8 @@ ActiveFeatureFunctionsModel::getStringParameterSelection(
   }
   Function* function = feature->getFunctions().at(index.row());
 
-  return function->getScalarInputParams().stringParameter;
+  return convertMap<std::map<QString, QString>>(
+      function->getScalarInputParams().stringParameter);
 }
 
 /*!
@@ -460,9 +464,11 @@ void ActiveFeatureFunctionsModel::setScalarInputParameters(
 
   // create scalar input parameters
   ScalarInputParams params;
-  params.intParameter = intParams;
-  params.doubleParameter = doubleParams;
-  params.stringParameter = stringParams;
+  params.intParameter = convertMap<std::map<std::string, int>>(intParams);
+  params.doubleParameter =
+      convertMap<std::map<std::string, double>>(doubleParams);
+  params.stringParameter =
+      convertMap<std::map<std::string, std::string>>(stringParams);
 
   // set scalar input parameters
   function->setScalarInputParams(params);
@@ -499,7 +505,8 @@ std::multimap<QString, QString> ActiveFeatureFunctionsModel::getStringParameter(
   }
   Function* function = feature->getFunctions().at(index.row());
 
-  return function->getStringParameter();
+  return convertMap<std::multimap<QString, QString>>(
+      function->getStringParameter());
 }
 
 /*!
@@ -568,7 +575,7 @@ void ActiveFeatureFunctionsModel::updateModel() {
 
     // create function tree items and add needed elements
     FunctionTreeItem* itemFunction =
-        new FunctionTreeItem(function->getMetaData().name);
+        new FunctionTreeItem(toQString(function->getMetaData().name));
     foreach (const NeededElement& element, function->getNeededElements()) {
       // distinguish between 1 and n elements as input element
       if (element.infinite) {

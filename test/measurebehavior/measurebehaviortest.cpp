@@ -7,6 +7,7 @@
 #include "controllersensoractions.h"
 #include "featuretablemodel.h"
 #include "measurebehaviortypes.h"
+#include "qtconvert.h"
 #include "testcontrollersensoractions.h"
 #include "testmeasurebehaviorlogic.h"
 
@@ -42,11 +43,17 @@ void MeasureBehaviorTest::testAimAndMeasure() {
   QCOMPARE(logic.next(), true);
   logic.measure();
   logic.sensorActionFinished(
-      true, SensorWorkerMessage::MEASUREMENT_FINISHED);  // calls next / measure
+      true,
+      toQString(
+          SensorWorkerMessage::MEASUREMENT_FINISHED));  // calls next / measure
   logic.sensorActionFinished(
-      true, SensorWorkerMessage::MEASUREMENT_FINISHED);  // calls next / measure
+      true,
+      toQString(
+          SensorWorkerMessage::MEASUREMENT_FINISHED));  // calls next / measure
   logic.sensorActionFinished(
-      true, SensorWorkerMessage::MEASUREMENT_FINISHED);  // calls next / measure
+      true,
+      toQString(
+          SensorWorkerMessage::MEASUREMENT_FINISHED));  // calls next / measure
 
   QCOMPARE(logic.next(), false);
   QCOMPARE(logic.featureIds.size(), 3);
@@ -70,13 +77,18 @@ void MeasureBehaviorTest::testSkip() {
   QCOMPARE(logic.next(), true);
   logic.measure();
   logic.sensorActionFinished(
-      true, SensorWorkerMessage::MEASUREMENT_FINISHED);  // calls next / measure
+      true,
+      toQString(
+          SensorWorkerMessage::MEASUREMENT_FINISHED));  // calls next / measure
 
   logic.setDecision(Decision::eSkip);
-  logic.sensorActionFinished(false, SensorWorkerMessage::FAILED_TO_MEASURE);
+  logic.sensorActionFinished(false,
+                             toQString(SensorWorkerMessage::FAILED_TO_MEASURE));
 
   logic.sensorActionFinished(
-      true, SensorWorkerMessage::MEASUREMENT_FINISHED);  // calls next / measure
+      true,
+      toQString(
+          SensorWorkerMessage::MEASUREMENT_FINISHED));  // calls next / measure
 
   QCOMPARE(logic.next(), false);
   QCOMPARE(logic.featureIds.size(), 3);
@@ -100,13 +112,18 @@ void MeasureBehaviorTest::testSearch() {
   QCOMPARE(logic.next(), true);
   logic.measure();
   logic.sensorActionFinished(
-      true, SensorWorkerMessage::MEASUREMENT_FINISHED);  // calls next / measure
+      true,
+      toQString(
+          SensorWorkerMessage::MEASUREMENT_FINISHED));  // calls next / measure
 
   logic.setDecision(Decision::eSearch);
-  logic.sensorActionFinished(false, SensorWorkerMessage::FAILED_TO_MEASURE);
+  logic.sensorActionFinished(false,
+                             toQString(SensorWorkerMessage::FAILED_TO_MEASURE));
 
   logic.sensorActionFinished(
-      true, SensorWorkerMessage::MEASUREMENT_FINISHED);  // calls next / measure
+      true,
+      toQString(
+          SensorWorkerMessage::MEASUREMENT_FINISHED));  // calls next / measure
 
   QCOMPARE(logic.next(), false);
   QCOMPARE(logic.featureIds.size(), 3);

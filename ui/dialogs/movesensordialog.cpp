@@ -1,5 +1,6 @@
 #include "movesensordialog.h"
 
+#include "qtconvert.h"
 #include "ui_movesensordialog.h"
 
 /*!
@@ -50,7 +51,7 @@ void MoveSensorDialog::initModels() {
 void MoveSensorDialog::showEvent(QShowEvent* event) {
   if (this->ui->comboBox_typeOfReading->currentIndex() < 0) {
     this->ui->comboBox_typeOfReading->setCurrentText(
-        getReadingTypeName(ReadingTypes::eCartesianReading));
+        toQString(getReadingTypeName(ReadingTypes::eCartesianReading)));
   }
 
   event->accept();
@@ -60,8 +61,8 @@ void MoveSensorDialog::showEvent(QShowEvent* event) {
  */
 void MoveSensorDialog::on_pushButton_move_clicked() {
   // set up reading from GUI elements
-  ReadingTypes readingType =
-      getReadingTypeEnum(this->ui->comboBox_typeOfReading->currentText());
+  ReadingTypes readingType = getReadingTypeEnum(
+      toStd(this->ui->comboBox_typeOfReading->currentText()));
   switch (readingType) {
     case ReadingTypes::eDistanceReading: {
       break;
@@ -115,7 +116,7 @@ void MoveSensorDialog::on_pushButton_move_clicked() {
 void MoveSensorDialog::on_comboBox_typeOfReading_currentTextChanged(
     const QString& arg1) {
   // get selected reading type
-  ReadingTypes readingType = getReadingTypeEnum(arg1);
+  ReadingTypes readingType = getReadingTypeEnum(toStd(arg1));
 
   // set visibility depending on reading type
   switch (readingType) {

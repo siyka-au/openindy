@@ -74,14 +74,13 @@ void QtStationAdapter::onStationDestroyed(Station* station) {
   }
 }
 
-void QtStationAdapter::onRealTimeReading(
-    const std::map<QString, QVariant>& reading) {
+void QtStationAdapter::onRealTimeReading(const oi::ValueMap& reading) {
   emit this->realTimeReading(toQVariantMap(reading));
 }
 
 void QtStationAdapter::onRealTimeStatus(
-    const std::map<QString, QString>& status) {
-  emit this->realTimeStatus(status);
+    const std::map<std::string, std::string>& status) {
+  emit this->realTimeStatus(toQStringMap(status));
 }
 
 void QtStationAdapter::onConnectionLost() { emit this->connectionLost(); }
@@ -94,9 +93,9 @@ void QtStationAdapter::onIsReadyForMeasurement(bool isReady) {
   emit this->isReadyForMeasurement(isReady);
 }
 
-void QtStationAdapter::onCommandFinished(bool success, const QString& msg,
+void QtStationAdapter::onCommandFinished(bool success, const std::string& msg,
                                          SensorAction sensorAction) {
-  emit this->commandFinished(success, msg, sensorAction);
+  emit this->commandFinished(success, toQString(msg), sensorAction);
 }
 
 void QtStationAdapter::onMeasurementFinished(
@@ -108,11 +107,13 @@ void QtStationAdapter::onMeasurementDone(bool success) {
   emit this->measurementDone(success);
 }
 
-void QtStationAdapter::onSensorMessage(const QString& msg, MessageTypes msgType,
+void QtStationAdapter::onSensorMessage(const std::string& msg,
+                                       MessageTypes msgType,
                                        MessageDestinations msgDest) {
-  emit this->sensorMessage(msg, msgType, msgDest);
+  emit this->sensorMessage(toQString(msg), msgType, msgDest);
 }
 
-void QtStationAdapter::onSensorStatus(SensorStatus status, const QString& msg) {
-  emit this->sensorStatus(status, msg);
+void QtStationAdapter::onSensorStatus(SensorStatus status,
+                                      const std::string& msg) {
+  emit this->sensorStatus(status, toQString(msg));
 }

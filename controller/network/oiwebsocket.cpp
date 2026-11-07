@@ -1,6 +1,7 @@
 #include "oiwebsocket.h"
 
 #include "oiwebsocketserver.h"
+#include "qtconvert.h"
 
 /*!
  * \brief OiWebSocket::OiWebSocket
@@ -68,7 +69,9 @@ void OiWebSocket::receiveResponse(const oi::OiRequestResponse& response) {
     return;
   }
   if (this->internalRef == response.requesterId || response.requesterId == -1) {
-    this->socket->sendBinaryMessage(response.response);
+    this->socket->sendBinaryMessage(
+        QByteArray(response.response.data(),
+                   static_cast<qsizetype>(response.response.size())));
   }
 }
 
@@ -80,7 +83,7 @@ void OiWebSocket::readMessage(const QByteArray& msg) {
   // pass the serialized request on; the request handler decodes it
   OiRequestResponse request;
   request.requesterId = this->internalRef;
-  request.request = msg;
+  request.request = toStdBytes(msg);
 
   emit this->sendRequest(request);
 }

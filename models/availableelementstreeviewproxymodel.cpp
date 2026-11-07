@@ -6,6 +6,7 @@
 
 #include "containers.h"
 #include "jobconnect.h"
+#include "qtconvert.h"
 #include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
 
@@ -422,9 +423,9 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(
         !item->getFeature()->getFeature().isNull()) {
       oi::Guarded<Feature> feature = item->getFeature()->getFeature();
       if (!this->filterFeatureName.isEmpty() &&
-          !feature->getFeatureName().startsWith(
-              this->filterFeatureName,
-              Qt::CaseInsensitive)) {  // filter by featurename
+          !toQString(feature->getFeatureName())
+               .startsWith(this->filterFeatureName,
+                           Qt::CaseInsensitive)) {  // filter by featurename
         accept = false;
       }
       if (!this->filterGroupName.isEmpty() &&

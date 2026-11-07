@@ -7,6 +7,7 @@
 #include "pluginloader.h"
 #include "pluginrepository.h"
 #include "project_codec.h"
+#include "qtconvert.h"
 #include "version.h"
 
 namespace {
@@ -113,11 +114,11 @@ ProjectExchanger::LoadResult ProjectExchanger::loadProject(
   if (!this->mConfigManager.isNull()) {
     for (const MeasurementConfig& config :
          this->mConfigManager->getProjectConfigs()) {
-      this->mConfigManager->removeProjectConfig(config.getName());
+      this->mConfigManager->removeProjectConfig(toQString(config.getName()));
     }
     for (const MeasurementConfig& config : decoded.projectConfigs) {
       if (config.isValid() && config.isProjectConfig() &&
-          !this->mConfigManager->getStandardConfig(config.getName())
+          !this->mConfigManager->getStandardConfig(toQString(config.getName()))
                .isValid()) {
         this->mConfigManager->addProjectConfig(config);
       }

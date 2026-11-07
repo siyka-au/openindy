@@ -4,6 +4,7 @@
 
 #include "containers.h"
 #include "qtconvert.h"
+#include "stringutil.h"
 
 /*!
  * \brief DataExchanger::DataExchanger
@@ -117,7 +118,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
 
   // check nominal system
   std::vector<oi::Guarded<FeatureWrapper>> features =
-      this->currentJob->getFeaturesByName(params.nominalSystem);
+      this->currentJob->getFeaturesByName(toStd(params.nominalSystem));
   if (features.size() != 1 || features.at(0).isNull() ||
       features.at(0)->getCoordinateSystem().isNull() ||
       features.at(0)->getCoordinateSystem()->getIsStationSystem()) {
@@ -167,7 +168,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
         case GeometryTypes::ePointGeometry: {
           simpleAscii->setGeometryType(params.typeOfGeometry);
           simpleAscii->setSkipFirstLine(params.skipFirstLine);
-          simpleAscii->setDelimiter(params.delimiter);
+          simpleAscii->setDelimiter(toStd(params.delimiter));
 
           // set user defined columns here hard coded (later selectable in table
           // view)
@@ -189,7 +190,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
         case GeometryTypes::ePlaneLevelGeometry: {
           simpleAscii->setGeometryType(params.typeOfGeometry);
           simpleAscii->setSkipFirstLine(params.skipFirstLine);
-          simpleAscii->setDelimiter(params.delimiter);
+          simpleAscii->setDelimiter(toStd(params.delimiter));
 
           std::vector<ExchangeSimpleAscii::ColumnType> columns;
           columns.push_back(ExchangeSimpleAscii::eColumnFeatureName);
@@ -229,7 +230,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   this->exchange->setStream(this->exchangeStream.get());
   this->exchange->setFeatures(params.exportFeatures);
   this->exchange->setExportObservations(params.exportObservations);
-  this->exchange->setGroupName(params.groupName);
+  this->exchange->setGroupName(toStd(params.groupName));
   this->exchange->setNominalSystem(features.at(0)->getCoordinateSystem());
   std::vector<DimensionType> dimensions = oi::keys(params.units);
   foreach (const DimensionType& dimension, dimensions) {
@@ -307,7 +308,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
     if (!simpleAscii.isNull()) {
       simpleAscii->setGeometryType(params.typeOfGeometry);
       simpleAscii->setSkipFirstLine(params.skipFirstLine);
-      simpleAscii->setDelimiter(params.delimiter);
+      simpleAscii->setDelimiter(toStd(params.delimiter));
       for (const auto& [dimension, unit] : params.units) {
         simpleAscii->setUnit(dimension, unit);
       }
@@ -512,13 +513,13 @@ void DataExchanger::createActuals(
         fAttr.name = fw->getFeature()->getFeatureName();
         fAttr.group = fw->getFeature()->getGroupName();
 
-        fAttr.isCommon = !QString::compare(
+        fAttr.isCommon = oi::equalsIgnoreCase(
             fw->getFeature()
                 ->getTransientAttribute("OI_FEATURE_COMMONSTATE")
                 .toString(),
-            "true", Qt::CaseInsensitive);
+            "true");
 
-        QString mcElementTypeName;
+        std::string mcElementTypeName;
         FeatureTypes funFeatureType;
         if (fw->getFeature()
                 ->getTransientAttribute("OI_FEATURE_PLANE_LEVEL")
@@ -531,24 +532,25 @@ void DataExchanger::createActuals(
           funFeatureType = fAttr.typeOfFeature;
         }
 
-        QString mConfigName = Settings::get(
-            QString("defaultMeasurementConfig.%1").arg(mcElementTypeName));
+        QString mConfigName =
+            Settings::get(QString("defaultMeasurementConfig.%1")
+                              .arg(toQString(mcElementTypeName)));
         MeasurementConfig mConfig = mConfigManager->findConfig(mConfigName);
 
         sys::Function defaultFunction =
             PluginRepository::getDefaultFunction(funFeatureType)
                 .value_or(sys::Function());
-        std::pair<QString, QString> functionPlugin;
-        functionPlugin.first = defaultFunction.name();
-        functionPlugin.second = defaultFunction.plugin().filePath();
+        std::pair<std::string, std::string> functionPlugin;
+        functionPlugin.first = toStd(defaultFunction.name());
+        functionPlugin.second = toStd(defaultFunction.plugin().filePath());
         fAttr.functionPlugin = functionPlugin;
 
         std::vector<oi::Guarded<FeatureWrapper>> addedFeatures =
             this->currentJob->addFeatures(fAttr);
 
         this->addFunctionsAndMConfigs(addedFeatures, mConfig,
-                                      fAttr.functionPlugin.second,
-                                      fAttr.functionPlugin.first);
+                                      toQString(fAttr.functionPlugin.second),
+                                      toQString(fAttr.functionPlugin.first));
 
         // this workflow's whole point is "add actuals to nominals at
         // import" (D17): link the new actual to a same-named, same-
@@ -582,15 +584,16 @@ void DataExchanger::runOnOwnThread(std::function<void()> work) {
   }
 }
 
-void DataExchanger::onMessage(const QString& msg, const MessageTypes& type,
+void DataExchanger::onMessage(const std::string& msg, const MessageTypes& type,
                               const MessageDestinations& dest) {
-  this->runOnOwnThread(
-      [this, msg, type, dest] { emit this->sendMessage(msg, type, dest); });
+  this->runOnOwnThread([this, msg = toQString(msg), type, dest] {
+    emit this->sendMessage(msg, type, dest);
+  });
 }
 
-void DataExchanger::onProgress(int percent, const QString& message) {
+void DataExchanger::onProgress(int percent, const std::string& text) {
   // only an import has ever shown progress
-  this->runOnOwnThread([this, percent, message] {
+  this->runOnOwnThread([this, percent, message = toQString(text)] {
     if (!this->exporting) {
       emit this->updateNominalImportProgress(percent, message);
     }
@@ -640,8 +643,8 @@ void DataExchanger::importFeatures(const bool& success) {
     std::vector<oi::Guarded<CoordinateSystem>> coordSystemList =
         this->currentJob->getCoordinateSystemsList();
     foreach (oi::Guarded<CoordinateSystem> cs, coordSystemList) {
-      if (cs->getFeatureName().compare(this->exchangeParams.nominalSystem) ==
-          0) {
+      if (cs->getFeatureName().compare(
+              toStd(this->exchangeParams.nominalSystem)) == 0) {
         this->currentJob->getActiveCoordinateSystem()
             ->setActiveCoordinateSystemState(false);
         cs->setActiveCoordinateSystemState(true);

@@ -1,5 +1,7 @@
 #include "plugininfowidget.h"
 
+#include "qtconvert.h"
+
 PluginInfoWidget::PluginInfoWidget(QWidget* parent) : QWidget(parent) {
   this->initGUI();
 }
@@ -186,7 +188,7 @@ void PluginInfoWidget::initGUI() {
   // add labels with icons of all elements / features
   foreach (const FeatureTypes& featureType, getAvailableFeatureTypes()) {
     QLabel* feature = new QLabel();
-    feature->setPixmap(QPixmap(getFeatureTypeIconPath(featureType)));
+    feature->setPixmap(QPixmap(toQString(getFeatureTypeIconPath(featureType))));
     feature->setFixedHeight(30);
     feature->setFixedWidth(30);
     feature->setScaledContents(true);
@@ -196,7 +198,7 @@ void PluginInfoWidget::initGUI() {
   }
   foreach (const ElementTypes& elementType, getAvailableElementTypes()) {
     QLabel* element = new QLabel();
-    element->setPixmap(QPixmap(getElementTypeIconPath(elementType)));
+    element->setPixmap(QPixmap(toQString(getElementTypeIconPath(elementType))));
     element->setFixedHeight(30);
     element->setFixedWidth(30);
     element->setScaledContents(true);

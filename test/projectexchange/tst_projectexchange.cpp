@@ -14,6 +14,7 @@
 #include "oijob.h"
 #include "pointgroup.h"
 #include "projectexchanger.h"
+#include "qtconvert.h"
 #include "station.h"
 
 using namespace oi;
@@ -76,7 +77,7 @@ oi::Guarded<FeatureWrapper> addPoint(const oi::Guarded<OiJob>& job,
                                      double z) {
   oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
   oi::Guarded<Point> point = new Point(Position(x, y, z));
-  point->setFeatureName(name);
+  point->setFeatureName(toStd(name));
   point->setIsSolved(true);
   wrapper->setPoint(point);
   job->addFeature(wrapper);
@@ -87,7 +88,7 @@ oi::Guarded<FeatureWrapper> addPlane(const oi::Guarded<OiJob>& job,
                                      const QString& name) {
   oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
   oi::Guarded<Plane> plane = new Plane();
-  plane->setFeatureName(name);
+  plane->setFeatureName(toStd(name));
   wrapper->setPlane(plane);
   job->addFeature(wrapper);
   return wrapper;
@@ -97,7 +98,7 @@ oi::Guarded<FeatureWrapper> addSphere(const oi::Guarded<OiJob>& job,
                                       const QString& name) {
   oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
   oi::Guarded<Sphere> sphere = new Sphere();
-  sphere->setFeatureName(name);
+  sphere->setFeatureName(toStd(name));
   wrapper->setSphere(sphere);
   job->addFeature(wrapper);
   return wrapper;
@@ -170,7 +171,7 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   foreach (const oi::Guarded<FeatureWrapper>& member,
            reloadedGroup->getMembers()) {
     if (!member.isNull() && !member->getFeature().isNull()) {
-      memberNames << member->getFeature()->getFeatureName();
+      memberNames << toQString(member->getFeature()->getFeatureName());
     }
   }
   memberNames.sort();

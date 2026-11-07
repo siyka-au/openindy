@@ -10,6 +10,7 @@
 #include <QRegularExpressionValidator>
 #include <QString>
 #include <QWidget>
+#include <QtCore>
 #include <map>
 
 class ScalarParameterWidget : public QWidget {

@@ -1,5 +1,6 @@
 #include "measurementconfigurationdialog.h"
 
+#include "qtconvert.h"
 #include "ui_measurementconfigurationdialog.h"
 
 #define MIN_TIME_INTERVAL 0.005
@@ -289,7 +290,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked() {
   }
 
   MeasurementConfig mConfig;
-  mConfig.setName(name);
+  mConfig.setName(toStd(name));
   mConfig.makeUserConfig();
 
   // add new measurement config
@@ -464,7 +465,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection() {
 
   // get measurement config from GUI selection
   MeasurementConfig mConfig;
-  mConfig.setName(name);
+  mConfig.setName(toStd(name));
 
   // set measurement type
   mConfig.setMeasurementType(

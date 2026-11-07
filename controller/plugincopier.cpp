@@ -1,6 +1,7 @@
 #include "plugincopier.h"
 
 #include "pluginloader.h"
+#include "qtconvert.h"
 
 /*!
  * \brief PluginCopier::PluginCopier
@@ -51,35 +52,21 @@ void PluginCopier::importPlugin(const QString& path) {
     }
 
     // copy all dependencies
-    for (int i = 0; i < metaData.dependenciesPath.size(); i++) {
+    for (std::size_t i = 0; i < metaData.dependenciesPath.size(); i++) {
       // get source path
-      QString sourcePath(
-          pluginFileInfo.absoluteDir().absolutePath() + "/" +
-          metaData.dependenciesPath.at(i).toObject().value("name").toString());
+      QString sourcePath(pluginFileInfo.absoluteDir().absolutePath() + "/" +
+                         toQString(metaData.dependenciesPath.at(i).name));
       QFileInfo sourcePathInfo(sourcePath);
 
       // get destination path
       QString destPath;
-      if (metaData.dependenciesPath.at(i)
-              .toObject()
-              .value("path")
-              .toString()
-              .compare("app") == 0) {
+      if (metaData.dependenciesPath.at(i).path == "app") {
         destPath = QString(userDir.absolutePath() + "/" +
-                           metaData.dependenciesPath.at(i)
-                               .toObject()
-                               .value("name")
-                               .toString());
+                           toQString(metaData.dependenciesPath.at(i).name));
       } else {
-        destPath = QString(metaData.dependenciesPath.at(i)
-                               .toObject()
-                               .value("path")
-                               .toString() +
-                           "/" +
-                           metaData.dependenciesPath.at(i)
-                               .toObject()
-                               .value("name")
-                               .toString());
+        destPath =
+            QString(toQString(metaData.dependenciesPath.at(i).path) + "/" +
+                    toQString(metaData.dependenciesPath.at(i).name));
       }
 
       // copy from source to destination
@@ -99,7 +86,8 @@ void PluginCopier::importPlugin(const QString& path) {
             MessageTypes::eCriticalMessage);
       }
 
-      emit this->updateProgress((i * 100) / metaData.dependenciesPath.size());
+      emit this->updateProgress(
+          static_cast<int>((i * 100) / metaData.dependenciesPath.size()));
     }
   }
 
@@ -134,47 +122,47 @@ void PluginCopier::deletePlugin(const QString& name) {
 void PluginCopier::readPluginMetaData(PluginMetaData& metaData,
                                       const QString& path) {
   QPluginLoader pluginLoader(path);
-  metaData.iid = pluginLoader.metaData().value("IID").toString();
-  metaData.name = pluginLoader.metaData()
-                      .value("MetaData")
-                      .toObject()
-                      .value("name")
-                      .toString();
-  metaData.pluginVersion = pluginLoader.metaData()
-                               .value("MetaData")
-                               .toObject()
-                               .value("pluginVersion")
-                               .toString();
-  metaData.author = pluginLoader.metaData()
-                        .value("MetaData")
-                        .toObject()
-                        .value("author")
-                        .toString();
-  metaData.compiler = pluginLoader.metaData()
-                          .value("MetaData")
-                          .toObject()
-                          .value("compiler")
-                          .toString();
-  metaData.operatingSystem = pluginLoader.metaData()
-                                 .value("MetaData")
-                                 .toObject()
-                                 .value("operatingSystem")
-                                 .toString();
+  metaData.iid = toStd(pluginLoader.metaData().value("IID").toString());
+  metaData.name = toStd(pluginLoader.metaData()
+                            .value("MetaData")
+                            .toObject()
+                            .value("name")
+                            .toString());
+  metaData.pluginVersion = toStd(pluginLoader.metaData()
+                                     .value("MetaData")
+                                     .toObject()
+                                     .value("pluginVersion")
+                                     .toString());
+  metaData.author = toStd(pluginLoader.metaData()
+                              .value("MetaData")
+                              .toObject()
+                              .value("author")
+                              .toString());
+  metaData.compiler = toStd(pluginLoader.metaData()
+                                .value("MetaData")
+                                .toObject()
+                                .value("compiler")
+                                .toString());
+  metaData.operatingSystem = toStd(pluginLoader.metaData()
+                                       .value("MetaData")
+                                       .toObject()
+                                       .value("operatingSystem")
+                                       .toString());
   metaData.dependencies = pluginLoader.metaData()
                               .value("MetaData")
                               .toObject()
                               .value("dependencies")
                               .toBool();
-  metaData.description = pluginLoader.metaData()
-                             .value("MetaData")
-                             .toObject()
-                             .value("description")
-                             .toString();
-  metaData.dependenciesPath = pluginLoader.metaData()
-                                  .value("MetaData")
-                                  .toObject()
-                                  .value("libPaths")
-                                  .toArray();
+  metaData.description = toStd(pluginLoader.metaData()
+                                   .value("MetaData")
+                                   .toObject()
+                                   .value("description")
+                                   .toString());
+  metaData.dependenciesPath = toDependencies(pluginLoader.metaData()
+                                                 .value("MetaData")
+                                                 .toObject()
+                                                 .value("libPaths")
+                                                 .toArray());
 }
 
 /*!
@@ -224,11 +212,10 @@ bool PluginCopier::copyDir(const QString& sourcePath,
  */
 bool PluginCopier::checkDependencies(const QString& sourcePath,
                                      const PluginMetaData& metaData) {
-  for (int i = 0; i < metaData.dependenciesPath.size(); i++) {
+  for (std::size_t i = 0; i < metaData.dependenciesPath.size(); i++) {
     // get source file path
-    QString p(
-        sourcePath + "/" +
-        metaData.dependenciesPath.at(i).toObject().value("name").toString());
+    QString p(sourcePath + "/" +
+              toQString(metaData.dependenciesPath.at(i).name));
     QFileInfo fileInfo(p);
 
     if (!fileInfo.exists()) {

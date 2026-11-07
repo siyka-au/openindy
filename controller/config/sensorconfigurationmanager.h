@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QString>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "console.h"
@@ -110,8 +111,8 @@ class SensorConfigurationManager : public QObject {
   // save sensor configs
   // ###################
 
-  std::map<QString, SensorConfiguration> savedSensorConfigsMap;
-  std::map<QString, SensorConfiguration> projectSensorConfigsMap;
+  std::map<std::string, SensorConfiguration> savedSensorConfigsMap;
+  std::map<std::string, SensorConfiguration> projectSensorConfigsMap;
 
   std::vector<SensorConfiguration> savedSensorConfigsList;
   std::vector<SensorConfiguration> projectSensorConfigsList;

@@ -14,7 +14,7 @@ class TestFunction : public ConstructFunction, public Producer<Point> {
   explicit TestFunction() : ConstructFunction() {
     this->applicableFor.push_back(FeatureTypes::ePointFeature);
   }
-  std::expected<Point, QString> exec() override { return Point(); }
+  std::expected<Point, std::string> exec() override { return Point(); }
 };
 }  // namespace
 

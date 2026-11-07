@@ -5,6 +5,7 @@
 
 #include "containers.h"
 #include "jobconnect.h"
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -107,53 +108,53 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
   if (role == Qt::DisplayRole) {
     switch (key) {
       case eObservationDisplayId:
-        return observation->getDisplayId();
+        return toQString(observation->getDisplayId());
       case eObservationDisplayStation:
-        return observation->getDisplayStation();
+        return toQString(observation->getDisplayStation());
       case eObservationDisplayTargetGeometries:
-        return observation->getDisplayTargetGeometries();
+        return toQString(observation->getDisplayTargetGeometries());
       case eObservationDisplayX:
-        return observation->getDisplayX(
+        return toQString(observation->getDisplayX(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eObservationDisplayY:
-        return observation->getDisplayY(
+        return toQString(observation->getDisplayY(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eObservationDisplayZ:
-        return observation->getDisplayZ(
+        return toQString(observation->getDisplayZ(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eObservationDisplayI:
-        return observation->getDisplayI(6);
+        return toQString(observation->getDisplayI(6));
       case eObservationDisplayJ:
-        return observation->getDisplayJ(6);
+        return toQString(observation->getDisplayJ(6));
       case eObservationDisplayK:
-        return observation->getDisplayK(6);
+        return toQString(observation->getDisplayK(6));
       case eObservationDisplaySigmaX:
-        return observation->getDisplaySigmaX(
+        return toQString(observation->getDisplaySigmaX(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eObservationDisplaySigmaY:
-        return observation->getDisplaySigmaY(
+        return toQString(observation->getDisplaySigmaY(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eObservationDisplaySigmaZ:
-        return observation->getDisplaySigmaZ(
+        return toQString(observation->getDisplaySigmaZ(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eObservationDisplaySigmaI:
-        return observation->getDisplaySigmaI(6);
+        return toQString(observation->getDisplaySigmaI(6));
       case eObservationDisplaySigmaJ:
-        return observation->getDisplaySigmaJ(6);
+        return toQString(observation->getDisplaySigmaJ(6));
       case eObservationDisplaySigmaK:
-        return observation->getDisplaySigmaK(6);
+        return toQString(observation->getDisplaySigmaK(6));
       case eObservationDisplayIsValid:
         // return observation->getDisplayIsValid();
         return QVariant();
@@ -171,11 +172,11 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
               geometry->getFunctions().at(0)->getStatistic();
           Residual residual =
               statistic.getDisplayResidual(observation->getId());
-          QString attr = getObservationDisplayAttributesName(key);
+          QString attr = toQString(getObservationDisplayAttributesName(key));
           if (residual.elementId == observation->getId() &&
-              residual.corrections.contains(attr)) {
+              residual.corrections.contains(toStd(attr))) {
             return QString::number(
-                convertFromDefault(residual.corrections[attr],
+                convertFromDefault(residual.corrections[toStd(attr)],
                                    this->parameterDisplayConfig.getDisplayUnit(
                                        DimensionType::eMetric)),
                 'f',
@@ -187,7 +188,8 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
       case eObservationDisplayReadingTime:
         return observation->getReading().isNull()
                    ? QVariant()
-                   : observation->getReading()->getDisplayTime();
+                   : QVariant(toQString(
+                         observation->getReading()->getDisplayTime()));
     }
 
   } else if (role == Qt::CheckStateRole) {
@@ -260,8 +262,8 @@ QVariant ObservationModel::headerData(int section, Qt::Orientation orientation,
                                       int role) const {
   if ((Qt::DisplayRole == role) && (Qt::Horizontal == orientation) &&
       (0 <= section) && (section < columnCount())) {
-    return getObservationDisplayAttributesName(
-        getObservationDisplayAttributes().at(section));
+    return toQString(getObservationDisplayAttributesName(
+        getObservationDisplayAttributes().at(section)));
   }
 
   return QVariant();

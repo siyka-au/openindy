@@ -69,20 +69,21 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   QtStationAdapter() = default;
 
   void onStationDestroyed(oi::Station* station) override;
-  void onRealTimeReading(const std::map<QString, QVariant>& reading) override;
-  void onRealTimeStatus(const std::map<QString, QString>& status) override;
+  void onRealTimeReading(const oi::ValueMap& reading) override;
+  void onRealTimeStatus(
+      const std::map<std::string, std::string>& status) override;
   void onConnectionLost() override;
   void onConnectionReceived() override;
   void onIsReadyForMeasurement(bool isReady) override;
-  void onCommandFinished(bool success, const QString& msg,
+  void onCommandFinished(bool success, const std::string& msg,
                          oi::SensorAction sensorAction) override;
   void onMeasurementFinished(
       int geomId,
       const std::vector<oi::Guarded<oi::Reading>>& readings) override;
   void onMeasurementDone(bool success) override;
-  void onSensorMessage(const QString& msg, oi::MessageTypes msgType,
+  void onSensorMessage(const std::string& msg, oi::MessageTypes msgType,
                        oi::MessageDestinations msgDest) override;
-  void onSensorStatus(oi::SensorStatus status, const QString& msg) override;
+  void onSensorStatus(oi::SensorStatus status, const std::string& msg) override;
 };
 
 #endif  // QTSTATIONADAPTER_H

@@ -1,5 +1,6 @@
 #include "exportdialog.h"
 
+#include "qtconvert.h"
 #include "ui_exportdialog.h"
 
 /*!
@@ -44,11 +45,11 @@ void ExportDialog::initModels() {
 
   // set unit type defaults
   this->ui->comboBox_distance_unit->setCurrentText(
-      getUnitTypeName(UnitType::eUnitMilliMeter));
+      toQString(getUnitTypeName(UnitType::eUnitMilliMeter)));
   this->ui->comboBox_angle_unit->setCurrentText(
-      getUnitTypeName(UnitType::eUnitDecimalDegree));
+      toQString(getUnitTypeName(UnitType::eUnitDecimalDegree)));
   this->ui->comboBox_temperature_unit->setCurrentText(
-      getUnitTypeName(UnitType::eUnitGrad));
+      toQString(getUnitTypeName(UnitType::eUnitGrad)));
 
   // assign plugin model
   this->ui->comboBox_plugin->setModel(&ModelManager::getPluginNamesModel());
@@ -81,13 +82,14 @@ void ExportDialog::on_pushButton_export_clicked() {
   params.isDefinedFormat = false;
   params.units.insert_or_assign(
       DimensionType::eMetric,
-      getUnitTypeEnum(this->ui->comboBox_distance_unit->currentText()));
+      getUnitTypeEnum(toStd(this->ui->comboBox_distance_unit->currentText())));
   params.units.insert_or_assign(
       DimensionType::eAngular,
-      getUnitTypeEnum(this->ui->comboBox_angle_unit->currentText()));
+      getUnitTypeEnum(toStd(this->ui->comboBox_angle_unit->currentText())));
   params.units.insert_or_assign(
       DimensionType::eTemperature,
-      getUnitTypeEnum(this->ui->comboBox_temperature_unit->currentText()));
+      getUnitTypeEnum(
+          toStd(this->ui->comboBox_temperature_unit->currentText())));
   params.distanceDigits = this->ui->lineEdit_distanceDigits->text().toInt();
   params.angleDigits = this->ui->lineEdit_angleDigits->text().toInt();
   params.temperatureDigits =

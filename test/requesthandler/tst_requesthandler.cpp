@@ -16,6 +16,7 @@
 #include "oirequesthandler.h"
 #include "openindy/network.pb.h"
 #include "openindy/project.pb.h"
+#include "qtconvert.h"
 #include "station.h"
 
 using namespace oi;
@@ -66,7 +67,7 @@ oi::Guarded<FeatureWrapper> addPoint(const oi::Guarded<OiJob>& job,
                                      double z) {
   oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
   oi::Guarded<Point> point = new Point(Position(x, y, z));
-  point->setFeatureName(name);
+  point->setFeatureName(toStd(name));
   point->setIsSolved(true);
   wrapper->setPoint(point);
   job->addFeature(wrapper);
@@ -135,14 +136,14 @@ class RequestHandlerTest : public QObject {
         Qt::DirectConnection);
     OiRequestResponse request;
     request.requesterId = requesterId;
-    request.request = bytes;
+    request.request = toStdBytes(bytes);
     answer.accepted = handler.receiveRequest(request);
     QObject::disconnect(connection);
     answer.sent = static_cast<int>(sent.size());
     if (!sent.empty()) {
       answer.carrier = sent.back();
       answer.envelope.ParseFromArray(
-          answer.carrier.response.constData(),
+          answer.carrier.response.data(),
           static_cast<int>(answer.carrier.response.size()));
     }
     return answer;
@@ -428,14 +429,14 @@ void RequestHandlerTest::measurementConfigs() {
   QObject::connect(&bare, &OiRequestHandler::sendResponse, this,
                    [&sent](OiRequestResponse r) { sent.push_back(r); });
   OiRequestResponse request;
-  request.request = bytesOf(envelope);
+  request.request = toStdBytes(bytesOf(envelope));
   bare.receiveRequest(request);
   QCOMPARE(sent.size(), 1);
   QCOMPARE(static_cast<int>(sent.front().errorCode),
            static_cast<int>(
                OiRequestResponse::ErrorCode::eNoMeasurementConfigManager));
   oipb::Envelope reply;
-  QVERIFY(reply.ParseFromArray(sent.front().response.constData(),
+  QVERIFY(reply.ParseFromArray(sent.front().response.data(),
                                static_cast<int>(sent.front().response.size())));
   QCOMPARE(static_cast<int>(reply.response().error()),
            static_cast<int>(oipb::ERROR_CODE_NO_MEASUREMENT_CONFIG_MANAGER));
@@ -607,7 +608,7 @@ void RequestHandlerTest::noJob() {
   envelope.mutable_request()->mutable_get_project();
   OiRequestResponse request;
   request.requesterId = 3;
-  request.request = bytesOf(envelope);
+  request.request = toStdBytes(bytesOf(envelope));
   QVERIFY(!empty.receiveRequest(request));
 
   QCOMPARE(sent.size(), 1);
@@ -615,7 +616,7 @@ void RequestHandlerTest::noJob() {
   QCOMPARE(static_cast<int>(sent.front().errorCode),
            static_cast<int>(OiRequestResponse::ErrorCode::eNoJob));
   oipb::Envelope reply;
-  QVERIFY(reply.ParseFromArray(sent.front().response.constData(),
+  QVERIFY(reply.ParseFromArray(sent.front().response.data(),
                                static_cast<int>(sent.front().response.size())));
   QCOMPARE(reply.request_id(), 5);
   QCOMPARE(static_cast<int>(reply.response().error()),
@@ -705,9 +706,8 @@ void RequestHandlerTest::notifications() {
     oipb::Envelope envelope;
     const auto& carrier = sent.back();
     [&] {
-      QVERIFY(
-          envelope.ParseFromArray(carrier.response.constData(),
-                                  static_cast<int>(carrier.response.size())));
+      QVERIFY(envelope.ParseFromArray(
+          carrier.response.data(), static_cast<int>(carrier.response.size())));
     }();
     return envelope;
   };

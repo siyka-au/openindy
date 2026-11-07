@@ -1,5 +1,6 @@
 #include "featuretreeviewmodel.h"
 
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -70,8 +71,8 @@ QVariant FeatureTreeViewModel::data(const QModelIndex& index, int role) const {
 
       if (item->getIsFeature() && !item->getFeature().isNull()) {
         // get and check icon path
-        const QString& iconPath =
-            getFeatureTypeIconPath(item->getFeature()->getFeatureTypeEnum());
+        const QString iconPath = toQString(
+            getFeatureTypeIconPath(item->getFeature()->getFeatureTypeEnum()));
         if (iconPath.compare("") == 0) {
           return QVariant();
         }

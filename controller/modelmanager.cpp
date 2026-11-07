@@ -430,7 +430,8 @@ void ModelManager::fillFeatureTypeModel(
   model.clear();
 
   foreach (const FeatureTypes& type, types) {
-    QStandardItem* item = new QStandardItem(getFeatureTypeDisplayName(type));
+    QStandardItem* item =
+        new QStandardItem(toQString(getFeatureTypeDisplayName(type)));
     item->setData(QVariant::fromValue(static_cast<int>(type)), Qt::UserRole);
     model.appendRow(item);
   }
@@ -693,7 +694,8 @@ ModelManager::getExchangeSimpleAsciiSupportedGeometries(
     foreach (const GeometryTypes& type, exchange->getSupportedGeometries()) {
       // display name for the user; the GeometryTypes value rides along in
       // Qt::UserRole so the consumer never parses the visible text back
-      QStandardItem* item = new QStandardItem(getGeometryTypeDisplayName(type));
+      QStandardItem* item =
+          new QStandardItem(toQString(getGeometryTypeDisplayName(type)));
       item->setData(QVariant::fromValue(static_cast<int>(type)), Qt::UserRole);
       supportedGeometries->appendRow(item);
     }
@@ -1053,7 +1055,7 @@ void ModelManager::updateCoordinateSystemsModel() {
     }
 
     // add system's name
-    coordSystems.append(system->getFeatureName());
+    coordSystems.append(toQString(system->getFeatureName()));
   }
 
   // add all station systems
@@ -1065,7 +1067,7 @@ void ModelManager::updateCoordinateSystemsModel() {
     }
 
     // add system's name
-    coordSystems.append(system->getFeatureName());
+    coordSystems.append(toQString(system->getFeatureName()));
   }
 
   ModelManager::coordinateSystemsModel.setStringList(coordSystems);
@@ -1091,7 +1093,7 @@ void ModelManager::updateNominalSystemsModel() {
     }
 
     // add system's name
-    coordSystems.append(system->getFeatureName());
+    coordSystems.append(toQString(system->getFeatureName()));
   }
 
   ModelManager::nominalSystemsModel.setStringList(coordSystems);
@@ -1220,7 +1222,7 @@ void ModelManager::initSensorTypeNamesModel() {
   QStringList sensorTypes;
 
   foreach (const SensorType& type, SensorTypeRegistry::all()) {
-    sensorTypes.append(type.displayName());
+    sensorTypes.append(toQString(type.displayName()));
   }
 
   ModelManager::sensorTypeNamesModel.setStringList(sensorTypes);
@@ -1403,23 +1405,28 @@ void ModelManager::initSensorConnectionModels() {
  */
 void ModelManager::initUnitTypesModels() {
   QStringList metricUnitTypes;
-  metricUnitTypes.append(getUnitTypeName(UnitType::eUnitInch));
-  metricUnitTypes.append(getUnitTypeName(UnitType::eUnitMeter));
-  metricUnitTypes.append(getUnitTypeName(UnitType::eUnitMilliMeter));
+  metricUnitTypes.append(toQString(getUnitTypeName(UnitType::eUnitInch)));
+  metricUnitTypes.append(toQString(getUnitTypeName(UnitType::eUnitMeter)));
+  metricUnitTypes.append(toQString(getUnitTypeName(UnitType::eUnitMilliMeter)));
   ModelManager::metricUnitTypesModel.setStringList(metricUnitTypes);
 
   QStringList angularUnitTypes;
-  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitArcSeconds));
-  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitDecimalDegree));
-  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitGon));
-  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitMilliRadians));
-  angularUnitTypes.append(getUnitTypeName(UnitType::eUnitRadiant));
+  angularUnitTypes.append(
+      toQString(getUnitTypeName(UnitType::eUnitArcSeconds)));
+  angularUnitTypes.append(
+      toQString(getUnitTypeName(UnitType::eUnitDecimalDegree)));
+  angularUnitTypes.append(toQString(getUnitTypeName(UnitType::eUnitGon)));
+  angularUnitTypes.append(
+      toQString(getUnitTypeName(UnitType::eUnitMilliRadians)));
+  angularUnitTypes.append(toQString(getUnitTypeName(UnitType::eUnitRadiant)));
   ModelManager::angularUnitTypesModel.setStringList(angularUnitTypes);
 
   QStringList temperatureUnitTypes;
-  temperatureUnitTypes.append(getUnitTypeName(UnitType::eUnitFahrenheit));
-  temperatureUnitTypes.append(getUnitTypeName(UnitType::eUnitGrad));
-  temperatureUnitTypes.append(getUnitTypeName(UnitType::eUnitKelvin));
+  temperatureUnitTypes.append(
+      toQString(getUnitTypeName(UnitType::eUnitFahrenheit)));
+  temperatureUnitTypes.append(toQString(getUnitTypeName(UnitType::eUnitGrad)));
+  temperatureUnitTypes.append(
+      toQString(getUnitTypeName(UnitType::eUnitKelvin)));
   ModelManager::temperatureUnitTypesModel.setStringList(temperatureUnitTypes);
 }
 
@@ -1428,13 +1435,20 @@ void ModelManager::initUnitTypesModels() {
  */
 void ModelManager::initReadingTypesModels() {
   QStringList readingTypes;
-  readingTypes.append(getReadingTypeName(ReadingTypes::eCartesianReading));
-  readingTypes.append(getReadingTypeName(ReadingTypes::eCartesianReading6D));
-  readingTypes.append(getReadingTypeName(ReadingTypes::eDistanceReading));
-  readingTypes.append(getReadingTypeName(ReadingTypes::ePolarReading));
-  readingTypes.append(getReadingTypeName(ReadingTypes::eDirectionReading));
-  readingTypes.append(getReadingTypeName(ReadingTypes::eTemperatureReading));
-  readingTypes.append(getReadingTypeName(ReadingTypes::eLevelReading));
+  readingTypes.append(
+      toQString(getReadingTypeName(ReadingTypes::eCartesianReading)));
+  readingTypes.append(
+      toQString(getReadingTypeName(ReadingTypes::eCartesianReading6D)));
+  readingTypes.append(
+      toQString(getReadingTypeName(ReadingTypes::eDistanceReading)));
+  readingTypes.append(
+      toQString(getReadingTypeName(ReadingTypes::ePolarReading)));
+  readingTypes.append(
+      toQString(getReadingTypeName(ReadingTypes::eDirectionReading)));
+  readingTypes.append(
+      toQString(getReadingTypeName(ReadingTypes::eTemperatureReading)));
+  readingTypes.append(
+      toQString(getReadingTypeName(ReadingTypes::eLevelReading)));
   ModelManager::readingTypeNamesModel.setStringList(readingTypes);
 }
 
@@ -1486,7 +1500,7 @@ void ModelManager::initActualNominalFilterModel() {
       getAvailableActualNominalFilters();
   QStringList items;
   foreach (const ActualNominalFilter& filter, actualNominalFilters) {
-    items.append(getActualNominalFilterName(filter));
+    items.append(toQString(getActualNominalFilterName(filter)));
   }
 
   ModelManager::actualNominalFilterModel.setStringList(items);

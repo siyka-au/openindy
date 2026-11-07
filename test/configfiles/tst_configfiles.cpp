@@ -94,12 +94,12 @@ void ConfigFilesTest::shippedSensorConfiguration() {
   QCOMPARE(oi::value(config->getDoubleParameter(), "echo value"), -123.45);
   QCOMPARE(oi::value(config->getDoubleParameter(), "Aa1 [arc sec]"), 0.064);
   QCOMPARE(oi::value(config->getStringParameter(), "reading type"),
-           QString("polar"));
+           std::string("polar"));
   QCOMPARE(oi::value(config->getStringParameter(), "active probe"),
-           QString("1.5''"));
-  QCOMPARE(
-      oi::values(config->getAvailableStringParameter(), "reading type"),
-      (std::vector<QString>{"cartesian", "polar", "direction", "distance"}));
+           std::string("1.5''"));
+  QCOMPARE(oi::values(config->getAvailableStringParameter(), "reading type"),
+           (std::vector<std::string>{"cartesian", "polar", "direction",
+                                     "distance"}));
   QCOMPARE(
       oi::values(config->getAvailableStringParameter(), "active probe").size(),
       3);

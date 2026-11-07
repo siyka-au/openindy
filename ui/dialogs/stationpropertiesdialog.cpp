@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "qtconvert.h"
 #include "ui_stationpropertiesdialog.h"
 
 /*!
@@ -176,11 +177,11 @@ void StationPropertiesDialog::showEvent(QShowEvent* event) {
  */
 void StationPropertiesDialog::initGUI() {
   // set general sensor config information
-  this->ui->lineEdit_sensorConfig1->setText(this->sConfig.getName());
+  this->ui->lineEdit_sensorConfig1->setText(toQString(this->sConfig.getName()));
 
   // set connection information
-  this->ui->lineEdit_connectionType->setText(
-      this->sConfig.getConnectionConfig().typeOfConnection.displayName());
+  this->ui->lineEdit_connectionType->setText(toQString(
+      this->sConfig.getConnectionConfig().typeOfConnection.displayName()));
   if (!this->sConfig.getIsValid()) {
     // set visible states
     this->ui->lineEdit_baudrate->setVisible(false);
@@ -221,8 +222,10 @@ void StationPropertiesDialog::initGUI() {
     this->ui->label_port->setVisible(true);
 
     // set connection information
-    this->ui->lineEdit_ip->setText(this->sConfig.getConnectionConfig().ip);
-    this->ui->lineEdit_port->setText(this->sConfig.getConnectionConfig().port);
+    this->ui->lineEdit_ip->setText(
+        toQString(this->sConfig.getConnectionConfig().ip));
+    this->ui->lineEdit_port->setText(
+        toQString(this->sConfig.getConnectionConfig().port));
 
   } else if (this->sConfig.getConnectionConfig().typeOfConnection ==
              ConnectionKind::serial()) {
@@ -247,7 +250,7 @@ void StationPropertiesDialog::initGUI() {
     // set connection information
     // this->ui->lineEdit_baudrate->setText(this->sConfig.getConnectionConfig().baudRate);
     this->ui->lineEdit_comPort->setText(
-        this->sConfig.getConnectionConfig().comPort);
+        toQString(this->sConfig.getConnectionConfig().comPort));
     // this->ui->lineEdit_databits->setText(this->sConfig.getConnectionConfig().dataBits);
     // this->ui->lineEdit_flowcontrol->setText(this->sConfig.getConnectionConfig().flowControl);
     // this->ui->lineEdit_parity->setText(this->sConfig.getConnectionConfig().parity);

@@ -98,9 +98,9 @@ class QtJobAdapter : public QObject, public oi::JobObserver {
   void onActiveGroupChanged() override;
   void onFeatureAttributesChanged() override;
   void onFeatureNameChanged(const int& featureId,
-                            const QString& oldName) override;
+                            const std::string& oldName) override;
   void onFeatureGroupChanged(const int& featureId,
-                             const QString& oldGroup) override;
+                             const std::string& oldGroup) override;
   void onFeatureCommentChanged(const int& featureId) override;
   void onFeatureIsUpdatedChanged(const int& featureId) override;
   void onFeatureIsSolvedChanged(const int& featureId) override;
@@ -115,7 +115,7 @@ class QtJobAdapter : public QObject, public oi::JobObserver {
   void onGeometryStatisticChanged(const int& featureId) override;
   void onGeometrySimulationDataChanged(const int& featureId) override;
   void onGeometryMeasurementConfigChanged(
-      const int& featureId, const QString& oldMConfig,
+      const int& featureId, const std::string& oldMConfig,
       const oi::MeasurementConfigKey oldKey) override;
   void onSystemObservationsChanged(const int& featureId,
                                    const int& obsId) override;
@@ -126,7 +126,7 @@ class QtJobAdapter : public QObject, public oi::JobObserver {
   void onTrafoParamSystemsChanged(const int& featureId) override;
   void onTrafoParamIsUsedChanged(const int& featureId) override;
   void onTrafoParamIsDatumChanged(const int& featureId) override;
-  void onSendMessage(const QString& msg, const oi::MessageTypes& msgType,
+  void onSendMessage(const std::string& msg, const oi::MessageTypes& msgType,
                      const oi::MessageDestinations& msgDest) override;
   void onRecalcFeatureRequested(
       const oi::Guarded<oi::Feature>& feature) override;

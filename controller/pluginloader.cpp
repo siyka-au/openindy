@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "qtconvert.h"
+
 // initialize static variables
 QPointer<PluginLoader> PluginLoader::myInstance(nullptr);
 PluginCopier PluginLoader::pluginCopier;
@@ -75,48 +77,48 @@ PluginMetaData PluginLoader::getPluginMetaData(const QString& path) {
                         .toBool();
     if (isPlugin) {
       // get plugin meta data
-      metaData.iid = pluginLoader.metaData().value("IID").toString();
-      metaData.name = pluginLoader.metaData()
-                          .value("MetaData")
-                          .toObject()
-                          .value("name")
-                          .toString();
-      metaData.pluginVersion = pluginLoader.metaData()
-                                   .value("MetaData")
-                                   .toObject()
-                                   .value("pluginVersion")
-                                   .toString();
-      metaData.author = pluginLoader.metaData()
-                            .value("MetaData")
-                            .toObject()
-                            .value("author")
-                            .toString();
-      metaData.compiler = pluginLoader.metaData()
-                              .value("MetaData")
-                              .toObject()
-                              .value("compiler")
-                              .toString();
-      metaData.operatingSystem = pluginLoader.metaData()
-                                     .value("MetaData")
-                                     .toObject()
-                                     .value("operatingSystem")
-                                     .toString();
+      metaData.iid = toStd(pluginLoader.metaData().value("IID").toString());
+      metaData.name = toStd(pluginLoader.metaData()
+                                .value("MetaData")
+                                .toObject()
+                                .value("name")
+                                .toString());
+      metaData.pluginVersion = toStd(pluginLoader.metaData()
+                                         .value("MetaData")
+                                         .toObject()
+                                         .value("pluginVersion")
+                                         .toString());
+      metaData.author = toStd(pluginLoader.metaData()
+                                  .value("MetaData")
+                                  .toObject()
+                                  .value("author")
+                                  .toString());
+      metaData.compiler = toStd(pluginLoader.metaData()
+                                    .value("MetaData")
+                                    .toObject()
+                                    .value("compiler")
+                                    .toString());
+      metaData.operatingSystem = toStd(pluginLoader.metaData()
+                                           .value("MetaData")
+                                           .toObject()
+                                           .value("operatingSystem")
+                                           .toString());
       metaData.dependencies = pluginLoader.metaData()
                                   .value("MetaData")
                                   .toObject()
                                   .value("dependencies")
                                   .toBool();
-      metaData.description = pluginLoader.metaData()
-                                 .value("MetaData")
-                                 .toObject()
-                                 .value("description")
-                                 .toString();
-      metaData.dependenciesPath = pluginLoader.metaData()
-                                      .value("MetaData")
-                                      .toObject()
-                                      .value("libPaths")
-                                      .toArray();
-      metaData.path = filePath;
+      metaData.description = toStd(pluginLoader.metaData()
+                                       .value("MetaData")
+                                       .toObject()
+                                       .value("description")
+                                       .toString());
+      metaData.dependenciesPath = toDependencies(pluginLoader.metaData()
+                                                     .value("MetaData")
+                                                     .toObject()
+                                                     .value("libPaths")
+                                                     .toArray());
+      metaData.path = toStd(filePath);
 
       break;
     }
@@ -170,7 +172,7 @@ oi::Guarded<Sensor> PluginLoader::loadSensorPlugin(const QString& path,
   if (plugin) {
     Plugin* sensorFactory = qobject_cast<Plugin*>(plugin);
     if (sensorFactory) {
-      sensor = sensorFactory->createSensor(name);
+      sensor = sensorFactory->createSensor(toStd(name));
       if (!sensor.isNull()) {
         sensor->init();
       }
@@ -207,7 +209,7 @@ oi::Guarded<Function> PluginLoader::loadFunctionPlugin(const QString& path,
   if (plugin) {
     Plugin* functionFactory = qobject_cast<Plugin*>(plugin);
     if (functionFactory) {
-      function = functionFactory->createFunction(name);
+      function = functionFactory->createFunction(toStd(name));
       if (!function.isNull()) {
         function->init();
       }
@@ -244,7 +246,7 @@ oi::Guarded<SimulationModel> PluginLoader::loadSimulationPlugin(
   if (plugin) {
     Plugin* simulationFactory = qobject_cast<Plugin*>(plugin);
     if (simulationFactory) {
-      simulation = simulationFactory->createSimulation(name);
+      simulation = simulationFactory->createSimulation(toStd(name));
       if (!simulation.isNull()) {
         simulation->init();
       }
@@ -281,7 +283,8 @@ oi::Guarded<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(
   if (plugin) {
     Plugin* bundleAdjustmentFactory = qobject_cast<Plugin*>(plugin);
     if (bundleAdjustmentFactory) {
-      bundleAdjustment = bundleAdjustmentFactory->createBundleAdjustment(name);
+      bundleAdjustment =
+          bundleAdjustmentFactory->createBundleAdjustment(toStd(name));
       if (bundleAdjustment.isNull()) {
         emit PluginLoader::getInstance() -> sendMessage(
             QString("Cannot load selected bundle adjustment: %1: %2")
@@ -361,7 +364,7 @@ oi::Guarded<ExchangeSimpleAscii> PluginLoader::loadExchangeSimpleAsciiPlugin(
   if (plugin) {
     Plugin* exchangeFactory = qobject_cast<Plugin*>(plugin);
     if (exchangeFactory) {
-      exchange = exchangeFactory->createSimpleAsciiExchange(name);
+      exchange = exchangeFactory->createSimpleAsciiExchange(toStd(name));
       if (!exchange.isNull()) {
         exchange->init();
       }
@@ -399,7 +402,7 @@ PluginLoader::loadExchangeDefinedFormatPlugin(const QString& path,
   if (plugin) {
     Plugin* exchangeFactory = qobject_cast<Plugin*>(plugin);
     if (exchangeFactory) {
-      exchange = exchangeFactory->createDefinedFormatExchange(name);
+      exchange = exchangeFactory->createDefinedFormatExchange(toStd(name));
       if (!exchange.isNull()) {
         exchange->init();
       }

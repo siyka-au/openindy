@@ -1,5 +1,8 @@
 #include "sortlistbyname.h"
 
+#include "containers.h"
+#include "qtconvert.h"
+
 SortListByName::SortListByName() {}
 
 /*!
@@ -11,16 +14,15 @@ void SortListByName::addRefPoint(Point p) {
     if (this->point.contains(
             p.getFeatureName())) {  // if there is yet a loc or ref point with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->point.find(p.getFeatureName());
+      auto idx = this->point.find(p.getFeatureName());
       if (idx != this->point.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.ref ==
             false) {  // if there is no ref point with the same name
           this->refPoints.append(p);
           checkAvailable.ref = true;
           checkAvailable.refIndex = this->refPoints.size() - 1;
-          this->point.insert(p.getFeatureName(), checkAvailable);
+          this->point.insert_or_assign(p.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a point with this name available
@@ -30,7 +32,7 @@ void SortListByName::addRefPoint(Point p) {
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refPoints.size() - 1;
       checkAvailable.locIndex = -1;
-      this->point.insert(p.getFeatureName(), checkAvailable);
+      this->point.insert_or_assign(p.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -44,16 +46,15 @@ void SortListByName::addLocPoint(Point p) {
     if (this->point.contains(
             p.getFeatureName())) {  // if there is yet a loc or ref point with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->point.find(p.getFeatureName());
+      auto idx = this->point.find(p.getFeatureName());
       if (idx != this->point.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.loc ==
             false) {  // if there is no loc point with the same name
           this->locPoints.append(p);
           checkAvailable.loc = true;
           checkAvailable.locIndex = this->locPoints.size() - 1;
-          this->point.insert(p.getFeatureName(), checkAvailable);
+          this->point.insert_or_assign(p.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a point with this name available
@@ -63,7 +64,7 @@ void SortListByName::addLocPoint(Point p) {
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locPoints.size() - 1;
       checkAvailable.refIndex = -1;
-      this->point.insert(p.getFeatureName(), checkAvailable);
+      this->point.insert_or_assign(p.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -74,11 +75,11 @@ void SortListByName::addLocPoint(Point p) {
  */
 QList<Point> SortListByName::getRefPoints() {
   QList<Point> result;
-  QList<QString> keys = this->point.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->point.find(key);
+  std::vector<std::string> keys = oi::keys(this->point);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->point.find(key);
     if (idx != this->point.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locPoints.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -98,11 +99,11 @@ QList<Point> SortListByName::getRefPoints() {
  */
 QList<Point> SortListByName::getLocPoints() {
   QList<Point> result;
-  QList<QString> keys = this->point.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->point.find(key);
+  std::vector<std::string> keys = oi::keys(this->point);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->point.find(key);
     if (idx != this->point.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locPoints.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -125,16 +126,15 @@ void SortListByName::addRefLine(Line l) {
     if (this->line.contains(
             l.getFeatureName())) {  // if there is yet a loc or ref line with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->line.find(l.getFeatureName());
+      auto idx = this->line.find(l.getFeatureName());
       if (idx != this->line.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.ref ==
             false) {  // if there is no ref line with the same name
           this->refLines.append(l);
           checkAvailable.ref = true;
           checkAvailable.refIndex = this->refLines.size() - 1;
-          this->line.insert(l.getFeatureName(), checkAvailable);
+          this->line.insert_or_assign(l.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a line with this name available
@@ -144,7 +144,7 @@ void SortListByName::addRefLine(Line l) {
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refLines.size() - 1;
       checkAvailable.locIndex = -1;
-      this->line.insert(l.getFeatureName(), checkAvailable);
+      this->line.insert_or_assign(l.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -158,16 +158,15 @@ void SortListByName::addLocLine(Line l) {
     if (this->line.contains(
             l.getFeatureName())) {  // if there is yet a loc or ref line with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->line.find(l.getFeatureName());
+      auto idx = this->line.find(l.getFeatureName());
       if (idx != this->line.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.loc ==
             false) {  // if there is no loc line with the same name
           this->locLines.append(l);
           checkAvailable.loc = true;
           checkAvailable.locIndex = this->locLines.size() - 1;
-          this->line.insert(l.getFeatureName(), checkAvailable);
+          this->line.insert_or_assign(l.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a line with this name available
@@ -177,7 +176,7 @@ void SortListByName::addLocLine(Line l) {
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locLines.size() - 1;
       checkAvailable.refIndex = -1;
-      this->line.insert(l.getFeatureName(), checkAvailable);
+      this->line.insert_or_assign(l.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -188,11 +187,11 @@ void SortListByName::addLocLine(Line l) {
  */
 QList<Line> SortListByName::getRefLines() {
   QList<Line> result;
-  QList<QString> keys = this->line.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->line.find(key);
+  std::vector<std::string> keys = oi::keys(this->line);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->line.find(key);
     if (idx != this->line.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locLines.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -212,11 +211,11 @@ QList<Line> SortListByName::getRefLines() {
  */
 QList<Line> SortListByName::getLocLines() {
   QList<Line> result;
-  QList<QString> keys = this->line.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->line.find(key);
+  std::vector<std::string> keys = oi::keys(this->line);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->line.find(key);
     if (idx != this->line.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locLines.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -239,16 +238,15 @@ void SortListByName::addRefPlane(Plane p) {
     if (this->plane.contains(
             p.getFeatureName())) {  // if there is yet a loc or ref plane with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->plane.find(p.getFeatureName());
+      auto idx = this->plane.find(p.getFeatureName());
       if (idx != this->plane.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.ref ==
             false) {  // if there is no ref plane with the same name
           this->refPlanes.append(p);
           checkAvailable.ref = true;
           checkAvailable.refIndex = this->refPlanes.size() - 1;
-          this->plane.insert(p.getFeatureName(), checkAvailable);
+          this->plane.insert_or_assign(p.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a plane with this name available
@@ -258,7 +256,7 @@ void SortListByName::addRefPlane(Plane p) {
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refPlanes.size() - 1;
       checkAvailable.locIndex = -1;
-      this->plane.insert(p.getFeatureName(), checkAvailable);
+      this->plane.insert_or_assign(p.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -272,16 +270,15 @@ void SortListByName::addLocPlane(Plane p) {
     if (this->plane.contains(
             p.getFeatureName())) {  // if there is yet a loc or ref plane with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->plane.find(p.getFeatureName());
+      auto idx = this->plane.find(p.getFeatureName());
       if (idx != this->plane.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.loc ==
             false) {  // if there is no loc plane with the same name
           this->locPlanes.append(p);
           checkAvailable.loc = true;
           checkAvailable.locIndex = this->locPlanes.size() - 1;
-          this->plane.insert(p.getFeatureName(), checkAvailable);
+          this->plane.insert_or_assign(p.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a plane with this name available
@@ -291,7 +288,7 @@ void SortListByName::addLocPlane(Plane p) {
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locPlanes.size() - 1;
       checkAvailable.refIndex = -1;
-      this->plane.insert(p.getFeatureName(), checkAvailable);
+      this->plane.insert_or_assign(p.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -302,11 +299,11 @@ void SortListByName::addLocPlane(Plane p) {
  */
 QList<Plane> SortListByName::getRefPlanes() {
   QList<Plane> result;
-  QList<QString> keys = this->plane.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->plane.find(key);
+  std::vector<std::string> keys = oi::keys(this->plane);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->plane.find(key);
     if (idx != this->plane.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locPlanes.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -326,11 +323,11 @@ QList<Plane> SortListByName::getRefPlanes() {
  */
 QList<Plane> SortListByName::getLocPlanes() {
   QList<Plane> result;
-  QList<QString> keys = this->plane.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->plane.find(key);
+  std::vector<std::string> keys = oi::keys(this->plane);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->plane.find(key);
     if (idx != this->plane.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locPlanes.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -353,16 +350,15 @@ void SortListByName::addRefSphere(Sphere s) {
     if (this->sphere.contains(
             s.getFeatureName())) {  // if there is yet a loc or ref sphere with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->sphere.find(s.getFeatureName());
+      auto idx = this->sphere.find(s.getFeatureName());
       if (idx != this->sphere.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.ref ==
             false) {  // if there is no ref sphere with the same name
           this->refSpheres.append(s);
           checkAvailable.ref = true;
           checkAvailable.refIndex = this->refSpheres.size() - 1;
-          this->sphere.insert(s.getFeatureName(), checkAvailable);
+          this->sphere.insert_or_assign(s.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a sphere with this name available
@@ -372,7 +368,7 @@ void SortListByName::addRefSphere(Sphere s) {
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refSpheres.size() - 1;
       checkAvailable.locIndex = -1;
-      this->sphere.insert(s.getFeatureName(), checkAvailable);
+      this->sphere.insert_or_assign(s.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -386,16 +382,15 @@ void SortListByName::addLocSphere(Sphere s) {
     if (this->sphere.contains(
             s.getFeatureName())) {  // if there is yet a loc or ref sphere with
                                     // this name available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->sphere.find(s.getFeatureName());
+      auto idx = this->sphere.find(s.getFeatureName());
       if (idx != this->sphere.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.loc ==
             false) {  // if there is no loc sphere with the same name
           this->locSpheres.append(s);
           checkAvailable.loc = true;
           checkAvailable.locIndex = this->locSpheres.size() - 1;
-          this->sphere.insert(s.getFeatureName(), checkAvailable);
+          this->sphere.insert_or_assign(s.getFeatureName(), checkAvailable);
         }
       }
     } else {  // if there is not a sphere with this name available
@@ -405,7 +400,7 @@ void SortListByName::addLocSphere(Sphere s) {
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locSpheres.size() - 1;
       checkAvailable.refIndex = -1;
-      this->sphere.insert(s.getFeatureName(), checkAvailable);
+      this->sphere.insert_or_assign(s.getFeatureName(), checkAvailable);
     }
   }
 }
@@ -416,11 +411,11 @@ void SortListByName::addLocSphere(Sphere s) {
  */
 QList<Sphere> SortListByName::getRefSpheres() {
   QList<Sphere> result;
-  QList<QString> keys = this->sphere.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->sphere.find(key);
+  std::vector<std::string> keys = oi::keys(this->sphere);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->sphere.find(key);
     if (idx != this->sphere.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locSpheres.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -441,11 +436,11 @@ QList<Sphere> SortListByName::getRefSpheres() {
  */
 QList<Sphere> SortListByName::getLocSpheres() {
   QList<Sphere> result;
-  QList<QString> keys = this->sphere.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->sphere.find(key);
+  std::vector<std::string> keys = oi::keys(this->sphere);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->sphere.find(key);
     if (idx != this->sphere.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locSpheres.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -470,17 +465,17 @@ void SortListByName::addRefScalarEntityDistance(ScalarEntityDistance s) {
             s.getFeatureName())) {  // if there is yet a loc or ref
                                     // scalarEntityDistance with this name
                                     // available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->scalarEntityDistance.find(s.getFeatureName());
+      auto idx = this->scalarEntityDistance.find(s.getFeatureName());
       if (idx != this->scalarEntityDistance.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.ref ==
             false) {  // if there is no ref scalarEntityDistance with the same
                       // name
           this->refScalarEntityDistances.append(s);
           checkAvailable.ref = true;
           checkAvailable.refIndex = this->refScalarEntityDistances.size() - 1;
-          this->scalarEntityDistance.insert(s.getFeatureName(), checkAvailable);
+          this->scalarEntityDistance.insert_or_assign(s.getFeatureName(),
+                                                      checkAvailable);
         }
       }
     } else {  // if there is not a scalarEntityDistance with this name available
@@ -490,7 +485,8 @@ void SortListByName::addRefScalarEntityDistance(ScalarEntityDistance s) {
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refScalarEntityDistances.size() - 1;
       checkAvailable.locIndex = -1;
-      this->scalarEntityDistance.insert(s.getFeatureName(), checkAvailable);
+      this->scalarEntityDistance.insert_or_assign(s.getFeatureName(),
+                                                  checkAvailable);
     }
   }
 }
@@ -505,17 +501,17 @@ void SortListByName::addLocScalarEntityDistance(ScalarEntityDistance s) {
             s.getFeatureName())) {  // if there is yet a loc or ref
                                     // scalarEntityDistance with this name
                                     // available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->sphere.find(s.getFeatureName());
+      auto idx = this->sphere.find(s.getFeatureName());
       if (idx != this->scalarEntityDistance.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.loc ==
             false) {  // if there is no loc scalarEntityDistance with the same
                       // name
           this->locScalarEntityDistances.append(s);
           checkAvailable.loc = true;
           checkAvailable.locIndex = this->locScalarEntityDistances.size() - 1;
-          this->scalarEntityDistance.insert(s.getFeatureName(), checkAvailable);
+          this->scalarEntityDistance.insert_or_assign(s.getFeatureName(),
+                                                      checkAvailable);
         }
       }
     } else {  // if there is not a scalarEntityDistance with this name available
@@ -525,7 +521,8 @@ void SortListByName::addLocScalarEntityDistance(ScalarEntityDistance s) {
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locScalarEntityDistances.size() - 1;
       checkAvailable.refIndex = -1;
-      this->scalarEntityDistance.insert(s.getFeatureName(), checkAvailable);
+      this->scalarEntityDistance.insert_or_assign(s.getFeatureName(),
+                                                  checkAvailable);
     }
   }
 }
@@ -536,12 +533,11 @@ void SortListByName::addLocScalarEntityDistance(ScalarEntityDistance s) {
  */
 QList<ScalarEntityDistance> SortListByName::getRefScalarEntityDistances() {
   QList<ScalarEntityDistance> result;
-  QList<QString> keys = this->scalarEntityDistance.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx =
-        this->scalarEntityDistance.find(key);
+  std::vector<std::string> keys = oi::keys(this->scalarEntityDistance);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->scalarEntityDistance.find(key);
     if (idx != this->scalarEntityDistance.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locScalarEntityDistances.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -563,12 +559,11 @@ QList<ScalarEntityDistance> SortListByName::getRefScalarEntityDistances() {
  */
 QList<ScalarEntityDistance> SortListByName::getLocScalarEntityDistances() {
   QList<ScalarEntityDistance> result;
-  QList<QString> keys = this->scalarEntityDistance.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx =
-        this->scalarEntityDistance.find(key);
+  std::vector<std::string> keys = oi::keys(this->scalarEntityDistance);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->scalarEntityDistance.find(key);
     if (idx != this->scalarEntityDistance.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locScalarEntityDistances.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -594,16 +589,16 @@ void SortListByName::addRefScalarEntityAngle(ScalarEntityAngle s) {
             s.getFeatureName())) {  // if there is yet a loc or ref
                                     // scalarEntityAngle with this name
                                     // available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->scalarEntityAngle.find(s.getFeatureName());
+      auto idx = this->scalarEntityAngle.find(s.getFeatureName());
       if (idx != this->scalarEntityAngle.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.ref ==
             false) {  // if there is no ref scalarEntityAngle with the same name
           this->refScalarEntityAngles.append(s);
           checkAvailable.ref = true;
           checkAvailable.refIndex = this->refScalarEntityAngles.size() - 1;
-          this->scalarEntityAngle.insert(s.getFeatureName(), checkAvailable);
+          this->scalarEntityAngle.insert_or_assign(s.getFeatureName(),
+                                                   checkAvailable);
         }
       }
     } else {  // if there is not a scalarEntityAngle with this name available
@@ -613,7 +608,8 @@ void SortListByName::addRefScalarEntityAngle(ScalarEntityAngle s) {
       checkAvailable.loc = false;
       checkAvailable.refIndex = this->refScalarEntityAngles.size() - 1;
       checkAvailable.locIndex = -1;
-      this->scalarEntityAngle.insert(s.getFeatureName(), checkAvailable);
+      this->scalarEntityAngle.insert_or_assign(s.getFeatureName(),
+                                               checkAvailable);
     }
   }
 }
@@ -628,16 +624,16 @@ void SortListByName::addLocScalarEntityAngle(ScalarEntityAngle s) {
             s.getFeatureName())) {  // if there is yet a loc or ref
                                     // scalarEntityAngle with this name
                                     // available
-      QMap<QString, LocRefBool>::Iterator idx =
-          this->scalarEntityAngle.find(s.getFeatureName());
+      auto idx = this->scalarEntityAngle.find(s.getFeatureName());
       if (idx != this->scalarEntityAngle.end()) {
-        LocRefBool checkAvailable = idx.value();
+        LocRefBool checkAvailable = idx->second;
         if (checkAvailable.loc ==
             false) {  // if there is no loc scalarEntityAngle with the same name
           this->locScalarEntityAngles.append(s);
           checkAvailable.loc = true;
           checkAvailable.locIndex = this->locScalarEntityAngles.size() - 1;
-          this->scalarEntityAngle.insert(s.getFeatureName(), checkAvailable);
+          this->scalarEntityAngle.insert_or_assign(s.getFeatureName(),
+                                                   checkAvailable);
         }
       }
     } else {  // if there is not a scalarEntityAngle with this name available
@@ -647,7 +643,8 @@ void SortListByName::addLocScalarEntityAngle(ScalarEntityAngle s) {
       checkAvailable.ref = false;
       checkAvailable.locIndex = this->locScalarEntityAngles.size() - 1;
       checkAvailable.refIndex = -1;
-      this->scalarEntityAngle.insert(s.getFeatureName(), checkAvailable);
+      this->scalarEntityAngle.insert_or_assign(s.getFeatureName(),
+                                               checkAvailable);
     }
   }
 }
@@ -658,11 +655,11 @@ void SortListByName::addLocScalarEntityAngle(ScalarEntityAngle s) {
  */
 QList<ScalarEntityAngle> SortListByName::getRefScalarEntityAngles() {
   QList<ScalarEntityAngle> result;
-  QList<QString> keys = this->scalarEntityAngle.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->scalarEntityAngle.find(key);
+  std::vector<std::string> keys = oi::keys(this->scalarEntityAngle);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->scalarEntityAngle.find(key);
     if (idx != this->scalarEntityAngle.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locScalarEntityAngles.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&
@@ -683,11 +680,11 @@ QList<ScalarEntityAngle> SortListByName::getRefScalarEntityAngles() {
  */
 QList<ScalarEntityAngle> SortListByName::getLocScalarEntityAngles() {
   QList<ScalarEntityAngle> result;
-  QList<QString> keys = this->scalarEntityAngle.keys();
-  foreach (QString key, keys) {  // all entries in map
-    QMap<QString, LocRefBool>::Iterator idx = this->scalarEntityAngle.find(key);
+  std::vector<std::string> keys = oi::keys(this->scalarEntityAngle);
+  foreach (const std::string& key, keys) {  // all entries in map
+    auto idx = this->scalarEntityAngle.find(key);
     if (idx != this->scalarEntityAngle.end()) {
-      LocRefBool checkAvailable = idx.value();
+      LocRefBool checkAvailable = idx->second;
       if (checkAvailable.loc == true && checkAvailable.ref == true &&
           this->locScalarEntityAngles.size() > checkAvailable.locIndex &&
           checkAvailable.locIndex >= 0 &&

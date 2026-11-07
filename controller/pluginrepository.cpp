@@ -11,6 +11,7 @@
 #include "oimetadata.h"
 #include "pluginabi.h"
 #include "pluginloader.h"
+#include "qtconvert.h"
 #include "settings.h"
 #include "util.h"
 
@@ -188,9 +189,11 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
     foreach (const NeededElement& ne, f->getNeededElements()) {
       neededElements.push_back(ne.typeOfElement);
     }
-    functions.push_back(sys::Function(
-        f->getMetaData().name, f->getMetaData().description, ownerRef,
-        f->getApplicableFor(), neededElements, f->getMetaData().iid));
+    functions.push_back(sys::Function(toQString(f->getMetaData().name),
+                                      toQString(f->getMetaData().description),
+                                      ownerRef, f->getApplicableFor(),
+                                      neededElements,
+                                      toQString(f->getMetaData().iid)));
   }
 
   std::vector<sys::Sensor> sensors;
@@ -203,16 +206,18 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
     // tag every config this sensor publishes with its own type here, once,
     // rather than asking each driver to derive and stamp its own SensorType -
     // the derivation already lives in one place (SensorType::fromInterfaceId)
-    const SensorType type = SensorType::fromInterfaceId(s->getMetaData().iid);
+    const SensorType type =
+        SensorType::fromInterfaceId(toStd(toQString(s->getMetaData().iid)));
     std::vector<MeasurementConfig> configs =
         s->getSupportedMeasurementConfigs();
     for (auto& config : configs) {
       config.setSensorType(type);
     }
 
-    sensors.push_back(sys::Sensor(
-        s->getMetaData().name, s->getMetaData().description, ownerRef,
-        s->getMetaData().iid, configs, s->getSupportedAcquisitionModes()));
+    sensors.push_back(sys::Sensor(toQString(s->getMetaData().name),
+                                  toQString(s->getMetaData().description),
+                                  ownerRef, toQString(s->getMetaData().iid),
+                                  configs, s->getSupportedAcquisitionModes()));
   }
 
   std::vector<sys::Tool> tools;
@@ -220,8 +225,9 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
     if (t.isNull()) {
       continue;
     }
-    tools.push_back(sys::Tool(t->getMetaData().name,
-                              t->getMetaData().description, ownerRef));
+    tools.push_back(sys::Tool(toQString(t->getMetaData().name),
+                              toQString(t->getMetaData().description),
+                              ownerRef));
   }
 
   std::vector<sys::Exchange> exchanges;
@@ -230,18 +236,20 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
     if (e.isNull()) {
       continue;
     }
-    exchanges.push_back(sys::Exchange(e->getMetaData().name,
-                                      e->getMetaData().description, ownerRef,
-                                      e->getMetaData().iid));
+    exchanges.push_back(sys::Exchange(toQString(e->getMetaData().name),
+                                      toQString(e->getMetaData().description),
+                                      ownerRef,
+                                      toQString(e->getMetaData().iid)));
   }
   foreach (const oi::Guarded<ExchangeDefinedFormat>& e,
            PluginLoader::loadExchangeDefinedFormatPlugins(filePath)) {
     if (e.isNull()) {
       continue;
     }
-    exchanges.push_back(sys::Exchange(e->getMetaData().name,
-                                      e->getMetaData().description, ownerRef,
-                                      e->getMetaData().iid));
+    exchanges.push_back(sys::Exchange(toQString(e->getMetaData().name),
+                                      toQString(e->getMetaData().description),
+                                      ownerRef,
+                                      toQString(e->getMetaData().iid)));
   }
 
   std::vector<sys::Simulation> simulations;
@@ -250,8 +258,9 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
     if (sim.isNull()) {
       continue;
     }
-    simulations.push_back(sys::Simulation(
-        sim->getMetaData().name, sim->getMetaData().description, ownerRef));
+    simulations.push_back(
+        sys::Simulation(toQString(sim->getMetaData().name),
+                        toQString(sim->getMetaData().description), ownerRef));
   }
 
   return sys::Plugin(name, description, version, author, filePath, functions,

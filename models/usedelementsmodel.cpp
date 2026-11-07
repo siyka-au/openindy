@@ -5,6 +5,7 @@
 
 #include "containers.h"
 #include "jobconnect.h"
+#include "qtconvert.h"
 #include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
 
@@ -122,124 +123,125 @@ QVariant UsedElementsModel::data(const QModelIndex& index, int role) const {
                element.geometry->getOwnerDescription().has_value()) {
       return QString("%1 - actual").arg(element.geometry->getFeatureName());
     } else if (!element.station.isNull()) {
-      return element.station->getFeatureName();
+      return toQString(element.station->getFeatureName());
     } else if (!element.coordSystem.isNull()) {
-      return element.coordSystem->getFeatureName();
+      return toQString(element.coordSystem->getFeatureName());
     } else if (!element.trafoParam.isNull()) {
-      return element.trafoParam->getFeatureName();
+      return toQString(element.trafoParam->getFeatureName());
     } else if (!element.observation.isNull() &&
                !element.observation->getReading().isNull()) {
       if (!element.observation->getMeasuredTargetGeometry().isNull()) {
         return "id:" + QString::number(element.observation->getId()) + " " +
-               element.observation->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.observation->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.observation->getId()) + " " +
-             element.observation->getStation()->getFeatureName();
+             toQString(element.observation->getStation()->getFeatureName());
 
     } else if (!element.polarReading.isNull()) {
       if (!element.polarReading->getObservation()
                ->getMeasuredTargetGeometry()
                .isNull()) {
         return "id:" + QString::number(element.polarReading->getId()) +
-               element.polarReading->getObservation()
-                   ->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.polarReading->getObservation()
+                             ->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.polarReading->getId()) +
-             element.polarReading->getObservation()
-                 ->getStation()
-                 ->getFeatureName();
+             toQString(element.polarReading->getObservation()
+                           ->getStation()
+                           ->getFeatureName());
 
     } else if (!element.directionReading.isNull()) {
       if (!element.directionReading->getObservation()
                ->getMeasuredTargetGeometry()
                .isNull()) {
         return "id:" + QString::number(element.directionReading->getId()) +
-               element.directionReading->getObservation()
-                   ->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.directionReading->getObservation()
+                             ->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.directionReading->getId()) +
-             element.directionReading->getObservation()
-                 ->getStation()
-                 ->getFeatureName();
+             toQString(element.directionReading->getObservation()
+                           ->getStation()
+                           ->getFeatureName());
 
     } else if (!element.distanceReading.isNull()) {
       if (!element.distanceReading->getObservation()
                ->getMeasuredTargetGeometry()
                .isNull()) {
         return "id:" + QString::number(element.distanceReading->getId()) +
-               element.distanceReading->getObservation()
-                   ->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.distanceReading->getObservation()
+                             ->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.distanceReading->getId()) +
-             element.distanceReading->getObservation()
-                 ->getStation()
-                 ->getFeatureName();
+             toQString(element.distanceReading->getObservation()
+                           ->getStation()
+                           ->getFeatureName());
 
     } else if (!element.cartesianReading.isNull()) {
       if (!element.cartesianReading->getObservation()
                ->getMeasuredTargetGeometry()
                .isNull()) {
         return "id:" + QString::number(element.cartesianReading->getId()) +
-               element.cartesianReading->getObservation()
-                   ->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.cartesianReading->getObservation()
+                             ->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.cartesianReading->getId()) +
-             element.cartesianReading->getObservation()
-                 ->getStation()
-                 ->getFeatureName();
+             toQString(element.cartesianReading->getObservation()
+                           ->getStation()
+                           ->getFeatureName());
 
     } else if (!element.temperatureReading.isNull()) {
       if (!element.temperatureReading->getObservation()
                ->getMeasuredTargetGeometry()
                .isNull()) {
         return "id:" + QString::number(element.temperatureReading->getId()) +
-               element.temperatureReading->getObservation()
-                   ->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.temperatureReading->getObservation()
+                             ->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.temperatureReading->getId()) +
-             element.temperatureReading->getObservation()
-                 ->getStation()
-                 ->getFeatureName();
+             toQString(element.temperatureReading->getObservation()
+                           ->getStation()
+                           ->getFeatureName());
 
     } else if (!element.levelReading.isNull()) {
       if (!element.levelReading->getObservation()
                ->getMeasuredTargetGeometry()
                .isNull()) {
         return "id:" + QString::number(element.levelReading->getId()) +
-               element.levelReading->getObservation()
-                   ->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.levelReading->getObservation()
+                             ->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.levelReading->getId()) +
-             element.levelReading->getObservation()
-                 ->getStation()
-                 ->getFeatureName();
+             toQString(element.levelReading->getObservation()
+                           ->getStation()
+                           ->getFeatureName());
 
     } else if (!element.undefinedReading.isNull()) {
       if (!element.undefinedReading->getObservation()
                ->getMeasuredTargetGeometry()
                .isNull()) {
         return "id:" + QString::number(element.undefinedReading->getId()) +
-               element.undefinedReading->getObservation()
-                   ->getMeasuredTargetGeometry()
-                   ->getFeatureName();
+               toQString(element.undefinedReading->getObservation()
+                             ->getMeasuredTargetGeometry()
+                             ->getFeatureName());
       }
       return "id:" + QString::number(element.undefinedReading->getId()) +
-             element.undefinedReading->getObservation()
-                 ->getStation()
-                 ->getFeatureName();
+             toQString(element.undefinedReading->getObservation()
+                           ->getStation()
+                           ->getFeatureName());
     }
     return QVariant();
 
   } else if (role == Qt::DecorationRole) {
     // get and check icon path
-    const QString& iconPath = getElementTypeIconPath(element.typeOfElement);
+    const QString iconPath =
+        toQString(getElementTypeIconPath(element.typeOfElement));
     if (iconPath.compare("") == 0) {
       return QVariant();
     }

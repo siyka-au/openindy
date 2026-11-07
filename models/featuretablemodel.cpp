@@ -6,6 +6,7 @@
 
 #include "containers.h"
 #include "jobconnect.h"
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -192,8 +193,8 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
   if ((Qt::DisplayRole == role) && (Qt::Horizontal == orientation) &&
       (0 <= section) && (section < columnCount())) {
     // get header
-    QString header = getFeatureDisplayAttributeName(
-        getFeatureDisplayAttributes().at(section));
+    QString header = toQString(getFeatureDisplayAttributeName(
+        getFeatureDisplayAttributes().at(section)));
 
     // add unit information to header
     if (getIsFeatureDisplayAttribute(
@@ -459,21 +460,21 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
         // name-matched pair, so there is no special-case to block here
         // any more - only commit the new feature name if it is valid
         if (!this->currentJob->validateFeatureName(
-                value.toString(), feature->getFeatureTypeEnum())) {
+                toStd(value.toString()), feature->getFeatureTypeEnum())) {
           return false;
         }
 
         // commit the new feature name
-        feature->getFeature()->setFeatureName(value.toString());
+        feature->getFeature()->setFeatureName(toStd(value.toString()));
 
         return true;
       }
       case eFeatureDisplayComment: {
-        feature->getFeature()->setComment(value.toString());
+        feature->getFeature()->setComment(toStd(value.toString()));
         return true;
       }
       case eFeatureDisplayGroup: {
-        feature->getFeature()->setGroupName(value.toString());
+        feature->getFeature()->setGroupName(toStd(value.toString()));
         return true;
       }
       case eFeatureDisplayMeasurementConfig: {
@@ -562,7 +563,7 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
           foreach (oi::Guarded<Function> copyFunction,
                    copyFeature->getFeature()->getFunctions()) {
             oi::Guarded<Function> function =
-                loadFunctionByName(copyFunction->getMetaData().name);
+                loadFunctionByName(toQString(copyFunction->getMetaData().name));
 
             if (!function.isNull()) {
               result = true;
@@ -705,20 +706,20 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
       case eTrafoParamDisplayName: {
         // only commit the new feature name if it is valid
         if (!this->currentJob->validateFeatureName(
-                value.toString(), feature->getFeatureTypeEnum())) {
+                toStd(value.toString()), feature->getFeatureTypeEnum())) {
           return false;
         }
 
         // commit the new feature name
-        feature->getFeature()->setFeatureName(value.toString());
+        feature->getFeature()->setFeatureName(toStd(value.toString()));
         return true;
       }
       case eTrafoParamDisplayComment: {
-        feature->getFeature()->setComment(value.toString());
+        feature->getFeature()->setComment(toStd(value.toString()));
         return true;
       }
       case eTrafoParamDisplayGroup: {
-        feature->getFeature()->setGroupName(value.toString());
+        feature->getFeature()->setGroupName(toStd(value.toString()));
         return true;
       }
     }
@@ -997,7 +998,7 @@ void FeatureTableModel::setActiveCoordinateSystem(const QString& name) {
 
   // get and check feature with the given name
   std::vector<oi::Guarded<FeatureWrapper> > features =
-      this->currentJob->getFeaturesByName(name);
+      this->currentJob->getFeaturesByName(toStd(name));
   if (features.size() != 1) {
     return;
   }
@@ -1030,7 +1031,7 @@ const QString FeatureTableModel::getActiveGroupName() const {
     return "";
   }
 
-  return this->currentJob->getActiveGroup();
+  return toQString(this->currentJob->getActiveGroup());
 }
 
 /*!
@@ -1043,7 +1044,7 @@ void FeatureTableModel::setActiveGroupName(const QString& group) {
     return;
   }
 
-  this->currentJob->setActiveGroup(group);
+  this->currentJob->setActiveGroup(toStd(group));
 }
 
 /*!
@@ -1169,212 +1170,212 @@ QVariant FeatureTableModel::getDisplayValue(
 
     switch ((FeatureDisplayAttributes)attr) {
       case eFeatureDisplayType:
-        return feature->getFeature()->getDisplayType();
+        return toQString(feature->getFeature()->getDisplayType());
       case eFeatureDisplayIsActual:
-        return feature->getFeature()->getDisplayIsActual();
+        return toQString(feature->getFeature()->getDisplayIsActual());
       case eFeatureDisplayName:
-        return feature->getFeature()->getFeatureName();
+        return toQString(feature->getFeature()->getFeatureName());
       case eFeatureDisplayComment:
-        return feature->getFeature()->getComment();
+        return toQString(feature->getFeature()->getComment());
       case eFeatureDisplayGroup:
-        return feature->getFeature()->getGroupName();
+        return toQString(feature->getFeature()->getGroupName());
       case eFeatureDisplayIsSolved:
         return QVariant();
       case eFeatureDisplayIsUpdated:
-        return feature->getFeature()->getDisplayIsUpdated();
+        return toQString(feature->getFeature()->getDisplayIsUpdated());
       case eFeatureDisplayFunctions:
-        return feature->getFeature()->getDisplayFunctions();
+        return toQString(feature->getFeature()->getDisplayFunctions());
       case eFeatureDisplayUsedFor:
-        return feature->getFeature()->getDisplayUsedFor();
+        return toQString(feature->getFeature()->getDisplayUsedFor());
       case eFeatureDisplayPreviouslyNeeded:
-        return feature->getFeature()->getDisplayPreviouslyNeeded();
+        return toQString(feature->getFeature()->getDisplayPreviouslyNeeded());
       case eFeatureDisplayStDev:
-        return feature->getFeature()->getDisplayStDev(
+        return toQString(feature->getFeature()->getDisplayStDev(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayMeasurementConfig:
-        return feature->getFeature()->getDisplayMeasurementConfig();
+        return toQString(feature->getFeature()->getDisplayMeasurementConfig());
       case eFeatureDisplayObservations:
-        return feature->getFeature()->getDisplayObservations();
+        return toQString(feature->getFeature()->getDisplayObservations());
       case eFeatureDisplayX:
-        return feature->getFeature()->getDisplayX(
+        return toQString(feature->getFeature()->getDisplayX(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayY:
-        return feature->getFeature()->getDisplayY(
+        return toQString(feature->getFeature()->getDisplayY(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayZ:
-        return feature->getFeature()->getDisplayZ(
+        return toQString(feature->getFeature()->getDisplayZ(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayPrimaryI:
-        return feature->getFeature()->getDisplayPrimaryI(
+        return toQString(feature->getFeature()->getDisplayPrimaryI(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eFeatureDisplayPrimaryJ:
-        return feature->getFeature()->getDisplayPrimaryJ(
+        return toQString(feature->getFeature()->getDisplayPrimaryJ(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eFeatureDisplayPrimaryK:
-        return feature->getFeature()->getDisplayPrimaryK(
+        return toQString(feature->getFeature()->getDisplayPrimaryK(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eFeatureDisplayRadiusA:
-        return feature->getFeature()->getDisplayRadiusA(
+        return toQString(feature->getFeature()->getDisplayRadiusA(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayRadiusB:
-        return feature->getFeature()->getDisplayRadiusB(
+        return toQString(feature->getFeature()->getDisplayRadiusB(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplaySecondaryI:
-        return feature->getFeature()->getDisplaySecondaryI(
+        return toQString(feature->getFeature()->getDisplaySecondaryI(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eFeatureDisplaySecondaryJ:
-        return feature->getFeature()->getDisplaySecondaryJ(
+        return toQString(feature->getFeature()->getDisplaySecondaryJ(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eFeatureDisplaySecondaryK:
-        return feature->getFeature()->getDisplaySecondaryK(
+        return toQString(feature->getFeature()->getDisplaySecondaryK(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eFeatureDisplayAperture:
-        return feature->getFeature()->getDisplayAperture(
+        return toQString(feature->getFeature()->getDisplayAperture(
             this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eAngular),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eAngular));
+                DimensionType::eAngular)));
       case eFeatureDisplayA:
-        return feature->getFeature()->getDisplayA(
+        return toQString(feature->getFeature()->getDisplayA(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayB:
-        return feature->getFeature()->getDisplayB(
+        return toQString(feature->getFeature()->getDisplayB(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayC:
-        return feature->getFeature()->getDisplayC(
+        return toQString(feature->getFeature()->getDisplayC(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayAngle:
-        return feature->getFeature()->getDisplayAngle(
+        return toQString(feature->getFeature()->getDisplayAngle(
             this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eAngular),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eAngular));
+                DimensionType::eAngular)));
       case eFeatureDisplayDistance:
-        return feature->getFeature()->getDisplayDistance(
+        return toQString(feature->getFeature()->getDisplayDistance(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayMeasurementSeries:
-        return feature->getFeature()->getDisplayMeasurementSeries(
+        return toQString(feature->getFeature()->getDisplayMeasurementSeries(
             this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eDimensionless),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eFeatureDisplayTemperature:
-        return feature->getFeature()->getDisplayTemperature(
+        return toQString(feature->getFeature()->getDisplayTemperature(
             this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eTemperature),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eTemperature));
+                DimensionType::eTemperature)));
       case eFeatureDisplayLength:
-        return feature->getFeature()->getDisplayLength(
+        return toQString(feature->getFeature()->getDisplayLength(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayExpansionOriginX:
-        return feature->getFeature()->getDisplayExpansionOriginX(
+        return toQString(feature->getFeature()->getDisplayExpansionOriginX(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayExpansionOriginY:
-        return feature->getFeature()->getDisplayExpansionOriginY(
+        return toQString(feature->getFeature()->getDisplayExpansionOriginY(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayExpansionOriginZ:
-        return feature->getFeature()->getDisplayExpansionOriginZ(
+        return toQString(feature->getFeature()->getDisplayExpansionOriginZ(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eFeatureDisplayFormError:
-        return feature->getFeature()->getDisplayFormError(
+        return toQString(feature->getFeature()->getDisplayFormError(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
     }
 
   } else if (getIsTrafoParamDisplayAttribute(attr)) {  // trafo param attributes
 
     switch ((TrafoParamDisplayAttributes)attr) {
       case eTrafoParamDisplayStartSystem:
-        return feature->getFeature()->getDisplayStartSystem();
+        return toQString(feature->getFeature()->getDisplayStartSystem());
       case eTrafoParamDisplayDestinationSystem:
-        return feature->getFeature()->getDisplayDestinationSystem();
+        return toQString(feature->getFeature()->getDisplayDestinationSystem());
       case eTrafoParamDisplayTranslationX:
-        return feature->getFeature()->getDisplayTranslationX(
+        return toQString(feature->getFeature()->getDisplayTranslationX(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eTrafoParamDisplayTranslationY:
-        return feature->getFeature()->getDisplayTranslationY(
+        return toQString(feature->getFeature()->getDisplayTranslationY(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eTrafoParamDisplayTranslationZ:
-        return feature->getFeature()->getDisplayTranslationZ(
+        return toQString(feature->getFeature()->getDisplayTranslationZ(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eMetric));
+                DimensionType::eMetric)));
       case eTrafoParamDisplayRotationX:
-        return feature->getFeature()->getDisplayRotationX(
+        return toQString(feature->getFeature()->getDisplayRotationX(
             this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eAngular),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eAngular));
+                DimensionType::eAngular)));
       case eTrafoParamDisplayRotationY:
-        return feature->getFeature()->getDisplayRotationY(
+        return toQString(feature->getFeature()->getDisplayRotationY(
             this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eAngular),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eAngular));
+                DimensionType::eAngular)));
       case eTrafoParamDisplayRotationZ:
-        return feature->getFeature()->getDisplayRotationZ(
+        return toQString(feature->getFeature()->getDisplayRotationZ(
             this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eAngular),
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eAngular));
+                DimensionType::eAngular)));
       case eTrafoParamDisplayScaleX:
-        return feature->getFeature()->getDisplayScaleX(
+        return toQString(feature->getFeature()->getDisplayScaleX(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eTrafoParamDisplayScaleY:
-        return feature->getFeature()->getDisplayScaleY(
+        return toQString(feature->getFeature()->getDisplayScaleY(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eTrafoParamDisplayScaleZ:
-        return feature->getFeature()->getDisplayScaleZ(
+        return toQString(feature->getFeature()->getDisplayScaleZ(
             this->parameterDisplayConfig.getDisplayDigits(
-                DimensionType::eDimensionless));
+                DimensionType::eDimensionless)));
       case eTrafoParamDisplayIsUsed:
         return QVariant();
       case eTrafoParamDisplayValidTime:
-        return feature->getFeature()->getDisplayValidTime();
+        return toQString(feature->getFeature()->getDisplayValidTime());
       case eTrafoParamDisplayIsMovement:
-        return feature->getFeature()->getDisplayIsMovement();
+        return toQString(feature->getFeature()->getDisplayIsMovement());
       case eTrafoParamDisplayIsDatumTransformation:
         return QVariant();
     }
@@ -1565,8 +1566,17 @@ void FeatureTableModel::connectJob() {
                    &QtJobAdapter::trafoParamIsDatumChanged, this,
                    &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
 
-  connectToJob(this, &FeatureTableModel::sendMessage, this->currentJob,
-               &OiJob::sendMessage);
+  // the signal carries QString, the job takes UTF-8
+  rememberJobConnection(
+      this,
+      QObject::connect(
+          this, &FeatureTableModel::sendMessage, this,
+          [job = this->currentJob](const QString& msg, const MessageTypes& type,
+                                   const MessageDestinations& destination) {
+            if (!job.isNull()) {
+              job->sendMessage(toStd(msg), type, destination);
+            }
+          }));
 }
 
 /*!

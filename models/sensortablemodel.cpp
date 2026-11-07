@@ -5,6 +5,7 @@
 
 #include "containers.h"
 #include "controller/qtconvert.h"
+#include "qtconvert.h"
 
 /*!
  * \brief SensorTableModel::SensorTableModel
@@ -181,13 +182,15 @@ void SensorTableModel::selectSensorPlugin(const QModelIndex& index) {
  */
 void SensorTableModel::selectSensorPlugin(const SensorConfiguration& sConfig) {
   // check if sConfig is different from the current selection
-  if (this->selectedSensor.first.compare(sConfig.getPluginName()) == 0 &&
-      this->selectedSensor.second.compare(sConfig.getSensorName()) == 0) {
+  if (this->selectedSensor.first.compare(toQString(sConfig.getPluginName())) ==
+          0 &&
+      this->selectedSensor.second.compare(toQString(sConfig.getSensorName())) ==
+          0) {
     return;
   }
 
-  this->selectedSensor.first = sConfig.getPluginName();
-  this->selectedSensor.second = sConfig.getSensorName();
+  this->selectedSensor.first = toQString(sConfig.getPluginName());
+  this->selectedSensor.second = toQString(sConfig.getSensorName());
 
   this->updateModel();
 
@@ -535,10 +538,10 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const {
   sConfig.setDoubleParameter(sensor->getDoubleParameter());
   sConfig.setAvailableStringParameter(sensor->getStringParameter());
   QStringList keys = toQStringList(oi::keys(sensor->getStringParameter()));
-  std::map<QString, QString> stringParams;
+  std::map<std::string, std::string> stringParams;
   foreach (const QString& key, keys) {
-    stringParams.insert_or_assign(key,
-                                  oi::value(sensor->getStringParameter(), key));
+    stringParams.insert_or_assign(
+        toStd(key), oi::value(sensor->getStringParameter(), toStd(key)));
   }
   sConfig.setStringParameter(stringParams);
 

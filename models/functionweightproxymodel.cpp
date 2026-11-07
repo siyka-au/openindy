@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief FunctionWeightProxyModel::FunctionWeightProxyModel
@@ -173,8 +174,8 @@ bool FunctionWeightProxyModel::lessThan(const QModelIndex& source_left,
             inputElem.at(source_left.row()).id);
 
     return QString::localeAwareCompare(
-               fwLeft->getFeature()->getFeatureName(),
-               fwRight->getFeature()->getFeatureName()) > 0;
+               toQString(fwLeft->getFeature()->getFeatureName()),
+               toQString(fwRight->getFeature()->getFeatureName())) > 0;
   }
   return false;
 }

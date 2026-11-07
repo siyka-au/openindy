@@ -13,6 +13,7 @@
 #include "createfeaturedialog.h"
 #include "measurementconfigurationdialog.h"
 #include "projectexchanger.h"
+#include "qtconvert.h"
 
 // recomended readings:
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
@@ -584,7 +585,7 @@ QStringList DialogsTest::getNames(QAbstractItemModel* model) {
 QStringList DialogsTest::getNames(std::vector<MeasurementConfig> list) {
   QStringList names;
   foreach (const MeasurementConfig mc, list) {
-    names << mc.getName();
+    names << toQString(mc.getName());
   }
   return names;
 }
@@ -858,7 +859,8 @@ void DialogsTest::projectSaveLoad() {
       ModelManager::getMeasurementConfigManager()->getProjectConfig(
           "measconfig-fastpoint_project");
   QVERIFY(point1.measurementConfig.isValid());
-  point1.functionPlugin = std::pair<QString, QString>("function1", "path");
+  point1.functionPlugin =
+      std::pair<std::string, std::string>("function1", "path");
   jobS.addFeatures(point1);  // job is reponsible
   oi::Guarded<FeatureWrapper> feature =
       jobS.getFeaturesByName(point1.name).at(0);
@@ -893,7 +895,7 @@ void DialogsTest::projectSaveLoad() {
            ModelManager::getMeasurementConfigManager()->getConfigs()) {
     if (mc.isProjectConfig() && !mc.isStandardConfig()) {
       ModelManager::getMeasurementConfigManager()->removeProjectConfig(
-          mc.getName());
+          toQString(mc.getName()));
     }
   }
 
@@ -1026,5 +1028,5 @@ void DialogsTest::entityTypeComboResolvesByDataNotByVisibleText() {
            before);
 
   // restore, since the model is shared static state
-  first->setText(getFeatureTypeDisplayName(before));
+  first->setText(toQString(getFeatureTypeDisplayName(before)));
 }
