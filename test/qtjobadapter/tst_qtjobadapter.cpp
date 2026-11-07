@@ -66,9 +66,10 @@ void QtJobAdapterTest::signalsKeepTheirOldNamesAndArguments() {
   QSignalSpy activeSpy(adapter, &QtJobAdapter::activeFeatureChanged);
   QSignalSpy attrSpy(adapter, &QtJobAdapter::featureAttributesChanged);
 
-  Point point;
+  auto own_point = std::make_unique<Point>();
+  Point& point = *own_point;
   point.setFeatureName("P1");
-  QVERIFY(job.addFeature(point.getFeatureWrapper()));
+  QVERIFY(job.addFeature(std::move(own_point)));
   QCOMPARE(setSpy.count(), 1);
   QCOMPARE(geomSpy.count(), 1);
 
@@ -100,9 +101,10 @@ void QtJobAdapterTest::messagesAndRecalculationArriveAsSignals() {
   QCOMPARE(featSpy.first().at(0).toInt(), 3);
   QCOMPARE(allSpy.count(), 1);
 
-  Point* point = new Point();
+  auto own_point = std::make_unique<Point>();
+  Point* point = own_point.get();
   point->setFeatureName("P");
-  QVERIFY(job.addFeature(point->getFeatureWrapper()));
+  QVERIFY(job.addFeature(std::move(own_point)));
   QVERIFY(job.removeFeature(point->getId()));
   QCOMPARE(setSpy.count(), 1);
 }
@@ -112,9 +114,10 @@ void QtJobAdapterTest::deferredIsSolvedStaysDeferred() {
   OiJob job;
   job.setExecutor(&executor);
   QSignalSpy spy(QtJobAdapter::of(&job), &QtJobAdapter::featureIsSolvedChanged);
-  Point point;
+  auto own_point = std::make_unique<Point>();
+  Point& point = *own_point;
   point.setFeatureName("P");
-  QVERIFY(job.addFeature(point.getFeatureWrapper()));
+  QVERIFY(job.addFeature(std::move(own_point)));
   point.setIsSolved(true);
   QCOMPARE(spy.count(), 0);
   QCoreApplication::processEvents();
@@ -141,9 +144,10 @@ void QtJobAdapterTest::jobDeletedLaterLeavesNothingBehind() {
   QObject context;
   QObject::connect(adapter, &QtJobAdapter::featureSetChanged, &context,
                    [&notified] { ++notified; });
-  Point* point = new Point();
+  auto own_point = std::make_unique<Point>();
+  Point* point = own_point.get();
   point->setFeatureName("P");
-  QVERIFY(job->addFeature(point->getFeatureWrapper()));
+  QVERIFY(job->addFeature(std::move(own_point)));
   QCOMPARE(notified, 1);
   delete job;
   QCOMPARE(QtJobAdapter::registrySize(), 0);

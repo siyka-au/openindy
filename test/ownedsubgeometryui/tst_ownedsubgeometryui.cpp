@@ -104,11 +104,11 @@ oi::Guarded<OiJob> OwnedSubGeometryUiTest::makeJobWithPlane(
     const Direction& normal) {
   const oi::Guarded<OiJob>& job = controller.createDefaultJob();
 
-  oi::Guarded<Plane> plane = new Plane();
-  oi::Guarded<FeatureWrapper> planeWrapper = new FeatureWrapper();
-  planeWrapper->setPlane(plane);
+  auto own_plane = std::make_unique<oi::Plane>();
+  oi::Guarded<oi::Plane> plane = own_plane.get();
+  oi::Guarded<oi::FeatureWrapper> planeWrapper = plane->getFeatureWrapper();
   plane->setFeatureName("Plane1");
-  job->addFeature(planeWrapper);
+  job->addFeature(std::move(own_plane));
 
   oi::Guarded<SetPlaneFunction> planeFn = new SetPlaneFunction();
   planeFn->position = position;
@@ -241,11 +241,11 @@ void OwnedSubGeometryUiTest::actionDoesNothingWithoutASolvedActivePlane() {
            "no active feature - the action must be a silent no-op");
 
   // an active feature that is not a solved Plane
-  oi::Guarded<Point> point = new Point();
+  auto own_point = std::make_unique<oi::Point>();
+  oi::Guarded<oi::Point> point = own_point.get();
+  oi::Guarded<oi::FeatureWrapper> pointWrapper = point->getFeatureWrapper();
   point->setFeatureName("SomePoint");
-  oi::Guarded<FeatureWrapper> pointWrapper = new FeatureWrapper();
-  pointWrapper->setPoint(point);
-  job->addFeature(pointWrapper);
+  job->addFeature(std::move(own_point));
   point->setActiveFeatureState(true);
 
   controller.generateOwnedNormalLine();

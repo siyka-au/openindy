@@ -117,10 +117,10 @@ void QtStationAdapterTest::resultsArriveAsSignalsOnTheUiThreadInOrder() {
   QtExecutor executor;
   OiJob job;
   job.setExecutor(&executor);
-  oi::Guarded<Station> station = new Station("S1");
-  oi::Guarded<FeatureWrapper> feature = new FeatureWrapper();
-  feature->setStation(station);
-  job.addFeature(feature);
+  auto own_station = std::make_unique<oi::Station>("S1");
+  oi::Guarded<oi::Station> station = own_station.get();
+  oi::Guarded<oi::FeatureWrapper> feature = station->getFeatureWrapper();
+  job.addFeature(std::move(own_station));
   station->setActiveStationState(true);
 
   FakeSensor sensor;

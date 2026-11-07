@@ -425,6 +425,9 @@ void DataExchanger::importMeasurements(
     std::vector<oi::Guarded<FeatureWrapper>> features) {
   const auto curDateTime = std::chrono::system_clock::now();
   foreach (oi::Guarded<FeatureWrapper> importedFeature, features) {
+    if (importedFeature.isNull()) {
+      continue;
+    }
     std::vector<oi::Guarded<FeatureWrapper>> jobFeatures =
         this->currentJob->getFeaturesByName(
             importedFeature->getFeature()->getFeatureName());
@@ -508,6 +511,9 @@ void DataExchanger::importMeasurements(
 void DataExchanger::createActuals(
     std::vector<oi::Guarded<FeatureWrapper>> features) {
   foreach (oi::Guarded<FeatureWrapper> fw, features) {
+    if (fw.isNull()) {
+      continue;  // the job rejected (and destroyed) this imported feature
+    }
     switch (fw->getFeatureTypeEnum()) {
       case FeatureTypes::ePlaneFeature:
       case FeatureTypes::ePointFeature: {
@@ -613,7 +619,9 @@ void DataExchanger::importFeatures(const bool& success) {
     return;
   }
 
-  // add the imported features to current OpenIndy job
+  // add the imported features to current OpenIndy job (the exchange owns them
+  // until the job takes them; on the measurement path they are simply freed
+  // with the exchange)
   std::vector<oi::Guarded<FeatureWrapper>> features =
       this->exchange->getFeatures();
 
@@ -624,8 +632,9 @@ void DataExchanger::importFeatures(const bool& success) {
     importSuccess = true;
   } else {
     // add features
-    importSuccess =
-        this->currentJob->addFeatures(features, this->exchangeParams.overwrite);
+    // the job takes ownership; the handles read null for a rejected feature
+    importSuccess = this->currentJob->addFeatures(
+        this->exchange->takeImportedFeatures(), this->exchangeParams.overwrite);
 
     // add actuals to nominals at import
     if (this->exchangeParams.createActual) {

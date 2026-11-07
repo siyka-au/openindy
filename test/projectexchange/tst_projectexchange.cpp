@@ -40,17 +40,17 @@ namespace {
 oi::Guarded<OiJob> makeJobWithStationAndSystem() {
   oi::Guarded<OiJob> job = new OiJob();
 
-  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
-  oi::Guarded<Station> station = new Station();
+  auto own_station = std::make_unique<oi::Station>();
+  oi::Guarded<oi::Station> station = own_station.get();
+  oi::Guarded<oi::FeatureWrapper> stationFeature = station->getFeatureWrapper();
   station->setFeatureName("STATION01");
-  stationFeature->setStation(station);
-  job->addFeature(stationFeature);
+  job->addFeature(std::move(own_station));
 
-  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
-  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
+  auto own_system = std::make_unique<oi::CoordinateSystem>();
+  oi::Guarded<oi::CoordinateSystem> system = own_system.get();
+  oi::Guarded<oi::FeatureWrapper> systemFeature = system->getFeatureWrapper();
   system->setFeatureName("PART");
-  systemFeature->setCoordinateSystem(system);
-  job->addFeature(systemFeature);
+  job->addFeature(std::move(own_system));
 
   station->setActiveStationState(true);
   station->getCoordinateSystem()->setActiveCoordinateSystemState(true);
@@ -75,32 +75,32 @@ oi::Guarded<OiJob> makeJobWithStationAndSystem() {
 oi::Guarded<FeatureWrapper> addPoint(const oi::Guarded<OiJob>& job,
                                      const QString& name, double x, double y,
                                      double z) {
-  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
-  oi::Guarded<Point> point = new Point(Position(x, y, z));
+  auto own_point = std::make_unique<oi::Point>(Position(x, y, z));
+  oi::Guarded<oi::Point> point = own_point.get();
+  oi::Guarded<oi::FeatureWrapper> wrapper = point->getFeatureWrapper();
   point->setFeatureName(toStd(name));
   point->setIsSolved(true);
-  wrapper->setPoint(point);
-  job->addFeature(wrapper);
+  job->addFeature(std::move(own_point));
   return wrapper;
 }
 
 oi::Guarded<FeatureWrapper> addPlane(const oi::Guarded<OiJob>& job,
                                      const QString& name) {
-  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
-  oi::Guarded<Plane> plane = new Plane();
+  auto own_plane = std::make_unique<oi::Plane>();
+  oi::Guarded<oi::Plane> plane = own_plane.get();
+  oi::Guarded<oi::FeatureWrapper> wrapper = plane->getFeatureWrapper();
   plane->setFeatureName(toStd(name));
-  wrapper->setPlane(plane);
-  job->addFeature(wrapper);
+  job->addFeature(std::move(own_plane));
   return wrapper;
 }
 
 oi::Guarded<FeatureWrapper> addSphere(const oi::Guarded<OiJob>& job,
                                       const QString& name) {
-  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
-  oi::Guarded<Sphere> sphere = new Sphere();
+  auto own_sphere = std::make_unique<oi::Sphere>();
+  oi::Guarded<oi::Sphere> sphere = own_sphere.get();
+  oi::Guarded<oi::FeatureWrapper> wrapper = sphere->getFeatureWrapper();
   sphere->setFeatureName(toStd(name));
-  wrapper->setSphere(sphere);
-  job->addFeature(wrapper);
+  job->addFeature(std::move(own_sphere));
   return wrapper;
 }
 
@@ -136,15 +136,15 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   oi::Guarded<FeatureWrapper> plane = addPlane(job, "Plane01");
   oi::Guarded<FeatureWrapper> sphere = addSphere(job, "Sphere01");
 
-  oi::Guarded<FeatureWrapper> groupWrapper = new FeatureWrapper();
-  oi::Guarded<Group> group = new Group();
+  auto own_group = std::make_unique<oi::Group>();
+  oi::Guarded<oi::Group> group = own_group.get();
+  oi::Guarded<oi::FeatureWrapper> groupWrapper = group->getFeatureWrapper();
   group->setFeatureName("MixedGroup");
-  groupWrapper->setGroup(group);
   QVERIFY2(group->addMember(plane),
            "plane should be accepted by an unconstrained group");
   QVERIFY2(group->addMember(sphere),
            "sphere should be accepted by an unconstrained group");
-  QVERIFY(job->addFeature(groupWrapper));
+  QVERIFY(job->addFeature(std::move(own_group)));
 
   QCOMPARE(group->memberCount(), 2);
 
@@ -191,14 +191,15 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
   oi::Guarded<FeatureWrapper> p2 = addPoint(job, "P2", 1.0, 0.0, 0.0);
   oi::Guarded<FeatureWrapper> p3 = addPoint(job, "P3", 0.0, 1.0, 0.0);
 
-  oi::Guarded<FeatureWrapper> groupWrapper = new FeatureWrapper();
-  oi::Guarded<PointGroup> pointGroup = new PointGroup();
+  auto own_pointGroup = std::make_unique<oi::PointGroup>();
+  oi::Guarded<oi::PointGroup> pointGroup = own_pointGroup.get();
+  oi::Guarded<oi::FeatureWrapper> groupWrapper =
+      pointGroup->getFeatureWrapper();
   pointGroup->setFeatureName("Wall");
-  groupWrapper->setPointGroup(pointGroup);
   QVERIFY(pointGroup->addMember(p1));
   QVERIFY(pointGroup->addMember(p2));
   QVERIFY(pointGroup->addMember(p3));
-  QVERIFY(job->addFeature(groupWrapper));
+  QVERIFY(job->addFeature(std::move(own_pointGroup)));
 
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);
@@ -236,14 +237,15 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   oi::Guarded<FeatureWrapper> plane = addPlane(job, "Plane01");
   oi::Guarded<FeatureWrapper> sphere = addSphere(job, "Sphere01");
 
-  oi::Guarded<FeatureWrapper> groupWrapper = new FeatureWrapper();
-  oi::Guarded<Group> group = new Group("Planes", FeatureTypes::ePlaneFeature);
-  groupWrapper->setGroup(group);
+  auto own_group =
+      std::make_unique<oi::Group>("Planes", FeatureTypes::ePlaneFeature);
+  oi::Guarded<oi::Group> group = own_group.get();
+  oi::Guarded<oi::FeatureWrapper> groupWrapper = group->getFeatureWrapper();
   QVERIFY2(group->addMember(plane),
            "plane should be accepted by a plane-constrained group");
   QVERIFY2(!group->addMember(sphere),
            "sphere should be rejected by a plane-constrained group");
-  QVERIFY(job->addFeature(groupWrapper));
+  QVERIFY(job->addFeature(std::move(own_group)));
 
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);

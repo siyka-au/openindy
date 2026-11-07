@@ -36,17 +36,17 @@ namespace {
 oi::Guarded<OiJob> makeJobWithStationAndSystem() {
   oi::Guarded<OiJob> job = new OiJob();
 
-  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
-  oi::Guarded<Station> station = new Station();
+  auto own_station = std::make_unique<oi::Station>();
+  oi::Guarded<oi::Station> station = own_station.get();
+  oi::Guarded<oi::FeatureWrapper> stationFeature = station->getFeatureWrapper();
   station->setFeatureName("STATION01");
-  stationFeature->setStation(station);
-  job->addFeature(stationFeature);
+  job->addFeature(std::move(own_station));
 
-  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
-  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
+  auto own_system = std::make_unique<oi::CoordinateSystem>();
+  oi::Guarded<oi::CoordinateSystem> system = own_system.get();
+  oi::Guarded<oi::FeatureWrapper> systemFeature = system->getFeatureWrapper();
   system->setFeatureName("PART");
-  systemFeature->setCoordinateSystem(system);
-  job->addFeature(systemFeature);
+  job->addFeature(std::move(own_system));
 
   station->setActiveStationState(true);
   station->getCoordinateSystem()->setActiveCoordinateSystemState(true);
@@ -65,12 +65,12 @@ oi::Guarded<OiJob> makeJobWithStationAndSystem() {
 oi::Guarded<FeatureWrapper> addPoint(const oi::Guarded<OiJob>& job,
                                      const QString& name, double x, double y,
                                      double z) {
-  oi::Guarded<FeatureWrapper> wrapper = new FeatureWrapper();
-  oi::Guarded<Point> point = new Point(Position(x, y, z));
+  auto own_point = std::make_unique<oi::Point>(Position(x, y, z));
+  oi::Guarded<oi::Point> point = own_point.get();
+  oi::Guarded<oi::FeatureWrapper> wrapper = point->getFeatureWrapper();
   point->setFeatureName(toStd(name));
   point->setIsSolved(true);
-  wrapper->setPoint(point);
-  job->addFeature(wrapper);
+  job->addFeature(std::move(own_point));
   return wrapper;
 }
 

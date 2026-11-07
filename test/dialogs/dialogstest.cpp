@@ -825,17 +825,17 @@ void DialogsTest::measurementConfigurationModel() {
 void DialogsTest::projectSaveLoad() {
   OiJob jobS;
 
-  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
-  oi::Guarded<Station> station = new Station();
+  auto own_station = std::make_unique<oi::Station>();
+  oi::Guarded<oi::Station> station = own_station.get();
+  oi::Guarded<oi::FeatureWrapper> stationFeature = station->getFeatureWrapper();
   station->setFeatureName("STATION01");
-  stationFeature->setStation(station);
-  jobS.addFeature(stationFeature);
+  jobS.addFeature(std::move(own_station));
 
-  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
-  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
+  auto own_system = std::make_unique<oi::CoordinateSystem>();
+  oi::Guarded<oi::CoordinateSystem> system = own_system.get();
+  oi::Guarded<oi::FeatureWrapper> systemFeature = system->getFeatureWrapper();
   system->setFeatureName("PART");
-  systemFeature->setCoordinateSystem(system);
-  jobS.addFeature(systemFeature);
+  jobS.addFeature(std::move(own_system));
 
   // activate features
   station->setActiveStationState(true);

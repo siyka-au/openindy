@@ -1319,19 +1319,17 @@ const oi::Guarded<OiJob>& Controller::createDefaultJob() {
   oi::Guarded<OiJob> job = new OiJob();
   this->setJob(job);
 
-  oi::Guarded<FeatureWrapper> stationFeature = new FeatureWrapper();
-  oi::Guarded<Station> station = new Station();
+  auto ownedStation = std::make_unique<Station>();
+  oi::Guarded<Station> station = ownedStation.get();
   station->setFeatureName("STATION01");
   station->setGroupName("00_Stations");
-  stationFeature->setStation(station);
 
-  oi::Guarded<FeatureWrapper> systemFeature = new FeatureWrapper();
-  oi::Guarded<CoordinateSystem> system = new CoordinateSystem();
+  auto ownedSystem = std::make_unique<CoordinateSystem>();
+  oi::Guarded<CoordinateSystem> system = ownedSystem.get();
   system->setFeatureName("PART");
-  systemFeature->setCoordinateSystem(system);
 
-  job->addFeature(stationFeature);
-  job->addFeature(systemFeature);
+  job->addFeature(std::move(ownedStation));
+  job->addFeature(std::move(ownedSystem));
 
   // activate features
   station->setActiveStationState(true);
