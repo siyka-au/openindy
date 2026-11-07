@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "containers.h"
+#include "qtconvert.h"
 
 /*!
  * \brief DataExchanger::DataExchanger
@@ -223,8 +224,9 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   this->exchange = exchange;
 
   // set exchange parameters
-  QIODevice* device = new QFile(params.exchangeFilePath);
-  this->exchange->setDevice(device);
+  this->exchangeStream = std::make_unique<std::fstream>(
+      toPath(params.exchangeFilePath), std::ios::in | std::ios::binary);
+  this->exchange->setStream(this->exchangeStream.get());
   this->exchange->setFeatures(params.exportFeatures);
   this->exchange->setExportObservations(params.exportObservations);
   this->exchange->setGroupName(params.groupName);
@@ -346,8 +348,10 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   this->exchange = exchange;
 
   // set exchange parameters
-  QIODevice* device = new QFile(params.exchangeFilePath);
-  this->exchange->setDevice(device);
+  this->exchangeStream = std::make_unique<std::fstream>(
+      toPath(params.exchangeFilePath),
+      std::ios::out | std::ios::trunc | std::ios::binary);
+  this->exchange->setStream(this->exchangeStream.get());
   this->exchange->setFeatures(params.exportFeatures);
 
   // connect exchange plugin

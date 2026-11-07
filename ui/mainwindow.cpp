@@ -1336,7 +1336,6 @@ void MainWindow::loadProjectFile(QString file) {
     return;
   }
 
-  QPointer<QFileDevice> device = new QFile(file);
   QString projectName = info.fileName();
 
   ProjectConfig::setProjectPath(info.absolutePath());
@@ -1345,7 +1344,7 @@ void MainWindow::loadProjectFile(QString file) {
   this->ui->tableView_features->clearSelection();
   this->ui->tableView_trafoParams->clearSelection();
 
-  emit this->loadProject(projectName, device);
+  emit this->loadProject(projectName, file);
 }
 
 /*!

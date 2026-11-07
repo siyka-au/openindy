@@ -5,7 +5,9 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <fstream>
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include "console.h"
@@ -136,6 +138,8 @@ class DataExchanger : public QObject,
   // thread the plugin runs on
   // #########################
 
+  // declared before the thread so the thread is gone before the stream
+  std::unique_ptr<std::fstream> exchangeStream;  // the exchange's file
   QThread exchangeThread;
   QObject* exchangeRunner{nullptr};  // context object living on exchangeThread
 

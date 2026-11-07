@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "featureutil.h"
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 #include "qtstationadapter.h"
 /*!
@@ -1036,8 +1037,8 @@ void Controller::saveProject() {
 
   // get and check name and file path
   QString name = this->job->getJobName();
-  QPointer<QFileDevice> fileDevice = this->job->getJobDevice();
-  if (name.compare("") == 0 || fileDevice.isNull()) {
+  const QString filePath = fromPath(this->job->getJobFile());
+  if (name.compare("") == 0 || filePath.isEmpty()) {
     emit this->saveAsTriggered();
     return;
   }
@@ -1055,21 +1056,21 @@ void Controller::saveProject() {
   }
 
   // write the project file
-  QSaveFile saveFile(fileDevice->fileName());
+  QSaveFile saveFile(filePath);
   if (saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
     if (saveFile.write(project) != project.size() || !saveFile.commit()) {
-      this->log(QString("Cannot write file \"%1\"").arg(fileDevice->fileName()),
+      this->log(QString("Cannot write file \"%1\"").arg(filePath),
                 MessageTypes::eErrorMessage,
                 MessageDestinations::eMessageBoxMessage);
       return;
     }
 
-    this->log(QString("OpenIndy project \"%1\" successfully stored.")
-                  .arg(fileDevice->fileName()),
-              MessageTypes::eInformationMessage,
-              MessageDestinations::eStatusBarMessage);
+    this->log(
+        QString("OpenIndy project \"%1\" successfully stored.").arg(filePath),
+        MessageTypes::eInformationMessage,
+        MessageDestinations::eStatusBarMessage);
   } else {
-    this->log(QString("Cannot open file  \"%1\"").arg(fileDevice->fileName()),
+    this->log(QString("Cannot open file  \"%1\"").arg(filePath),
               MessageTypes::eInformationMessage,
               MessageDestinations::eStatusBarMessage);
     QMessageBox msgBox;
@@ -1105,7 +1106,7 @@ void Controller::saveProject(const QString& fileName) {
   this->job->setJobName(fileName);
 
   // set device
-  this->job->setJobDevice(new QFile(fileName));
+  this->job->setJobFile(toPath(fileName));
 
   this->saveProject();
 
@@ -1116,22 +1117,16 @@ void Controller::saveProject(const QString& fileName) {
 /*!
  * \brief Controller::loadProject
  * \param projectName
- * \param device
+ * \param filePath
  */
 void Controller::loadProject(const QString& projectName,
-                             const QPointer<QFileDevice>& device) {
-  // check device
-  if (device.isNull()) {
-    this->log("No device", MessageTypes::eErrorMessage,
-              MessageDestinations::eMessageBoxMessage);
-    return;
-  }
-
+                             const QString& filePath) {
   // read the project file
   QByteArray project;
-  if (device->open(QIODevice::ReadOnly)) {
-    project = device->readAll();
-    device->close();
+  QFile file(filePath);
+  if (file.open(QIODevice::ReadOnly)) {
+    project = file.readAll();
+    file.close();
   } else {
     this->log("Error while opening OpenIndy project file.",
               MessageTypes::eErrorMessage,
@@ -1196,7 +1191,7 @@ void Controller::loadProject(const QString& projectName,
       (emit this->showMessageBox(msg, MessageTypes::eQuestionMessage) ==
        QMessageBox::Yes)) {
     // set project meta data
-    newJob->setJobDevice(device);
+    newJob->setJobFile(toPath(filePath));
     newJob->setJobName(projectName);
 
     // delete old job
@@ -1303,12 +1298,12 @@ void Controller::loadProject(const QString& projectName,
     }
 
     this->log(QString("OpenIndy project \"%1\" successfully loaded.")
-                  .arg(device->fileName()),
+                  .arg(filePath),
               MessageTypes::eInformationMessage,
               MessageDestinations::eConsoleMessage);
   } else {
     this->log(QString("OpenIndy project \"%1\" was not loaded.")
-                  .arg(device->fileName()),
+                  .arg(filePath),
               MessageTypes::eInformationMessage,
               MessageDestinations::eConsoleMessage);
   }

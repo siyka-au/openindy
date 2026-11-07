@@ -148,8 +148,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   // save or load projects
   void saveProject();
   void saveProject(const QString& fileName);
-  void loadProject(const QString& projectName,
-                   const QPointer<QFileDevice>& device);
+  void loadProject(const QString& projectName, const QString& filePath);
 
   // log messages
   void log(const QString& msg, const MessageTypes& msgType,

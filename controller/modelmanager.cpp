@@ -1293,91 +1293,93 @@ void ModelManager::initMeasurementConfigModels() {
 void ModelManager::initSensorConnectionModels() {
   // initialize baud rate model
   QStandardItem* baud1200 = new QStandardItem("1200");
-  baud1200->setData(QSerialPort::Baud1200, Qt::UserRole);
+  baud1200->setData(static_cast<int>(oi::BaudRate::Baud1200), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud1200);
   QStandardItem* baud2400 = new QStandardItem("2400");
-  baud2400->setData(QSerialPort::Baud2400, Qt::UserRole);
+  baud2400->setData(static_cast<int>(oi::BaudRate::Baud2400), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud2400);
   QStandardItem* baud4800 = new QStandardItem("4800");
-  baud4800->setData(QSerialPort::Baud4800, Qt::UserRole);
+  baud4800->setData(static_cast<int>(oi::BaudRate::Baud4800), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud4800);
   QStandardItem* baud9600 = new QStandardItem("9600");
-  baud9600->setData(QSerialPort::Baud9600, Qt::UserRole);
+  baud9600->setData(static_cast<int>(oi::BaudRate::Baud9600), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud9600);
   QStandardItem* baud19200 = new QStandardItem("19200");
-  baud19200->setData(QSerialPort::Baud19200, Qt::UserRole);
+  baud19200->setData(static_cast<int>(oi::BaudRate::Baud19200), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud19200);
   QStandardItem* baud38400 = new QStandardItem("38400");
-  baud38400->setData(QSerialPort::Baud38400, Qt::UserRole);
+  baud38400->setData(static_cast<int>(oi::BaudRate::Baud38400), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud38400);
   QStandardItem* baud57600 = new QStandardItem("57600");
-  baud57600->setData(QSerialPort::Baud57600, Qt::UserRole);
+  baud57600->setData(static_cast<int>(oi::BaudRate::Baud57600), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud57600);
   QStandardItem* baud115200 = new QStandardItem("115200");
-  baud115200->setData(QSerialPort::Baud115200, Qt::UserRole);
+  baud115200->setData(static_cast<int>(oi::BaudRate::Baud115200), Qt::UserRole);
   ModelManager::baudRateTypesModel.appendRow(baud115200);
 
   // initialize databits model
   QStandardItem* data5 = new QStandardItem("5");
-  data5->setData(QSerialPort::Data5, Qt::UserRole);
+  data5->setData(static_cast<int>(oi::DataBits::Data5), Qt::UserRole);
   ModelManager::dataBitTypesModel.appendRow(data5);
   QStandardItem* data6 = new QStandardItem("6");
-  data6->setData(QSerialPort::Data6, Qt::UserRole);
+  data6->setData(static_cast<int>(oi::DataBits::Data6), Qt::UserRole);
   ModelManager::dataBitTypesModel.appendRow(data6);
   QStandardItem* data7 = new QStandardItem("7");
-  data7->setData(QSerialPort::Data7, Qt::UserRole);
+  data7->setData(static_cast<int>(oi::DataBits::Data7), Qt::UserRole);
   ModelManager::dataBitTypesModel.appendRow(data7);
   QStandardItem* data8 = new QStandardItem("8");
-  data8->setData(QSerialPort::Data8, Qt::UserRole);
+  data8->setData(static_cast<int>(oi::DataBits::Data8), Qt::UserRole);
   ModelManager::dataBitTypesModel.appendRow(data8);
 
   // initialize flow control model
   QStandardItem* noControl = new QStandardItem("no flowcontrol");
-  noControl->setData(QSerialPort::NoFlowControl, Qt::UserRole);
+  noControl->setData(static_cast<int>(oi::FlowControl::None), Qt::UserRole);
   ModelManager::flowControlTypesModel.appendRow(noControl);
   QStandardItem* hardwareControl = new QStandardItem("hardware flowcontrol");
-  hardwareControl->setData(QSerialPort::HardwareControl, Qt::UserRole);
+  hardwareControl->setData(static_cast<int>(oi::FlowControl::Hardware),
+                           Qt::UserRole);
   ModelManager::flowControlTypesModel.appendRow(hardwareControl);
   QStandardItem* softwareControl = new QStandardItem("software flowcontrol");
-  softwareControl->setData(QSerialPort::SoftwareControl, Qt::UserRole);
+  softwareControl->setData(static_cast<int>(oi::FlowControl::Software),
+                           Qt::UserRole);
   ModelManager::flowControlTypesModel.appendRow(softwareControl);
   QStandardItem* unknownControl = new QStandardItem("unknown flowcontrol");
-  unknownControl->setData(static_cast<QSerialPort::FlowControl>(-1),
-                          Qt::UserRole);
+  unknownControl->setData(-1, Qt::UserRole);
   ModelManager::flowControlTypesModel.appendRow(unknownControl);
 
   // initialize parity model
   QStandardItem* noParity = new QStandardItem("no parity");
-  noParity->setData(QSerialPort::NoParity, Qt::UserRole);
+  noParity->setData(static_cast<int>(oi::Parity::None), Qt::UserRole);
   ModelManager::parityTypesModel.appendRow(noParity);
   QStandardItem* evenParity = new QStandardItem("even parity");
-  evenParity->setData(QSerialPort::EvenParity, Qt::UserRole);
+  evenParity->setData(static_cast<int>(oi::Parity::Even), Qt::UserRole);
   ModelManager::parityTypesModel.appendRow(evenParity);
   QStandardItem* oddParity = new QStandardItem("odd parity");
-  oddParity->setData(QSerialPort::OddParity, Qt::UserRole);
+  oddParity->setData(static_cast<int>(oi::Parity::Odd), Qt::UserRole);
   ModelManager::parityTypesModel.appendRow(oddParity);
   QStandardItem* spaceParity = new QStandardItem("space parity");
-  spaceParity->setData(QSerialPort::SpaceParity, Qt::UserRole);
+  spaceParity->setData(static_cast<int>(oi::Parity::Space), Qt::UserRole);
   ModelManager::parityTypesModel.appendRow(spaceParity);
   QStandardItem* markParity = new QStandardItem("mark parity");
-  markParity->setData(QSerialPort::MarkParity, Qt::UserRole);
+  markParity->setData(static_cast<int>(oi::Parity::Mark), Qt::UserRole);
   ModelManager::parityTypesModel.appendRow(markParity);
   QStandardItem* unknownParity = new QStandardItem("unknown parity");
-  unknownParity->setData(static_cast<QSerialPort::Parity>(-1), Qt::UserRole);
+  unknownParity->setData(-1, Qt::UserRole);
   ModelManager::parityTypesModel.appendRow(unknownParity);
 
   // initialize stop bits model
   QStandardItem* oneStop = new QStandardItem("one stop");
-  oneStop->setData(QSerialPort::OneStop, Qt::UserRole);
+  oneStop->setData(static_cast<int>(oi::StopBits::One), Qt::UserRole);
   ModelManager::stopBitTypesModel.appendRow(oneStop);
   QStandardItem* oneHalfStop = new QStandardItem("one and half");
-  oneHalfStop->setData(QSerialPort::OneAndHalfStop, Qt::UserRole);
+  oneHalfStop->setData(static_cast<int>(oi::StopBits::OneAndHalf),
+                       Qt::UserRole);
   ModelManager::stopBitTypesModel.appendRow(oneHalfStop);
   QStandardItem* twoStop = new QStandardItem("two stop");
-  twoStop->setData(QSerialPort::TwoStop, Qt::UserRole);
+  twoStop->setData(static_cast<int>(oi::StopBits::Two), Qt::UserRole);
   ModelManager::stopBitTypesModel.appendRow(twoStop);
   QStandardItem* unknownStop = new QStandardItem("unknown stopbits");
-  unknownStop->setData(static_cast<QSerialPort::StopBits>(-1), Qt::UserRole);
+  unknownStop->setData(-1, Qt::UserRole);
   ModelManager::stopBitTypesModel.appendRow(unknownStop);
 
   // initialize serial ports model

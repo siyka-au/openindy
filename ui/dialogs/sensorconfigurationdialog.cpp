@@ -234,27 +234,26 @@ void SensorConfigurationDialog::sensorConnectionChanged() {
   }
   cConfig.ip = this->ui->comboBox_ip->currentText();
   cConfig.port = this->ui->lineEdit_port->text();
-  cConfig.baudRate = static_cast<QSerialPort::BaudRate>(
+  cConfig.baudRate = static_cast<oi::BaudRate>(
       this->ui->comboBox_baudrate
           ->itemData(ui->comboBox_baudrate->currentIndex())
           .toInt());
   cConfig.comPort = this->ui->comboBox_comPort->currentText();
   ;
-  cConfig.dataBits = static_cast<QSerialPort::DataBits>(
-      this->ui->comboBox_baudrate
-          ->itemData(ui->comboBox_baudrate->currentIndex())
+  cConfig.dataBits = static_cast<oi::DataBits>(
+      this->ui->comboBox_databits
+          ->itemData(ui->comboBox_databits->currentIndex())
           .toInt());
-  cConfig.flowControl = static_cast<QSerialPort::FlowControl>(
-      this->ui->comboBox_baudrate
-          ->itemData(ui->comboBox_baudrate->currentIndex())
+  cConfig.flowControl = static_cast<oi::FlowControl>(
+      this->ui->comboBox_flowcontrol
+          ->itemData(ui->comboBox_flowcontrol->currentIndex())
           .toInt());
-  cConfig.parity = static_cast<QSerialPort::Parity>(
-      this->ui->comboBox_baudrate
-          ->itemData(ui->comboBox_baudrate->currentIndex())
+  cConfig.parity = static_cast<oi::Parity>(
+      this->ui->comboBox_parity->itemData(ui->comboBox_parity->currentIndex())
           .toInt());
-  cConfig.stopBits = static_cast<QSerialPort::StopBits>(
-      this->ui->comboBox_baudrate
-          ->itemData(ui->comboBox_baudrate->currentIndex())
+  cConfig.stopBits = static_cast<oi::StopBits>(
+      this->ui->comboBox_stopbits
+          ->itemData(ui->comboBox_stopbits->currentIndex())
           .toInt());
   sConfig.setConnectionConfig(cConfig);
 
@@ -401,28 +400,28 @@ void SensorConfigurationDialog::updateGuiFromSensorConfig(
 
   // set up connection parameters
   const ConnectionConfig& cConfig = sConfig.getConnectionConfig();
-  int baudRateIndex =
-      this->ui->comboBox_baudrate->findData(cConfig.baudRate, Qt::UserRole);
+  int baudRateIndex = this->ui->comboBox_baudrate->findData(
+      static_cast<int>(cConfig.baudRate), Qt::UserRole);
   if (baudRateIndex >= 0) {
     this->ui->comboBox_baudrate->setCurrentIndex(baudRateIndex);
   }
-  int dataBitsIndex =
-      this->ui->comboBox_databits->findData(cConfig.dataBits, Qt::UserRole);
+  int dataBitsIndex = this->ui->comboBox_databits->findData(
+      static_cast<int>(cConfig.dataBits), Qt::UserRole);
   if (dataBitsIndex >= 0) {
     this->ui->comboBox_databits->setCurrentIndex(dataBitsIndex);
   }
   int flowControlIndex = this->ui->comboBox_flowcontrol->findData(
-      cConfig.flowControl, Qt::UserRole);
+      static_cast<int>(cConfig.flowControl), Qt::UserRole);
   if (flowControlIndex >= 0) {
     this->ui->comboBox_flowcontrol->setCurrentIndex(flowControlIndex);
   }
-  int parityIndex =
-      this->ui->comboBox_parity->findData(cConfig.parity, Qt::UserRole);
+  int parityIndex = this->ui->comboBox_parity->findData(
+      static_cast<int>(cConfig.parity), Qt::UserRole);
   if (parityIndex >= 0) {
     this->ui->comboBox_parity->setCurrentIndex(parityIndex);
   }
-  int stopBitsIndex =
-      this->ui->comboBox_stopbits->findData(cConfig.stopBits, Qt::UserRole);
+  int stopBitsIndex = this->ui->comboBox_stopbits->findData(
+      static_cast<int>(cConfig.stopBits), Qt::UserRole);
   if (stopBitsIndex >= 0) {
     this->ui->comboBox_stopbits->setCurrentIndex(stopBitsIndex);
   }

@@ -2,8 +2,10 @@
 #define QTCONVERT_H
 
 #include <QList>
+#include <QString>
 #include <QStringList>
 #include <QVariantMap>
+#include <filesystem>
 #include <map>
 #include <vector>
 
@@ -50,6 +52,16 @@ template <typename T>
     out.insert_or_assign(it.key(), it.value());
   }
   return out;
+}
+
+// File system paths, through UTF-16 so non-ASCII names survive on every
+// platform.
+[[nodiscard]] inline std::filesystem::path toPath(const QString& s) {
+  return std::filesystem::path(s.toStdU16String());
+}
+
+[[nodiscard]] inline QString fromPath(const std::filesystem::path& p) {
+  return QString::fromStdU16String(p.u16string());
 }
 
 #endif  // QTCONVERT_H
