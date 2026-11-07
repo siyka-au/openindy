@@ -8,7 +8,10 @@
 #include <iostream>
 
 #include "chooselalib.h"
+#include "console.h"
+#include "log.h"
 #include "mainwindow.h"
+#include "qtconvert.h"
 #include "version.h"
 
 const QString _date = __DATE__;
@@ -48,6 +51,28 @@ int main(int argc, char* argv[]) {
 #endif
 
   ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
+
+  // the core's diagnostic log: warnings and errors into the application's
+  // console and log file, everything else to stderr
+  oi::log::setSink([](oi::log::Level level, std::string_view text) {
+    MessageTypes type = MessageTypes::eInformationMessage;
+    switch (level) {
+      case oi::log::Level::kWarn:
+        type = MessageTypes::eWarningMessage;
+        break;
+      case oi::log::Level::kError:
+        type = MessageTypes::eErrorMessage;
+        break;
+      case oi::log::Level::kCritical:
+        type = MessageTypes::eCriticalMessage;
+        break;
+      default:
+        std::cerr << "[" << oi::log::levelName(level) << "] " << text
+                  << std::endl;
+        return;
+    }
+    Console::getInstance()->addLine(toQString(text), type);
+  });
 
   a.setOrganizationName(Company);
   a.setOrganizationDomain(Company);
