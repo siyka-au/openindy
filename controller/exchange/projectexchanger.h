@@ -20,8 +20,8 @@ using namespace oi;
 class ProjectExchanger {
  public:
   struct LoadResult {
-    oi::Guarded<OiJob> job;  //!< null if the project could not be loaded
-    QString error;           //!< why, for the user
+    std::unique_ptr<OiJob> job;  //!< null if the project could not be loaded
+    QString error;               //!< why, for the user
   };
 
   ProjectExchanger() = default;

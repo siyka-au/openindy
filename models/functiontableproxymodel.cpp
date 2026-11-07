@@ -44,14 +44,14 @@ void FunctionTableProxyModel::addFunction(const QModelIndex& index) {
   QString filePath = sourceModel->getPluginFilePath(this->mapToSource(index));
 
   // load and check function
-  oi::Guarded<Function> function =
+  std::unique_ptr<Function> function =
       PluginManager::loadFunctionPlugin(filePath, functionName);
-  if (function.isNull()) {
+  if (!function || this->currentJob.isNull()) {
     return;
   }
 
   // add the function and its dependencies
-  emit this->startAddFunction(function);
+  this->currentJob->addFunction(std::move(function));
 }
 
 /*!
@@ -226,9 +226,6 @@ void FunctionTableProxyModel::connectJob() {
                    &QtJobAdapter::featureFunctionsChanged, this,
                    &FunctionTableProxyModel::invalidateFilter,
                    Qt::AutoConnection);
-
-  connectToJob(this, &FunctionTableProxyModel::startAddFunction,
-               this->currentJob, &OiJob::addFunction);
 }
 
 /*!

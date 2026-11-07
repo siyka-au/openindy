@@ -52,9 +52,7 @@ class ApplicationHost : public oi::codec::ProjectHost {
     if (!found.has_value()) {
       return nullptr;
     }
-    oi::Guarded<T> object =
-        load(found->filePath(), QString::fromStdString(name));
-    return std::unique_ptr<T>(object.data());
+    return load(found->filePath(), QString::fromStdString(name));
   }
 
   QPointer<MeasurementConfigManager> configs_;
@@ -103,8 +101,7 @@ ProjectExchanger::LoadResult ProjectExchanger::loadProject(
   // a project always has the initial bundle transformation
   if (decoded.job->getFeaturesByName("Bundle01_1").empty()) {
     FeatureUtil util;
-    if (!util.createInitialBundleTransformation(decoded.job)) {
-      delete decoded.job.data();
+    if (!util.createInitialBundleTransformation(decoded.job.get())) {
       result.error = "the project has no usable bundle system";
       return result;
     }
@@ -125,7 +122,7 @@ ProjectExchanger::LoadResult ProjectExchanger::loadProject(
     }
   }
 
-  result.job = decoded.job;
+  result.job = std::move(decoded.job);
   return result;
 }
 

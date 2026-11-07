@@ -3,10 +3,12 @@
 
 #include <QList>
 #include <QMap>
+#include <QMetaType>
 #include <QObject>
 #include <QPointer>
 #include <QVariantMap>
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "stationobserver.h"
@@ -15,6 +17,14 @@ namespace oi {
 class Reading;
 class Station;
 }  // namespace oi
+
+/*!
+ * A Qt signal needs copyable arguments, a reading batch has one owner: the
+ * batch travels in a shared box and the receiving slot moves the readings out
+ * (readings nobody takes are freed with the box).
+ */
+using ReadingBatch = std::shared_ptr<std::vector<std::unique_ptr<oi::Reading>>>;
+Q_DECLARE_METATYPE(ReadingBatch)
 
 /*!
  * Turns the plain oi::StationObserver callbacks of a Station back into the Qt
@@ -56,8 +66,7 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   // sensor action callbacks
   void commandFinished(bool success, QString msg,
                        oi::SensorAction sensorAction);
-  void measurementFinished(int geomId,
-                           std::vector<oi::Guarded<oi::Reading>> readings);
+  void measurementFinished(int geomId, ReadingBatch readings);
   void measurementDone(bool success);
 
   // what the driver reports
@@ -66,7 +75,7 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   void sensorStatus(oi::SensorStatus status, QString msg);
 
  private:
-  QtStationAdapter() = default;
+  QtStationAdapter() { qRegisterMetaType<ReadingBatch>("ReadingBatch"); }
 
   void onStationDestroyed(oi::Station* station) override;
   void onRealTimeReading(const oi::ValueMap& reading) override;
@@ -78,8 +87,7 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   void onCommandFinished(bool success, const std::string& msg,
                          oi::SensorAction sensorAction) override;
   void onMeasurementFinished(
-      int geomId,
-      const std::vector<oi::Guarded<oi::Reading>>& readings) override;
+      int geomId, std::vector<std::unique_ptr<oi::Reading>> readings) override;
   void onMeasurementDone(bool success) override;
   void onSensorMessage(const std::string& msg, oi::MessageTypes msgType,
                        oi::MessageDestinations msgDest) override;

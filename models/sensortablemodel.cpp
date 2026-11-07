@@ -431,15 +431,14 @@ std::vector<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const {
   }
 
   // load and check sensor plugin
-  oi::Guarded<Sensor> sensor =
+  const std::unique_ptr<Sensor> sensor =
       PluginManager::loadSensorPlugin(filePath, sensorName);
-  if (sensor.isNull()) {
+  if (!sensor) {
     return types;
   }
 
   // get reading types and delete sensor
   types = sensor->getSupportedReadingTypes();
-  delete sensor.data();
 
   return types;
 }
@@ -460,15 +459,14 @@ std::vector<SensorFunctions> SensorTableModel::getSupportedSensorActions()
   }
 
   // load and check sensor plugin
-  oi::Guarded<Sensor> sensor =
+  const std::unique_ptr<Sensor> sensor =
       PluginManager::loadSensorPlugin(filePath, sensorName);
-  if (sensor.isNull()) {
+  if (!sensor) {
     return functions;
   }
 
   // get functions and delete sensor
   functions = sensor->getSupportedSensorActions();
-  delete sensor.data();
 
   return functions;
 }
@@ -489,15 +487,14 @@ std::vector<ConnectionKind> SensorTableModel::getSupportedConnectionTypes()
   }
 
   // load and check sensor plugin
-  oi::Guarded<Sensor> sensor =
+  const std::unique_ptr<Sensor> sensor =
       PluginManager::loadSensorPlugin(filePath, sensorName);
-  if (sensor.isNull()) {
+  if (!sensor) {
     return types;
   }
 
   // get connection types and delete sensor
   types = sensor->getSupportedConnectionTypes();
-  delete sensor.data();
 
   return types;
 }
@@ -518,9 +515,9 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const {
   }
 
   // load and check sensor plugin
-  oi::Guarded<Sensor> sensor =
+  const std::unique_ptr<Sensor> sensor =
       PluginManager::loadSensorPlugin(filePath, sensorName);
-  if (sensor.isNull()) {
+  if (!sensor) {
     return sConfig;
   }
 
@@ -551,8 +548,6 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const {
     cConfig.typeOfConnection = sensor->getSupportedConnectionTypes().front();
   }
   sConfig.setConnectionConfig(cConfig);
-
-  delete sensor.data();
 
   return sConfig;
 }

@@ -110,10 +110,11 @@ oi::Guarded<OiJob> OwnedSubGeometryUiTest::makeJobWithPlane(
   plane->setFeatureName("Plane1");
   job->addFeature(std::move(own_plane));
 
-  oi::Guarded<SetPlaneFunction> planeFn = new SetPlaneFunction();
-  planeFn->position = position;
-  planeFn->direction = normal;
-  plane->addFunction(planeFn);
+  auto ownedFn = std::make_unique<SetPlaneFunction>();
+  const oi::Guarded<SetPlaneFunction> planeFn = ownedFn.get();
+  ownedFn->position = position;
+  ownedFn->direction = normal;
+  plane->addFunction(std::move(ownedFn));
   plane->recalc();
 
   // the public way to make a feature active - OiJob::setActiveFeature is a

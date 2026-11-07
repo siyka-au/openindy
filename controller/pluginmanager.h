@@ -10,6 +10,7 @@
 #include <QPluginLoader>
 #include <QPointer>
 #include <QString>
+#include <memory>
 #include <vector>
 
 #include "bundleadjustment.h"
@@ -61,33 +62,33 @@ class PluginManager : public QObject {
   // load OpenIndy plugins
   // #####################
 
-  static oi::Guarded<Sensor> loadSensorPlugin(const QString& path,
-                                              const QString& name);
-  static oi::Guarded<Function> loadFunctionPlugin(const QString& path,
+  static std::unique_ptr<Sensor> loadSensorPlugin(const QString& path,
                                                   const QString& name);
-  static oi::Guarded<SimulationModel> loadSimulationPlugin(const QString& path,
-                                                           const QString& name);
-  static oi::Guarded<BundleAdjustment> loadBundleAdjustmentPlugin(
+  static std::unique_ptr<Function> loadFunctionPlugin(const QString& path,
+                                                      const QString& name);
+  static std::unique_ptr<SimulationModel> loadSimulationPlugin(
+      const QString& path, const QString& name);
+  static std::unique_ptr<BundleAdjustment> loadBundleAdjustmentPlugin(
       const QString& path, const QString& name);
   static QPointer<Tool> loadToolPlugin(const QString& path,
                                        const QString& name);
-  static oi::Guarded<ExchangeSimpleAscii> loadExchangeSimpleAsciiPlugin(
+  static std::unique_ptr<ExchangeSimpleAscii> loadExchangeSimpleAsciiPlugin(
       const QString& path, const QString& name);
-  static oi::Guarded<ExchangeDefinedFormat> loadExchangeDefinedFormatPlugin(
+  static std::unique_ptr<ExchangeDefinedFormat> loadExchangeDefinedFormatPlugin(
       const QString& path, const QString& name);
 
-  static std::vector<oi::Guarded<Sensor> > loadSensorPlugins(
+  static std::vector<std::unique_ptr<Sensor> > loadSensorPlugins(
       const QString& path);
-  static std::vector<oi::Guarded<Function> > loadFunctionPlugins(
+  static std::vector<std::unique_ptr<Function> > loadFunctionPlugins(
       const QString& path);
-  static std::vector<oi::Guarded<SimulationModel> > loadSimulationPlugins(
+  static std::vector<std::unique_ptr<SimulationModel> > loadSimulationPlugins(
       const QString& path);
-  static std::vector<oi::Guarded<BundleAdjustment> >
+  static std::vector<std::unique_ptr<BundleAdjustment> >
   loadBundleAdjustmentPlugins(const QString& path);
   static QList<QPointer<Tool> > loadToolPlugins(const QString& path);
-  static std::vector<oi::Guarded<ExchangeSimpleAscii> >
+  static std::vector<std::unique_ptr<ExchangeSimpleAscii> >
   loadExchangeSimpleAsciiPlugins(const QString& path);
-  static std::vector<oi::Guarded<ExchangeDefinedFormat> >
+  static std::vector<std::unique_ptr<ExchangeDefinedFormat> >
   loadExchangeDefinedFormatPlugins(const QString& path);
 
  signals:

@@ -146,10 +146,10 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
                        std::vector<sys::Simulation>());
 
   std::vector<sys::Function> functions;
-  foreach (const oi::Guarded<Function>& f,
-           loadIf(probe.plugin != nullptr, &PluginManager::loadFunctionPlugins,
-                  filePath)) {
-    if (f.isNull()) {
+  for (const std::unique_ptr<Function>& f :
+       loadIf(probe.plugin != nullptr, &PluginManager::loadFunctionPlugins,
+              filePath)) {
+    if (!f) {
       continue;
     }
     std::vector<ElementTypes> neededElements;
@@ -164,10 +164,10 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   }
 
   std::vector<sys::Sensor> sensors;
-  foreach (const oi::Guarded<Sensor>& s,
-           loadIf(probe.plugin != nullptr, &PluginManager::loadSensorPlugins,
-                  filePath)) {
-    if (s.isNull()) {
+  for (const std::unique_ptr<Sensor>& s :
+       loadIf(probe.plugin != nullptr, &PluginManager::loadSensorPlugins,
+              filePath)) {
+    if (!s) {
       continue;
     }
 
@@ -199,10 +199,10 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   }
 
   std::vector<sys::Exchange> exchanges;
-  foreach (const oi::Guarded<ExchangeSimpleAscii>& e,
-           loadIf(probe.plugin != nullptr,
-                  &PluginManager::loadExchangeSimpleAsciiPlugins, filePath)) {
-    if (e.isNull()) {
+  for (const std::unique_ptr<ExchangeSimpleAscii>& e :
+       loadIf(probe.plugin != nullptr,
+              &PluginManager::loadExchangeSimpleAsciiPlugins, filePath)) {
+    if (!e) {
       continue;
     }
     exchanges.push_back(sys::Exchange(toQString(e->getMetaData().name),
@@ -210,10 +210,10 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
                                       ownerRef,
                                       toQString(e->getMetaData().iid)));
   }
-  foreach (const oi::Guarded<ExchangeDefinedFormat>& e,
-           loadIf(probe.plugin != nullptr,
-                  &PluginManager::loadExchangeDefinedFormatPlugins, filePath)) {
-    if (e.isNull()) {
+  for (const std::unique_ptr<ExchangeDefinedFormat>& e :
+       loadIf(probe.plugin != nullptr,
+              &PluginManager::loadExchangeDefinedFormatPlugins, filePath)) {
+    if (!e) {
       continue;
     }
     exchanges.push_back(sys::Exchange(toQString(e->getMetaData().name),
@@ -223,10 +223,10 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   }
 
   std::vector<sys::Simulation> simulations;
-  foreach (const oi::Guarded<SimulationModel>& sim,
-           loadIf(probe.plugin != nullptr,
-                  &PluginManager::loadSimulationPlugins, filePath)) {
-    if (sim.isNull()) {
+  for (const std::unique_ptr<SimulationModel>& sim :
+       loadIf(probe.plugin != nullptr, &PluginManager::loadSimulationPlugins,
+              filePath)) {
+    if (!sim) {
       continue;
     }
     simulations.push_back(

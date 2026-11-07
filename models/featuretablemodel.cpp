@@ -562,14 +562,18 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
           bool result = false;
           foreach (oi::Guarded<Function> copyFunction,
                    copyFeature->getFeature()->getFunctions()) {
-            oi::Guarded<Function> function =
+            std::unique_ptr<Function> loaded =
                 loadFunctionByName(toQString(copyFunction->getMetaData().name));
 
-            if (!function.isNull()) {
+            if (loaded) {
               result = true;
 
-              // 3.2 add new function
-              this->currentJob->addFunction(function);
+              // 3.2 add new function (the feature owns it from here on)
+              const oi::Guarded<Function> function(loaded.get());
+              this->currentJob->addFunction(std::move(loaded));
+              if (function.isNull()) {
+                continue;  // the feature rejected it
+              }
 
               // 3.3 assign function parameters from copied function to the new
               // functions
@@ -779,14 +783,14 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
   return false;
 }
 
-oi::Guarded<Function> FeatureTableModel::loadFunctionByName(QString name) {
+std::unique_ptr<Function> FeatureTableModel::loadFunctionByName(QString name) {
   //*******************************************************
   // work around : get all functions and compare the names. then get the
   // function plugin path to create the function. the plugin path is not stored
   // correctly in the metadata of the functions (It is a bug!!), thats why this
   // workaraound is needed
   //*******************************************************
-  oi::Guarded<Function> function(nullptr);
+  std::unique_ptr<Function> function;
 
   foreach (const sys::Function& f, PluginRepository::getAllFunctions()) {
     if (f.name() == name) {

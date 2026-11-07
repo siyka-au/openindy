@@ -46,8 +46,6 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   // signals to change job state
   // ###########################
 
-  void startAddFunction(const oi::Guarded<Function>& function);
-
   // #########################
   // send messages to OpenIndy
   // #########################

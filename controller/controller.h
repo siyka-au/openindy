@@ -29,6 +29,7 @@
 #include "pluginmanager.h"
 #include "projectexchanger.h"
 #include "qtexecutor.h"
+#include "qtstationadapter.h"
 #include "sensorconfigurationmanager.h"
 #include "settings.h"
 #include "trafoparamtablecolumnconfig.h"
@@ -339,8 +340,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // slots to react on sensor results
   // ################################
 
-  void measurementFinished(const int& geomId,
-                           const std::vector<oi::Guarded<Reading>>& readings);
+  void measurementFinished(const int& geomId, ReadingBatch readings);
 
  private:
   // ##############
@@ -348,7 +348,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // ##############
 
   // set OpenIndy job
-  void setJob(const oi::Guarded<OiJob>& job);
+  void setJob(std::unique_ptr<OiJob> job);
 
   // init configs and plugins
   void initDisplayConfigs();
@@ -437,6 +437,10 @@ class Controller : public QObject, public ControllerSensorActions {
   oi::Guarded<Station> getConnectedActiveStation();
 
   oi::Guarded<Station> getActiveStation();
+
+  // the owner of `job` (declared last: the job goes first, while the
+  // executor and the configs it reports to still exist)
+  std::unique_ptr<OiJob> ownedJob;
 };
 
 #endif  // CONTROLLER_H

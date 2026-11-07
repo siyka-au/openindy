@@ -142,7 +142,8 @@ class DataExchanger : public QObject,
   oi::Guarded<OiJob> currentJob;
 
   ExchangeParams exchangeParams;
-  oi::Guarded<ExchangeInterface> exchange;
+  std::unique_ptr<ExchangeInterface> ownedExchange;
+  oi::Guarded<ExchangeInterface> exchange;  // view of ownedExchange
   bool exporting = false;  // whether the running exchange is an export
 
   QPointer<ObservationImporter> observationImporter;

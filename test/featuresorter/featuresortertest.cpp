@@ -61,7 +61,7 @@ oi::Guarded<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name,
   point->setFeatureName(toStd(name));
   point->setGroupName(toStd(groupname));
   if (!isNominal) {
-    point->addFunction(new FakeFit());
+    point->addFunction(std::make_unique<FakeFit>());
   }
   featurewrapper->setPoint(point);
 

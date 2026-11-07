@@ -62,7 +62,7 @@ void PluginHostTest::loadsFunctionsAndSensors() {
   const QString path = DEFAULT_PLUGIN_PATH;
   QVERIFY(!PluginManager::loadFunctionPlugins(path).empty());
   QVERIFY(!PluginManager::loadSensorPlugins(path).empty());
-  QVERIFY(!PluginManager::loadSensorPlugin(path, "PseudoTracker").isNull());
+  QVERIFY(PluginManager::loadSensorPlugin(path, "PseudoTracker") != nullptr);
   // the same library again comes from the process-wide cache
   QCOMPARE(PluginHost::plugin(path), PluginHost::plugin(path));
 }

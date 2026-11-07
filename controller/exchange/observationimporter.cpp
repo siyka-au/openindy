@@ -104,7 +104,7 @@ bool ObservationImporter::importObservations() {
   }
 
   // create list of imported readings
-  std::vector<oi::Guarded<Reading> > readings;
+  std::vector<std::unique_ptr<Reading>> readings;
 
   // open file and create observations
   try {
@@ -162,13 +162,13 @@ bool ObservationImporter::importObservations() {
       rCartesian.xyz.setAt(1, xyz[1]);
       rCartesian.xyz.setAt(2, xyz[2]);
       rCartesian.isValid = true;
-      oi::Guarded<Reading> reading = new Reading(rCartesian);
+      auto reading = std::make_unique<Reading>(rCartesian);
       reading->setSensorFace(SensorFaces::eUndefinedSide);
       reading->setMeasuredAt(curDateTime);
       reading->setImported(true);
 
       // add reading to list of imported readings
-      readings.push_back(reading);
+      readings.push_back(std::move(reading));
 
       // update import progress
       numObservations++;
@@ -196,7 +196,8 @@ bool ObservationImporter::importObservations() {
 
   // add observations to the active feature
   this->currentJob->addMeasurementResults(
-      this->currentJob->getActiveFeature()->getGeometry()->getId(), readings);
+      this->currentJob->getActiveFeature()->getGeometry()->getId(),
+      std::move(readings));
 
   emit this->importFinished(true);
 

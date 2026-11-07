@@ -909,7 +909,7 @@ void DialogsTest::projectSaveLoad() {
       "standard), (StdPoint, standard), (StdTwoSide, standard), (StdTwoSide, "
       "standard), (level, standard), (measconfig-scandistance, user)" == name);
 
-  oi::Guarded<OiJob> jobL = projectExchanger.loadProject(project).job;
+  const auto jobL = projectExchanger.loadProject(project).job;
 
   name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs())
              .join(", ");

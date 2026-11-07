@@ -155,20 +155,20 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   }
 
   // load exchange method with plugin loader
-  oi::Guarded<ExchangeInterface> exchange(nullptr);
+  std::unique_ptr<ExchangeInterface> exchange;
   if (params.isDefinedFormat) {
-    oi::Guarded<ExchangeDefinedFormat> definedFormat =
+    std::unique_ptr<ExchangeDefinedFormat> definedFormat =
         PluginManager::loadExchangeDefinedFormatPlugin(plugin->filePath(),
                                                        params.exchangeName);
-    if (!definedFormat.isNull()) {
+    if (definedFormat) {
       definedFormat->setUsedElements(params.usedElements);
     }
-    exchange = definedFormat;
+    exchange = std::move(definedFormat);
   } else {
-    oi::Guarded<ExchangeSimpleAscii> simpleAscii =
+    std::unique_ptr<ExchangeSimpleAscii> simpleAscii =
         PluginManager::loadExchangeSimpleAsciiPlugin(plugin->filePath(),
                                                      params.exchangeName);
-    if (!simpleAscii.isNull()) {
+    if (simpleAscii) {
       switch (params.typeOfGeometry) {
         case GeometryTypes::ePointGeometry: {
           simpleAscii->setGeometryType(params.typeOfGeometry);
@@ -215,11 +215,11 @@ bool DataExchanger::importData(const ExchangeParams& params) {
         }
       }
     }
-    exchange = simpleAscii;
+    exchange = std::move(simpleAscii);
   }
 
   // check if the loaded exchange method is ok
-  if (exchange.isNull()) {
+  if (!exchange) {
     emit this->sendMessage(
         QString("No exchange available with the name %1 in the plugin %2")
             .arg(params.exchangeName)
@@ -227,7 +227,8 @@ bool DataExchanger::importData(const ExchangeParams& params) {
         MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     return false;
   }
-  this->exchange = exchange;
+  this->exchange = exchange.get();
+  this->ownedExchange = std::move(exchange);
 
   // set exchange parameters
   this->exchangeStream = std::make_unique<std::fstream>(
@@ -297,22 +298,22 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   }
 
   // load exchange method with plugin loader
-  oi::Guarded<ExchangeInterface> exchange(nullptr);
+  std::unique_ptr<ExchangeInterface> exchange;
   if (params.isDefinedFormat) {
-    oi::Guarded<ExchangeDefinedFormat> definedFormat =
+    std::unique_ptr<ExchangeDefinedFormat> definedFormat =
         PluginManager::loadExchangeDefinedFormatPlugin(
             qApp->applicationDirPath() + "/" + plugin->filePath(),
             params.exchangeName);
-    if (!definedFormat.isNull()) {
+    if (definedFormat) {
       definedFormat->setUsedElements(params.usedElements);
     }
-    exchange = definedFormat;
+    exchange = std::move(definedFormat);
   } else {
-    oi::Guarded<ExchangeSimpleAscii> simpleAscii =
+    std::unique_ptr<ExchangeSimpleAscii> simpleAscii =
         PluginManager::loadExchangeSimpleAsciiPlugin(
             qApp->applicationDirPath() + "/" + plugin->filePath(),
             params.exchangeName);
-    if (!simpleAscii.isNull()) {
+    if (simpleAscii) {
       simpleAscii->setGeometryType(params.typeOfGeometry);
       simpleAscii->setSkipFirstLine(params.skipFirstLine);
       simpleAscii->setDelimiter(toStd(params.delimiter));
@@ -341,11 +342,11 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
 
       // simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
     }
-    exchange = simpleAscii;
+    exchange = std::move(simpleAscii);
   }
 
   // check if the loaded exchange method is ok
-  if (exchange.isNull()) {
+  if (!exchange) {
     emit this->sendMessage(
         QString("No exchange available with the name %1 in the plugin %2")
             .arg(params.exchangeName)
@@ -353,7 +354,8 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
         MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     return false;
   }
-  this->exchange = exchange;
+  this->exchange = exchange.get();
+  this->ownedExchange = std::move(exchange);
 
   // set exchange parameters
   this->exchangeStream = std::make_unique<std::fstream>(
@@ -444,8 +446,8 @@ void DataExchanger::importMeasurements(
         continue;
       }
 
-      std::vector<oi::Guarded<Reading>> importedReadings;
-      oi::Guarded<Reading> reading = nullptr;
+      std::vector<std::unique_ptr<Reading>> importedReadings;
+      std::unique_ptr<Reading> reading;
 
       switch (jobFeature->getFeatureTypeEnum()) {
         case FeatureTypes::ePointFeature: {
@@ -457,7 +459,7 @@ void DataExchanger::importMeasurements(
           rCartesian.xyz.setAt(1, p.getAt(1));
           rCartesian.xyz.setAt(2, p.getAt(2));
           rCartesian.isValid = true;
-          reading = new Reading(rCartesian);
+          reading = std::make_unique<Reading>(rCartesian);
 
           break;
         }
@@ -474,7 +476,7 @@ void DataExchanger::importMeasurements(
             rLevel.j = direction.getAt(1);
             rLevel.k = direction.getAt(2);
             rLevel.isValid = true;
-            reading = new Reading(rLevel);
+            reading = std::make_unique<Reading>(rLevel);
 
           } else {
             // Points / Cartesian
@@ -485,20 +487,23 @@ void DataExchanger::importMeasurements(
             rCartesian.xyz.setAt(1, p.getAt(1));
             rCartesian.xyz.setAt(2, p.getAt(2));
             rCartesian.isValid = true;
-            reading = new Reading(rCartesian);
+            reading = std::make_unique<Reading>(rCartesian);
           }
           break;
         }
       }
 
+      if (!reading) {
+        continue;  // not a feature type a reading can be made of
+      }
       reading->setSensorFace(SensorFaces::eUndefinedSide);
       reading->setMeasuredAt(curDateTime);
       reading->setImported(true);
 
-      importedReadings.push_back(reading);
+      importedReadings.push_back(std::move(reading));
 
       this->currentJob->addMeasurementResults(
-          jobFeature->getGeometry()->getId(), importedReadings);
+          jobFeature->getGeometry()->getId(), std::move(importedReadings));
       emit this->sendMessage(
           QString("import reading to feature: \"%1\"")
               .arg(jobFeature->getFeature()->getFeatureName()),
@@ -657,7 +662,7 @@ void DataExchanger::importFeatures(const bool& success) {
   }
 
   // delete exchange instance because it is not necessary anymore
-  delete this->exchange;
+  this->ownedExchange.reset();
 
   // stop thread if it is still running
   if (this->exchangeThread.isRunning()) {
@@ -674,7 +679,7 @@ void DataExchanger::importFeatures(const bool& success) {
  */
 void DataExchanger::exportFeatures(const bool& success) {
   // delete exchange instance because it is not necessary anymore
-  delete this->exchange;
+  this->ownedExchange.reset();
 
   // stop thread if it is still running
   if (this->exchangeThread.isRunning()) {
@@ -739,14 +744,14 @@ void DataExchanger::addFunctionsAndMConfigs(
     }
 
     // load function plugin
-    oi::Guarded<Function> function(nullptr);
+    std::unique_ptr<Function> function;
     if (!path.isEmpty() && !fName.isEmpty()) {
       function = PluginManager::loadFunctionPlugin(path, fName);
     }
 
     // assign function and measurement config to feature
-    if (!function.isNull()) {
-      feature->getFeature()->addFunction(function);
+    if (function) {
+      feature->getFeature()->addFunction(std::move(function));
     }
     if (mConfig.isValid() && !feature->getGeometry().isNull()) {
       feature->getGeometry()->setMeasurementConfig(mConfig.getKey());

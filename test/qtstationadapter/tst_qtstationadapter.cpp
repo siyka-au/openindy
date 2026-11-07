@@ -20,7 +20,6 @@ using namespace oi;
 Q_DECLARE_METATYPE(oi::SensorAction)
 Q_DECLARE_METATYPE(oi::MessageTypes)
 Q_DECLARE_METATYPE(oi::MessageDestinations)
-Q_DECLARE_METATYPE(std::vector<oi::Guarded<oi::Reading>>)
 
 namespace {
 
@@ -35,12 +34,13 @@ class FakeSensor : public Sensor {
   std::map<std::string, std::string> getSensorStatus() override {
     return {{"a", "b"}};
   }
-  std::vector<oi::Guarded<Reading>> measure(const MeasurementConfig&) override {
-    std::vector<oi::Guarded<Reading>> result;
+  std::vector<std::unique_ptr<Reading>> measure(
+      const MeasurementConfig&) override {
+    std::vector<std::unique_ptr<Reading>> result;
     for (int i = 0; i < 2; ++i) {
       ReadingCartesian r;
       r.isValid = true;
-      result.push_back(new Reading(r));
+      result.push_back(std::make_unique<Reading>(r));
     }
     return result;
   }
@@ -80,8 +80,6 @@ void QtStationAdapterTest::initTestCase() {
   qRegisterMetaType<oi::SensorAction>("oi::SensorAction");
   qRegisterMetaType<oi::MessageTypes>("oi::MessageTypes");
   qRegisterMetaType<oi::MessageDestinations>("oi::MessageDestinations");
-  qRegisterMetaType<std::vector<oi::Guarded<oi::Reading>>>(
-      "std::vector<oi::Guarded<oi::Reading>>");
 }
 
 void QtStationAdapterTest::ofReturnsTheSameAdapterEachTime() {
@@ -123,8 +121,7 @@ void QtStationAdapterTest::resultsArriveAsSignalsOnTheUiThreadInOrder() {
   job.addFeature(std::move(own_station));
   station->setActiveStationState(true);
 
-  FakeSensor sensor;
-  station->setSensor(&sensor);
+  station->setSensor(std::make_unique<FakeSensor>());
 
   QtStationAdapter* adapter = QtStationAdapter::of(station);
   QStringList order;
@@ -138,10 +135,10 @@ void QtStationAdapterTest::resultsArriveAsSignalsOnTheUiThreadInOrder() {
                      note(QString("finished:%1").arg(ok));
                    });
   QObject::connect(adapter, &QtStationAdapter::measurementFinished, this,
-                   [&](int geomId, std::vector<oi::Guarded<Reading>> readings) {
+                   [&](int geomId, ReadingBatch readings) {
                      note(QString("measurementFinished:%1:%2")
                               .arg(geomId)
-                              .arg(readings.size()));
+                              .arg(readings->size()));
                    });
   QObject::connect(adapter, &QtStationAdapter::measurementDone, this,
                    [&](bool ok) { note(QString("done:%1").arg(ok)); });
@@ -164,8 +161,7 @@ void QtStationAdapterTest::streamingResultsArriveOnTheUiThread() {
   Station station("S1");
   station.setExecutor(&executor);
   station.setActiveStationState(true);
-  FakeSensor sensor;
-  station.setSensor(&sensor);
+  station.setSensor(std::make_unique<FakeSensor>());
 
   QtStationAdapter* adapter = QtStationAdapter::of(&station);
   QSignalSpy readings(adapter, &QtStationAdapter::realTimeReading);
@@ -195,8 +191,9 @@ void QtStationAdapterTest::sensorMessagesAndStatusArriveAsSignals() {
   Station station("S1");
   station.setExecutor(&executor);
   station.setActiveStationState(true);
-  FakeSensor sensor;
-  station.setSensor(&sensor);
+  auto ownedSensor = std::make_unique<FakeSensor>();
+  FakeSensor& sensor = *ownedSensor;
+  station.setSensor(std::move(ownedSensor));
 
   QtStationAdapter* adapter = QtStationAdapter::of(&station);
   QSignalSpy messages(adapter, &QtStationAdapter::sensorMessage);

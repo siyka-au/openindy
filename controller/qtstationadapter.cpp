@@ -99,8 +99,10 @@ void QtStationAdapter::onCommandFinished(bool success, const std::string& msg,
 }
 
 void QtStationAdapter::onMeasurementFinished(
-    int geomId, const std::vector<oi::Guarded<Reading>>& readings) {
-  emit this->measurementFinished(geomId, readings);
+    int geomId, std::vector<std::unique_ptr<Reading>> readings) {
+  emit this->measurementFinished(
+      geomId, std::make_shared<std::vector<std::unique_ptr<Reading>>>(
+                  std::move(readings)));
 }
 
 void QtStationAdapter::onMeasurementDone(bool success) {

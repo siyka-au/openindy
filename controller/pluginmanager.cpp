@@ -153,15 +153,15 @@ static ToolPlugin* toolPluginOf(const QString& path) {
  * \param name
  * \return
  */
-oi::Guarded<Sensor> PluginManager::loadSensorPlugin(const QString& path,
-                                                    const QString& name) {
-  oi::Guarded<Sensor> sensor(nullptr);
+std::unique_ptr<Sensor> PluginManager::loadSensorPlugin(const QString& path,
+                                                        const QString& name) {
+  std::unique_ptr<Sensor> sensor(nullptr);
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     sensor = factory->createSensor(toStd(name));
-    if (!sensor.isNull()) {
+    if (sensor) {
       sensor->init();
     }
   } else {
@@ -177,15 +177,15 @@ oi::Guarded<Sensor> PluginManager::loadSensorPlugin(const QString& path,
  * \param name
  * \return
  */
-oi::Guarded<Function> PluginManager::loadFunctionPlugin(const QString& path,
-                                                        const QString& name) {
-  oi::Guarded<Function> function(nullptr);
+std::unique_ptr<Function> PluginManager::loadFunctionPlugin(
+    const QString& path, const QString& name) {
+  std::unique_ptr<Function> function(nullptr);
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     function = factory->createFunction(toStd(name));
-    if (!function.isNull()) {
+    if (function) {
       function->init();
     }
   } else {
@@ -201,15 +201,15 @@ oi::Guarded<Function> PluginManager::loadFunctionPlugin(const QString& path,
  * \param name
  * \return
  */
-oi::Guarded<SimulationModel> PluginManager::loadSimulationPlugin(
+std::unique_ptr<SimulationModel> PluginManager::loadSimulationPlugin(
     const QString& path, const QString& name) {
-  oi::Guarded<SimulationModel> simulation(nullptr);
+  std::unique_ptr<SimulationModel> simulation(nullptr);
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     simulation = factory->createSimulation(toStd(name));
-    if (!simulation.isNull()) {
+    if (simulation) {
       simulation->init();
     }
   } else {
@@ -225,15 +225,15 @@ oi::Guarded<SimulationModel> PluginManager::loadSimulationPlugin(
  * \param name
  * \return
  */
-oi::Guarded<BundleAdjustment> PluginManager::loadBundleAdjustmentPlugin(
+std::unique_ptr<BundleAdjustment> PluginManager::loadBundleAdjustmentPlugin(
     const QString& path, const QString& name) {
-  oi::Guarded<BundleAdjustment> bundleAdjustment(nullptr);
+  std::unique_ptr<BundleAdjustment> bundleAdjustment(nullptr);
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     bundleAdjustment = factory->createBundleAdjustment(toStd(name));
-    if (!bundleAdjustment.isNull()) {
+    if (bundleAdjustment) {
       bundleAdjustment->init();
     }
   } else {
@@ -249,15 +249,16 @@ oi::Guarded<BundleAdjustment> PluginManager::loadBundleAdjustmentPlugin(
  * \param name
  * \return
  */
-oi::Guarded<ExchangeSimpleAscii> PluginManager::loadExchangeSimpleAsciiPlugin(
-    const QString& path, const QString& name) {
-  oi::Guarded<ExchangeSimpleAscii> exchangeSimpleAscii(nullptr);
+std::unique_ptr<ExchangeSimpleAscii>
+PluginManager::loadExchangeSimpleAsciiPlugin(const QString& path,
+                                             const QString& name) {
+  std::unique_ptr<ExchangeSimpleAscii> exchangeSimpleAscii(nullptr);
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     exchangeSimpleAscii = factory->createSimpleAsciiExchange(toStd(name));
-    if (!exchangeSimpleAscii.isNull()) {
+    if (exchangeSimpleAscii) {
       exchangeSimpleAscii->init();
     }
   } else {
@@ -274,16 +275,16 @@ oi::Guarded<ExchangeSimpleAscii> PluginManager::loadExchangeSimpleAsciiPlugin(
  * \param name
  * \return
  */
-oi::Guarded<ExchangeDefinedFormat>
+std::unique_ptr<ExchangeDefinedFormat>
 PluginManager::loadExchangeDefinedFormatPlugin(const QString& path,
                                                const QString& name) {
-  oi::Guarded<ExchangeDefinedFormat> exchangeDefinedFormat(nullptr);
+  std::unique_ptr<ExchangeDefinedFormat> exchangeDefinedFormat(nullptr);
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     exchangeDefinedFormat = factory->createDefinedFormatExchange(toStd(name));
-    if (!exchangeDefinedFormat.isNull()) {
+    if (exchangeDefinedFormat) {
       exchangeDefinedFormat->init();
     }
   } else {
@@ -299,16 +300,16 @@ PluginManager::loadExchangeDefinedFormatPlugin(const QString& path,
  * \param path
  * \return
  */
-std::vector<oi::Guarded<Sensor> > PluginManager::loadSensorPlugins(
+std::vector<std::unique_ptr<Sensor> > PluginManager::loadSensorPlugins(
     const QString& path) {
-  std::vector<oi::Guarded<Sensor> > sensorList;
+  std::vector<std::unique_ptr<Sensor> > sensorList;
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     sensorList = factory->createSensors();
-    for (const oi::Guarded<Sensor>& item : sensorList) {
-      if (!item.isNull()) {
+    for (const std::unique_ptr<Sensor>& item : sensorList) {
+      if (item) {
         item->init();
       }
     }
@@ -324,16 +325,16 @@ std::vector<oi::Guarded<Sensor> > PluginManager::loadSensorPlugins(
  * \param path
  * \return
  */
-std::vector<oi::Guarded<Function> > PluginManager::loadFunctionPlugins(
+std::vector<std::unique_ptr<Function> > PluginManager::loadFunctionPlugins(
     const QString& path) {
-  std::vector<oi::Guarded<Function> > functionList;
+  std::vector<std::unique_ptr<Function> > functionList;
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     functionList = factory->createFunctions();
-    for (const oi::Guarded<Function>& item : functionList) {
-      if (!item.isNull()) {
+    for (const std::unique_ptr<Function>& item : functionList) {
+      if (item) {
         item->init();
       }
     }
@@ -349,16 +350,16 @@ std::vector<oi::Guarded<Function> > PluginManager::loadFunctionPlugins(
  * \param path
  * \return
  */
-std::vector<oi::Guarded<SimulationModel> > PluginManager::loadSimulationPlugins(
-    const QString& path) {
-  std::vector<oi::Guarded<SimulationModel> > simulationList;
+std::vector<std::unique_ptr<SimulationModel> >
+PluginManager::loadSimulationPlugins(const QString& path) {
+  std::vector<std::unique_ptr<SimulationModel> > simulationList;
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     simulationList = factory->createSimulations();
-    for (const oi::Guarded<SimulationModel>& item : simulationList) {
-      if (!item.isNull()) {
+    for (const std::unique_ptr<SimulationModel>& item : simulationList) {
+      if (item) {
         item->init();
       }
     }
@@ -374,16 +375,16 @@ std::vector<oi::Guarded<SimulationModel> > PluginManager::loadSimulationPlugins(
  * \param path
  * \return
  */
-std::vector<oi::Guarded<BundleAdjustment> >
+std::vector<std::unique_ptr<BundleAdjustment> >
 PluginManager::loadBundleAdjustmentPlugins(const QString& path) {
-  std::vector<oi::Guarded<BundleAdjustment> > bundleAdjustmentList;
+  std::vector<std::unique_ptr<BundleAdjustment> > bundleAdjustmentList;
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     bundleAdjustmentList = factory->createBundleAdjustments();
-    for (const oi::Guarded<BundleAdjustment>& item : bundleAdjustmentList) {
-      if (!item.isNull()) {
+    for (const std::unique_ptr<BundleAdjustment>& item : bundleAdjustmentList) {
+      if (item) {
         item->init();
       }
     }
@@ -399,17 +400,17 @@ PluginManager::loadBundleAdjustmentPlugins(const QString& path) {
  * \param path
  * \return
  */
-std::vector<oi::Guarded<ExchangeSimpleAscii> >
+std::vector<std::unique_ptr<ExchangeSimpleAscii> >
 PluginManager::loadExchangeSimpleAsciiPlugins(const QString& path) {
-  std::vector<oi::Guarded<ExchangeSimpleAscii> > exchangeSimpleAsciiList;
+  std::vector<std::unique_ptr<ExchangeSimpleAscii> > exchangeSimpleAsciiList;
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     exchangeSimpleAsciiList = factory->createSimpleAsciiExchanges();
-    for (const oi::Guarded<ExchangeSimpleAscii>& item :
+    for (const std::unique_ptr<ExchangeSimpleAscii>& item :
          exchangeSimpleAsciiList) {
-      if (!item.isNull()) {
+      if (item) {
         item->init();
       }
     }
@@ -425,17 +426,18 @@ PluginManager::loadExchangeSimpleAsciiPlugins(const QString& path) {
  * \param path
  * \return
  */
-std::vector<oi::Guarded<ExchangeDefinedFormat> >
+std::vector<std::unique_ptr<ExchangeDefinedFormat> >
 PluginManager::loadExchangeDefinedFormatPlugins(const QString& path) {
-  std::vector<oi::Guarded<ExchangeDefinedFormat> > exchangeDefinedFormatList;
+  std::vector<std::unique_ptr<ExchangeDefinedFormat> >
+      exchangeDefinedFormatList;
 
   QString error;
   Plugin* factory = PluginHost::plugin(path, &error);
   if (factory) {
     exchangeDefinedFormatList = factory->createDefinedFormatExchanges();
-    for (const oi::Guarded<ExchangeDefinedFormat>& item :
+    for (const std::unique_ptr<ExchangeDefinedFormat>& item :
          exchangeDefinedFormatList) {
-      if (!item.isNull()) {
+      if (item) {
         item->init();
       }
     }
@@ -459,7 +461,7 @@ QPointer<Tool> PluginManager::loadToolPlugin(const QString& path,
   ToolPlugin* toolFactory = toolPluginOf(path);
   if (toolFactory) {
     tool = toolFactory->createTool(name);
-    if (!tool.isNull()) {
+    if (tool) {
       tool->init();
     }
   }
@@ -479,7 +481,7 @@ QList<QPointer<Tool> > PluginManager::loadToolPlugins(const QString& path) {
   if (toolFactory) {
     toolList = toolFactory->createTools();
     for (const QPointer<Tool>& tool : toolList) {
-      if (!tool.isNull()) {
+      if (tool) {
         tool->init();
       }
     }

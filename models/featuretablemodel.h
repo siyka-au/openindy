@@ -155,7 +155,7 @@ class FeatureTableModel : public QAbstractTableModel {
   void connectJob();
   void disconnectJob();
 
-  oi::Guarded<Function> loadFunctionByName(QString name);
+  std::unique_ptr<Function> loadFunctionByName(QString name);
 
  private:
   // ###########

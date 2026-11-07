@@ -37,8 +37,9 @@ namespace {
 // creates "Bundle01_1" if it is missing, which requires a "Bundle01" system
 // and a "STATION01" station - the same minimal setup
 // test/dialogs/dialogstest.cpp uses to get a save/load round trip to succeed.
-oi::Guarded<OiJob> makeJobWithStationAndSystem() {
-  oi::Guarded<OiJob> job = new OiJob();
+std::unique_ptr<OiJob> makeJobWithStationAndSystem() {
+  auto ownedJob = std::make_unique<OiJob>();
+  const oi::Guarded<OiJob> job = ownedJob.get();
 
   auto own_station = std::make_unique<oi::Station>();
   oi::Guarded<oi::Station> station = own_station.get();
@@ -69,7 +70,7 @@ oi::Guarded<OiJob> makeJobWithStationAndSystem() {
   // file is testing
   FeatureUtil().createInitialBundleTransformation(job);
 
-  return job;
+  return ownedJob;
 }
 
 oi::Guarded<FeatureWrapper> addPoint(const oi::Guarded<OiJob>& job,
@@ -131,7 +132,8 @@ void ProjectExchangeTest::initTestCase() {
  * legitimately produces new objects.
  */
 void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
-  oi::Guarded<OiJob> job = makeJobWithStationAndSystem();
+  const auto ownedJob = makeJobWithStationAndSystem();
+  const oi::Guarded<OiJob> job = ownedJob.get();
 
   oi::Guarded<FeatureWrapper> plane = addPlane(job, "Plane01");
   oi::Guarded<FeatureWrapper> sphere = addSphere(job, "Sphere01");
@@ -151,8 +153,8 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);
 
-  oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
-  QVERIFY2(!reloaded.isNull(), "the project should reload without error");
+  const auto reloaded = exchanger.loadProject(xml).job;
+  QVERIFY2(reloaded != nullptr, "the project should reload without error");
 
   const std::vector<oi::Guarded<FeatureWrapper> > reloadedGroups =
       reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
@@ -185,7 +187,8 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
  * attribute is what makes that possible.
  */
 void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
-  oi::Guarded<OiJob> job = makeJobWithStationAndSystem();
+  const auto ownedJob = makeJobWithStationAndSystem();
+  const oi::Guarded<OiJob> job = ownedJob.get();
 
   oi::Guarded<FeatureWrapper> p1 = addPoint(job, "P1", 0.0, 0.0, 0.0);
   oi::Guarded<FeatureWrapper> p2 = addPoint(job, "P2", 1.0, 0.0, 0.0);
@@ -204,8 +207,8 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);
 
-  oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
-  QVERIFY(!reloaded.isNull());
+  const auto reloaded = exchanger.loadProject(xml).job;
+  QVERIFY(reloaded != nullptr);
 
   // must come back as a PointGroup, not a plain Group
   QCOMPARE(reloaded->getFeaturesByType(FeatureTypes::eGroupFeature).size(), 0);
@@ -232,7 +235,8 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
  * object.
  */
 void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
-  oi::Guarded<OiJob> job = makeJobWithStationAndSystem();
+  const auto ownedJob = makeJobWithStationAndSystem();
+  const oi::Guarded<OiJob> job = ownedJob.get();
 
   oi::Guarded<FeatureWrapper> plane = addPlane(job, "Plane01");
   oi::Guarded<FeatureWrapper> sphere = addSphere(job, "Sphere01");
@@ -250,8 +254,8 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   ProjectExchanger exchanger;
   const QByteArray xml = exchanger.saveProject(job);
 
-  oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
-  QVERIFY(!reloaded.isNull());
+  const auto reloaded = exchanger.loadProject(xml).job;
+  QVERIFY(reloaded != nullptr);
 
   const std::vector<oi::Guarded<FeatureWrapper> > reloadedGroups =
       reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
@@ -288,7 +292,7 @@ void ProjectExchangeTest::loadFailsOnAFileThatIsNotAProject() {
   ProjectExchanger exchanger;
   const ProjectExchanger::LoadResult result =
       exchanger.loadProject("this is not an OpenIndy project");
-  QVERIFY(result.job.isNull());
+  QVERIFY(!result.job);
   QVERIFY(!result.error.isEmpty());
 }
 
