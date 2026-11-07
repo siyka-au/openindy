@@ -2,6 +2,7 @@
 #define READINGTABLECOLUMNCONFIG_H
 
 #include <QList>
+#include <vector>
 
 #include "types.h"
 
@@ -28,7 +29,7 @@ class ReadingTableColumnConfig {
  private:
   void init();
 
-  QList<ReadingDisplayAttributes> displayColumns;
+  std::vector<ReadingDisplayAttributes> displayColumns;
 };
 
 #endif  // READINGTABLECOLUMNCONFIG_H

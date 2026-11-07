@@ -1,5 +1,9 @@
 #include "trafocontroller.h"
 
+#include <vector>
+
+#include "containers.h"
+
 TrafoController::TrafoController(QObject* parent) : QObject(parent) {}
 
 /*!
@@ -18,7 +22,7 @@ void TrafoController::transformObservations(
     return;
   }
 
-  QList<oi::Guarded<CoordinateSystem> > startSystems;
+  std::vector<oi::Guarded<CoordinateSystem> > startSystems;
 
   // run through all observations of the feature
   foreach (const oi::Guarded<Observation>& obs,
@@ -34,8 +38,8 @@ void TrafoController::transformObservations(
         obs->getStation()->getCoordinateSystem();
 
     // add the start system to the list of start systems
-    if (!startSystems.contains(startSystem)) {
-      startSystems.append(startSystem);
+    if (!oi::contains(startSystems, startSystem)) {
+      startSystems.push_back(startSystem);
     }
   }
 

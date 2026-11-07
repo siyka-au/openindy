@@ -2,6 +2,7 @@
 #define TRAFOPARAMTABLECOLUMNCONFIG_H
 
 #include <QList>
+#include <vector>
 
 #include "types.h"
 
@@ -33,7 +34,7 @@ class TrafoParamTableColumnConfig {
   void init();
   void initBundle();
 
-  QList<TrafoParamDisplayAttributes> displayColumns;
+  std::vector<TrafoParamDisplayAttributes> displayColumns;
 };
 
 #endif  // TRAFOPARAMTABLECOLUMNCONFIG_H

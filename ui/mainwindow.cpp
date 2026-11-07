@@ -2,7 +2,12 @@
 
 #include <QRegularExpression>
 #include <algorithm>
+#include <map>
+#include <set>
+#include <vector>
 
+#include "containers.h"
+#include "controller/qtconvert.h"
 #include "ui_mainwindow.h"
 
 /*!
@@ -305,9 +310,10 @@ void MainWindow::stationSensorChanged(const int& featureId) {
 
   // set sensor action's visibility depending on the sensor type
   SensorType type = activeStation->getActiveSensorType();
-  QList<SensorFunctions> sensorActions =
+  std::vector<SensorFunctions> sensorActions =
       activeStation->getSupportedSensorActions();
-  QStringList selfDefinedActions = activeStation->getSelfDefinedActions();
+  QStringList selfDefinedActions =
+      toQStringList(activeStation->getSelfDefinedActions());
   this->activeSensorTypeChanged(type, sensorActions, selfDefinedActions);
 
   // TODO Absturz
@@ -809,7 +815,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(
   const bool isGeometry = !selectedFeature->getGeometry().isNull();
   const bool showEnableDisableMenuEntries =
       (isGeometry &&
-       !selectedFeature->getGeometry()->getObservations().isEmpty()) ||
+       !selectedFeature->getGeometry()->getObservations().empty()) ||
       isStation;
 
   // if the selected feature is the active feature
@@ -877,10 +883,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(
     }
   }
 
-  QList<int> ids;
+  std::vector<int> ids;
   if (multipleFeaturesSelected) {
     for (QModelIndex idx : selection) {
-      ids.append(sourceModel->getFeatureIdAtIndex(model->mapToSource(idx)));
+      ids.push_back(sourceModel->getFeatureIdAtIndex(model->mapToSource(idx)));
     }
 
     menu->addSeparator();
@@ -1585,9 +1591,9 @@ void MainWindow::showFeatureProperties(bool checked) {
         feature->getFeature()->getId(), feature->getFeature()->getFeatureName(),
         feature->getFeatureTypeEnum());
 
-    QMap<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
-    QMap<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
-    QMap<GeometryParameters, QString> parameters =
+    std::map<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
+    std::map<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
+    std::map<GeometryParameters, QString> parameters =
         feature->getGeometry()->getUnknownParameters(displayUnits,
                                                      displayDigits);
     this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
@@ -1613,9 +1619,9 @@ void MainWindow::showFeatureProperties(bool checked) {
         feature->getFeature()->getId(),
         feature->getFeature()->getFeatureName());
 
-    QMap<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
-    QMap<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
-    QMap<TrafoParamParameters, QString> parameters =
+    std::map<DimensionType, UnitType> displayUnits = dConfig.getDisplayUnits();
+    std::map<DimensionType, int> displayDigits = dConfig.getDisplayDigits();
+    std::map<TrafoParamParameters, QString> parameters =
         feature->getTrafoParam()->getUnknownParameters(displayUnits,
                                                        displayDigits);
     this->trafoParamPropertiesDialog.setUnknownTrafoParamParameters(parameters);
@@ -1661,13 +1667,13 @@ void MainWindow::aimAndMeasureFeatures() {
 
   // ordered list of feature id's that are currently aimed and measured (ALT +
   // F3)
-  QList<int> measureFeatures;
+  std::vector<int> measureFeatures;
   QModelIndexList selection =
       this->ui->tableView_features->selectionModel()->selectedIndexes();
   foreach (const QModelIndex& index, selection) {
     int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-    if (id >= 0 && !measureFeatures.contains(id)) {
-      measureFeatures.append(id);
+    if (id >= 0 && !oi::contains(measureFeatures, id)) {
+      measureFeatures.push_back(id);
     }
   }
 
@@ -1744,7 +1750,7 @@ void MainWindow::deleteFeatures(bool checked) {
   std::sort(selection.begin(), selection.end());
 
   // get the id's of the selected features
-  QSet<int> featureIds;
+  std::set<int> featureIds;
   foreach (const QModelIndex& index, selection) {
     int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
     if (id >= 0) {
@@ -2031,7 +2037,7 @@ void MainWindow::bundleSelectionChanged() {
 
   // set up input stations
   QJsonArray inputStations;
-  const QList<BundleStation>& stations = bundlePlugin->getInputStations();
+  const std::vector<BundleStation>& stations = bundlePlugin->getInputStations();
   foreach (const BundleStation& station, stations) {
     // get and check station
     oi::Guarded<FeatureWrapper> feature =
@@ -2077,26 +2083,26 @@ void MainWindow::bundleSettingsChanged() {
   QJsonObject param;
   /* TODO bundle scalar parameters remove later
       //set up scalar parameters
-      const QMap<QString, int> &intParams =
-     this->bundleParameterWidget->getIntParameter(); const QMap<QString, double>
-     &doubleParams = this->bundleParameterWidget->getDoubleParameter(); const
-     QMap<QString, QString> &stringParams =
+      const std::map<QString, int> &intParams =
+     this->bundleParameterWidget->getIntParameter(); const std::map<QString,
+     double> &doubleParams = this->bundleParameterWidget->getDoubleParameter();
+     const std::map<QString, QString> &stringParams =
      this->bundleParameterWidget->getStringParameter(); QJsonArray
-     integerParameter, doubleParameter, stringParameter; QMap<QString,
+     integerParameter, doubleParameter, stringParameter; std::map<QString,
      int>::ConstIterator intIterator; for(intIterator = intParams.constBegin();
      intIterator != intParams.constEnd(); intIterator++){ QJsonObject parameter;
           parameter.insert("name", intIterator.key());
           parameter.insert("value", intIterator.value());
           integerParameter.append(parameter);
       }
-      QMap<QString, double>::ConstIterator doubleIterator;
+      std::map<QString, double>::ConstIterator doubleIterator;
       for(doubleIterator = doubleParams.constBegin(); doubleIterator !=
      doubleParams.constEnd(); intIterator++){ QJsonObject parameter;
           parameter.insert("name", doubleIterator.key());
           parameter.insert("value", doubleIterator.value());
           doubleParameter.append(parameter);
       }
-      QMap<QString, QString>::ConstIterator stringIterator;
+      std::map<QString, QString>::ConstIterator stringIterator;
       for(stringIterator = stringParams.constBegin(); stringIterator !=
      stringParams.constEnd(); intIterator++){ QJsonObject parameter;
           parameter.insert("name", stringIterator.key());
@@ -2741,7 +2747,8 @@ void MainWindow::initBundleView() {
  * \param selfDefinedActions
  */
 void MainWindow::activeSensorTypeChanged(
-    const SensorType& type, const QList<SensorFunctions>& supportedActions,
+    const SensorType& type,
+    const std::vector<SensorFunctions>& supportedActions,
     const QStringList& selfDefinedActions) {
   // visibility follows what the driver declares it can do, not what its type
   // is - a switch on sensor type both hardcodes assumptions the driver already
@@ -2753,7 +2760,8 @@ void MainWindow::activeSensorTypeChanged(
     if (action.isNull()) {
       return;
     }
-    const bool available = hasSensor && supportedActions.contains(required);
+    const bool available =
+        hasSensor && oi::contains(supportedActions, required);
     action->setVisible(available);
     action->setEnabled(available);
   };
@@ -2904,10 +2912,10 @@ void MainWindow::updateSystemFilterSize() {
   }
 
   /*//get the largest system name
-  const QList<oi::Guarded<CoordinateSystem> > &nominalSystems =
-  job->getCoordinateSystemsList(); QList<oi::Guarded<CoordinateSystem> >
+  const std::vector<oi::Guarded<CoordinateSystem> > &nominalSystems =
+  job->getCoordinateSystemsList(); std::vector<oi::Guarded<CoordinateSystem> >
   &stationSystems = job->getStationSystemsList();
-  QList<oi::Guarded<CoordinateSystem> > &bundleSystems =
+  std::vector<oi::Guarded<CoordinateSystem> > &bundleSystems =
   job->getBundleSystemList(); QString largestSystemName = ""; foreach(const
   oi::Guarded<CoordinateSystem> &system, nominalSystems){ if(!system.isNull() &&
   system->getFeatureName().length() > largestSystemName.length()){
@@ -3182,7 +3190,7 @@ void MainWindow::on_actionNew_watch_window_triggered() {
 void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
   oi::Guarded<OiJob> job = ModelManager::getCurrentJob();
   if (!job.isNull()) {
-    QList<oi::Guarded<FeatureWrapper> > features;
+    std::vector<oi::Guarded<FeatureWrapper> > features;
     QVariant watchWindowKey;
     QString windowTitleSuffix;
 
@@ -3195,7 +3203,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
         if (feature.isNull()) {
           return;
         }
-        features.append(feature);
+        features.push_back(feature);
 
         watchWindowKey =
             QString("%1%2")
@@ -3227,7 +3235,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
           int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
           oi::Guarded<FeatureWrapper> feature = job->getFeatureById(id);
           if (!feature.isNull()) {
-            features.append(feature);
+            features.push_back(feature);
           }
         }
 
@@ -3330,14 +3338,14 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed() {
                                                           1);
 
     showFoundFeatureIndex = 0;
-    if (!foundFeatures.isEmpty()) {
+    if (!foundFeatures.empty()) {
       showFoundFeature(showFoundFeatureIndex);
     }
   }
 }
 
 void MainWindow::showFoundFeature(int index) {
-  if (!foundFeatures.isEmpty() && foundFeatures.size() > index) {
+  if (!foundFeatures.empty() && foundFeatures.size() > index) {
     oi::Guarded<FeatureWrapper> feature = foundFeatures.at(index);
 
     if (!feature.isNull()) {
@@ -3373,7 +3381,7 @@ void MainWindow::showFoundFeature(int index) {
 
 void MainWindow::on_pushButton_showNextFoundFeature_clicked() {
   showFoundFeatureIndex++;
-  if (foundFeatures.isEmpty() ||
+  if (foundFeatures.empty() ||
       showFoundFeatureIndex > (foundFeatures.size() - 1)) {
     showFoundFeatureIndex = 0;  // wrap around
   }

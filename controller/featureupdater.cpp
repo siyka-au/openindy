@@ -1,6 +1,11 @@
 #include "featureupdater.h"
 
+#include <map>
+#include <vector>
+
+#include "containers.h"
 #include "jobconnect.h"
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 /*!
@@ -237,13 +242,13 @@ bool FeatureUpdater::recalcBundle(
   this->clearBundleResults(bundleSystem);
 
   // check bundle stations
-  QList<BundleStation> stations = bundlePlugin->getInputStations();
+  std::vector<BundleStation> stations = bundlePlugin->getInputStations();
   if (stations.size() < 2) {
     return false;
   }
 
   // set up input geometries
-  QList<BundleStation> inputStations;
+  std::vector<BundleStation> inputStations;
   foreach (BundleStation inputStation, stations) {
     // get corresponding station feature
     oi::Guarded<FeatureWrapper> station =
@@ -261,7 +266,7 @@ bool FeatureUpdater::recalcBundle(
 
     // add station geometries
     inputStation.geometries.clear();
-    QList<oi::Guarded<Geometry> > geometries =
+    std::vector<oi::Guarded<Geometry> > geometries =
         station->getStation()->getTargetGeometries();
     foreach (const oi::Guarded<Geometry>& geom, geometries) {
       if (!geom.isNull() && geom->getIsCommon() && geom->getIsSolved()) {
@@ -273,12 +278,12 @@ bool FeatureUpdater::recalcBundle(
             geom->getPosition().getVector().getAt(1);
         inputGeometry.parameters[GeometryParameters::eUnknownZ] =
             geom->getPosition().getVector().getAt(2);
-        inputStation.geometries.append(inputGeometry);
+        inputStation.geometries.push_back(inputGeometry);
         qDebug() << "FeatureUpdater::recalcBundle inputGeometry:"
                  << geom->getId();
       }
     }
-    inputStations.append(inputStation);
+    inputStations.push_back(inputStation);
   }
 
   // check input stations
@@ -461,10 +466,11 @@ void FeatureUpdater::setUpTrafoParamActualActual(
   // delete old copy elements
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
-  QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
+  std::vector<int> startKeys =
+      oi::keys(systemTransformation->inputElementsStartSystem);
   foreach (const int& key, startKeys) {
-    QList<InputElement> startElements =
-        systemTransformation->inputElementsStartSystem.value(key);
+    std::vector<InputElement> startElements =
+        oi::value(systemTransformation->inputElementsStartSystem, key);
     foreach (const InputElement& element, startElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -472,11 +478,11 @@ void FeatureUpdater::setUpTrafoParamActualActual(
     }
   }
   systemTransformation->inputElementsStartSystem.clear();
-  QList<int> destKeys =
-      systemTransformation->inputElementsDestinationSystem.keys();
+  std::vector<int> destKeys =
+      oi::keys(systemTransformation->inputElementsDestinationSystem);
   foreach (const int& key, destKeys) {
-    QList<InputElement> destElements =
-        systemTransformation->inputElementsDestinationSystem.value(key);
+    std::vector<InputElement> destElements =
+        oi::value(systemTransformation->inputElementsDestinationSystem, key);
     foreach (const InputElement& element, destElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -487,7 +493,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(
 
   // get and check keys
   bool isAlignment = false;
-  QList<int> keys = systemTransformation->getInputElements().keys();
+  std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
   if (keys.size() <= 0) {  // no input elements
     return;
   } else if (keys.size() == 1) {  // normal transformation
@@ -511,13 +517,13 @@ void FeatureUpdater::setUpTrafoParamActualActual(
   // set up input elements for alignment transformations
   if (isAlignment) {
     // run through all keys and add start system elements
-    QList<int> keys = systemTransformation->getInputElements().keys();
+    std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
     foreach (const int& key, keys) {
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(key);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), key);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -534,11 +540,12 @@ void FeatureUpdater::setUpTrafoParamActualActual(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
 
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsStartSystem.insert(key, newElements);
+        systemTransformation->inputElementsStartSystem.insert_or_assign(
+            key, newElements);
       }
     }
   }
@@ -546,8 +553,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(
   // set up input elements for normal transformations
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -574,13 +581,13 @@ void FeatureUpdater::setUpTrafoParamActualActual(
   // set up input elements for alignment transformations
   if (isAlignment) {
     // run through all keys and add destination system elements
-    QList<int> keys = systemTransformation->getInputElements().keys();
+    std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
     foreach (const int& key, keys) {
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(key);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), key);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -597,11 +604,11 @@ void FeatureUpdater::setUpTrafoParamActualActual(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
 
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsDestinationSystem.insert(
+        systemTransformation->inputElementsDestinationSystem.insert_or_assign(
             key, newElements);
       }
     }
@@ -610,8 +617,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(
   // set up input elements for normal transformations
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -633,8 +640,10 @@ void FeatureUpdater::setUpTrafoParamActualActual(
   // #########################
 
   // add sorted lists to the function
-  systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
-  systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+  systemTransformation->inputPointsStartSystem =
+      fromQList(sorter.getLocPoints());
+  systemTransformation->inputPointsDestinationSystem =
+      fromQList(sorter.getRefPoints());
 
   // switch back to the active system
   this->switchCoordinateSystem();
@@ -651,10 +660,11 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
   // delete old copy elements
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
-  QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
+  std::vector<int> startKeys =
+      oi::keys(systemTransformation->inputElementsStartSystem);
   foreach (const int& key, startKeys) {
-    QList<InputElement> startElements =
-        systemTransformation->inputElementsStartSystem.value(key);
+    std::vector<InputElement> startElements =
+        oi::value(systemTransformation->inputElementsStartSystem, key);
     foreach (const InputElement& element, startElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -662,11 +672,11 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
     }
   }
   systemTransformation->inputElementsStartSystem.clear();
-  QList<int> destKeys =
-      systemTransformation->inputElementsDestinationSystem.keys();
+  std::vector<int> destKeys =
+      oi::keys(systemTransformation->inputElementsDestinationSystem);
   foreach (const int& key, destKeys) {
-    QList<InputElement> destElements =
-        systemTransformation->inputElementsDestinationSystem.value(key);
+    std::vector<InputElement> destElements =
+        oi::value(systemTransformation->inputElementsDestinationSystem, key);
     foreach (const InputElement& element, destElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -677,7 +687,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
 
   // get and check keys
   bool isAlignment = false;
-  QList<int> keys = systemTransformation->getInputElements().keys();
+  std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
   if (keys.size() <= 0) {  // no input elements
     return;
   } else if ((keys.size() == 1) ||
@@ -702,13 +712,13 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
   // set up input elements for alignment transformations
   if (isAlignment) {
     // run through all keys and add start system elements
-    QList<int> keys = systemTransformation->getInputElements().keys();
+    std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
     foreach (const int& key, keys) {
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(key);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), key);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -725,11 +735,12 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
 
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsStartSystem.insert(key, newElements);
+        systemTransformation->inputElementsStartSystem.insert_or_assign(
+            key, newElements);
       }
     }
   }
@@ -737,8 +748,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
   // set up input elements for normal transformations
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -756,11 +767,11 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
     // bestFit with level
     if (keys.size() == 2) {
       // get input elements at the position key
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(1);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), 1);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -777,10 +788,11 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsStartSystem.insert(1, newElements);
+        systemTransformation->inputElementsStartSystem.insert_or_assign(
+            1, newElements);
       }
     }
   }
@@ -796,13 +808,13 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
   // set up input elements for alignment transformations
   if (isAlignment) {
     // run through all keys and add destination system elements
-    QList<int> keys = systemTransformation->getInputElements().keys();
+    std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
     foreach (const int& key, keys) {
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(key);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), key);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -819,11 +831,11 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
 
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsDestinationSystem.insert(
+        systemTransformation->inputElementsDestinationSystem.insert_or_assign(
             key, newElements);
       }
     }
@@ -832,8 +844,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
   // set up input elements for normal transformations
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -851,11 +863,11 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
     // bestFit with level
     if (keys.size() == 2) {
       // get input elements at the position key
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(1);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), 1);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -872,10 +884,10 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsDestinationSystem.insert(
+        systemTransformation->inputElementsDestinationSystem.insert_or_assign(
             1, newElements);
       }
     }
@@ -886,8 +898,10 @@ void FeatureUpdater::setUpTrafoParamActualNominal(
   // #########################
 
   // add sorted lists to the function
-  systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
-  systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+  systemTransformation->inputPointsStartSystem =
+      fromQList(sorter.getLocPoints());
+  systemTransformation->inputPointsDestinationSystem =
+      fromQList(sorter.getRefPoints());
 
   // switch back to active system
   this->switchCoordinateSystem();
@@ -904,10 +918,11 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
   // delete old copy elements
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
-  QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
+  std::vector<int> startKeys =
+      oi::keys(systemTransformation->inputElementsStartSystem);
   foreach (const int& key, startKeys) {
-    QList<InputElement> startElements =
-        systemTransformation->inputElementsStartSystem.value(key);
+    std::vector<InputElement> startElements =
+        oi::value(systemTransformation->inputElementsStartSystem, key);
     foreach (const InputElement& element, startElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -915,11 +930,11 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
     }
   }
   systemTransformation->inputElementsStartSystem.clear();
-  QList<int> destKeys =
-      systemTransformation->inputElementsDestinationSystem.keys();
+  std::vector<int> destKeys =
+      oi::keys(systemTransformation->inputElementsDestinationSystem);
   foreach (const int& key, destKeys) {
-    QList<InputElement> destElements =
-        systemTransformation->inputElementsDestinationSystem.value(key);
+    std::vector<InputElement> destElements =
+        oi::value(systemTransformation->inputElementsDestinationSystem, key);
     foreach (const InputElement& element, destElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -932,7 +947,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
 
   // get and check keys
   bool isAlignment = false;
-  QList<int> keys = systemTransformation->getInputElements().keys();
+  std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
   if (keys.size() <= 0) {  // no input elements
     return;
   } else if (keys.size() == 1) {  // normal transformation
@@ -952,8 +967,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
   // set up input elements for normal transformations
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -980,8 +995,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
   // set up input elements for normal transformations
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -999,8 +1014,10 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(
   }
 
   // add sorted lists to the function
-  systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
-  systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+  systemTransformation->inputPointsStartSystem =
+      fromQList(sorter.getLocPoints());
+  systemTransformation->inputPointsDestinationSystem =
+      fromQList(sorter.getRefPoints());
 }
 
 /*!
@@ -1015,10 +1032,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   systemTransformation->inputPointsStartSystem.clear();
   systemTransformation->inputPointsDestinationSystem.clear();
 
-  QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
+  std::vector<int> startKeys =
+      oi::keys(systemTransformation->inputElementsStartSystem);
   foreach (const int& key, startKeys) {
-    QList<InputElement> startElements =
-        systemTransformation->inputElementsStartSystem.value(key);
+    std::vector<InputElement> startElements =
+        oi::value(systemTransformation->inputElementsStartSystem, key);
     foreach (const InputElement& element, startElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -1027,11 +1045,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   }
   systemTransformation->inputElementsStartSystem.clear();
 
-  QList<int> destKeys =
-      systemTransformation->inputElementsDestinationSystem.keys();
+  std::vector<int> destKeys =
+      oi::keys(systemTransformation->inputElementsDestinationSystem);
   foreach (const int& key, destKeys) {
-    QList<InputElement> destElements =
-        systemTransformation->inputElementsDestinationSystem.value(key);
+    std::vector<InputElement> destElements =
+        oi::value(systemTransformation->inputElementsDestinationSystem, key);
     foreach (const InputElement& element, destElements) {
       if (!element.geometry.isNull()) {
         delete element.geometry.data();
@@ -1042,10 +1060,10 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
 
   // check if this trafo already exists and temporary de activate the
   // transformation
-  QList<oi::Guarded<TrafoParam> > existingTrafoParams =
+  std::vector<oi::Guarded<TrafoParam> > existingTrafoParams =
       this->currentJob->getTransformationParametersList();
 
-  QList<oi::Guarded<TrafoParam> > tempUnsolvedTRafoParam;
+  std::vector<oi::Guarded<TrafoParam> > tempUnsolvedTRafoParam;
 
   // check if trafo param has the same configuration
   foreach (oi::Guarded<TrafoParam> existingTP, existingTrafoParams) {
@@ -1057,14 +1075,14 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
       // if it is currently used, set it temporarly to unused
       if (existingTP->getIsUsed()) {
         existingTP->setIsUsed(false);
-        tempUnsolvedTRafoParam.append(existingTP);
+        tempUnsolvedTRafoParam.push_back(existingTP);
       }
     }
   }
 
   // get and check keys
   bool isAlignment = false;
-  QList<int> keys = systemTransformation->getInputElements().keys();
+  std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
   if (keys.size() <= 0) {  // no input elements
     return;
   } else if (keys.size() == 1 || keys.size() == 2) {  // normal transformation
@@ -1087,13 +1105,13 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   // set up input elements for alignment transformations
   if (isAlignment) {
     // run through all keys and add start system elements
-    QList<int> keys = systemTransformation->getInputElements().keys();
+    std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
     foreach (const int& key, keys) {
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(key);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), key);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -1110,11 +1128,12 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
 
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsStartSystem.insert(key, newElements);
+        systemTransformation->inputElementsStartSystem.insert_or_assign(
+            key, newElements);
       }
     }
   }
@@ -1122,8 +1141,8 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   // set up input elements for normal transformation
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -1140,11 +1159,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
     // bestFit with level
     if (keys.size() == 2) {
       // get input elements at the position key
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(1);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), 1);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -1161,10 +1180,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsStartSystem.insert(1, newElements);
+        systemTransformation->inputElementsStartSystem.insert_or_assign(
+            1, newElements);
       }
     }
   }
@@ -1179,13 +1199,13 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   // set up input elements for alignment transformation
   if (isAlignment) {
     // run through all keys and add destination system elements
-    QList<int> keys = systemTransformation->getInputElements().keys();
+    std::vector<int> keys = oi::keys(systemTransformation->getInputElements());
     foreach (const int& key, keys) {
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(key);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), key);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -1202,11 +1222,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
 
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsDestinationSystem.insert(
+        systemTransformation->inputElementsDestinationSystem.insert_or_assign(
             key, newElements);
       }
     }
@@ -1216,8 +1236,8 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
 
   if (!isAlignment) {
     // get input elements at the position 0
-    QList<InputElement> inputElements =
-        systemTransformation->getInputElements().value(0);
+    std::vector<InputElement> inputElements =
+        oi::value(systemTransformation->getInputElements(), 0);
     foreach (const InputElement& element, inputElements) {
       // add all points
       if (element.typeOfElement == ElementTypes::ePointElement &&
@@ -1233,11 +1253,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
     }
     if (keys.size() == 2) {
       // get input elements at the position key
-      QList<InputElement> newElements;
+      std::vector<InputElement> newElements;
 
       // get input elements at the position key
-      QList<InputElement> inputElements =
-          systemTransformation->getInputElements().value(1);
+      std::vector<InputElement> inputElements =
+          oi::value(systemTransformation->getInputElements(), 1);
       foreach (const InputElement& element, inputElements) {
         // check geometry
         if (element.geometry.isNull() ||
@@ -1254,11 +1274,11 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
         InputElement copyElement(element.id);
         this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(),
                            element.typeOfElement);
-        newElements.append(copyElement);
+        newElements.push_back(copyElement);
       }
 
       if (newElements.size() > 0) {
-        systemTransformation->inputElementsDestinationSystem.insert(
+        systemTransformation->inputElementsDestinationSystem.insert_or_assign(
             1, newElements);
       }
     }
@@ -1269,8 +1289,10 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(
   // #########################
 
   // add sorted lists to the function
-  systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
-  systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+  systemTransformation->inputPointsStartSystem =
+      fromQList(sorter.getLocPoints());
+  systemTransformation->inputPointsDestinationSystem =
+      fromQList(sorter.getRefPoints());
 
   // re activate all existing transformations
   foreach (oi::Guarded<TrafoParam> tp, tempUnsolvedTRafoParam) {
@@ -1768,7 +1790,7 @@ void FeatureUpdater::clearBundleResults(
   }
 
   // get and delete bundle transformations
-  QList<oi::Guarded<TrafoParam> > transformations =
+  std::vector<oi::Guarded<TrafoParam> > transformations =
       bundleSystem->getTransformationParameters();
   foreach (const oi::Guarded<TrafoParam>& trafo, transformations) {
     if (!trafo.isNull() && trafo->getIsBundle()) {
@@ -1814,8 +1836,8 @@ void FeatureUpdater::saveBundleResults(
   oi::Guarded<BundleAdjustment> plugin = bundleSystem->getBundlePlugin();
 
   // get bundle results
-  QList<BundleGeometry> geometries = plugin->getOutputGeometries();
-  QList<BundleTransformation> transformations =
+  std::vector<BundleGeometry> geometries = plugin->getOutputGeometries();
+  std::vector<BundleTransformation> transformations =
       plugin->getOutputTransformations();
 
   // create nominal geometries in bundle system
@@ -1830,11 +1852,11 @@ void FeatureUpdater::saveBundleResults(
  * \param geometries
  * \param bundleSystem
  */
-/*void FeatureUpdater::createBundleGeometries(const QList<BundleGeometry>
+/*void FeatureUpdater::createBundleGeometries(const std::vector<BundleGeometry>
 &geometries, const oi::Guarded<CoordinateSystem> &bundleSystem){
 
     //create common points as nominals in bundle system
-    QList<oi::Guarded<FeatureWrapper> > features;
+    std::vector<oi::Guarded<FeatureWrapper> > features;
     foreach(const BundleGeometry &geom, geometries){
 
         //get corresponding actual
@@ -1878,7 +1900,7 @@ actual->getPoint().isNull()){ continue;
  * \param bundleSystem
  */
 void FeatureUpdater::createBundleTransformations(
-    QList<BundleTransformation>& transformations,
+    std::vector<BundleTransformation>& transformations,
     const oi::Guarded<CoordinateSystem>& bundleSystem) {
   // create transformations
   FeatureAttributes fAttr;
@@ -1886,7 +1908,7 @@ void FeatureUpdater::createBundleTransformations(
   fAttr.group = bundleSystem->getGroupName();
   fAttr.count = 1;
   fAttr.startSystem = bundleSystem->getFeatureName();
-  QList<oi::Guarded<FeatureWrapper> > features;
+  std::vector<oi::Guarded<FeatureWrapper> > features;
   foreach (const BundleTransformation& transformation, transformations) {
     qDebug() << "transformation.id=" << transformation.id;
 
@@ -1912,7 +1934,7 @@ void FeatureUpdater::createBundleTransformations(
 
     // create trafo param feature
     fAttr.destinationSystem = stationName;
-    features.append(this->currentJob->addFeatures(fAttr));
+    oi::appendAll(features, this->currentJob->addFeatures(fAttr));
   }
 
   // check number of created transformations
@@ -1932,7 +1954,7 @@ void FeatureUpdater::createBundleTransformations(
     oi::Guarded<TrafoParam> trafo = feature->getTrafoParam();
 
     // set up parameters
-    QMap<TrafoParamParameters, double> parameters =
+    std::map<TrafoParamParameters, double> parameters =
         transformations.at(index).parameters;
     trafo->setUnknownParameters(parameters);
     trafo->setIsUsed(true);
@@ -1951,7 +1973,7 @@ void FeatureUpdater::recalcAllBundleTrafoDependencies(
   // if bundle system
   if (bundleSystem->getIsBundleSystem()) {
     // get all trafo params from job
-    QList<oi::Guarded<TrafoParam> > globalTps =
+    std::vector<oi::Guarded<TrafoParam> > globalTps =
         this->currentJob->getTransformationParametersList();
 
     foreach (oi::Guarded<TrafoParam> gTP, globalTps) {

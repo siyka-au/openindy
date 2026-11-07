@@ -1,5 +1,7 @@
 #include "pluginloader.h"
 
+#include <vector>
+
 // initialize static variables
 QPointer<PluginLoader> PluginLoader::myInstance(nullptr);
 PluginCopier PluginLoader::pluginCopier;
@@ -424,9 +426,9 @@ PluginLoader::loadExchangeDefinedFormatPlugin(const QString& path,
  * \param path
  * \return
  */
-QList<oi::Guarded<Sensor> > PluginLoader::loadSensorPlugins(
+std::vector<oi::Guarded<Sensor> > PluginLoader::loadSensorPlugins(
     const QString& path) {
-  QList<oi::Guarded<Sensor> > sensorList;
+  std::vector<oi::Guarded<Sensor> > sensorList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -458,9 +460,9 @@ QList<oi::Guarded<Sensor> > PluginLoader::loadSensorPlugins(
  * \param path
  * \return
  */
-QList<oi::Guarded<Function> > PluginLoader::loadFunctionPlugins(
+std::vector<oi::Guarded<Function> > PluginLoader::loadFunctionPlugins(
     const QString& path) {
-  QList<oi::Guarded<Function> > functionList;
+  std::vector<oi::Guarded<Function> > functionList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -492,9 +494,9 @@ QList<oi::Guarded<Function> > PluginLoader::loadFunctionPlugins(
  * \param path
  * \return
  */
-QList<oi::Guarded<SimulationModel> > PluginLoader::loadSimulationPlugins(
+std::vector<oi::Guarded<SimulationModel> > PluginLoader::loadSimulationPlugins(
     const QString& path) {
-  QList<oi::Guarded<SimulationModel> > simulationList;
+  std::vector<oi::Guarded<SimulationModel> > simulationList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -527,9 +529,9 @@ QList<oi::Guarded<SimulationModel> > PluginLoader::loadSimulationPlugins(
  * \param path
  * \return
  */
-QList<oi::Guarded<BundleAdjustment> > PluginLoader::loadBundleAdjustmentPlugins(
-    const QString& path) {
-  QList<oi::Guarded<BundleAdjustment> > bundleAdjustmentList;
+std::vector<oi::Guarded<BundleAdjustment> >
+PluginLoader::loadBundleAdjustmentPlugins(const QString& path) {
+  std::vector<oi::Guarded<BundleAdjustment> > bundleAdjustmentList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -597,9 +599,9 @@ QList<QPointer<Tool> > PluginLoader::loadToolPlugins(const QString& path) {
  * \param path
  * \return
  */
-QList<oi::Guarded<ExchangeSimpleAscii> >
+std::vector<oi::Guarded<ExchangeSimpleAscii> >
 PluginLoader::loadExchangeSimpleAsciiPlugins(const QString& path) {
-  QList<oi::Guarded<ExchangeSimpleAscii> > exchangeList;
+  std::vector<oi::Guarded<ExchangeSimpleAscii> > exchangeList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();
@@ -633,9 +635,9 @@ PluginLoader::loadExchangeSimpleAsciiPlugins(const QString& path) {
  * \param path
  * \return
  */
-QList<oi::Guarded<ExchangeDefinedFormat> >
+std::vector<oi::Guarded<ExchangeDefinedFormat> >
 PluginLoader::loadExchangeDefinedFormatPlugins(const QString& path) {
-  QList<oi::Guarded<ExchangeDefinedFormat> > exchangeList;
+  std::vector<oi::Guarded<ExchangeDefinedFormat> > exchangeList;
 
   QPluginLoader pluginLoader(path);
   QObject* plugin = pluginLoader.instance();

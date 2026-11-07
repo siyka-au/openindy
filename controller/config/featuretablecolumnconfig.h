@@ -2,6 +2,7 @@
 #define FEATURETABLECOLUMNCONFIG_H
 
 #include <QList>
+#include <vector>
 
 #include "types.h"
 
@@ -15,7 +16,7 @@ using namespace oi;
 class FeatureTableColumnConfig {
  public:
   FeatureTableColumnConfig();
-  explicit FeatureTableColumnConfig(QList<FeatureDisplayAttributes>);
+  explicit FeatureTableColumnConfig(std::vector<FeatureDisplayAttributes>);
 
   [[nodiscard]] bool getColumnVisibility(
       const FeatureDisplayAttributes& column) const;
@@ -33,7 +34,7 @@ class FeatureTableColumnConfig {
  private:
   void init();
 
-  QList<FeatureDisplayAttributes> displayColumns;
+  std::vector<FeatureDisplayAttributes> displayColumns;
 };
 
 #endif  // FEATURETABLECOLUMNCONFIG_H

@@ -5,6 +5,8 @@
 #include <QMap>
 #include <QPointer>
 #include <QString>
+#include <map>
+#include <vector>
 
 #include "coordinatesystem.h"
 #include "exchangedefinedformat.h"
@@ -32,21 +34,21 @@ class ExchangeParams {
                            // false if it is a simple ascii one
 
   // general exchange parameters
-  QList<oi::Guarded<FeatureWrapper> >
+  std::vector<oi::Guarded<FeatureWrapper> >
       exportFeatures;         // features that shall be exported
   bool exportObservations{};  // true if observations shall be exported
   QString groupName;
   QString nominalSystem;
-  QMap<DimensionType, UnitType> units;
+  std::map<DimensionType, UnitType> units;
 
   // simple ascii parameters
   QString delimiter;
   bool skipFirstLine{};
   GeometryTypes typeOfGeometry;
-  QList<ExchangeSimpleAscii::ColumnType> userDefinedColumns;
+  std::vector<ExchangeSimpleAscii::ColumnType> userDefinedColumns;
 
   // defined format parameters
-  QList<ElementTypes> usedElements;
+  std::vector<ElementTypes> usedElements;
 
   double distanceDigits{};
   double angleDigits{};

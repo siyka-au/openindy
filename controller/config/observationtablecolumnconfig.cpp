@@ -1,5 +1,7 @@
 #include "observationtablecolumnconfig.h"
 
+#include "containers.h"
+
 /*!
  * \brief ObservationTableColumnConfig::ObservationTableColumnConfig
  */
@@ -15,7 +17,7 @@ ObservationTableColumnConfig::ObservationTableColumnConfig() {
  */
 bool ObservationTableColumnConfig::getColumnVisibility(
     const ObservationDisplayAttributes& column) const {
-  return this->displayColumns.contains(column);
+  return oi::contains(this->displayColumns, column);
 }
 
 /*!
@@ -25,10 +27,10 @@ bool ObservationTableColumnConfig::getColumnVisibility(
  */
 void ObservationTableColumnConfig::setColumnVisibility(
     const ObservationDisplayAttributes& column, const bool& isVisible) {
-  if (isVisible && !this->displayColumns.contains(column)) {
-    this->displayColumns.append(column);
+  if (isVisible && !oi::contains(this->displayColumns, column)) {
+    this->displayColumns.push_back(column);
   } else {
-    this->displayColumns.removeOne(column);
+    oi::removeOne(this->displayColumns, column);
   }
 }
 
@@ -41,7 +43,7 @@ void ObservationTableColumnConfig::setColumnVisibility(
  */
 int ObservationTableColumnConfig::getColumnPosition(
     const ObservationDisplayAttributes& column) const {
-  return this->displayColumns.indexOf(column);
+  return oi::indexOf(this->displayColumns, column);
 }
 
 /*!
@@ -51,10 +53,10 @@ int ObservationTableColumnConfig::getColumnPosition(
  */
 void ObservationTableColumnConfig::setColumnPosition(
     const ObservationDisplayAttributes& column, const int& index) {
-  if (this->displayColumns.contains(column) && index >= 0 &&
+  if (oi::contains(this->displayColumns, column) && index >= 0 &&
       index < this->displayColumns.size()) {
-    this->displayColumns.removeOne(column);
-    this->displayColumns.insert(index, column);
+    oi::removeOne(this->displayColumns, column);
+    oi::insertAt(this->displayColumns, index, column);
   }
 }
 
@@ -66,22 +68,22 @@ void ObservationTableColumnConfig::setColumnPosition(
 void ObservationTableColumnConfig::init() {
   // defines visible (!) columns but not column order (!), ordinal defines
   // column order
-  this->displayColumns.append(eObservationDisplayId);
-  this->displayColumns.append(eObservationDisplayStation);
-  this->displayColumns.append(eObservationDisplayTargetGeometries);
-  this->displayColumns.append(eObservationDisplayX);
-  this->displayColumns.append(eObservationDisplayY);
-  this->displayColumns.append(eObservationDisplayZ);
-  this->displayColumns.append(eObservationDisplayI);
-  this->displayColumns.append(eObservationDisplayJ);
-  this->displayColumns.append(eObservationDisplayK);
-  this->displayColumns.append(eObservationDisplayIsSolved);
-  this->displayColumns.append(eObservationDisplayVX);
-  this->displayColumns.append(eObservationDisplayVY);
-  this->displayColumns.append(eObservationDisplayVZ);
-  this->displayColumns.append(eObservationDisplayV);
-  this->displayColumns.append(eObservationDisplayVR);
-  this->displayColumns.append(eObservationDisplayIsUsed);
-  this->displayColumns.append(eObservationDisplayIsDummyPoint);
-  this->displayColumns.append(eObservationDisplayReadingTime);
+  this->displayColumns.push_back(eObservationDisplayId);
+  this->displayColumns.push_back(eObservationDisplayStation);
+  this->displayColumns.push_back(eObservationDisplayTargetGeometries);
+  this->displayColumns.push_back(eObservationDisplayX);
+  this->displayColumns.push_back(eObservationDisplayY);
+  this->displayColumns.push_back(eObservationDisplayZ);
+  this->displayColumns.push_back(eObservationDisplayI);
+  this->displayColumns.push_back(eObservationDisplayJ);
+  this->displayColumns.push_back(eObservationDisplayK);
+  this->displayColumns.push_back(eObservationDisplayIsSolved);
+  this->displayColumns.push_back(eObservationDisplayVX);
+  this->displayColumns.push_back(eObservationDisplayVY);
+  this->displayColumns.push_back(eObservationDisplayVZ);
+  this->displayColumns.push_back(eObservationDisplayV);
+  this->displayColumns.push_back(eObservationDisplayVR);
+  this->displayColumns.push_back(eObservationDisplayIsUsed);
+  this->displayColumns.push_back(eObservationDisplayIsDummyPoint);
+  this->displayColumns.push_back(eObservationDisplayReadingTime);
 }

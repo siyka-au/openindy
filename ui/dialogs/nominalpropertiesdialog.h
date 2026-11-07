@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QPointer>
 #include <QShowEvent>
+#include <map>
 
 #include "modelmanager.h"
 
@@ -41,10 +42,10 @@ class NominalPropertiesDialog : public QDialog {
   void setCurrentNominal(const int& id, const QString& name,
                          const FeatureTypes& type);
 
-  [[nodiscard]] const QMap<GeometryParameters, QString>&
+  [[nodiscard]] const std::map<GeometryParameters, QString>&
   getUnknownNominalParameters() const;
   void setUnknownNominalParameters(
-      const QMap<GeometryParameters, QString>& parameters);
+      const std::map<GeometryParameters, QString>& parameters);
 
  signals:
 
@@ -53,7 +54,7 @@ class NominalPropertiesDialog : public QDialog {
   // #######################
 
   void nominalParametersChanged(
-      const int& id, const QMap<GeometryParameters, double>& parameters);
+      const int& id, const std::map<GeometryParameters, double>& parameters);
 
  private slots:
 
@@ -82,7 +83,7 @@ class NominalPropertiesDialog : public QDialog {
 
   void setParametersToGUI(const GeometryParameters& param,
                           const QString& value);
-  void getParametersFromGUI(QMap<GeometryParameters, double>& parameters);
+  void getParametersFromGUI(std::map<GeometryParameters, double>& parameters);
 
  private:
   Ui::NominalPropertiesDialog* ui;
@@ -94,7 +95,7 @@ class NominalPropertiesDialog : public QDialog {
   int id{-1};
   QString name;
   FeatureTypes type{FeatureTypes::eUndefinedFeature};
-  QMap<GeometryParameters, QString> parameters;
+  std::map<GeometryParameters, QString> parameters;
 };
 
 #endif  // NOMINALPROPERTIESDIALOG_H

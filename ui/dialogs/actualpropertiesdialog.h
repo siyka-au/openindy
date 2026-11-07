@@ -17,6 +17,7 @@
 #include <QtNetwork/QNetworkInterface>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
+#include <vector>
 
 #include "clipboardutil.h"
 #include "functionstatisticmodel.h"
@@ -51,7 +52,7 @@ class ActualPropertiesDialog : public QDialog {
 
   void useObservation(bool use, const QModelIndex& index);
   void unUseObservation(bool use, const QModelIndex& index);
-  void removeObservationsById(const QList<int> selectedIds);
+  void removeObservationsById(const std::vector<int> selectedIds);
 
   void sendMessage(const QString& msg, const MessageTypes& msgType,
                    const MessageDestinations& msgDest =

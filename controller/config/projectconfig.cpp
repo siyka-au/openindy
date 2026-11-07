@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <optional>
+#include <vector>
 
 QString ProjectConfig::configFolder;
 QString ProjectConfig::importNominalPath;
@@ -22,7 +23,7 @@ int ProjectConfig::temperatureDigits;
 bool ProjectConfig::useSounds;
 int ProjectConfig::autoSaveInterval;
 
-QList<oi::FeatureDisplayAttributes> ProjectConfig::displayColumns;
+std::vector<oi::FeatureDisplayAttributes> ProjectConfig::displayColumns;
 
 /*!
  * \brief ProjectConfig::getImportNominalPath
@@ -148,7 +149,7 @@ int ProjectConfig::getAutoSaveInterval() { return autoSaveInterval; }
 
 void ProjectConfig::setAutoSaveInterval(int value) { autoSaveInterval = value; }
 
-QList<oi::FeatureDisplayAttributes> ProjectConfig::getDisplayColumns() {
+std::vector<oi::FeatureDisplayAttributes> ProjectConfig::getDisplayColumns() {
   return displayColumns;
 }
 
@@ -325,13 +326,13 @@ bool ProjectConfig::loadProjectSettingsConfigFile() {
     for (const ColumnName& known : columnNames) {
       if (QString::compare(name, QLatin1String(known.name),
                            Qt::CaseInsensitive) == 0) {
-        displayColumns.append(known.attribute);
+        displayColumns.push_back(known.attribute);
         break;
       }
     }
   }
 
-  return !displayColumns.isEmpty();  // no display columns found: invalid
+  return !displayColumns.empty();  // no display columns found: invalid
 }
 
 /*!

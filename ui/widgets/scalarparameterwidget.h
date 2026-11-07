@@ -10,6 +10,7 @@
 #include <QRegularExpressionValidator>
 #include <QString>
 #include <QWidget>
+#include <map>
 
 class ScalarParameterWidget : public QWidget {
   Q_OBJECT
@@ -32,15 +33,16 @@ class ScalarParameterWidget : public QWidget {
   // ######################
 
   // fill scalar display parameters
-  void setIntParameter(const QMap<QString, int>& intParameter);
-  void setDoubleParameter(const QMap<QString, double>& doubleParameter);
-  void setStringParameter(const QMultiMap<QString, QString>& stringParameter,
-                          const QMap<QString, QString>& defaultSelection);
+  void setIntParameter(const std::map<QString, int>& intParameter);
+  void setDoubleParameter(const std::map<QString, double>& doubleParameter);
+  void setStringParameter(
+      const std::multimap<QString, QString>& stringParameter,
+      const std::map<QString, QString>& defaultSelection);
 
   // get scalar parameter selection (user defined inputs)
-  const QMap<QString, int>& getIntParameter();
-  const QMap<QString, double>& getDoubleParameter();
-  const QMap<QString, QString>& getStringParameter();
+  const std::map<QString, int>& getIntParameter();
+  const std::map<QString, double>& getDoubleParameter();
+  const std::map<QString, QString>& getStringParameter();
 
   // remove all scalar display parameters
   void clearAll();
@@ -51,10 +53,10 @@ class ScalarParameterWidget : public QWidget {
   // #################
 
   // user defined parameters
-  QMap<QString, int> intParameter;
-  QMap<QString, double> doubleParameter;
+  std::map<QString, int> intParameter;
+  std::map<QString, double> doubleParameter;
   QMap<QString, QStringList> stringParameter;
-  QMap<QString, QString> stringParameterSelection;
+  std::map<QString, QString> stringParameterSelection;
 
   // dynamic GUI elements for each available parameter
   QList<QLabel*> parameterLabel;

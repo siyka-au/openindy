@@ -1,6 +1,7 @@
 #include "actualpropertiesdialog.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "ui_actualpropertiesdialog.h"
 
@@ -337,7 +338,7 @@ void ActualPropertiesDialog::deleteObservations() {
   // get selected indexes
   selection = this->getSelection();
   if (selection.size() > 0) {
-    QList<int> selectedIds;
+    std::vector<int> selectedIds;
     ObservationProxyModel* model = static_cast<ObservationProxyModel*>(
         this->ui->tableView_observation->model());
     if (model == nullptr) {
@@ -347,7 +348,7 @@ void ActualPropertiesDialog::deleteObservations() {
       int i = ModelManager::getObservationModel().getObservationIdByIndex(
           model->mapToSource(idx));
       if (i >= 0) {
-        selectedIds.append(i);
+        selectedIds.push_back(i);
       }
     }
     emit this->removeObservationsById(selectedIds);

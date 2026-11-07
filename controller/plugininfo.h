@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QString>
+#include <vector>
 
 #include "measurementconfig.h"
 #include "types.h"
@@ -37,9 +38,10 @@ class OI_MAIN_EXPORT Plugin {
   Plugin() {}
   Plugin(const QString& name, const QString& description,
          const QString& version, const QString& author, const QString& filePath,
-         const QList<Function>& functions, const QList<Sensor>& sensors,
-         const QList<Tool>& tools, const QList<Exchange>& exchanges,
-         const QList<Simulation>& simulations)
+         const std::vector<Function>& functions,
+         const std::vector<Sensor>& sensors, const std::vector<Tool>& tools,
+         const std::vector<Exchange>& exchanges,
+         const std::vector<Simulation>& simulations)
       : m_name(name),
         m_description(description),
         m_version(version),
@@ -59,11 +61,13 @@ class OI_MAIN_EXPORT Plugin {
     return m_filePath;
   }  // the real, collision-safe identity - see PluginRepository
 
-  [[nodiscard]] QList<Function> functions() const { return m_functions; }
-  [[nodiscard]] QList<Sensor> sensors() const { return m_sensors; }
-  [[nodiscard]] QList<Tool> tools() const { return m_tools; }
-  [[nodiscard]] QList<Exchange> exchanges() const { return m_exchanges; }
-  [[nodiscard]] QList<Simulation> simulations() const { return m_simulations; }
+  [[nodiscard]] std::vector<Function> functions() const { return m_functions; }
+  [[nodiscard]] std::vector<Sensor> sensors() const { return m_sensors; }
+  [[nodiscard]] std::vector<Tool> tools() const { return m_tools; }
+  [[nodiscard]] std::vector<Exchange> exchanges() const { return m_exchanges; }
+  [[nodiscard]] std::vector<Simulation> simulations() const {
+    return m_simulations;
+  }
 
  private:
   QString m_name;
@@ -72,11 +76,11 @@ class OI_MAIN_EXPORT Plugin {
   QString m_author;
   QString m_filePath;
 
-  QList<Function> m_functions;
-  QList<Sensor> m_sensors;
-  QList<Tool> m_tools;
-  QList<Exchange> m_exchanges;
-  QList<Simulation> m_simulations;
+  std::vector<Function> m_functions;
+  std::vector<Sensor> m_sensors;
+  std::vector<Tool> m_tools;
+  std::vector<Exchange> m_exchanges;
+  std::vector<Simulation> m_simulations;
 };
 
 //! shared shape: a named item offered by a plugin, identified within that
@@ -85,12 +89,12 @@ class OI_MAIN_EXPORT Plugin {
 class OI_MAIN_EXPORT Sensor {
  public:
   Sensor() {}
-  Sensor(
-      const QString& name, const QString& description, const Plugin& plugin,
-      const QString& interfaceCategory,
-      const QList<MeasurementConfig>& measurementConfigs =
-          QList<MeasurementConfig>(),
-      const QList<AcquisitionMode>& acquisitionModes = QList<AcquisitionMode>())
+  Sensor(const QString& name, const QString& description, const Plugin& plugin,
+         const QString& interfaceCategory,
+         const std::vector<MeasurementConfig>& measurementConfigs =
+             std::vector<MeasurementConfig>(),
+         const std::vector<AcquisitionMode>& acquisitionModes =
+             std::vector<AcquisitionMode>())
       : m_name(name),
         m_description(description),
         m_plugin(plugin),
@@ -119,10 +123,10 @@ class OI_MAIN_EXPORT Sensor {
   //! that already builds this sys::Sensor at all) - MeasurementConfigManager
   //! merges these across every scanned sensor, not just a connected one, so
   //! the picker has real options before anything is plugged in
-  [[nodiscard]] QList<MeasurementConfig> measurementConfigs() const {
+  [[nodiscard]] std::vector<MeasurementConfig> measurementConfigs() const {
     return m_measurementConfigs;
   }
-  [[nodiscard]] QList<AcquisitionMode> acquisitionModes() const {
+  [[nodiscard]] std::vector<AcquisitionMode> acquisitionModes() const {
     return m_acquisitionModes;
   }
 
@@ -131,8 +135,8 @@ class OI_MAIN_EXPORT Sensor {
   QString m_description;
   Plugin m_plugin;
   QString m_interfaceCategory;
-  QList<MeasurementConfig> m_measurementConfigs;
-  QList<AcquisitionMode> m_acquisitionModes;
+  std::vector<MeasurementConfig> m_measurementConfigs;
+  std::vector<AcquisitionMode> m_acquisitionModes;
 };
 
 class OI_MAIN_EXPORT Tool {
@@ -209,8 +213,8 @@ class OI_MAIN_EXPORT Function {
  public:
   Function() {}
   Function(const QString& name, const QString& description,
-           const Plugin& plugin, const QList<FeatureTypes>& applicableFor,
-           const QList<ElementTypes>& neededElements,
+           const Plugin& plugin, const std::vector<FeatureTypes>& applicableFor,
+           const std::vector<ElementTypes>& neededElements,
            const QString& interfaceCategory)
       : m_name(name),
         m_description(description),
@@ -225,10 +229,10 @@ class OI_MAIN_EXPORT Function {
   [[nodiscard]] QString qualifiedId() const {
     return m_plugin.filePath() + "#" + m_name;
   }
-  [[nodiscard]] QList<FeatureTypes> applicableFor() const {
+  [[nodiscard]] std::vector<FeatureTypes> applicableFor() const {
     return m_applicableFor;
   }
-  [[nodiscard]] QList<ElementTypes> neededElements() const {
+  [[nodiscard]] std::vector<ElementTypes> neededElements() const {
     return m_neededElements;
   }
 
@@ -244,8 +248,8 @@ class OI_MAIN_EXPORT Function {
   QString m_name;
   QString m_description;
   Plugin m_plugin;
-  QList<FeatureTypes> m_applicableFor;
-  QList<ElementTypes> m_neededElements;
+  std::vector<FeatureTypes> m_applicableFor;
+  std::vector<ElementTypes> m_neededElements;
   QString m_interfaceCategory;
 };
 

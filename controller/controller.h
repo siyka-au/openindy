@@ -11,6 +11,9 @@
 #include <QSaveFile>
 #include <QString>
 #include <QThread>
+#include <map>
+#include <set>
+#include <vector>
 
 #include "calibratedconstellation.h"
 #include "console.h"
@@ -81,15 +84,16 @@ class Controller : public QObject, public ControllerSensorActions {
 
   // add or remove features
   void addFeatures(const FeatureAttributes& attributes);
-  void removeFeatures(const QSet<int>& featureIds);
+  void removeFeatures(const std::set<int>& featureIds);
   oi::Guarded<FeatureWrapper> getActiveFeature();
 
   // change feature parameters
-  void setNominalParameters(const int& featureId,
-                            const QMap<GeometryParameters, double>& parameters);
+  void setNominalParameters(
+      const int& featureId,
+      const std::map<GeometryParameters, double>& parameters);
   void setTrafoParamParameters(
       const int& featureId,
-      const QMap<TrafoParamParameters, double>& parameters);
+      const std::map<TrafoParamParameters, double>& parameters);
 
   // recalculation
   void recalcActiveFeature();
@@ -124,7 +128,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // add or remove observations
   void importObservations(const QString& filename);
   void removeObservations(const int& featureId);
-  void removeObservationsById(const QList<int> selectedIds);
+  void removeObservationsById(const std::vector<int> selectedIds);
   void removeAllObservations();
   void enableObservations(const int& featureId);
   void disableObservations(const int& featureId);
@@ -337,7 +341,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // ################################
 
   void measurementFinished(const int& geomId,
-                           const QList<oi::Guarded<Reading>>& readings);
+                           const std::vector<oi::Guarded<Reading>>& readings);
 
  private:
   // ##############
@@ -373,7 +377,7 @@ class Controller : public QObject, public ControllerSensorActions {
   oi::Guarded<FeatureWrapper> createActualForNominal(
       const oi::Guarded<Geometry>& nominal);
   void addFunctionsAndMConfigs(
-      const QList<oi::Guarded<FeatureWrapper>>& actuals,
+      const std::vector<oi::Guarded<FeatureWrapper>>& actuals,
       const MeasurementConfig& mConfig, const QString& path,
       const QString& fName);
 

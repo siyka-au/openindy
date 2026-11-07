@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QPixmap>
+#include <vector>
 
 #include "pluginrepository.h"
 #include "plugintreeitem.h"
@@ -44,8 +45,8 @@ class PluginTreeViewModel : public QAbstractItemModel {
   // get or set plugins
   // ##################
 
-  [[nodiscard]] const QList<sys::Plugin>& getPlugins() const;
-  void setPlugins(const QList<sys::Plugin>& plugins);
+  [[nodiscard]] const std::vector<sys::Plugin>& getPlugins() const;
+  void setPlugins(const std::vector<sys::Plugin>& plugins);
 
  signals:
 
@@ -62,7 +63,7 @@ class PluginTreeViewModel : public QAbstractItemModel {
   // loaded plugins
   // ##############
 
-  QList<sys::Plugin> plugins;
+  std::vector<sys::Plugin> plugins;
 
   // ##############
   // root tree item

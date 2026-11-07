@@ -21,6 +21,8 @@
 #include <QString>
 #include <QVariant>
 #include <QWindow>
+#include <set>
+#include <vector>
 
 #include "aboutdialog.h"
 #include "actualpropertiesdialog.h"
@@ -99,7 +101,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
 
   // add or remove features
   void addFeatures(const FeatureAttributes& attributes);
-  void removeFeatures(const QSet<int>& featureIds);
+  void removeFeatures(const std::set<int>& featureIds);
 
   bool featureCreated(bool);
 
@@ -398,9 +400,10 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   // ##############################
 
   // sensor type
-  void activeSensorTypeChanged(const SensorType& type,
-                               const QList<SensorFunctions>& supportedActions,
-                               const QStringList& selfDefinedActions);
+  void activeSensorTypeChanged(
+      const SensorType& type,
+      const std::vector<SensorFunctions>& supportedActions,
+      const QStringList& selfDefinedActions);
 
   // magnify
   void updateMagnifyWindow(const oi::Guarded<FeatureWrapper>& feature);
@@ -500,7 +503,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   void openWatchWindow(WatchWindowBehavior);
 
   void showFoundFeature(int index);
-  QList<oi::Guarded<FeatureWrapper>> foundFeatures;
+  std::vector<oi::Guarded<FeatureWrapper>> foundFeatures;
   int showFoundFeatureIndex{};
 
   ClipBoardUtil clipBoardUtil;

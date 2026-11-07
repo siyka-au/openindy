@@ -1,5 +1,8 @@
 #include "usedelementsmodel.h"
 
+#include <vector>
+
+#include "containers.h"
 #include "jobconnect.h"
 #include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
@@ -46,10 +49,11 @@ int UsedElementsModel::rowCount(const QModelIndex& parent) const {
                                  // NeededElement index now
 
   // check input elements
-  if (!function->getInputElements().contains(inputElementKey)) {
+  const auto elements = function->getInputElements().find(inputElementKey);
+  if (elements == function->getInputElements().cend()) {
     return 0;
   }
-  return function->getInputElements()[inputElementKey].size();
+  return static_cast<int>(elements->second.size());
 }
 
 /*!
@@ -96,12 +100,13 @@ QVariant UsedElementsModel::data(const QModelIndex& index, int role) const {
       this->neededElementIndex;  // D12: position is always the real
                                  // NeededElement index now
   // check and get input element
-  if (!function->getInputElements().contains(inputElementKey) ||
-      index.row() >= function->getInputElements()[inputElementKey].size()) {
+  const auto elements = function->getInputElements().find(inputElementKey);
+  if (elements == function->getInputElements().cend() || index.row() < 0 ||
+      static_cast<std::size_t>(index.row()) >= elements->second.size()) {
     return QVariant();
   }
   InputElement element =
-      function->getInputElements()[inputElementKey].at(index.row());
+      elements->second.at(static_cast<std::size_t>(index.row()));
 
   if (role == Qt::DisplayRole) {
     if (!element.geometry.isNull() &&
@@ -294,8 +299,8 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList& selection) {
     return;
   }
 
-  QList<InputElement> inputElements =
-      function->getInputElements().value(inputElementKey);
+  std::vector<InputElement> inputElements =
+      oi::value(function->getInputElements(), inputElementKey);
 
   // remove all selected elements
   foreach (const QModelIndex& index, selection) {

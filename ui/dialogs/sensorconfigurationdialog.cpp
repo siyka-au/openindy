@@ -1,5 +1,7 @@
 #include "sensorconfigurationdialog.h"
 
+#include <vector>
+
 #include "ui_sensorconfigurationdialog.h"
 
 /*!
@@ -388,7 +390,7 @@ void SensorConfigurationDialog::updateGuiFromSensorConfig(
   this->ui->lineEdit_port->blockSignals(true);
 
   // set up available connection types
-  QList<ConnectionKind> supportedConnections =
+  std::vector<ConnectionKind> supportedConnections =
       ModelManager::getSensorTableModel().getSupportedConnectionTypes();
   this->ui->comboBox_typeOfConnection->clear();
   foreach (const ConnectionKind& kind, supportedConnections) {

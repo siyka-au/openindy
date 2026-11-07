@@ -8,11 +8,14 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
+#include <map>
+
+#include "containers.h"
 
 bool Settings::isInit = false;
-QMap<QString, QString> Settings::systemLayer;
-QMap<QString, QString> Settings::userLayer;
-QMap<QString, QString> Settings::projectLayer;
+std::map<QString, QString> Settings::systemLayer;
+std::map<QString, QString> Settings::userLayer;
+std::map<QString, QString> Settings::projectLayer;
 
 /*!
  * \brief Settings::init
@@ -37,13 +40,13 @@ QString Settings::get(const QString& key) {
   }
 
   if (Settings::projectLayer.contains(key)) {
-    return Settings::projectLayer.value(key);
+    return oi::value(Settings::projectLayer, key);
   }
   if (Settings::userLayer.contains(key)) {
-    return Settings::userLayer.value(key);
+    return oi::value(Settings::userLayer, key);
   }
   if (Settings::systemLayer.contains(key)) {
-    return Settings::systemLayer.value(key);
+    return oi::value(Settings::systemLayer, key);
   }
 
   return QString();
@@ -59,7 +62,7 @@ void Settings::setUserValue(const QString& key, const QString& value) {
   if (!Settings::isInit) {
     Settings::init();
   }
-  Settings::userLayer.insert(key, value);
+  Settings::userLayer.insert_or_assign(key, value);
   Settings::saveUserLayer();
 }
 
@@ -73,7 +76,7 @@ void Settings::setProjectValue(const QString& key, const QString& value) {
   if (!Settings::isInit) {
     Settings::init();
   }
-  Settings::projectLayer.insert(key, value);
+  Settings::projectLayer.insert_or_assign(key, value);
 }
 
 /*!
@@ -123,11 +126,12 @@ void Settings::loadSystemLayerFromFile(const QString& path) {
       continue;
     }
     if (!function.isEmpty()) {
-      Settings::systemLayer.insert("defaultFunction." + featureType, function);
+      Settings::systemLayer.insert_or_assign("defaultFunction." + featureType,
+                                             function);
     }
     if (!measurementConfig.isEmpty()) {
-      Settings::systemLayer.insert("defaultMeasurementConfig." + featureType,
-                                   measurementConfig);
+      Settings::systemLayer.insert_or_assign(
+          "defaultMeasurementConfig." + featureType, measurementConfig);
     }
   }
 
@@ -154,7 +158,7 @@ void Settings::loadUserLayer() {
 
   QJsonObject obj = doc.object();
   foreach (const QString& key, obj.keys()) {
-    Settings::userLayer.insert(key, obj.value(key).toString());
+    Settings::userLayer.insert_or_assign(key, obj.value(key).toString());
   }
 }
 
@@ -166,8 +170,8 @@ void Settings::saveUserLayer() {
   QDir().mkpath(QFileInfo(path).absolutePath());
 
   QJsonObject obj;
-  foreach (const QString& key, Settings::userLayer.keys()) {
-    obj.insert(key, Settings::userLayer.value(key));
+  foreach (const QString& key, oi::keys(Settings::userLayer)) {
+    obj.insert(key, oi::value(Settings::userLayer, key));
   }
 
   QFile file(path);

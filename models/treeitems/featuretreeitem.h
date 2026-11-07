@@ -4,6 +4,7 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <vector>
 
 #include "featurewrapper.h"
 #include "observation.h"
@@ -111,7 +112,7 @@ class FeatureTreeItem : public QObject {
   oi::Guarded<Reading> reading;
 
   // all elements that are sub elements of this item
-  QList<ElementTypes> containedElementTypes;
+  std::vector<ElementTypes> containedElementTypes;
 
   // parent and child items
   QPointer<FeatureTreeItem> parent;

@@ -100,7 +100,7 @@ ProjectExchanger::LoadResult ProjectExchanger::loadProject(
   }
 
   // a project always has the initial bundle transformation
-  if (decoded.job->getFeaturesByName("Bundle01_1").isEmpty()) {
+  if (decoded.job->getFeaturesByName("Bundle01_1").empty()) {
     FeatureUtil util;
     if (!util.createInitialBundleTransformation(decoded.job)) {
       delete decoded.job.data();

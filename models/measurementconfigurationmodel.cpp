@@ -1,5 +1,9 @@
 #include "measurementconfigurationmodel.h"
 
+#include <vector>
+
+#include "containers.h"
+
 /*!
  * \brief MeasurementConfigurationModel::MeasurementConfigurationModel
  * \param parent
@@ -54,7 +58,7 @@ QVariant MeasurementConfigurationModel::data(const QModelIndex& index,
     return QVariant();
   }
 
-  const QList<MeasurementConfig> configs =
+  const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
   if (index.row() < configs.size()) {
     return configs.at(index.row()).getName();
@@ -115,7 +119,7 @@ bool MeasurementConfigurationModel::setData(const QModelIndex& index,
     return false;
   }
 
-  const QList<MeasurementConfig> configs =
+  const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
   if (index.row() < configs.size()) {
     // check if there already is a measurement config with the new name
@@ -147,7 +151,8 @@ QModelIndex MeasurementConfigurationModel::getIndex(
     return QModelIndex();
   }
 
-  const int idx = this->measurementConfigManager->getConfigs().indexOf(mConfig);
+  const int idx =
+      oi::indexOf(this->measurementConfigManager->getConfigs(), mConfig);
   if (idx >= 0) {
     return this->createIndex(idx, 0);
   }
@@ -173,7 +178,7 @@ MeasurementConfig MeasurementConfigurationModel::getMeasurementConfig(
   }
 
   // check if the index is a measurement config
-  const QList<MeasurementConfig> configs =
+  const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
   if (index.row() < configs.size()) {
     return configs.at(index.row());
@@ -194,7 +199,7 @@ bool MeasurementConfigurationModel::isUserConfig(
     return false;
   }
 
-  const QList<MeasurementConfig> configs =
+  const std::vector<MeasurementConfig> configs =
       this->measurementConfigManager->getConfigs();
   if (index.row() < configs.size()) {
     return configs.at(index.row()).isUserConfig();
@@ -227,7 +232,7 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(
   this->updateModel();
 
   // get all saved measurement configs
-  const QList<MeasurementConfig> userConfigs =
+  const std::vector<MeasurementConfig> userConfigs =
       this->measurementConfigManager->getConfigs();
   for (int i = 0; i < userConfigs.size(); i++) {
     if (userConfigs.at(i).getName().compare(mConfig.getName()) == 0) {

@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QObject>
+#include <map>
 
 #include "types.h"
 
@@ -23,8 +24,8 @@ class ParameterDisplayConfig {
   [[nodiscard]] int getDisplayDigits(const DimensionType& dimension) const;
   void setDisplayDigits(const DimensionType& dimension, const int& digits);
 
-  [[nodiscard]] QMap<DimensionType, UnitType> getDisplayUnits() const;
-  [[nodiscard]] QMap<DimensionType, int> getDisplayDigits() const;
+  [[nodiscard]] std::map<DimensionType, UnitType> getDisplayUnits() const;
+  [[nodiscard]] std::map<DimensionType, int> getDisplayDigits() const;
 
   [[nodiscard]] bool getUseSounds() const;
   void setUseSounds(const bool use);

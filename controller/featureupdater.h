@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <vector>
 
 #include "console.h"
 #include "coordinatesystem.h"
@@ -109,10 +110,10 @@ class FeatureUpdater : public QObject {
   // clear or save bundle results
   void clearBundleResults(const oi::Guarded<CoordinateSystem>& bundleSystem);
   void saveBundleResults(const oi::Guarded<CoordinateSystem>& bundleSystem);
-  // void createBundleGeometries(const QList<BundleGeometry> &geometries, const
-  // oi::Guarded<CoordinateSystem> &bundleSystem);
+  // void createBundleGeometries(const std::vector<BundleGeometry> &geometries,
+  // const oi::Guarded<CoordinateSystem> &bundleSystem);
   void createBundleTransformations(
-      QList<BundleTransformation>& transformations,
+      std::vector<BundleTransformation>& transformations,
       const oi::Guarded<CoordinateSystem>& bundleSystem);
   // recalc bundle- trafoParam dependencies
   void recalcAllBundleTrafoDependencies(

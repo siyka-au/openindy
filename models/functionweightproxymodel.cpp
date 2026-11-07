@@ -1,5 +1,9 @@
 #include "functionweightproxymodel.h"
 
+#include <vector>
+
+#include "containers.h"
+
 /*!
  * \brief FunctionWeightProxyModel::FunctionWeightProxyModel
  * \param parent
@@ -99,7 +103,8 @@ bool FunctionWeightProxyModel::filterAcceptsRow(
                                          ->getFeature()
                                          ->getFunctions()
                                          .at(0);
-    QList<InputElement> inputElem = function->getInputElements().value(0);
+    std::vector<InputElement> inputElem =
+        oi::value(function->getInputElements(), 0);
 
     oi::Guarded<FeatureWrapper> fw =
         source_model->getCurrentJob()->getFeatureById(
@@ -157,7 +162,8 @@ bool FunctionWeightProxyModel::lessThan(const QModelIndex& source_left,
                                          ->getFeature()
                                          ->getFunctions()
                                          .at(0);
-    QList<InputElement> inputElem = function->getInputElements().value(0);
+    std::vector<InputElement> inputElem =
+        oi::value(function->getInputElements(), 0);
 
     oi::Guarded<FeatureWrapper> fwRight =
         source_model->getCurrentJob()->getFeatureById(

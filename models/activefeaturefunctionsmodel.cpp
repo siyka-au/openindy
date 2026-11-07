@@ -1,5 +1,7 @@
 #include "activefeaturefunctionsmodel.h"
 
+#include <map>
+
 #include "jobconnect.h"
 #include "qtjobadapter.h"
 
@@ -319,29 +321,29 @@ bool ActiveFeatureFunctionsModel::getSupportsWeights(
  * \param index
  * \return
  */
-QMap<QString, int> ActiveFeatureFunctionsModel::getIntegerParameter(
+std::map<QString, int> ActiveFeatureFunctionsModel::getIntegerParameter(
     const QModelIndex& index) const {
   // check index (has to be valid and its parent has to be the root item)
   if (!index.isValid() || index.parent().isValid()) {
-    return QMap<QString, int>();
+    return std::map<QString, int>();
   }
 
   // check current job
   if (this->currentJob.isNull()) {
-    return QMap<QString, int>();
+    return std::map<QString, int>();
   }
 
   // check and get active feature
   if (this->currentJob->getActiveFeature().isNull() ||
       this->currentJob->getActiveFeature()->getFeature().isNull()) {
-    return QMap<QString, int>();
+    return std::map<QString, int>();
   }
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
   if (index.row() >= feature->getFunctions().size() ||
       feature->getFunctions().at(index.row()).isNull()) {
-    return QMap<QString, int>();
+    return std::map<QString, int>();
   }
   Function* function = feature->getFunctions().at(index.row());
 
@@ -353,29 +355,29 @@ QMap<QString, int> ActiveFeatureFunctionsModel::getIntegerParameter(
  * \param index
  * \return
  */
-QMap<QString, double> ActiveFeatureFunctionsModel::getDoubleParameter(
+std::map<QString, double> ActiveFeatureFunctionsModel::getDoubleParameter(
     const QModelIndex& index) const {
   // check index (has to be valid and its parent has to be the root item)
   if (!index.isValid() || index.parent().isValid()) {
-    return QMap<QString, double>();
+    return std::map<QString, double>();
   }
 
   // check current job
   if (this->currentJob.isNull()) {
-    return QMap<QString, double>();
+    return std::map<QString, double>();
   }
 
   // check and get active feature
   if (this->currentJob->getActiveFeature().isNull() ||
       this->currentJob->getActiveFeature()->getFeature().isNull()) {
-    return QMap<QString, double>();
+    return std::map<QString, double>();
   }
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
   if (index.row() >= feature->getFunctions().size() ||
       feature->getFunctions().at(index.row()).isNull()) {
-    return QMap<QString, double>();
+    return std::map<QString, double>();
   }
   Function* function = feature->getFunctions().at(index.row());
 
@@ -387,29 +389,30 @@ QMap<QString, double> ActiveFeatureFunctionsModel::getDoubleParameter(
  * \param index
  * \return
  */
-QMap<QString, QString> ActiveFeatureFunctionsModel::getStringParameterSelection(
+std::map<QString, QString>
+ActiveFeatureFunctionsModel::getStringParameterSelection(
     const QModelIndex& index) const {
   // check index (has to be valid and its parent has to be the root item)
   if (!index.isValid() || index.parent().isValid()) {
-    return QMap<QString, QString>();
+    return std::map<QString, QString>();
   }
 
   // check current job
   if (this->currentJob.isNull()) {
-    return QMap<QString, QString>();
+    return std::map<QString, QString>();
   }
 
   // check and get active feature
   if (this->currentJob->getActiveFeature().isNull() ||
       this->currentJob->getActiveFeature()->getFeature().isNull()) {
-    return QMap<QString, QString>();
+    return std::map<QString, QString>();
   }
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
   if (index.row() >= feature->getFunctions().size() ||
       feature->getFunctions().at(index.row()).isNull()) {
-    return QMap<QString, QString>();
+    return std::map<QString, QString>();
   }
   Function* function = feature->getFunctions().at(index.row());
 
@@ -424,9 +427,9 @@ QMap<QString, QString> ActiveFeatureFunctionsModel::getStringParameterSelection(
  * \param stringParams
  */
 void ActiveFeatureFunctionsModel::setScalarInputParameters(
-    const QModelIndex& index, const QMap<QString, int>& intParams,
-    const QMap<QString, double>& doubleParams,
-    const QMap<QString, QString>& stringParams) {
+    const QModelIndex& index, const std::map<QString, int>& intParams,
+    const std::map<QString, double>& doubleParams,
+    const std::map<QString, QString>& stringParams) {
   // check index (has to be valid and its parent has to be the root item)
   if (!index.isValid() || index.parent().isValid()) {
     return;
@@ -466,29 +469,29 @@ void ActiveFeatureFunctionsModel::setScalarInputParameters(
  * \param index
  * \return
  */
-QMultiMap<QString, QString> ActiveFeatureFunctionsModel::getStringParameter(
+std::multimap<QString, QString> ActiveFeatureFunctionsModel::getStringParameter(
     const QModelIndex& index) const {
   // check index (has to be valid and its parent has to be the root item)
   if (!index.isValid() || index.parent().isValid()) {
-    return QMultiMap<QString, QString>();
+    return std::multimap<QString, QString>();
   }
 
   // check current job
   if (this->currentJob.isNull()) {
-    return QMultiMap<QString, QString>();
+    return std::multimap<QString, QString>();
   }
 
   // check and get active feature
   if (this->currentJob->getActiveFeature().isNull() ||
       this->currentJob->getActiveFeature()->getFeature().isNull()) {
-    return QMultiMap<QString, QString>();
+    return std::multimap<QString, QString>();
   }
   Feature* feature = this->currentJob->getActiveFeature()->getFeature();
 
   // check and get function
   if (index.row() >= feature->getFunctions().size() ||
       feature->getFunctions().at(index.row()).isNull()) {
-    return QMultiMap<QString, QString>();
+    return std::multimap<QString, QString>();
   }
   Function* function = feature->getFunctions().at(index.row());
 

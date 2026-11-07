@@ -2,6 +2,7 @@
 #include <QPointer>
 #include <QString>
 #include <QtTest>
+#include <vector>
 
 #include "controllersensoractions.h"
 #include "featuretablemodel.h"
@@ -31,11 +32,11 @@ void MeasureBehaviorTest::testAimAndMeasure() {
   TestControllerSensorActions controller;
   QPointer<FeatureTableModel> featureTableModel;
 
-  QList<int> measureFeatures;
+  std::vector<int> measureFeatures;
 
-  measureFeatures.append(101);
-  measureFeatures.append(102);
-  measureFeatures.append(103);
+  measureFeatures.push_back(101);
+  measureFeatures.push_back(102);
+  measureFeatures.push_back(103);
 
   logic.init(&controller, measureFeatures, featureTableModel);
   QCOMPARE(logic.next(), true);
@@ -59,11 +60,11 @@ void MeasureBehaviorTest::testSkip() {
   TestControllerSensorActions controller;
   QPointer<FeatureTableModel> featureTableModel;
 
-  QList<int> measureFeatures;
+  std::vector<int> measureFeatures;
 
-  measureFeatures.append(101);
-  measureFeatures.append(102);
-  measureFeatures.append(103);
+  measureFeatures.push_back(101);
+  measureFeatures.push_back(102);
+  measureFeatures.push_back(103);
 
   logic.init(&controller, measureFeatures, featureTableModel);
   QCOMPARE(logic.next(), true);
@@ -89,11 +90,11 @@ void MeasureBehaviorTest::testSearch() {
   TestControllerSensorActions controller;
   QPointer<FeatureTableModel> featureTableModel;
 
-  QList<int> measureFeatures;
+  std::vector<int> measureFeatures;
 
-  measureFeatures.append(101);
-  measureFeatures.append(102);
-  measureFeatures.append(103);
+  measureFeatures.push_back(101);
+  measureFeatures.push_back(102);
+  measureFeatures.push_back(103);
 
   logic.init(&controller, measureFeatures, featureTableModel);
   QCOMPARE(logic.next(), true);

@@ -1,6 +1,7 @@
 #include "plugintreeviewmodel.h"
 
 #include <QFont>
+#include <vector>
 
 PluginTreeViewModel::PluginTreeViewModel(QObject* parent) {
   this->rootItem = new PluginTreeItem("available plugins");
@@ -139,7 +140,7 @@ QVariant PluginTreeViewModel::headerData(int section,
  * \brief PluginTreeViewModel::getPlugins
  * \return
  */
-const QList<sys::Plugin>& PluginTreeViewModel::getPlugins() const {
+const std::vector<sys::Plugin>& PluginTreeViewModel::getPlugins() const {
   return this->plugins;
 }
 
@@ -147,7 +148,7 @@ const QList<sys::Plugin>& PluginTreeViewModel::getPlugins() const {
  * \brief PluginTreeViewModel::setPlugins
  * \param plugins
  */
-void PluginTreeViewModel::setPlugins(const QList<sys::Plugin>& plugins) {
+void PluginTreeViewModel::setPlugins(const std::vector<sys::Plugin>& plugins) {
   emit this->beginResetModel();
 
   // set new plugins

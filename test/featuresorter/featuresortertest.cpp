@@ -4,6 +4,7 @@
 #include <QtTest>
 #include <algorithm>
 #include <random>
+#include <vector>
 
 #include "feature.h"
 #include "featuresorter.h"
@@ -44,10 +45,10 @@ class FeatureSorterTest : public QObject {
  private:
   oi::Guarded<FeatureWrapper> createPoint(int id, QString name, bool isNominal,
                                           QString groupname = "");
-  QString asString(QList<oi::Guarded<FeatureWrapper>> features,
+  QString asString(std::vector<oi::Guarded<FeatureWrapper>> features,
                    bool withGroup = false);
-  QList<oi::Guarded<FeatureWrapper>> createPoints(QString data);
-  QList<oi::Guarded<FeatureWrapper>> createTestData(bool shuffle = false);
+  std::vector<oi::Guarded<FeatureWrapper>> createPoints(QString data);
+  std::vector<oi::Guarded<FeatureWrapper>> createTestData(bool shuffle = false);
 };
 
 oi::Guarded<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name,
@@ -65,10 +66,10 @@ oi::Guarded<FeatureWrapper> FeatureSorterTest::createPoint(int id, QString name,
 
   return featurewrapper;
 }
-QString FeatureSorterTest::asString(QList<oi::Guarded<FeatureWrapper>> features,
-                                    bool withGroup) {
+QString FeatureSorterTest::asString(
+    std::vector<oi::Guarded<FeatureWrapper>> features, bool withGroup) {
   QString s;
-  for (int i = 0; i < features.count(); ++i) {
+  for (int i = 0; i < features.size(); ++i) {
     s.append(QVariant(features[i]->getFeature()->getId()).toString());
     s.append(", ");
     if (withGroup) {
@@ -90,9 +91,9 @@ QString FeatureSorterTest::asString(QList<oi::Guarded<FeatureWrapper>> features,
   return s;
 }
 
-QList<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createPoints(
+std::vector<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createPoints(
     QString data) {
-  QList<oi::Guarded<FeatureWrapper>> features;
+  std::vector<oi::Guarded<FeatureWrapper>> features;
 
   QTextStream stream(data.toUtf8());
   while (!stream.atEnd()) {
@@ -107,9 +108,9 @@ QList<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createPoints(
     }
 
     // id    actual/nominal  groupname   featurename
-    features.append(createPoint(columns.at(0).toInt(), columns.at(3),
-                                columns.at(1).startsWith("nominal"),
-                                columns.at(2)));
+    features.push_back(createPoint(columns.at(0).toInt(), columns.at(3),
+                                   columns.at(1).startsWith("nominal"),
+                                   columns.at(2)));
   }
   return features;
 }
@@ -118,10 +119,10 @@ FeatureSorterTest::FeatureSorterTest() {}
 
 // basic test
 void FeatureSorterTest::testSimpleSortByName() {
-  QList<oi::Guarded<FeatureWrapper>> features;
-  features.append(createPoint(1, "B", false));
-  features.append(createPoint(2, "B", true));
-  features.append(createPoint(3, "A", false));
+  std::vector<oi::Guarded<FeatureWrapper>> features;
+  features.push_back(createPoint(1, "B", false));
+  features.push_back(createPoint(2, "B", true));
+  features.push_back(createPoint(3, "A", false));
 
   qDebug() << asString(features);
 
@@ -143,10 +144,10 @@ void FeatureSorterTest::testSimpleSortByName() {
 
 // basic test
 void FeatureSorterTest::testSimpleSortById() {
-  QList<oi::Guarded<FeatureWrapper>> features;
-  features.append(createPoint(4, "B", false));
-  features.append(createPoint(5, "B", true));
-  features.append(createPoint(3, "A", false));
+  std::vector<oi::Guarded<FeatureWrapper>> features;
+  features.push_back(createPoint(4, "B", false));
+  features.push_back(createPoint(5, "B", true));
+  features.push_back(createPoint(3, "A", false));
 
   qDebug() << asString(features);
 
@@ -169,7 +170,7 @@ void FeatureSorterTest::testSimpleSortById() {
  * @brief FeatureSorterTest::createTestData
  * @return suffled test features
  */
-QList<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createTestData(
+std::vector<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createTestData(
     bool shuffle) {
   // colum delim: "\t"
   // line ending: "\n"
@@ -213,7 +214,7 @@ QList<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createTestData(
 134	actual		Y_Achse\n\
 ");
 
-  QList<oi::Guarded<FeatureWrapper>> features = createPoints(data);
+  std::vector<oi::Guarded<FeatureWrapper>> features = createPoints(data);
 
   qDebug() << asString(features);
 
@@ -227,7 +228,7 @@ QList<oi::Guarded<FeatureWrapper>> FeatureSorterTest::createTestData(
 }
 
 void FeatureSorterTest::testFeatureSorter_eSortStandard() {
-  QList<oi::Guarded<FeatureWrapper>> features = createTestData();
+  std::vector<oi::Guarded<FeatureWrapper>> features = createTestData();
   qDebug() << asString(features);
 
   FeatureSorter freatureSorter;
@@ -261,7 +262,7 @@ void FeatureSorterTest::testFeatureSorter_eSortStandard() {
 }
 
 void FeatureSorterTest::testFeatureSorter_eSortBy_Name_ActNom() {
-  QList<oi::Guarded<FeatureWrapper>> features = createTestData(true);
+  std::vector<oi::Guarded<FeatureWrapper>> features = createTestData(true);
   qDebug() << asString(features);
 
   FeatureSorter freatureSorter;
@@ -296,7 +297,7 @@ void FeatureSorterTest::testFeatureSorter_eSortBy_Name_ActNom() {
 }
 
 void FeatureSorterTest::testFeatureSorter_eSortBy_Group_Name_ActNom() {
-  QList<oi::Guarded<FeatureWrapper>> features = createTestData(true);
+  std::vector<oi::Guarded<FeatureWrapper>> features = createTestData(true);
   qDebug() << asString(features);
 
   FeatureSorter freatureSorter;

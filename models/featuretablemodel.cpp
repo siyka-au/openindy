@@ -1,5 +1,9 @@
 #include "featuretablemodel.h"
 
+#include <map>
+#include <vector>
+
+#include "containers.h"
 #include "jobconnect.h"
 #include "qtjobadapter.h"
 
@@ -576,22 +580,22 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
               oi::Guarded<Geometry> geometry = feature->getGeometry();
               // 3.3.2 copy used elements
               if (editMode.testFlag(EditMode::eFunctionCopyUsedElements)) {
-                QMap<int, QList<InputElement> > inputElements =
+                std::map<int, std::vector<InputElement> > inputElements =
                     copyFunction->getInputElements();
-                QMap<int, QList<InputElement> >::const_iterator iterator =
-                    inputElements.constBegin();
+                std::map<int, std::vector<InputElement> >::const_iterator
+                    iterator = inputElements.cbegin();
                 if (!geometry.isNull() &&
-                    !inputElements.isEmpty()) {  // remove existing observation
-                                                 // references
+                    !inputElements.empty()) {  // remove existing observation
+                                               // references
                   for (oi::Guarded<Observation> obs :
                        geometry->getObservations()) {
                     geometry->removeObservation(obs);
                   }
                 }
-                while (iterator != inputElements.constEnd()) {
-                  QList<InputElement> elements = iterator.value();
+                while (iterator != inputElements.cend()) {
+                  std::vector<InputElement> elements = iterator->second;
                   for (auto element : elements) {
-                    function->addInputElement(element, iterator.key());
+                    function->addInputElement(element, iterator->first);
                     if (!geometry.isNull() &&
                         !element.observation
                              .isNull()) {  // insert observation reference from
@@ -611,8 +615,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
       case eFeatureDisplayX:
         if (!feature->getGeometry().isNull() &&
             !feature->getGeometry()->getOwnerDescription().has_value()) {
-          QMap<GeometryParameters, double> parameters;
-          parameters.insert(
+          std::map<GeometryParameters, double> parameters;
+          parameters.insert_or_assign(
               GeometryParameters::eUnknownX,
               convertToDefault(value.toDouble(),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -625,8 +629,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
       case eFeatureDisplayY:
         if (!feature->getGeometry().isNull() &&
             !feature->getGeometry()->getOwnerDescription().has_value()) {
-          QMap<GeometryParameters, double> parameters;
-          parameters.insert(
+          std::map<GeometryParameters, double> parameters;
+          parameters.insert_or_assign(
               GeometryParameters::eUnknownY,
               convertToDefault(value.toDouble(),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -639,8 +643,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
       case eFeatureDisplayZ:
         if (!feature->getGeometry().isNull() &&
             !feature->getGeometry()->getOwnerDescription().has_value()) {
-          QMap<GeometryParameters, double> parameters;
-          parameters.insert(
+          std::map<GeometryParameters, double> parameters;
+          parameters.insert_or_assign(
               GeometryParameters::eUnknownZ,
               convertToDefault(value.toDouble(),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -653,8 +657,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
       case eFeatureDisplayPrimaryI:
         if (!feature->getGeometry().isNull() &&
             !feature->getGeometry()->getOwnerDescription().has_value()) {
-          QMap<GeometryParameters, double> parameters;
-          parameters.insert(
+          std::map<GeometryParameters, double> parameters;
+          parameters.insert_or_assign(
               GeometryParameters::eUnknownPrimaryI,
               convertToDefault(value.toDouble(),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -667,8 +671,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
       case eFeatureDisplayPrimaryJ:
         if (!feature->getGeometry().isNull() &&
             !feature->getGeometry()->getOwnerDescription().has_value()) {
-          QMap<GeometryParameters, double> parameters;
-          parameters.insert(
+          std::map<GeometryParameters, double> parameters;
+          parameters.insert_or_assign(
               GeometryParameters::eUnknownPrimaryJ,
               convertToDefault(value.toDouble(),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -681,8 +685,8 @@ bool FeatureTableModel::setData(const QModelIndex& index, const QVariant& value,
       case eFeatureDisplayPrimaryK:
         if (!feature->getGeometry().isNull() &&
             !feature->getGeometry()->getOwnerDescription().has_value()) {
-          QMap<GeometryParameters, double> parameters;
-          parameters.insert(
+          std::map<GeometryParameters, double> parameters;
+          parameters.insert_or_assign(
               GeometryParameters::eUnknownPrimaryK,
               convertToDefault(value.toDouble(),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -990,7 +994,7 @@ void FeatureTableModel::setActiveCoordinateSystem(const QString& name) {
   }
 
   // get and check feature with the given name
-  QList<oi::Guarded<FeatureWrapper> > features =
+  std::vector<oi::Guarded<FeatureWrapper> > features =
       this->currentJob->getFeaturesByName(name);
   if (features.size() != 1) {
     return;

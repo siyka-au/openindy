@@ -1,5 +1,7 @@
 #include "bundlestationsmodel.h"
 
+#include <vector>
+
 #include "qtjobadapter.h"
 
 /*!
@@ -365,7 +367,7 @@ void BundleStationsModel::updateModel() {
   // add remaining stations
   QJsonArray stationTemplate =
       this->bundleTemplate.value("parameters").toArray();
-  QList<oi::Guarded<oi::Station> > stations =
+  std::vector<oi::Guarded<oi::Station> > stations =
       this->currentJob->getStationsList();
   foreach (const oi::Guarded<oi::Station>& station, stations) {
     // check station

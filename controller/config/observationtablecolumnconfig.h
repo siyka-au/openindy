@@ -2,6 +2,7 @@
 #define OBSERVATIONTABLECOLUMNCONFIG_H
 
 #include <QList>
+#include <vector>
 
 #include "types.h"
 
@@ -28,7 +29,7 @@ class ObservationTableColumnConfig {
  private:
   void init();
 
-  QList<ObservationDisplayAttributes> displayColumns;
+  std::vector<ObservationDisplayAttributes> displayColumns;
 };
 
 #endif  // OBSERVATIONTABLECOLUMNCONFIG_H

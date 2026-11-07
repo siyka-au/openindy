@@ -4,6 +4,7 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <vector>
 
 #include "controllersensoractions.h"
 #include "featuretablemodel.h"
@@ -22,7 +23,7 @@ class OI_MAIN_EXPORT MeasureBehaviorLogic : public QObject {
  public:
   explicit MeasureBehaviorLogic(QObject* parent = nullptr);
 
-  void init(ControllerSensorActions* control, QList<int> measureFeatures,
+  void init(ControllerSensorActions* control, std::vector<int> measureFeatures,
             FeatureTableModel* sourceModel);
   bool next();
   void measure();
@@ -58,7 +59,7 @@ class OI_MAIN_EXPORT MeasureBehaviorLogic : public QObject {
 
   ControllerSensorActions* control{};
   FeatureTableModel* sourceModel{};
-  QList<int> measureFeatures;
+  std::vector<int> measureFeatures;
 
   int activeFeatureId{-1};
   Decision decision;

@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QPointer>
 #include <QShowEvent>
+#include <map>
 
 #include "modelmanager.h"
 
@@ -38,10 +39,10 @@ class TrafoParamPropertiesDialog : public QDialog {
 
   void setCurrentTrafoParam(const int& id, const QString& name);
 
-  [[nodiscard]] const QMap<TrafoParamParameters, QString>&
+  [[nodiscard]] const std::map<TrafoParamParameters, QString>&
   getUnknownTrafoParamParameters() const;
   void setUnknownTrafoParamParameters(
-      const QMap<TrafoParamParameters, QString>& parameters);
+      const std::map<TrafoParamParameters, QString>& parameters);
 
  signals:
 
@@ -50,7 +51,7 @@ class TrafoParamPropertiesDialog : public QDialog {
   // ###########################
 
   void trafoParamParametersChanged(
-      const int& id, const QMap<TrafoParamParameters, double>& parameters);
+      const int& id, const std::map<TrafoParamParameters, double>& parameters);
 
  private slots:
 
@@ -77,7 +78,7 @@ class TrafoParamPropertiesDialog : public QDialog {
 
   void setParametersToGUI(const TrafoParamParameters& param,
                           const QString& value);
-  void getParametersFromGUI(QMap<TrafoParamParameters, double>& parameters);
+  void getParametersFromGUI(std::map<TrafoParamParameters, double>& parameters);
 
  private:
   Ui::TrafoParamPropertiesDialog* ui;
@@ -88,7 +89,7 @@ class TrafoParamPropertiesDialog : public QDialog {
 
   int id{};
   QString name;
-  QMap<TrafoParamParameters, QString> parameters;
+  std::map<TrafoParamParameters, QString> parameters;
 };
 
 #endif  // TRAFOPARAMPROPERTIESDIALOG_H

@@ -79,13 +79,13 @@ void ExportDialog::on_pushButton_export_clicked() {
   params.exchangeName = this->ui->comboBox_method->currentText();
   params.pluginName = this->ui->comboBox_plugin->currentText();
   params.isDefinedFormat = false;
-  params.units.insert(
+  params.units.insert_or_assign(
       DimensionType::eMetric,
       getUnitTypeEnum(this->ui->comboBox_distance_unit->currentText()));
-  params.units.insert(
+  params.units.insert_or_assign(
       DimensionType::eAngular,
       getUnitTypeEnum(this->ui->comboBox_angle_unit->currentText()));
-  params.units.insert(
+  params.units.insert_or_assign(
       DimensionType::eTemperature,
       getUnitTypeEnum(this->ui->comboBox_temperature_unit->currentText()));
   params.distanceDigits = this->ui->lineEdit_distanceDigits->text().toInt();

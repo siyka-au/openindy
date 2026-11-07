@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include <functional>
+#include <vector>
 
 #include "console.h"
 #include "exchangeParams.h"
@@ -144,13 +145,13 @@ class DataExchanger : public QObject,
   // helper method
   // #############
   void addFunctionsAndMConfigs(
-      const QList<oi::Guarded<FeatureWrapper> >& actuals,
+      const std::vector<oi::Guarded<FeatureWrapper> >& actuals,
       const MeasurementConfig& mConfig, const QString& path,
       const QString& fName);
 
   // import readings of features
-  void importMeasurements(QList<oi::Guarded<FeatureWrapper> > features);
-  void createActuals(QList<oi::Guarded<FeatureWrapper> > features);
+  void importMeasurements(std::vector<oi::Guarded<FeatureWrapper> > features);
+  void createActuals(std::vector<oi::Guarded<FeatureWrapper> > features);
 };
 
 #endif  // OIDATAEXCHANGER_H

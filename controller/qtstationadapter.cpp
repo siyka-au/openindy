@@ -5,7 +5,10 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QThread>
+#include <map>
+#include <vector>
 
+#include "qtconvert.h"
 #include "station.h"
 
 using namespace oi;
@@ -71,11 +74,13 @@ void QtStationAdapter::onStationDestroyed(Station* station) {
   }
 }
 
-void QtStationAdapter::onRealTimeReading(const QVariantMap& reading) {
-  emit this->realTimeReading(reading);
+void QtStationAdapter::onRealTimeReading(
+    const std::map<QString, QVariant>& reading) {
+  emit this->realTimeReading(toQVariantMap(reading));
 }
 
-void QtStationAdapter::onRealTimeStatus(const QMap<QString, QString>& status) {
+void QtStationAdapter::onRealTimeStatus(
+    const std::map<QString, QString>& status) {
   emit this->realTimeStatus(status);
 }
 
@@ -95,7 +100,7 @@ void QtStationAdapter::onCommandFinished(bool success, const QString& msg,
 }
 
 void QtStationAdapter::onMeasurementFinished(
-    int geomId, const QList<oi::Guarded<Reading>>& readings) {
+    int geomId, const std::vector<oi::Guarded<Reading>>& readings) {
   emit this->measurementFinished(geomId, readings);
 }
 

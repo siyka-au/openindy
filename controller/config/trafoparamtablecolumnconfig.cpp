@@ -1,5 +1,7 @@
 #include "trafoparamtablecolumnconfig.h"
 
+#include "containers.h"
+
 /*!
  * \brief TrafoParamTableColumnConfig::FeatureTableColumnConfig
  */
@@ -19,7 +21,7 @@ TrafoParamTableColumnConfig::TrafoParamTableColumnConfig(bool initBundle) {
  */
 bool TrafoParamTableColumnConfig::getColumnVisibility(
     const TrafoParamDisplayAttributes& column) const {
-  return this->displayColumns.contains(column);
+  return oi::contains(this->displayColumns, column);
 }
 
 /*!
@@ -29,10 +31,10 @@ bool TrafoParamTableColumnConfig::getColumnVisibility(
  */
 void TrafoParamTableColumnConfig::setColumnVisibility(
     const TrafoParamDisplayAttributes& column, const bool& isVisible) {
-  if (isVisible && !this->displayColumns.contains(column)) {
-    this->displayColumns.append(column);
+  if (isVisible && !oi::contains(this->displayColumns, column)) {
+    this->displayColumns.push_back(column);
   } else {
-    this->displayColumns.removeOne(column);
+    oi::removeOne(this->displayColumns, column);
   }
 }
 
@@ -45,7 +47,7 @@ void TrafoParamTableColumnConfig::setColumnVisibility(
  */
 int TrafoParamTableColumnConfig::getColumnPosition(
     const TrafoParamDisplayAttributes& column) const {
-  return this->displayColumns.indexOf(column);
+  return oi::indexOf(this->displayColumns, column);
 }
 
 /*!
@@ -55,10 +57,10 @@ int TrafoParamTableColumnConfig::getColumnPosition(
  */
 void TrafoParamTableColumnConfig::setColumnPosition(
     const TrafoParamDisplayAttributes& column, const int& index) {
-  if (this->displayColumns.contains(column) && index >= 0 &&
+  if (oi::contains(this->displayColumns, column) && index >= 0 &&
       index < this->displayColumns.size()) {
-    this->displayColumns.removeOne(column);
-    this->displayColumns.insert(index, column);
+    oi::removeOne(this->displayColumns, column);
+    oi::insertAt(this->displayColumns, index, column);
   }
 }
 
@@ -81,39 +83,39 @@ TrafoParamDisplayAttributes TrafoParamTableColumnConfig::getDisplayAttributeAt(
  */
 void TrafoParamTableColumnConfig::init() {
   // default columns in default order
-  this->displayColumns.append(eTrafoParamDisplayName);
-  this->displayColumns.append(eTrafoParamDisplayGroup);
-  this->displayColumns.append(eTrafoParamDisplayIsSolved);
-  this->displayColumns.append(eTrafoParamDisplayIsUsed);
-  this->displayColumns.append(eTrafoParamDisplayStartSystem);
-  this->displayColumns.append(eTrafoParamDisplayDestinationSystem);
-  this->displayColumns.append(eTrafoParamDisplayTranslationX);
-  this->displayColumns.append(eTrafoParamDisplayTranslationY);
-  this->displayColumns.append(eTrafoParamDisplayTranslationZ);
-  this->displayColumns.append(eTrafoParamDisplayRotationX);
-  this->displayColumns.append(eTrafoParamDisplayRotationY);
-  this->displayColumns.append(eTrafoParamDisplayRotationZ);
-  this->displayColumns.append(eTrafoParamDisplayScaleX);
-  this->displayColumns.append(eTrafoParamDisplayScaleY);
-  this->displayColumns.append(eTrafoParamDisplayScaleZ);
-  this->displayColumns.append(eTrafoParamDisplayStDev);
-  this->displayColumns.append(eTrafoParamDisplayFunctions);
-  this->displayColumns.append(eTrafoParamDisplayComment);
+  this->displayColumns.push_back(eTrafoParamDisplayName);
+  this->displayColumns.push_back(eTrafoParamDisplayGroup);
+  this->displayColumns.push_back(eTrafoParamDisplayIsSolved);
+  this->displayColumns.push_back(eTrafoParamDisplayIsUsed);
+  this->displayColumns.push_back(eTrafoParamDisplayStartSystem);
+  this->displayColumns.push_back(eTrafoParamDisplayDestinationSystem);
+  this->displayColumns.push_back(eTrafoParamDisplayTranslationX);
+  this->displayColumns.push_back(eTrafoParamDisplayTranslationY);
+  this->displayColumns.push_back(eTrafoParamDisplayTranslationZ);
+  this->displayColumns.push_back(eTrafoParamDisplayRotationX);
+  this->displayColumns.push_back(eTrafoParamDisplayRotationY);
+  this->displayColumns.push_back(eTrafoParamDisplayRotationZ);
+  this->displayColumns.push_back(eTrafoParamDisplayScaleX);
+  this->displayColumns.push_back(eTrafoParamDisplayScaleY);
+  this->displayColumns.push_back(eTrafoParamDisplayScaleZ);
+  this->displayColumns.push_back(eTrafoParamDisplayStDev);
+  this->displayColumns.push_back(eTrafoParamDisplayFunctions);
+  this->displayColumns.push_back(eTrafoParamDisplayComment);
 }
 
 void TrafoParamTableColumnConfig::initBundle() {
   // default columns in default order
-  this->displayColumns.append(eTrafoParamDisplayName);
-  this->displayColumns.append(eTrafoParamDisplayIsSolved);
-  this->displayColumns.append(eTrafoParamDisplayStartSystem);
-  this->displayColumns.append(eTrafoParamDisplayDestinationSystem);
-  this->displayColumns.append(eTrafoParamDisplayTranslationX);
-  this->displayColumns.append(eTrafoParamDisplayTranslationY);
-  this->displayColumns.append(eTrafoParamDisplayTranslationZ);
-  this->displayColumns.append(eTrafoParamDisplayRotationX);
-  this->displayColumns.append(eTrafoParamDisplayRotationY);
-  this->displayColumns.append(eTrafoParamDisplayRotationZ);
-  this->displayColumns.append(eTrafoParamDisplayScaleX);
-  this->displayColumns.append(eTrafoParamDisplayScaleY);
-  this->displayColumns.append(eTrafoParamDisplayScaleZ);
+  this->displayColumns.push_back(eTrafoParamDisplayName);
+  this->displayColumns.push_back(eTrafoParamDisplayIsSolved);
+  this->displayColumns.push_back(eTrafoParamDisplayStartSystem);
+  this->displayColumns.push_back(eTrafoParamDisplayDestinationSystem);
+  this->displayColumns.push_back(eTrafoParamDisplayTranslationX);
+  this->displayColumns.push_back(eTrafoParamDisplayTranslationY);
+  this->displayColumns.push_back(eTrafoParamDisplayTranslationZ);
+  this->displayColumns.push_back(eTrafoParamDisplayRotationX);
+  this->displayColumns.push_back(eTrafoParamDisplayRotationY);
+  this->displayColumns.push_back(eTrafoParamDisplayRotationZ);
+  this->displayColumns.push_back(eTrafoParamDisplayScaleX);
+  this->displayColumns.push_back(eTrafoParamDisplayScaleY);
+  this->displayColumns.push_back(eTrafoParamDisplayScaleZ);
 }

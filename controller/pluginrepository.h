@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include <optional>
+#include <vector>
 
 #include "plugininfo.h"
 #include "types.h"
@@ -32,7 +33,7 @@ class OI_MAIN_EXPORT PluginRepository {
   // get all / by name
   // #################
 
-  static QList<sys::Plugin> getAll();
+  static std::vector<sys::Plugin> getAll();
   static std::optional<sys::Plugin> getByName(
       const QString& name);  // convenience/display lookup - can be ambiguous,
                              // see plugininfo.h
@@ -43,7 +44,7 @@ class OI_MAIN_EXPORT PluginRepository {
   // get functions
   // #############
 
-  static QList<sys::Function> getAllFunctions();
+  static std::vector<sys::Function> getAllFunctions();
   // whether a function is a "create" function for the given feature type, i.e.
   // one that can produce it from scratch. A pure predicate over the function
   // itself - exposed so consumers filtering their own function lists (e.g.
@@ -52,11 +53,11 @@ class OI_MAIN_EXPORT PluginRepository {
   static bool isCreateFunctionFor(const sys::Function& function,
                                   const FeatureTypes& type);
 
-  static QList<sys::Function> getFunctionsApplicableTo(
+  static std::vector<sys::Function> getFunctionsApplicableTo(
       const FeatureTypes&
           type);  // fit/construct/special/system-transformation functions, i.e.
                   // functions used to create a feature
-  static QList<sys::Function> getChangeFunctions(
+  static std::vector<sys::Function> getChangeFunctions(
       const FeatureTypes& type);  // everything else, i.e. functions used to
                                   // modify an already-solved feature
   static std::optional<sys::Function> getByQualifiedId(
@@ -78,10 +79,10 @@ class OI_MAIN_EXPORT PluginRepository {
   // get tools
   // #########
 
-  static QList<sys::Tool> getAllTools();
+  static std::vector<sys::Tool> getAllTools();
 
-  static QList<sys::Sensor> getAllSensors();
-  static QList<MeasurementConfig> getAllMeasurementConfigs();
+  static std::vector<sys::Sensor> getAllSensors();
+  static std::vector<MeasurementConfig> getAllMeasurementConfigs();
 
   // ###################
   // ABI-rejected plugins
@@ -93,11 +94,11 @@ class OI_MAIN_EXPORT PluginRepository {
   static const QStringList& getRejectedPlugins();
 
  private:
-  static QList<sys::Plugin> scanDirectory(const QString& dirPath);
+  static std::vector<sys::Plugin> scanDirectory(const QString& dirPath);
   static sys::Plugin scanPluginFile(const QString& filePath);
   static bool checkAbiVersion(const QString& filePath, const QJsonObject& meta);
 
-  static QList<sys::Plugin> plugins;
+  static std::vector<sys::Plugin> plugins;
   static QStringList rejected;
   static bool isInit;
 };

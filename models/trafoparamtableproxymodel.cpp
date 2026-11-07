@@ -1,5 +1,7 @@
 #include "trafoparamtableproxymodel.h"
 
+#include "containers.h"
+
 /*!
  * \brief TrafoParamTableProxyModel::TrafoParamTableProxyModel
  * \param parent
@@ -63,7 +65,7 @@ QModelIndex TrafoParamTableProxyModel::mapToSource(
           proxyIndex.column());
 
   // get the index of the attribute in the list of all available attributes
-  int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
+  int sourceColumn = oi::indexOf(getFeatureDisplayAttributes(), attr);
 
   // set up correct column position for the source index
   sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);

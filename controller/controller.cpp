@@ -1,5 +1,9 @@
 #include "controller.h"
 
+#include <map>
+#include <set>
+#include <vector>
+
 #include "featureutil.h"
 #include "qtjobadapter.h"
 #include "qtstationadapter.h"
@@ -114,7 +118,7 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
     return;
   }
 
-  QList<oi::Guarded<FeatureWrapper> > features =
+  std::vector<oi::Guarded<FeatureWrapper> > features =
       this->job->addFeatures(attributes);
   if (features.size() == 0) {
     this->log("No feature were created - See console output for details",
@@ -177,7 +181,7 @@ void Controller::addFeatures(const FeatureAttributes& attributes) {
  * \brief Controller::removeFeatures
  * \param featureIds
  */
-void Controller::removeFeatures(const QSet<int>& featureIds) {
+void Controller::removeFeatures(const std::set<int>& featureIds) {
   // check job
   if (this->job.isNull()) {
     this->log("No active job", MessageTypes::eErrorMessage,
@@ -198,7 +202,8 @@ void Controller::removeFeatures(const QSet<int>& featureIds) {
  * \param parameters
  */
 void Controller::setNominalParameters(
-    const int& featureId, const QMap<GeometryParameters, double>& parameters) {
+    const int& featureId,
+    const std::map<GeometryParameters, double>& parameters) {
   // check job
   if (this->job.isNull()) {
     this->log("No active job", MessageTypes::eErrorMessage,
@@ -228,7 +233,7 @@ void Controller::setNominalParameters(
  */
 void Controller::setTrafoParamParameters(
     const int& featureId,
-    const QMap<TrafoParamParameters, double>& parameters) {
+    const std::map<TrafoParamParameters, double>& parameters) {
   // check job
   if (this->job.isNull()) {
     this->log("No active job", MessageTypes::eErrorMessage,
@@ -327,7 +332,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   }
 
   // resolve the producer function's plugin, then instantiate it
-  QList<sys::Function> candidates =
+  std::vector<sys::Function> candidates =
       PluginRepository::getFunctionsApplicableTo(subType);
   oi::Guarded<Function> producerFunction(nullptr);
   for (const sys::Function& candidate : candidates) {
@@ -350,7 +355,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   subAttributes.name =
       QString("%1_%2").arg(namePrefix).arg(owner->getFeature()->getId());
   subAttributes.count = 1;
-  QList<oi::Guarded<FeatureWrapper> > created =
+  std::vector<oi::Guarded<FeatureWrapper> > created =
       this->job->addFeatures(subAttributes);
   if (created.size() != 1 || created.at(0).isNull()) {
     return;
@@ -628,7 +633,7 @@ void Controller::disableObservations(const int& featureId) {
   this->job->disableObservations(featureId);
 }
 
-void Controller::removeObservationsById(const QList<int> selectedIds) {
+void Controller::removeObservationsById(const std::vector<int> selectedIds) {
   // check job
   if (this->job.isNull()) {
     this->log("No job available", MessageTypes::eErrorMessage,
@@ -829,7 +834,7 @@ void Controller::updateBundleAdjustment(
       }
   */
   // update input stations
-  QList<BundleStation> inputStations;
+  std::vector<BundleStation> inputStations;
   params = param.value("inputStations").toArray();
   for (auto&& param : params) {
     QJsonObject station = param.toObject();
@@ -846,7 +851,7 @@ void Controller::updateBundleAdjustment(
     bundleStation.ry = station.value("ry").toBool();
     bundleStation.rz = station.value("rz").toBool();
     bundleStation.m = station.value("m").toBool();
-    inputStations.append(bundleStation);
+    inputStations.push_back(bundleStation);
   }
 
   // set up input parameters
@@ -1217,11 +1222,11 @@ void Controller::loadProject(const QString& projectName,
               .isNull()) {  // no bundle result was saved
         // load plugin and set plugin to bundle system "Bundle01"
         // see MainWindow::initBundleView()
-        QList<oi::Guarded<FeatureWrapper> > bundleSystems =
+        std::vector<oi::Guarded<FeatureWrapper> > bundleSystems =
             this->job->getFeaturesByName("Bundle01");
-        if (!bundleSystems.isEmpty()) {
+        if (!bundleSystems.empty()) {
           oi::Guarded<CoordinateSystem> bundleSystem =
-              bundleSystems.first()->getCoordinateSystem();
+              bundleSystems.front()->getCoordinateSystem();
 
           QString bundleName, pluginName;
           bundleName = bundleTemplate.value("plugin")
@@ -1269,7 +1274,7 @@ void Controller::loadProject(const QString& projectName,
 
           // initially add all stations to bundle
           // see void MainWindow::bundleSelectionChanged()
-          QList<BundleStation> bundleStations;
+          std::vector<BundleStation> bundleStations;
           foreach (const oi::Guarded<Station>& station,
                    this->job->getStationsList()) {
             // create initial BundleStation
@@ -1282,7 +1287,7 @@ void Controller::loadProject(const QString& projectName,
             bundleStation.ry = false;
             bundleStation.rz = false;
             bundleStation.m = true;
-            bundleStations.append(bundleStation);
+            bundleStations.push_back(bundleStation);
           }
 
           bundlePlugin->setInputStations(bundleStations);
@@ -1919,7 +1924,7 @@ void Controller::activeStationChangedCallback() {
   emit stationStatus(data);
 
   // disconnect all stations
-  QList<oi::Guarded<Station> > stations = this->job->getStationsList();
+  std::vector<oi::Guarded<Station> > stations = this->job->getStationsList();
   foreach (const oi::Guarded<Station>& station, stations) {
     // check station
     if (station.isNull()) {
@@ -1956,7 +1961,7 @@ void Controller::activeStationChangedCallback() {
  * \param readings
  */
 void Controller::measurementFinished(
-    const int& geomId, const QList<oi::Guarded<Reading> >& readings) {
+    const int& geomId, const std::vector<oi::Guarded<Reading> >& readings) {
   // check job
   if (this->job.isNull()) {
     return;
@@ -2265,7 +2270,7 @@ void Controller::initConfigManager() {
  */
 void Controller::initToolPlugins() {
   // get available tools
-  QList<sys::Tool> toolPlugins = PluginRepository::getAllTools();
+  std::vector<sys::Tool> toolPlugins = PluginRepository::getAllTools();
 
   // load all tool plugins and add them to the list of tool plugins
   this->toolPlugins.clear();
@@ -2291,8 +2296,8 @@ void Controller::registerMetaTypes() {
   qRegisterMetaType<oi::MessageDestinations>("MessageDestinations");
   qRegisterMetaType<oi::MeasurementConfig>("MeasurementConfig");
   qRegisterMetaType<oi::SensorConfiguration>("SensorConfiguration");
-  qRegisterMetaType<QList<oi::Guarded<oi::Reading> > >(
-      "QList<oi::Guarded<Reading> >");
+  qRegisterMetaType<std::vector<oi::Guarded<oi::Reading> > >(
+      "std::vector<oi::Guarded<Reading> >");
   qRegisterMetaType<oi::Guarded<oi::Feature> >("oi::Guarded<Feature>");
   qRegisterMetaType<oi::Guarded<oi::Function> >("oi::Guarded<Function>");
   qRegisterMetaType<oi::Guarded<oi::FeatureWrapper> >(
@@ -2304,15 +2309,19 @@ void Controller::registerMetaTypes() {
   qRegisterMetaType<oi::Sensor>("Sensor");
   qRegisterMetaType<oi::Guarded<oi::Sensor> >("oi::Guarded<Sensor>");
   qRegisterMetaType<oi::ReadingTypes>("ReadingTypes");
-  qRegisterMetaType<QList<oi::ReadingTypes> >("QList<ReadingTypes>");
+  qRegisterMetaType<std::vector<oi::ReadingTypes> >(
+      "std::vector<ReadingTypes>");
   qRegisterMetaType<oi::SensorType>("SensorType");
-  qRegisterMetaType<QList<oi::SensorType> >("QList<SensorType>");
+  qRegisterMetaType<std::vector<oi::SensorType> >("std::vector<SensorType>");
   qRegisterMetaType<oi::ConnectionKind>("ConnectionKind");
-  qRegisterMetaType<QList<oi::ConnectionKind> >("QList<ConnectionKind>");
+  qRegisterMetaType<std::vector<oi::ConnectionKind> >(
+      "std::vector<ConnectionKind>");
   qRegisterMetaType<oi::SensorFunctions>("SensorFunctions");
-  qRegisterMetaType<QList<oi::SensorFunctions> >("QList<SensorFunctions>");
+  qRegisterMetaType<std::vector<oi::SensorFunctions> >(
+      "std::vector<SensorFunctions>");
   qRegisterMetaType<oi::AcquisitionMode>("AcquisitionMode");
-  qRegisterMetaType<QList<oi::AcquisitionMode> >("QList<AcquisitionMode>");
+  qRegisterMetaType<std::vector<oi::AcquisitionMode> >(
+      "std::vector<AcquisitionMode>");
   qRegisterMetaType<oi::LocalPoint>("LocalPoint");
   qRegisterMetaType<oi::CalibratedConstellation>("CalibratedConstellation");
   // SensorAction crosses the SensorWorker thread boundary in commandFinished();
@@ -2422,16 +2431,17 @@ oi::Guarded<FeatureWrapper> Controller::createActualForNominal(
       this->measurementConfigManager->getUserConfig(elementConfigName);
 
   // create the actual
-  QList<oi::Guarded<FeatureWrapper> > created = this->job->addFeatures(attr);
-  if (created.size() != 1 || created.first().isNull() ||
-      created.first()->getGeometry().isNull()) {
+  std::vector<oi::Guarded<FeatureWrapper> > created =
+      this->job->addFeatures(attr);
+  if (created.size() != 1 || created.front().isNull() ||
+      created.front()->getGeometry().isNull()) {
     return oi::Guarded<FeatureWrapper>(nullptr);
   }
-  oi::Guarded<FeatureWrapper> actual = created.first();
+  oi::Guarded<FeatureWrapper> actual = created.front();
 
   // attach its fit function and measurement config
-  QList<oi::Guarded<FeatureWrapper> > actuals;
-  actuals.append(actual);
+  std::vector<oi::Guarded<FeatureWrapper> > actuals;
+  actuals.push_back(actual);
   sys::Function defaultFunction =
       PluginRepository::getDefaultFunction(type).value_or(sys::Function());
   this->addFunctionsAndMConfigs(actuals, mConfig,
@@ -2453,7 +2463,7 @@ oi::Guarded<FeatureWrapper> Controller::createActualForNominal(
  * \param fName
  */
 void Controller::addFunctionsAndMConfigs(
-    const QList<oi::Guarded<FeatureWrapper> >& actuals,
+    const std::vector<oi::Guarded<FeatureWrapper> >& actuals,
     const MeasurementConfig& mConfig, const QString& path,
     const QString& fName) {
   // check job
@@ -2667,7 +2677,7 @@ void Controller::createNewStation() {
   this->addFeatures(attributes);
 
   this->job->getStationsList()
-      .last()
+      .back()
       ->getFeatureWrapper()
       ->getStation()
       ->setActiveStationState(true);

@@ -5,6 +5,7 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <vector>
 
 #include "oijob.h"
 #include "pluginrepository.h"
@@ -50,8 +51,8 @@ class FunctionTableModel : public QAbstractTableModel {
   // get or set currently available plugins
   // ######################################
 
-  [[nodiscard]] const QList<sys::Plugin>& getPlugins() const;
-  void setPlugins(const QList<sys::Plugin>& plugins);
+  [[nodiscard]] const std::vector<sys::Plugin>& getPlugins() const;
+  void setPlugins(const std::vector<sys::Plugin>& plugins);
 
  signals:
 
@@ -76,7 +77,7 @@ class FunctionTableModel : public QAbstractTableModel {
   // currently available plugins
   // ###########################
 
-  QList<sys::Plugin> plugins;
+  std::vector<sys::Plugin> plugins;
 };
 
 #endif  // FUNCTIONTABLEMODEL_H

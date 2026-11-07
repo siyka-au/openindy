@@ -1,5 +1,10 @@
 #include "sensorparametersmodel.h"
 
+#include <iterator>
+#include <map>
+
+#include "containers.h"
+
 /*!
  * \brief SensorParametersModel::SensorParametersModel
  * \param parent
@@ -14,7 +19,7 @@ SensorParametersModel::SensorParametersModel(QObject* parent)
  */
 int SensorParametersModel::rowCount(const QModelIndex& parent) const {
   if (this->sConfig.getIsValid()) {
-    return this->sConfig.getStringParameter().keys().size() +
+    return std::ssize(oi::keys(this->sConfig.getStringParameter())) +
            this->sConfig.getDoubleParameter().size() +
            this->sConfig.getIntegerParameter().size();
   }
@@ -45,20 +50,23 @@ QVariant SensorParametersModel::data(const QModelIndex& index, int role) const {
   int rowIndex = index.row();
 
   if (role == Qt::DisplayRole) {
-    if (rowIndex < this->sConfig.getStringParameter().keys().size()) {
-      return this->sConfig.getStringParameter().value(
-          this->sConfig.getStringParameter().keys().at(rowIndex));
+    if (rowIndex < std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+      return oi::value(
+          this->sConfig.getStringParameter(),
+          oi::keys(this->sConfig.getStringParameter()).at(rowIndex));
     } else if (rowIndex <
                this->sConfig.getDoubleParameter().size() +
-                   this->sConfig.getStringParameter().keys().size()) {
-      rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size();
+                   std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+      rowIndex =
+          rowIndex - std::ssize(oi::keys(this->sConfig.getStringParameter()));
       return QString::number(
-          this->sConfig.getDoubleParameter().values().at(rowIndex), 'f', 8);
+          oi::values(this->sConfig.getDoubleParameter()).at(rowIndex), 'f', 8);
     } else {
-      rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size() -
+      rowIndex = rowIndex -
+                 std::ssize(oi::keys(this->sConfig.getStringParameter())) -
                  this->sConfig.getDoubleParameter().size();
       return QString::number(
-          this->sConfig.getIntegerParameter().values().at(rowIndex), 'g', 8);
+          oi::values(this->sConfig.getIntegerParameter()).at(rowIndex), 'g', 8);
     }
   }
 
@@ -77,16 +85,19 @@ QVariant SensorParametersModel::headerData(int section,
                                            int role) const {
   if ((Qt::DisplayRole == role) && (Qt::Vertical == orientation) &&
       (0 <= section) && (section < rowCount())) {
-    if (section < this->sConfig.getStringParameter().keys().size()) {
-      return this->sConfig.getStringParameter().keys().at(section);
-    } else if (section < this->sConfig.getDoubleParameter().size() +
-                             this->sConfig.getStringParameter().keys().size()) {
-      section = section - this->sConfig.getStringParameter().keys().size();
-      return this->sConfig.getDoubleParameter().keys().at(section);
+    if (section < std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+      return oi::keys(this->sConfig.getStringParameter()).at(section);
+    } else if (section <
+               this->sConfig.getDoubleParameter().size() +
+                   std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+      section =
+          section - std::ssize(oi::keys(this->sConfig.getStringParameter()));
+      return oi::keys(this->sConfig.getDoubleParameter()).at(section);
     } else {
-      section = section - this->sConfig.getStringParameter().keys().size() -
+      section = section -
+                std::ssize(oi::keys(this->sConfig.getStringParameter())) -
                 this->sConfig.getDoubleParameter().size();
-      return this->sConfig.getIntegerParameter().keys().at(section);
+      return oi::keys(this->sConfig.getIntegerParameter()).at(section);
     }
 
   } else if ((Qt::DisplayRole == role) && (Qt::Horizontal == orientation) &&
@@ -161,25 +172,30 @@ bool SensorParametersModel::setData(const QModelIndex& index,
   int columnIndex = index.column();
 
   if (rowIndex < rowCount()) {
-    if (rowIndex < this->sConfig.getStringParameter().keys().size()) {
-      QMap<QString, QString> params = this->sConfig.getStringParameter();
-      params.insert(this->sConfig.getStringParameter().keys().at(rowIndex),
-                    value.toString());
+    if (rowIndex < std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+      std::map<QString, QString> params = this->sConfig.getStringParameter();
+      params.insert_or_assign(
+          oi::keys(this->sConfig.getStringParameter()).at(rowIndex),
+          value.toString());
       this->sConfig.setStringParameter(params);
     } else if (rowIndex <
                this->sConfig.getDoubleParameter().size() +
-                   this->sConfig.getStringParameter().keys().size()) {
-      rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size();
-      QMap<QString, double> params = this->sConfig.getDoubleParameter();
-      params.insert(this->sConfig.getDoubleParameter().keys().at(rowIndex),
-                    value.toDouble());
+                   std::ssize(oi::keys(this->sConfig.getStringParameter()))) {
+      rowIndex =
+          rowIndex - std::ssize(oi::keys(this->sConfig.getStringParameter()));
+      std::map<QString, double> params = this->sConfig.getDoubleParameter();
+      params.insert_or_assign(
+          oi::keys(this->sConfig.getDoubleParameter()).at(rowIndex),
+          value.toDouble());
       this->sConfig.setDoubleParameter(params);
     } else {
-      rowIndex = rowIndex - this->sConfig.getStringParameter().keys().size() -
+      rowIndex = rowIndex -
+                 std::ssize(oi::keys(this->sConfig.getStringParameter())) -
                  this->sConfig.getDoubleParameter().size();
-      QMap<QString, int> params = this->sConfig.getIntegerParameter();
-      params.insert(this->sConfig.getIntegerParameter().keys().at(rowIndex),
-                    value.toInt());
+      std::map<QString, int> params = this->sConfig.getIntegerParameter();
+      params.insert_or_assign(
+          oi::keys(this->sConfig.getIntegerParameter()).at(rowIndex),
+          value.toInt());
       this->sConfig.setIntegerParameter(params);
     }
 

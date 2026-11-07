@@ -5,14 +5,16 @@
 #include <QDir>
 #include <QJsonObject>
 #include <QPluginLoader>
+#include <vector>
 
+#include "containers.h"
 #include "oimetadata.h"
 #include "pluginabi.h"
 #include "pluginloader.h"
 #include "settings.h"
 #include "util.h"
 
-QList<sys::Plugin> PluginRepository::plugins;
+std::vector<sys::Plugin> PluginRepository::plugins;
 QStringList PluginRepository::rejected;
 bool PluginRepository::isInit = false;
 
@@ -29,12 +31,12 @@ void PluginRepository::init() {
   QString systemPluginDir = qApp->applicationDirPath() + "/plugins";
   QString userPluginDir = QDir::homePath() + "/.openindy/plugins";
 
-  QList<sys::Plugin> systemPlugins =
+  std::vector<sys::Plugin> systemPlugins =
       PluginRepository::scanDirectory(systemPluginDir);
-  QList<sys::Plugin> userPlugins =
+  std::vector<sys::Plugin> userPlugins =
       PluginRepository::scanDirectory(userPluginDir);
 
-  QList<sys::Plugin> merged = systemPlugins;
+  std::vector<sys::Plugin> merged = systemPlugins;
   foreach (const sys::Plugin& userPlugin, userPlugins) {
     bool shadowed = false;
     for (auto& i : merged) {
@@ -48,7 +50,7 @@ void PluginRepository::init() {
       }
     }
     if (!shadowed) {
-      merged.append(userPlugin);
+      merged.push_back(userPlugin);
     }
   }
 
@@ -61,8 +63,9 @@ void PluginRepository::init() {
  * \param dirPath
  * \return every valid OpenIndy plugin found directly in dirPath
  */
-QList<sys::Plugin> PluginRepository::scanDirectory(const QString& dirPath) {
-  QList<sys::Plugin> result;
+std::vector<sys::Plugin> PluginRepository::scanDirectory(
+    const QString& dirPath) {
+  std::vector<sys::Plugin> result;
 
   QDir dir(dirPath);
   if (!dir.exists()) {
@@ -89,7 +92,7 @@ QList<sys::Plugin> PluginRepository::scanDirectory(const QString& dirPath) {
       continue;
     }
 
-    result.append(PluginRepository::scanPluginFile(filePath));
+    result.push_back(PluginRepository::scanPluginFile(filePath));
   }
 
   return result;
@@ -171,26 +174,26 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   // empty child lists, since a function shouldn't carry a copy of its plugin's
   // entire other contents
   sys::Plugin ownerRef(name, description, version, author, filePath,
-                       QList<sys::Function>(), QList<sys::Sensor>(),
-                       QList<sys::Tool>(), QList<sys::Exchange>(),
-                       QList<sys::Simulation>());
+                       std::vector<sys::Function>(), std::vector<sys::Sensor>(),
+                       std::vector<sys::Tool>(), std::vector<sys::Exchange>(),
+                       std::vector<sys::Simulation>());
 
-  QList<sys::Function> functions;
+  std::vector<sys::Function> functions;
   foreach (const oi::Guarded<Function>& f,
            PluginLoader::loadFunctionPlugins(filePath)) {
     if (f.isNull()) {
       continue;
     }
-    QList<ElementTypes> neededElements;
+    std::vector<ElementTypes> neededElements;
     foreach (const NeededElement& ne, f->getNeededElements()) {
-      neededElements.append(ne.typeOfElement);
+      neededElements.push_back(ne.typeOfElement);
     }
-    functions.append(sys::Function(
+    functions.push_back(sys::Function(
         f->getMetaData().name, f->getMetaData().description, ownerRef,
         f->getApplicableFor(), neededElements, f->getMetaData().iid));
   }
 
-  QList<sys::Sensor> sensors;
+  std::vector<sys::Sensor> sensors;
   foreach (const oi::Guarded<Sensor>& s,
            PluginLoader::loadSensorPlugins(filePath)) {
     if (s.isNull()) {
@@ -201,52 +204,53 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
     // rather than asking each driver to derive and stamp its own SensorType -
     // the derivation already lives in one place (SensorType::fromInterfaceId)
     const SensorType type = SensorType::fromInterfaceId(s->getMetaData().iid);
-    QList<MeasurementConfig> configs = s->getSupportedMeasurementConfigs();
+    std::vector<MeasurementConfig> configs =
+        s->getSupportedMeasurementConfigs();
     for (auto& config : configs) {
       config.setSensorType(type);
     }
 
-    sensors.append(sys::Sensor(
+    sensors.push_back(sys::Sensor(
         s->getMetaData().name, s->getMetaData().description, ownerRef,
         s->getMetaData().iid, configs, s->getSupportedAcquisitionModes()));
   }
 
-  QList<sys::Tool> tools;
+  std::vector<sys::Tool> tools;
   foreach (const QPointer<Tool>& t, PluginLoader::loadToolPlugins(filePath)) {
     if (t.isNull()) {
       continue;
     }
-    tools.append(sys::Tool(t->getMetaData().name, t->getMetaData().description,
-                           ownerRef));
+    tools.push_back(sys::Tool(t->getMetaData().name,
+                              t->getMetaData().description, ownerRef));
   }
 
-  QList<sys::Exchange> exchanges;
+  std::vector<sys::Exchange> exchanges;
   foreach (const oi::Guarded<ExchangeSimpleAscii>& e,
            PluginLoader::loadExchangeSimpleAsciiPlugins(filePath)) {
     if (e.isNull()) {
       continue;
     }
-    exchanges.append(sys::Exchange(e->getMetaData().name,
-                                   e->getMetaData().description, ownerRef,
-                                   e->getMetaData().iid));
+    exchanges.push_back(sys::Exchange(e->getMetaData().name,
+                                      e->getMetaData().description, ownerRef,
+                                      e->getMetaData().iid));
   }
   foreach (const oi::Guarded<ExchangeDefinedFormat>& e,
            PluginLoader::loadExchangeDefinedFormatPlugins(filePath)) {
     if (e.isNull()) {
       continue;
     }
-    exchanges.append(sys::Exchange(e->getMetaData().name,
-                                   e->getMetaData().description, ownerRef,
-                                   e->getMetaData().iid));
+    exchanges.push_back(sys::Exchange(e->getMetaData().name,
+                                      e->getMetaData().description, ownerRef,
+                                      e->getMetaData().iid));
   }
 
-  QList<sys::Simulation> simulations;
+  std::vector<sys::Simulation> simulations;
   foreach (const oi::Guarded<SimulationModel>& sim,
            PluginLoader::loadSimulationPlugins(filePath)) {
     if (sim.isNull()) {
       continue;
     }
-    simulations.append(sys::Simulation(
+    simulations.push_back(sys::Simulation(
         sim->getMetaData().name, sim->getMetaData().description, ownerRef));
   }
 
@@ -258,7 +262,7 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
  * \brief PluginRepository::getAll
  * \return
  */
-QList<sys::Plugin> PluginRepository::getAll() {
+std::vector<sys::Plugin> PluginRepository::getAll() {
   if (!PluginRepository::isInit) {
     PluginRepository::init();
   }
@@ -300,10 +304,10 @@ std::optional<sys::Plugin> PluginRepository::getByFilePath(
  * \brief PluginRepository::getAllFunctions
  * \return every function across every loaded plugin
  */
-QList<sys::Function> PluginRepository::getAllFunctions() {
-  QList<sys::Function> result;
+std::vector<sys::Function> PluginRepository::getAllFunctions() {
+  std::vector<sys::Function> result;
   foreach (const sys::Plugin& plugin, PluginRepository::getAll()) {
-    result.append(plugin.functions());
+    oi::appendAll(result, plugin.functions());
   }
   return result;
 }
@@ -331,15 +335,15 @@ bool PluginRepository::isCreateFunctionFor(const sys::Function& function,
         function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) ==
             0;
   }
-  return isCreateCategory && function.applicableFor().contains(type);
+  return isCreateCategory && oi::contains(function.applicableFor(), type);
 }
 
-QList<sys::Function> PluginRepository::getFunctionsApplicableTo(
+std::vector<sys::Function> PluginRepository::getFunctionsApplicableTo(
     const FeatureTypes& type) {
-  QList<sys::Function> result;
+  std::vector<sys::Function> result;
   foreach (const sys::Function& function, PluginRepository::getAllFunctions()) {
     if (PluginRepository::isCreateFunctionFor(function, type)) {
-      result.append(function);
+      result.push_back(function);
     }
   }
   return result;
@@ -353,9 +357,9 @@ QList<sys::Function> PluginRepository::getFunctionsApplicableTo(
  * \param type
  * \return
  */
-QList<sys::Function> PluginRepository::getChangeFunctions(
+std::vector<sys::Function> PluginRepository::getChangeFunctions(
     const FeatureTypes& type) {
-  QList<sys::Function> result;
+  std::vector<sys::Function> result;
   foreach (const sys::Function& function, PluginRepository::getAllFunctions()) {
     bool isCreateCategory =
         function.interfaceCategory().compare(
@@ -366,8 +370,8 @@ QList<sys::Function> PluginRepository::getChangeFunctions(
             OiMetaData::iid_ConstructFunction) == 0 ||
         function.interfaceCategory().compare(OiMetaData::iid_SpecialFunction) ==
             0;
-    if (!isCreateCategory && function.applicableFor().contains(type)) {
-      result.append(function);
+    if (!isCreateCategory && oi::contains(function.applicableFor(), type)) {
+      result.push_back(function);
     }
   }
   return result;
@@ -392,10 +396,10 @@ std::optional<sys::Function> PluginRepository::getByQualifiedId(
  * \brief PluginRepository::getAllTools
  * \return
  */
-QList<sys::Tool> PluginRepository::getAllTools() {
-  QList<sys::Tool> result;
+std::vector<sys::Tool> PluginRepository::getAllTools() {
+  std::vector<sys::Tool> result;
   foreach (const sys::Plugin& plugin, PluginRepository::getAll()) {
-    result.append(plugin.tools());
+    oi::appendAll(result, plugin.tools());
   }
   return result;
 }
@@ -404,10 +408,10 @@ QList<sys::Tool> PluginRepository::getAllTools() {
  * \brief PluginRepository::getAllSensors
  * \return
  */
-QList<sys::Sensor> PluginRepository::getAllSensors() {
-  QList<sys::Sensor> result;
+std::vector<sys::Sensor> PluginRepository::getAllSensors() {
+  std::vector<sys::Sensor> result;
   foreach (const sys::Plugin& plugin, PluginRepository::getAll()) {
-    result.append(plugin.sensors());
+    oi::appendAll(result, plugin.sensors());
   }
   return result;
 }
@@ -420,10 +424,10 @@ QList<sys::Sensor> PluginRepository::getAllSensors() {
  * since it comes from the same instantiate+init() scan that already
  * builds the plugin catalog.
  */
-QList<MeasurementConfig> PluginRepository::getAllMeasurementConfigs() {
-  QList<MeasurementConfig> result;
+std::vector<MeasurementConfig> PluginRepository::getAllMeasurementConfigs() {
+  std::vector<MeasurementConfig> result;
   foreach (const sys::Sensor& sensor, PluginRepository::getAllSensors()) {
-    result.append(sensor.measurementConfigs());
+    oi::appendAll(result, sensor.measurementConfigs());
   }
   return result;
 }

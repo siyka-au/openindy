@@ -1,5 +1,9 @@
 #include "availableelementstreeviewproxymodel.h"
 
+#include <map>
+#include <vector>
+
+#include "containers.h"
 #include "jobconnect.h"
 #include "qtfunctionadapter.h"
 #include "qtjobadapter.h"
@@ -208,8 +212,8 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
   ElementTypes neededElementType = neededElement.typeOfElement;
 
   // check each model index
-  QList<FeatureTreeItem*> inputElements;  // input elements of type
-                                          // neededElement
+  std::vector<FeatureTreeItem*> inputElements;  // input elements of type
+                                                // neededElement
   foreach (const QModelIndex& index, selection) {
     // get source index
     QModelIndex sourceIndex = this->mapToSource(index);
@@ -242,11 +246,11 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
       neededElementType == ElementTypes::eRadiusElement) {  // feature
 
     // temporary save all feature pointers
-    QList<oi::Guarded<FeatureWrapper> > features;
+    std::vector<oi::Guarded<FeatureWrapper> > features;
     foreach (FeatureTreeItem* item, inputElements) {
       if (!item->getFeature().isNull() &&
           !item->getFeature()->getFeature().isNull()) {
-        features.append(item->getFeature());
+        features.push_back(item->getFeature());
       }
     }
 
@@ -266,10 +270,10 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
              ElementTypes::eObservationElement) {  // observation
 
     // temporary save all observation pointers
-    QList<oi::Guarded<Observation> > observations;
+    std::vector<oi::Guarded<Observation> > observations;
     foreach (FeatureTreeItem* item, inputElements) {
       if (!item->getObservation().isNull()) {
-        observations.append(item->getObservation());
+        observations.push_back(item->getObservation());
       }
     }
 
@@ -293,10 +297,10 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
   } else if (getIsReading(neededElementType)) {  // reading
 
     // temporary save all reading pointers
-    QList<oi::Guarded<Reading> > readings;
+    std::vector<oi::Guarded<Reading> > readings;
     foreach (FeatureTreeItem* item, inputElements) {
       if (!item->getReading().isNull()) {
-        readings.append(item->getReading());
+        readings.push_back(item->getReading());
       }
     }
 
@@ -387,7 +391,7 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(
       }
 
       // check if function already contains the element
-      QMap<int, QList<InputElement> > inputElements =
+      std::map<int, std::vector<InputElement> > inputElements =
           function->getInputElements();
       if (item->getIsFeature() && !item->getFeature().isNull() &&
           !item->getFeature()->getFeature().isNull()) {
@@ -526,7 +530,7 @@ void AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition() {
  * \param type
  */
 void AvailableElementsTreeViewProxyModel::addInputElement(
-    QList<FeatureTreeItem*>& inputElements,
+    std::vector<FeatureTreeItem*>& inputElements,
     const QPointer<FeatureTreeItem>& item, const ElementTypes& type) {
   // check item
   if (item.isNull()) {
@@ -564,7 +568,7 @@ void AvailableElementsTreeViewProxyModel::addInputElement(
     }
 
     // check if the inputElements list already contains the item
-    if (inputElements.contains(item)) {
+    if (oi::contains(inputElements, item)) {
       return;
     }
 
@@ -577,7 +581,7 @@ void AvailableElementsTreeViewProxyModel::addInputElement(
     const int inputElementKey =
         this->neededElementIndex;  // D12: position is always the real
                                    // NeededElement index now
-    QMap<int, QList<InputElement> > functionInputElements =
+    std::map<int, std::vector<InputElement> > functionInputElements =
         function->getInputElements();
     foreach (const InputElement& element,
              functionInputElements[inputElementKey]) {
@@ -587,7 +591,7 @@ void AvailableElementsTreeViewProxyModel::addInputElement(
     }
 
     // add the item to the inputElements list
-    inputElements.append(item);
+    inputElements.push_back(item);
 
     return;
   }

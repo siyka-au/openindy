@@ -1,5 +1,8 @@
 #include "watchwindowdialog.h"
 
+#include <vector>
+
+#include "containers.h"
 #include "qtstationadapter.h"
 #include "ui_watchwindowdialog.h"
 
@@ -7,10 +10,9 @@
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b,
-                                     oi::Guarded<OiJob> job,
-                                     QList<oi::Guarded<FeatureWrapper> > f,
-                                     QWidget* parent)
+WatchWindowDialog::WatchWindowDialog(
+    WatchWindowBehavior b, oi::Guarded<OiJob> job,
+    std::vector<oi::Guarded<FeatureWrapper> > f, QWidget* parent)
     : QDialog(parent),
       ui(new Ui::WatchWindowDialog),
       behavior(b),
@@ -63,10 +65,10 @@ void WatchWindowDialog::on_checkBox_x_clicked() {
   this->lablesRescaled = false;
 
   if (this->ui->checkBox_x->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eX, this->ui->lineEdit_tolerance_x->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eX);
+    this->settings.displayValues.erase(eX);
   }
 }
 
@@ -78,10 +80,10 @@ void WatchWindowDialog::on_checkBox_y_clicked() {
   this->lablesRescaled = false;
 
   if (this->ui->checkBox_y->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eY, this->ui->lineEdit_tolerance_y->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eY);
+    this->settings.displayValues.erase(eY);
   }
 }
 
@@ -93,10 +95,10 @@ void WatchWindowDialog::on_checkBox_z_clicked() {
   this->lablesRescaled = false;
 
   if (this->ui->checkBox_z->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eZ, this->ui->lineEdit_tolerance_z->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eZ);
+    this->settings.displayValues.erase(eZ);
   }
 }
 
@@ -108,10 +110,10 @@ void WatchWindowDialog::on_checkBox_d3d_clicked() {
   this->lablesRescaled = false;
 
   if (this->ui->checkBox_d3d->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eD3D, this->ui->lineEdit_tolerance_d3d->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eD3D);
+    this->settings.displayValues.erase(eD3D);
   }
 }
 
@@ -122,7 +124,7 @@ void WatchWindowDialog::on_checkBox_d3d_clicked() {
 void WatchWindowDialog::on_lineEdit_tolerance_x_textChanged(
     const QString& arg1) {
   if (this->ui->checkBox_x->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eX, this->ui->lineEdit_tolerance_x->text().toDouble());
   }
 }
@@ -134,7 +136,7 @@ void WatchWindowDialog::on_lineEdit_tolerance_x_textChanged(
 void WatchWindowDialog::on_lineEdit_tolerance_y_textChanged(
     const QString& arg1) {
   if (this->ui->checkBox_y->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eY, this->ui->lineEdit_tolerance_y->text().toDouble());
   }
 }
@@ -146,7 +148,7 @@ void WatchWindowDialog::on_lineEdit_tolerance_y_textChanged(
 void WatchWindowDialog::on_lineEdit_tolerance_z_textChanged(
     const QString& arg1) {
   if (this->ui->checkBox_z->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eZ, this->ui->lineEdit_tolerance_z->text().toDouble());
   }
 }
@@ -158,7 +160,7 @@ void WatchWindowDialog::on_lineEdit_tolerance_z_textChanged(
 void WatchWindowDialog::on_lineEdit_tolerance_d3d_textChanged(
     const QString& arg1) {
   if (this->ui->checkBox_d3d->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eD3D, this->ui->lineEdit_tolerance_d3d->text().toDouble());
   }
 }
@@ -398,29 +400,29 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap& reading) {
 void WatchWindowDialog::setVisibility() {
   // set visibility
   // list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
-  QList<DisplayAttributes> visibleLayouts;
+  std::vector<DisplayAttributes> visibleLayouts;
 
   if (this->settings.displayValues.contains(eX)) {
     this->streamData[eX]->setVisible(true);
-    visibleLayouts.append(eX);
+    visibleLayouts.push_back(eX);
   } else {
     this->streamData[eX]->setVisible(false);
   }
   if (this->settings.displayValues.contains(eY)) {
     this->streamData[eY]->setVisible(true);
-    visibleLayouts.append(eY);
+    visibleLayouts.push_back(eY);
   } else {
     this->streamData[eY]->setVisible(false);
   }
   if (this->settings.displayValues.contains(eZ)) {
     this->streamData[eZ]->setVisible(true);
-    visibleLayouts.append(eZ);
+    visibleLayouts.push_back(eZ);
   } else {
     this->streamData[eZ]->setVisible(false);
   }
   if (this->settings.displayValues.contains(eD3D)) {
     this->streamData[eD3D]->setVisible(true);
-    visibleLayouts.append(eD3D);
+    visibleLayouts.push_back(eD3D);
   } else {
     this->streamData[eD3D]->setVisible(false);
   }
@@ -429,7 +431,7 @@ void WatchWindowDialog::setVisibility() {
   // except feature name label
   for (int i = eX; i != eNotDeclared; i++) {
     DisplayAttributes attr = static_cast<DisplayAttributes>(i);
-    if (!visibleLayouts.contains(attr)) {
+    if (!oi::contains(visibleLayouts, attr)) {
       this->masterLayout->setStretch(masterLayoutIndex[attr], 0);
     }
   }
@@ -437,7 +439,7 @@ void WatchWindowDialog::setVisibility() {
   // set all active attributes to same stretch value
   for (int i = eName; i != eNotDeclared; i++) {
     DisplayAttributes attr = static_cast<DisplayAttributes>(i);
-    if (visibleLayouts.contains(attr)) {
+    if (oi::contains(visibleLayouts, attr)) {
       this->masterLayout->setStretch(masterLayoutIndex[attr], 1);
     }
   }
@@ -451,7 +453,7 @@ void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name,
                  DimensionType::eMetric));
     // set color depending on tolerance
     QString color =
-        (qFabs(value) >= qFabs(this->settings.displayValues.value(attr))
+        (qFabs(value) >= qFabs(oi::value(this->settings.displayValues, attr))
              ? "#FF0000"
              : "#00FF00");
 
@@ -473,31 +475,31 @@ void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name,
  */
 void WatchWindowDialog::getDefaultSettings() {
   if (this->ui->checkBox_x->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eX, this->ui->lineEdit_tolerance_x->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eX);
+    this->settings.displayValues.erase(eX);
   }
 
   if (this->ui->checkBox_y->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eY, this->ui->lineEdit_tolerance_y->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eY);
+    this->settings.displayValues.erase(eY);
   }
 
   if (this->ui->checkBox_z->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eZ, this->ui->lineEdit_tolerance_z->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eZ);
+    this->settings.displayValues.erase(eZ);
   }
 
   if (this->ui->checkBox_d3d->isChecked()) {
-    this->settings.displayValues.insert(
+    this->settings.displayValues.insert_or_assign(
         eD3D, this->ui->lineEdit_tolerance_d3d->text().toDouble());
   } else {
-    this->settings.displayValues.remove(eD3D);
+    this->settings.displayValues.erase(eD3D);
   }
 
   this->settings.showLastMeasurement =
@@ -630,7 +632,7 @@ oi::Guarded<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ) {
       }
       break;
     case WatchWindowBehavior::eShowCurrentSelectedFeature:
-      if (!this->features.isEmpty()) {
+      if (!this->features.empty()) {
         return this->features[0];
       }
       break;

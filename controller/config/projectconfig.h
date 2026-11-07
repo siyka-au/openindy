@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QList>
 #include <QString>
+#include <vector>
 
 #include "parameterdisplayconfig.h"
 #include "types.h"
@@ -40,7 +41,7 @@ class ProjectConfig {
   static int getAutoSaveInterval();
   static void setAutoSaveInterval(int value);
 
-  static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
+  static std::vector<oi::FeatureDisplayAttributes> getDisplayColumns();
   static ParameterDisplayConfig getParameterDisplayConfig();
 
   /*! Where the config files live; the application's own config/projectConfigs
@@ -74,7 +75,7 @@ class ProjectConfig {
 
   static int autoSaveInterval;
 
-  static QList<oi::FeatureDisplayAttributes> displayColumns;
+  static std::vector<oi::FeatureDisplayAttributes> displayColumns;
 };
 
 #endif  // PROJECTCONFIG_H

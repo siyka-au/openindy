@@ -1,5 +1,8 @@
 #include "modelmanager.h"
 
+#include <vector>
+
+#include "qtconvert.h"
 #include "qtjobadapter.h"
 
 // single model manager instance
@@ -33,7 +36,7 @@ SensorTableProxyModel ModelManager::sensorTableProxyModel;
 // SensorConfigurationModel ModelManager::sensorConfigurationModel;
 // SensorConfigurationProxyModel ModelManager::sensorConfigurationProxyModel;
 QStringListModel ModelManager::sensorTypeNamesModel;
-QList<sys::Plugin> ModelManager::plugins;
+std::vector<sys::Plugin> ModelManager::plugins;
 QStandardItemModel ModelManager::baudRateTypesModel;
 QStandardItemModel ModelManager::dataBitTypesModel;
 QStandardItemModel ModelManager::flowControlTypesModel;
@@ -92,9 +95,9 @@ void ModelManager::init() {
 }
 
 void ModelManager::testInit(
-    QList<FeatureTypes> entityTypes,
+    std::vector<FeatureTypes> entityTypes,
     QPointer<MeasurementConfigManager> measurementConfigManager,
-    QList<sys::Plugin> plugins) {
+    std::vector<sys::Plugin> plugins) {
   ModelManager::plugins = plugins;
   ModelManager::functionsListModel.setPlugins(ModelManager::plugins);
 
@@ -422,8 +425,8 @@ QStandardItemModel& ModelManager::getScalarEntityTypeNamesModel() {
  * \param model
  * \param types
  */
-void ModelManager::fillFeatureTypeModel(QStandardItemModel& model,
-                                        const QList<FeatureTypes>& types) {
+void ModelManager::fillFeatureTypeModel(
+    QStandardItemModel& model, const std::vector<FeatureTypes>& types) {
   model.clear();
 
   foreach (const FeatureTypes& type, types) {
@@ -655,7 +658,7 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(
   oi::Guarded<ExchangeSimpleAscii> exchange =
       PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
   if (!exchange.isNull()) {
-    delimiters = exchange->getSupportedDelimiters();
+    delimiters = toQStringList(exchange->getSupportedDelimiters());
   }
 
   model = new QStringListModel(delimiters);
@@ -1102,7 +1105,7 @@ void ModelManager::updateGroupsModel() {
 
   // get a list of all available groups
   if (!ModelManager::currentJob.isNull()) {
-    groups = ModelManager::currentJob->getFeatureGroupList();
+    groups = toQStringList(ModelManager::currentJob->getFeatureGroupList());
     groups.sort();
   }
 
@@ -1439,11 +1442,11 @@ void ModelManager::initReadingTypesModels() {
 void ModelManager::initScalarEntityTypesModels() {
   ModelManager::fillFeatureTypeModel(
       ModelManager::scalarEntityTypeNamesModel,
-      QList<FeatureTypes>()
-          << FeatureTypes::eScalarEntityAngleFeature
-          << FeatureTypes::eScalarEntityDistanceFeature
-          << FeatureTypes::eScalarEntityMeasurementSeriesFeature
-          << FeatureTypes::eScalarEntityTemperatureFeature);
+      std::vector<FeatureTypes>{
+          FeatureTypes::eScalarEntityAngleFeature,
+          FeatureTypes::eScalarEntityDistanceFeature,
+          FeatureTypes::eScalarEntityMeasurementSeriesFeature,
+          FeatureTypes::eScalarEntityTemperatureFeature});
 }
 
 /*!
@@ -1477,7 +1480,7 @@ void ModelManager::initGroupsModel() { ModelManager::updateGroupsModel(); }
  */
 void ModelManager::initActualNominalFilterModel() {
   // create filter options
-  QList<ActualNominalFilter> actualNominalFilters =
+  std::vector<ActualNominalFilter> actualNominalFilters =
       getAvailableActualNominalFilters();
   QStringList items;
   foreach (const ActualNominalFilter& filter, actualNominalFilters) {

@@ -1,5 +1,7 @@
 #include "functiontablemodel.h"
 
+#include <vector>
+
 /*!
  * \brief FeatureTableModel::FeatureTableModel
  * \param parent
@@ -183,7 +185,7 @@ QString FunctionTableModel::getPluginFilePath(const QModelIndex& index) const {
  * \brief FunctionTableModel::getPlugins
  * \return
  */
-const QList<sys::Plugin>& FunctionTableModel::getPlugins() const {
+const std::vector<sys::Plugin>& FunctionTableModel::getPlugins() const {
   return plugins;
 }
 
@@ -191,7 +193,7 @@ const QList<sys::Plugin>& FunctionTableModel::getPlugins() const {
  * \brief FunctionTableModel::setPlugins
  * \param plugins
  */
-void FunctionTableModel::setPlugins(const QList<sys::Plugin>& plugins) {
+void FunctionTableModel::setPlugins(const std::vector<sys::Plugin>& plugins) {
   emit this->beginResetModel();
   this->plugins = plugins;
   emit this->endResetModel();

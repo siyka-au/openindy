@@ -3,6 +3,7 @@
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
+#include <vector>
 
 #include "measurementconfigurationmodel.h"
 #include "sensortype.h"
@@ -47,8 +48,9 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
   //! UI list; Controller::_startMeasurement is what actually rejects an
   //! incompatible config reaching the sensor. Default (invalid) means "no
   //! sensor known yet" and shows every type, matching prior behaviour.
-  void setFilter(const QList<ElementTypes> neededElements,
-                 FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor,
+  void setFilter(const std::vector<ElementTypes> neededElements,
+                 FeatureTypes typeOfFeature,
+                 std::vector<FeatureTypes> applicableFor,
                  const SensorType& activeSensorType = SensorType());
   void setFilterProjectConfig();
   void setFilterUserConfig();
@@ -91,9 +93,9 @@ class OI_MAIN_EXPORT MeasurementConfigurationProxyModel
 
   MeasurementConfigurationFilterTypes filterType{
       MeasurementConfigurationFilterTypes::eNo_MeasurementConfigurationFilter};
-  QList<ElementTypes> neededElements;
+  std::vector<ElementTypes> neededElements;
   FeatureTypes typeOfFeature;
-  QList<FeatureTypes> functionIsApplicableFor;
+  std::vector<FeatureTypes> functionIsApplicableFor;
   SensorType activeSensorType;
 };
 

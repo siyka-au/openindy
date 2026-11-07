@@ -1,5 +1,10 @@
 #include "scalarparameterwidget.h"
 
+#include <map>
+
+#include "containers.h"
+#include "controller/qtconvert.h"
+
 ScalarParameterWidget::ScalarParameterWidget(QWidget* parent)
     : QWidget(parent),
       doubleValidator(new QRegularExpressionValidator(this->validDouble)),
@@ -18,7 +23,7 @@ ScalarParameterWidget::ScalarParameterWidget(QWidget* parent)
  * \param intParameter
  */
 void ScalarParameterWidget::setIntParameter(
-    const QMap<QString, int>& intParameter) {
+    const std::map<QString, int>& intParameter) {
   this->intParameter = intParameter;
   this->setUpGui();
 }
@@ -28,7 +33,7 @@ void ScalarParameterWidget::setIntParameter(
  * \param doubleParameter
  */
 void ScalarParameterWidget::setDoubleParameter(
-    const QMap<QString, double>& doubleParameter) {
+    const std::map<QString, double>& doubleParameter) {
   this->doubleParameter = doubleParameter;
   this->setUpGui();
 }
@@ -39,11 +44,12 @@ void ScalarParameterWidget::setDoubleParameter(
  * \param defaultSelection
  */
 void ScalarParameterWidget::setStringParameter(
-    const QMultiMap<QString, QString>& stringParameter,
-    const QMap<QString, QString>& defaultSelection) {
+    const std::multimap<QString, QString>& stringParameter,
+    const std::map<QString, QString>& defaultSelection) {
   this->stringParameter.clear();
-  foreach (const QString& key, stringParameter.keys()) {
-    this->stringParameter.insert(key, stringParameter.values(key));
+  foreach (const QString& key, oi::keys(stringParameter)) {
+    this->stringParameter.insert(
+        key, toQStringList(oi::values(stringParameter, key)));
   }
   this->stringParameterSelection = defaultSelection;
   this->setUpGui();
@@ -53,7 +59,7 @@ void ScalarParameterWidget::setStringParameter(
  * \brief ScalarParameterWidget::getIntParameter
  * \return
  */
-const QMap<QString, int>& ScalarParameterWidget::getIntParameter() {
+const std::map<QString, int>& ScalarParameterWidget::getIntParameter() {
   this->getParameterFromGUI();
   return this->intParameter;
 }
@@ -62,7 +68,7 @@ const QMap<QString, int>& ScalarParameterWidget::getIntParameter() {
  * \brief ScalarParameterWidget::getDoubleParameter
  * \return
  */
-const QMap<QString, double>& ScalarParameterWidget::getDoubleParameter() {
+const std::map<QString, double>& ScalarParameterWidget::getDoubleParameter() {
   this->getParameterFromGUI();
   return this->doubleParameter;
 }
@@ -71,7 +77,7 @@ const QMap<QString, double>& ScalarParameterWidget::getDoubleParameter() {
  * \brief ScalarParameterWidget::getStringParameter
  * \return
  */
-const QMap<QString, QString>& ScalarParameterWidget::getStringParameter() {
+const std::map<QString, QString>& ScalarParameterWidget::getStringParameter() {
   this->getParameterFromGUI();
   return this->stringParameterSelection;
 }
@@ -99,8 +105,6 @@ void ScalarParameterWidget::setUpGui() {
   this->clearGuiElements();
 
   // get iterators for parameter maps
-  QMapIterator<QString, int> intIterator(this->intParameter);
-  QMapIterator<QString, double> doubleIterator(this->doubleParameter);
   QMapIterator<QString, QStringList> stringIterator(this->stringParameter);
 
   // set up layout
@@ -124,7 +128,7 @@ void ScalarParameterWidget::setUpGui() {
     QComboBox* stringComboBox = new QComboBox();
     stringComboBox->addItems(stringValue);
     stringComboBox->setCurrentText(
-        this->stringParameterSelection.value(stringKey));
+        oi::value(this->stringParameterSelection, stringKey));
     this->parameterLabel.append(stringLabel);
     this->stringParameterComboBox.insert(stringKey, stringComboBox);
     this->myLayout->insertRow(rowIndex, stringLabel, stringComboBox);
@@ -133,10 +137,7 @@ void ScalarParameterWidget::setUpGui() {
                      Qt::AutoConnection);
     rowIndex++;
   }
-  while (intIterator.hasNext()) {
-    intIterator.next();
-    QString intKey = static_cast<QString>(intIterator.key());
-    int intValue = static_cast<int>(intIterator.value());
+  for (const auto& [intKey, intValue] : this->intParameter) {
     QLabel* intLabel = new QLabel(intKey);
     intLabel->setMinimumWidth(300);
     intLabel->setWordWrap(true);
@@ -151,10 +152,7 @@ void ScalarParameterWidget::setUpGui() {
                      Qt::AutoConnection);
     rowIndex++;
   }
-  while (doubleIterator.hasNext()) {
-    doubleIterator.next();
-    QString doubleKey = static_cast<QString>(doubleIterator.key());
-    double doubleValue = static_cast<double>(doubleIterator.value());
+  for (const auto& [doubleKey, doubleValue] : this->doubleParameter) {
     QLabel* doubleLabel = new QLabel(doubleKey);
     doubleLabel->setMinimumWidth(300);
     doubleLabel->setWordWrap(true);
@@ -219,9 +217,9 @@ void ScalarParameterWidget::getParameterFromGUI() {
     QString intKey = static_cast<QString>(intIterator.key());
     QLineEdit* intValue = static_cast<QLineEdit*>(intIterator.value());
     if (intValue->hasAcceptableInput()) {  // if line edit contains an integer
-      this->intParameter.insert(intKey, intValue->text().toInt());
+      this->intParameter.insert_or_assign(intKey, intValue->text().toInt());
     } else if (intValue->text().trimmed().isEmpty()) {
-      this->intParameter.insert(intKey, 0);  // set to 0
+      this->intParameter.insert_or_assign(intKey, 0);  // set to 0
     }
   }
 
@@ -233,9 +231,10 @@ void ScalarParameterWidget::getParameterFromGUI() {
     QString doubleKey = static_cast<QString>(doubleIterator.key());
     QLineEdit* doubleValue = static_cast<QLineEdit*>(doubleIterator.value());
     if (doubleValue->hasAcceptableInput()) {  // if line edit contains a double
-      this->doubleParameter.insert(doubleKey, doubleValue->text().toDouble());
+      this->doubleParameter.insert_or_assign(doubleKey,
+                                             doubleValue->text().toDouble());
     } else if (doubleValue->text().trimmed().isEmpty()) {
-      this->doubleParameter.insert(doubleKey, 0.0);  // set to 0
+      this->doubleParameter.insert_or_assign(doubleKey, 0.0);  // set to 0
     }
   }
 
@@ -246,7 +245,7 @@ void ScalarParameterWidget::getParameterFromGUI() {
     stringIterator.next();
     QString stringKey = static_cast<QString>(stringIterator.key());
     QComboBox* stringValue = static_cast<QComboBox*>(stringIterator.value());
-    this->stringParameterSelection.insert(stringKey,
-                                          stringValue->currentText());
+    this->stringParameterSelection.insert_or_assign(stringKey,
+                                                    stringValue->currentText());
   }
 }

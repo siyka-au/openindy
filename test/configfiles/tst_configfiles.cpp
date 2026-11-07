@@ -5,6 +5,7 @@
 
 #include "config_codec.h"
 #include "configfile.h"
+#include "containers.h"
 #include "projectconfig.h"
 #include "sensortype.h"
 
@@ -87,19 +88,21 @@ void ConfigFilesTest::shippedSensorConfiguration() {
   QCOMPARE(accuracy.sigmaDistance, 2.5e-5);
   QCOMPARE(accuracy.sigmaTemp, 0.5);
   QCOMPARE(accuracy.sigmaXyz.getAt(1), 2.5e-5);
-  QVERIFY(accuracy.sigmaUndefined.isEmpty());
+  QVERIFY(accuracy.sigmaUndefined.empty());
 
   QCOMPARE(config->getDoubleParameter().size(), 17);
-  QCOMPARE(config->getDoubleParameter().value("echo value"), -123.45);
-  QCOMPARE(config->getDoubleParameter().value("Aa1 [arc sec]"), 0.064);
-  QCOMPARE(config->getStringParameter().value("reading type"),
+  QCOMPARE(oi::value(config->getDoubleParameter(), "echo value"), -123.45);
+  QCOMPARE(oi::value(config->getDoubleParameter(), "Aa1 [arc sec]"), 0.064);
+  QCOMPARE(oi::value(config->getStringParameter(), "reading type"),
            QString("polar"));
-  QCOMPARE(config->getStringParameter().value("active probe"),
+  QCOMPARE(oi::value(config->getStringParameter(), "active probe"),
            QString("1.5''"));
-  QCOMPARE(config->getAvailableStringParameter().values("reading type"),
-           QStringList({"cartesian", "polar", "direction", "distance"}));
-  QCOMPARE(config->getAvailableStringParameter().values("active probe").size(),
-           3);
+  QCOMPARE(
+      oi::values(config->getAvailableStringParameter(), "reading type"),
+      (std::vector<QString>{"cartesian", "polar", "direction", "distance"}));
+  QCOMPARE(
+      oi::values(config->getAvailableStringParameter(), "active probe").size(),
+      3);
 }
 
 void ConfigFilesTest::everyShippedFileIsJson() {
@@ -173,8 +176,8 @@ void ConfigFilesTest::shippedProjectConfigs() {
 
   const auto columns = ProjectConfig::getDisplayColumns();
   QCOMPARE(columns.size(), 20);
-  QVERIFY(columns.first() == FeatureDisplayAttributes::eFeatureDisplayType);
-  QVERIFY(columns.last() == FeatureDisplayAttributes::eFeatureDisplayDistance);
+  QVERIFY(columns.front() == FeatureDisplayAttributes::eFeatureDisplayType);
+  QVERIFY(columns.back() == FeatureDisplayAttributes::eFeatureDisplayDistance);
   ProjectConfig::setConfigFolder(QString());
 }
 
@@ -263,7 +266,7 @@ void ConfigFilesTest::projectConfigFallsBackOnBadFiles() {
                   {"name": "name"}, {"name": "NoSuchColumn"}, 7, {}]}})");
   QVERIFY(ProjectConfig::loadProjectSettingsConfigFile());
   QCOMPARE(ProjectConfig::getDisplayColumns().size(), 1);
-  QVERIFY(ProjectConfig::getDisplayColumns().first() ==
+  QVERIFY(ProjectConfig::getDisplayColumns().front() ==
           FeatureDisplayAttributes::eFeatureDisplayName);
   ProjectConfig::setConfigFolder(QString());
 }

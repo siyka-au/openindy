@@ -3,6 +3,7 @@
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
+#include <vector>
 
 #include "featuretreeitem.h"
 #include "featuretreeviewmodel.h"
@@ -105,7 +106,7 @@ class AvailableElementsTreeViewProxyModel : public QSortFilterProxyModel {
 
   void resetSelectedFunctionPosition();
 
-  void addInputElement(QList<FeatureTreeItem*>& inputElements,
+  void addInputElement(std::vector<FeatureTreeItem*>& inputElements,
                        const QPointer<FeatureTreeItem>& item,
                        const ElementTypes& type);
 

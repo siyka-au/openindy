@@ -6,6 +6,7 @@
 #include <QPointer>
 #include <QThread>
 #include <QVariantMap>
+#include <map>
 
 #include "featuresorter.h"
 #include "featureupdater.h"
@@ -161,7 +162,7 @@ class OiRequestHandler : public QObject {
   ErrorCode getCoordinateSystems(const Request& request, Response& response);
 
   // the parameters of a feature as sorted name/value pairs
-  [[nodiscard]] static QMap<QString, double> parametersOf(
+  [[nodiscard]] static std::map<QString, double> parametersOf(
       const oi::Guarded<FeatureWrapper>& feature);
 
   // send an error response (no payload)

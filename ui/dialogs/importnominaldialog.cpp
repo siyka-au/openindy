@@ -182,13 +182,13 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked() {
   params.skipFirstLine = this->ui->checkBox_skipFirst_sa->isChecked();
   params.typeOfGeometry = static_cast<GeometryTypes>(
       this->ui->comboBox_geometry_sa->currentData(Qt::UserRole).toInt());
-  params.units.insert(
+  params.units.insert_or_assign(
       DimensionType::eMetric,
       getUnitTypeEnum(this->ui->comboBox_distance_sa->currentText()));
-  params.units.insert(
+  params.units.insert_or_assign(
       DimensionType::eAngular,
       getUnitTypeEnum(this->ui->comboBox_angle_sa->currentText()));
-  params.units.insert(
+  params.units.insert_or_assign(
       DimensionType::eTemperature,
       getUnitTypeEnum(this->ui->comboBox_temperature_sa->currentText()));
   params.createActual = this->ui->checkBox_createActual->isChecked();

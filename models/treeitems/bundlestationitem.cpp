@@ -1,5 +1,7 @@
 #include "bundlestationitem.h"
 
+#include "containers.h"
+
 /*!
  * \brief BundleStationItem::BundleStationItem
  * \param key
@@ -29,7 +31,7 @@ BundleStationItem::~BundleStationItem() {
  * \param child
  */
 void BundleStationItem::appendChild(BundleStationItem* child) {
-  this->m_childItems.append(child);
+  this->m_childItems.push_back(child);
   child->setParentItem(this);
 }
 
@@ -48,7 +50,7 @@ void BundleStationItem::removeAllChildren() {
  */
 BundleStationItem* BundleStationItem::child(int row) {
   if (this->m_childItems.size() > row) {
-    return this->m_childItems.value(row);
+    return oi::value(this->m_childItems, row);
   }
   return nullptr;
 }
@@ -57,7 +59,7 @@ BundleStationItem* BundleStationItem::child(int row) {
  * \brief BundleStationItem::childCount
  * \return
  */
-int BundleStationItem::childCount() const { return m_childItems.count(); }
+int BundleStationItem::childCount() const { return m_childItems.size(); }
 
 /*!
  * \brief BundleStationItem::columnCount
@@ -91,8 +93,8 @@ int BundleStationItem::row() const {
     return 0;
   }
 
-  return this->m_parentItem->m_childItems.indexOf(
-      const_cast<BundleStationItem*>(this));
+  return oi::indexOf(this->m_parentItem->m_childItems,
+                     const_cast<BundleStationItem*>(this));
 }
 
 /*!

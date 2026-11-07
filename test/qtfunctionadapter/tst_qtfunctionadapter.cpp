@@ -12,7 +12,7 @@ namespace {
 class TestFunction : public ConstructFunction, public Producer<Point> {
  public:
   explicit TestFunction() : ConstructFunction() {
-    this->applicableFor.append(FeatureTypes::ePointFeature);
+    this->applicableFor.push_back(FeatureTypes::ePointFeature);
   }
   std::expected<Point, QString> exec() override { return Point(); }
 };

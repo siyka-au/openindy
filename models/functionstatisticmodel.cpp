@@ -1,5 +1,7 @@
 #include "functionstatisticmodel.h"
 
+#include "containers.h"
+
 /*!
  * \brief FunctionStatisticModel::FunctionStatisticModel
  * \param feature
@@ -102,7 +104,7 @@ QVariant FunctionStatisticModel::data(const QModelIndex& index,
     return residual.elementId;
   } else {
     return QString::number(
-        convertFromDefault(residual.corrections.values()[index.column() - 1],
+        convertFromDefault(oi::values(residual.corrections)[index.column() - 1],
                            this->parameterDisplayConfig.getDisplayUnit(
                                DimensionType::eMetric)),
         'f',
@@ -125,11 +127,13 @@ QVariant FunctionStatisticModel::headerData(int section,
     if (section == 0) {
       return "id";
     } else {
-      return this->feature->getFunctions()[this->functionIndex]
-          ->getStatistic()
-          .getDisplayResiduals()[0]
-          .corrections.keys()
-          .at(section - 1);
+      return oi::keys(this->feature->getFunctions()
+                          .at(static_cast<std::size_t>(this->functionIndex))
+                          ->getStatistic()
+                          .getDisplayResiduals()
+                          .at(0)
+                          .corrections)
+          .at(static_cast<std::size_t>(section - 1));
     }
   }
 

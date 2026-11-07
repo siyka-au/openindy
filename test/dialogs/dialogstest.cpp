@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QStringListModel>
 #include <QtTest>
+#include <vector>
 
 #include "availablefunctionslistproxymodel.h"
 #include "chooselalib.h"
@@ -56,8 +57,8 @@ class DialogsTest : public QObject {
   QStringList getNames(QSortFilterProxyModel* model);
   QStringList getNames(QAbstractListModel* model);
   QStringList getNames(QAbstractItemModel* model);
-  QStringList getNames(QList<MeasurementConfig> list);
-  QStringList getKeys(QList<MeasurementConfig> list);
+  QStringList getNames(std::vector<MeasurementConfig> list);
+  QStringList getKeys(std::vector<MeasurementConfig> list);
 };
 
 DialogsTest::DialogsTest() {}
@@ -75,9 +76,11 @@ void DialogsTest::initTestCase() {
 
   // the enum values themselves, not their names - the combo carries the type
   // in Qt::UserRole so its visible text is a display name and can be reworded
-  QList<FeatureTypes> entityTypes;
-  entityTypes << FeatureTypes::ePointFeature << FeatureTypes::eCircleFeature
-              << FeatureTypes::ePlaneFeature;  // comboBox_entityType order
+  std::vector<FeatureTypes> entityTypes;
+  entityTypes.push_back(FeatureTypes::ePointFeature);
+  entityTypes.push_back(FeatureTypes::eCircleFeature);
+  entityTypes.push_back(
+      FeatureTypes::ePlaneFeature);  // comboBox_entityType order
 
   QPointer<MeasurementConfigManager> measurementConfigManager =
       new MeasurementConfigManager();
@@ -123,50 +126,54 @@ void DialogsTest::initTestCase() {
   // create plugin with some functions, in the PluginRepository domain-object
   // shape, fed straight into ModelManager::testInit()'s injection seam -
   // no scan, no registration step needed
-  sys::Plugin testPluginRef("testplugin", QString(), QString(), "esc",
-                            QString(), QList<sys::Function>(),
-                            QList<sys::Sensor>(), QList<sys::Tool>(),
-                            QList<sys::Exchange>(), QList<sys::Simulation>());
+  sys::Plugin testPluginRef(
+      "testplugin", QString(), QString(), "esc", QString(),
+      std::vector<sys::Function>(), std::vector<sys::Sensor>(),
+      std::vector<sys::Tool>(), std::vector<sys::Exchange>(),
+      std::vector<sys::Simulation>());
 
-  sys::Function sysPoint("function-fitpoint", QString(), testPluginRef,
-                         QList<FeatureTypes>() << FeatureTypes::ePointFeature,
-                         QList<ElementTypes>()
-                             << ElementTypes::eObservationElement,
-                         OiMetaData::iid_FitFunction);
-  sys::Function sysPlane("function-fitplane", QString(), testPluginRef,
-                         QList<FeatureTypes>() << FeatureTypes::ePlaneFeature,
-                         QList<ElementTypes>()
-                             << ElementTypes::eObservationElement,
-                         OiMetaData::iid_FitFunction);
+  sys::Function sysPoint(
+      "function-fitpoint", QString(), testPluginRef,
+      std::vector<FeatureTypes>{FeatureTypes::ePointFeature},
+      std::vector<ElementTypes>{ElementTypes::eObservationElement},
+      OiMetaData::iid_FitFunction);
+  sys::Function sysPlane(
+      "function-fitplane", QString(), testPluginRef,
+      std::vector<FeatureTypes>{FeatureTypes::ePlaneFeature},
+      std::vector<ElementTypes>{ElementTypes::eObservationElement},
+      OiMetaData::iid_FitFunction);
   sys::Function sysLevel(
       "function-fitlevel", QString(), testPluginRef,
-      QList<FeatureTypes>()
-          << FeatureTypes::ePlaneFeature << FeatureTypes::eLevelFeature,
-      QList<ElementTypes>() << ElementTypes::eObservationElement,
+      std::vector<FeatureTypes>{FeatureTypes::ePlaneFeature,
+                                FeatureTypes::eLevelFeature},
+      std::vector<ElementTypes>{ElementTypes::eObservationElement},
       OiMetaData::iid_FitFunction);
   sys::Function sysPlaneFromPoints(
       "function-planefrompoints", QString(), testPluginRef,
-      QList<FeatureTypes>() << FeatureTypes::ePlaneFeature,
-      QList<ElementTypes>() << ElementTypes::eObservationElement,
+      std::vector<FeatureTypes>{FeatureTypes::ePlaneFeature},
+      std::vector<ElementTypes>{ElementTypes::eObservationElement},
       OiMetaData::iid_ConstructFunction);  // set measurement config combox to
                                            // visible = false
-  sys::Function sysCircle("function-fitcircle", QString(), testPluginRef,
-                          QList<FeatureTypes>() << FeatureTypes::eCircleFeature,
-                          QList<ElementTypes>()
-                              << ElementTypes::eObservationElement,
-                          OiMetaData::iid_FitFunction);
+  sys::Function sysCircle(
+      "function-fitcircle", QString(), testPluginRef,
+      std::vector<FeatureTypes>{FeatureTypes::eCircleFeature},
+      std::vector<ElementTypes>{ElementTypes::eObservationElement},
+      OiMetaData::iid_FitFunction);
 
-  QList<sys::Function> sysFunctions;
-  sysFunctions << sysPlane << sysPoint << sysLevel << sysCircle
-               << sysPlaneFromPoints;
+  std::vector<sys::Function> sysFunctions;
+  sysFunctions.push_back(sysPlane);
+  sysFunctions.push_back(sysPoint);
+  sysFunctions.push_back(sysLevel);
+  sysFunctions.push_back(sysCircle);
+  sysFunctions.push_back(sysPlaneFromPoints);
 
-  sys::Plugin sysTestPlugin("testplugin", QString(), QString(), "esc",
-                            QString(), sysFunctions, QList<sys::Sensor>(),
-                            QList<sys::Tool>(), QList<sys::Exchange>(),
-                            QList<sys::Simulation>());
+  sys::Plugin sysTestPlugin(
+      "testplugin", QString(), QString(), "esc", QString(), sysFunctions,
+      std::vector<sys::Sensor>(), std::vector<sys::Tool>(),
+      std::vector<sys::Exchange>(), std::vector<sys::Simulation>());
 
-  QList<sys::Plugin> sysPlugins;
-  sysPlugins << sysTestPlugin;
+  std::vector<sys::Plugin> sysPlugins;
+  sysPlugins.push_back(sysTestPlugin);
 
   // init ModelManager
   ModelManager::testInit(entityTypes, measurementConfigManager, sysPlugins);
@@ -574,7 +581,7 @@ QStringList DialogsTest::getNames(QAbstractItemModel* model) {
   return names;
 }
 
-QStringList DialogsTest::getNames(QList<MeasurementConfig> list) {
+QStringList DialogsTest::getNames(std::vector<MeasurementConfig> list) {
   QStringList names;
   foreach (const MeasurementConfig mc, list) {
     names << mc.getName();
@@ -582,7 +589,7 @@ QStringList DialogsTest::getNames(QList<MeasurementConfig> list) {
   return names;
 }
 
-QStringList DialogsTest::getKeys(QList<MeasurementConfig> list) {
+QStringList DialogsTest::getKeys(std::vector<MeasurementConfig> list) {
   QStringList keys;
   foreach (const MeasurementConfig mc, list) {
     MeasurementConfigKey key = mc.getKey();
@@ -622,24 +629,24 @@ void DialogsTest::measurementConfigFilter() {
   names = getNames(proxy);
   qDebug() << "all:            " << names;
 
-  QList<ElementTypes> neededElements;
-  QList<FeatureTypes> applicableFor;
-  neededElements.append(ElementTypes::eObservationElement);
-  applicableFor.append(FeatureTypes::ePointFeature);
+  std::vector<ElementTypes> neededElements;
+  std::vector<FeatureTypes> applicableFor;
+  neededElements.push_back(ElementTypes::eObservationElement);
+  applicableFor.push_back(FeatureTypes::ePointFeature);
   proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
   names = getNames(proxy);
   qDebug() << "point:          " << names;
 
   neededElements.clear();
   applicableFor.clear();
-  neededElements.append(ElementTypes::eObservationElement);
-  applicableFor.append(FeatureTypes::ePlaneFeature);
+  neededElements.push_back(ElementTypes::eObservationElement);
+  applicableFor.push_back(FeatureTypes::ePlaneFeature);
   proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
   names = getNames(proxy);
   qDebug() << "plane:          " << names;
 
   applicableFor.clear();
-  applicableFor.append(FeatureTypes::eLevelFeature);
+  applicableFor.push_back(FeatureTypes::eLevelFeature);
   proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
   names = getNames(proxy);
   qDebug() << "level:          " << names;
@@ -928,13 +935,13 @@ void DialogsTest::setDefaultFunctionAndConfig() {
     }
   }
 
-  QList<FeatureTypes> featureTypes = getAvailableFeatureTypes();
+  std::vector<FeatureTypes> featureTypes = getAvailableFeatureTypes();
   foreach (FeatureTypes featureType, featureTypes) {
     qDebug() << "featureType: " << static_cast<int>(featureType)
              << getFeatureTypeName(featureType);
   }
 
-  QList<ElementTypes> elementTypes = getAvailableElementTypes();
+  std::vector<ElementTypes> elementTypes = getAvailableElementTypes();
   foreach (ElementTypes elementType, elementTypes) {
     qDebug() << "elementType: " << static_cast<int>(elementType)
              << getElementTypeName(elementType);
@@ -993,9 +1000,9 @@ void DialogsTest::entityTypeComboResolvesByDataNotByVisibleText() {
   QStandardItemModel& model = ModelManager::getScalarEntityTypeNamesModel();
   QCOMPARE(model.rowCount(), 3);  // seeded by testInit: point, circle, plane
 
-  const QList<FeatureTypes> expected = {FeatureTypes::ePointFeature,
-                                        FeatureTypes::eCircleFeature,
-                                        FeatureTypes::ePlaneFeature};
+  const std::vector<FeatureTypes> expected = {FeatureTypes::ePointFeature,
+                                              FeatureTypes::eCircleFeature,
+                                              FeatureTypes::ePlaneFeature};
 
   for (int row = 0; row < model.rowCount(); row++) {
     QStandardItem* item = model.item(row);

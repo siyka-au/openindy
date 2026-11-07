@@ -5,6 +5,7 @@
 #include <QModelIndex>
 #include <QPixmap>
 #include <QPointer>
+#include <map>
 
 #include "function.h"
 #include "functiontreeitem.h"
@@ -63,21 +64,21 @@ class ActiveFeatureFunctionsModel : public QAbstractItemModel {
   [[nodiscard]] bool getSupportsWeights(const QModelIndex& index) const;
 
   // get user defined scalar input parameters
-  [[nodiscard]] QMap<QString, int> getIntegerParameter(
+  [[nodiscard]] std::map<QString, int> getIntegerParameter(
       const QModelIndex& index) const;
-  [[nodiscard]] QMap<QString, double> getDoubleParameter(
+  [[nodiscard]] std::map<QString, double> getDoubleParameter(
       const QModelIndex& index) const;
-  [[nodiscard]] QMap<QString, QString> getStringParameterSelection(
+  [[nodiscard]] std::map<QString, QString> getStringParameterSelection(
       const QModelIndex& index) const;
 
   // set scalar input parameters
   void setScalarInputParameters(const QModelIndex& index,
-                                const QMap<QString, int>& intParams,
-                                const QMap<QString, double>& doubleParams,
-                                const QMap<QString, QString>& stringParams);
+                                const std::map<QString, int>& intParams,
+                                const std::map<QString, double>& doubleParams,
+                                const std::map<QString, QString>& stringParams);
 
   // get all available string parameters
-  [[nodiscard]] QMultiMap<QString, QString> getStringParameter(
+  [[nodiscard]] std::multimap<QString, QString> getStringParameter(
       const QModelIndex& index) const;
 
   // ###############################

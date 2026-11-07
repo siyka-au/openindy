@@ -2,6 +2,7 @@
 #define BUNDLEGEOMETRYITEM_H
 
 #include <QVariant>
+#include <vector>
 
 /*!
  * \brief The BundleGeometryItem class
@@ -47,7 +48,7 @@ class BundleGeometryItem {
   QString key;
 
   // children and parent
-  QList<BundleGeometryItem*> m_childItems;
+  std::vector<BundleGeometryItem*> m_childItems;
   BundleGeometryItem* m_parentItem;
 };
 

@@ -2,6 +2,7 @@
 #define BUNDLESTATIONITEM_H
 
 #include <QVariant>
+#include <vector>
 
 /*!
  * \brief The BundleStationItem class
@@ -56,7 +57,7 @@ class BundleStationItem {
   bool value;
 
   // children and parent
-  QList<BundleStationItem*> m_childItems;
+  std::vector<BundleStationItem*> m_childItems;
   BundleStationItem* m_parentItem;
 };
 

@@ -1,5 +1,9 @@
 #include "trafoparampropertiesdialog.h"
 
+#include <map>
+#include <vector>
+
+#include "containers.h"
 #include "ui_trafoparampropertiesdialog.h"
 
 /*!
@@ -59,7 +63,7 @@ void TrafoParamPropertiesDialog::setCurrentTrafoParam(const int& id,
  * \brief TrafoParamPropertiesDialog::getUnknownTrafoParamParameters
  * \return
  */
-const QMap<TrafoParamParameters, QString>&
+const std::map<TrafoParamParameters, QString>&
 TrafoParamPropertiesDialog::getUnknownTrafoParamParameters() const {
   return this->parameters;
 }
@@ -69,7 +73,7 @@ TrafoParamPropertiesDialog::getUnknownTrafoParamParameters() const {
  * \param parameters
  */
 void TrafoParamPropertiesDialog::setUnknownTrafoParamParameters(
-    const QMap<TrafoParamParameters, QString>& parameters) {
+    const std::map<TrafoParamParameters, QString>& parameters) {
   this->parameters = parameters;
 }
 
@@ -94,7 +98,7 @@ void TrafoParamPropertiesDialog::on_toolButton_ok_clicked() {
 
   if (ret == QMessageBox::Yes) {
     // get a map of unknown parameters
-    QMap<TrafoParamParameters, double> parameters;
+    std::map<TrafoParamParameters, double> parameters;
     this->getParametersFromGUI(parameters);
 
     emit this->trafoParamParametersChanged(this->id, parameters);
@@ -119,12 +123,12 @@ void TrafoParamPropertiesDialog::showEvent(QShowEvent* event) {
  */
 void TrafoParamPropertiesDialog::initGUI() {
   // get a list of all available unknown parameters
-  QList<TrafoParamParameters> availableUnknownParameters =
+  std::vector<TrafoParamParameters> availableUnknownParameters =
       getAvailableTrafoParamParameters();
 
   // setdefault inputs
   foreach (const TrafoParamParameters& param, availableUnknownParameters) {
-    this->setParametersToGUI(param, this->parameters.value(param, "0.0"));
+    this->setParametersToGUI(param, oi::value(this->parameters, param, "0.0"));
   }
 }
 
@@ -176,9 +180,9 @@ void TrafoParamPropertiesDialog::setParametersToGUI(
  * \param parameters
  */
 void TrafoParamPropertiesDialog::getParametersFromGUI(
-    QMap<TrafoParamParameters, double>& parameters) {
+    std::map<TrafoParamParameters, double>& parameters) {
   // get a list of all unknown parameters
-  QList<TrafoParamParameters> unknownParameters =
+  std::vector<TrafoParamParameters> unknownParameters =
       getAvailableTrafoParamParameters();
 
   // get parameter display config
@@ -191,93 +195,96 @@ void TrafoParamPropertiesDialog::getParametersFromGUI(
     switch (param) {
       case TrafoParamParameters::eUnknownTX:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_tx->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_tx->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_tx->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case TrafoParamParameters::eUnknownTY:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_ty->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_ty->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_ty->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case TrafoParamParameters::eUnknownTZ:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_tz->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_tz->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_tz->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case TrafoParamParameters::eUnknownRX:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_rx->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_rx->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_rx->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
       case TrafoParamParameters::eUnknownRY:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_ry->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_ry->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_ry->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
       case TrafoParamParameters::eUnknownRZ:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_rz->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_rz->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_rz->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
       case TrafoParamParameters::eUnknownSX:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_sx->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_sx->text()) == 0) {
           break;
         }
-        parameters.insert(param, this->ui->lineEdit_sx->text().toDouble());
+        parameters.insert_or_assign(param,
+                                    this->ui->lineEdit_sx->text().toDouble());
         break;
       case TrafoParamParameters::eUnknownSY:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_sy->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_sy->text()) == 0) {
           break;
         }
-        parameters.insert(param, this->ui->lineEdit_sy->text().toDouble());
+        parameters.insert_or_assign(param,
+                                    this->ui->lineEdit_sy->text().toDouble());
         break;
       case TrafoParamParameters::eUnknownSZ:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_sz->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_sz->text()) == 0) {
           break;
         }
-        parameters.insert(param, this->ui->lineEdit_sz->text().toDouble());
+        parameters.insert_or_assign(param,
+                                    this->ui->lineEdit_sz->text().toDouble());
         break;
     }
   }

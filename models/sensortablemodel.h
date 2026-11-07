@@ -5,6 +5,7 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <vector>
 
 #include "oijob.h"
 #include "oimetadata.h"
@@ -59,9 +60,9 @@ class SensorTableModel : public QAbstractTableModel {
   [[nodiscard]] QString getPluginFilePath(const QModelIndex& index) const;
 
   // get supported connection / reading or action types
-  [[nodiscard]] QList<ReadingTypes> getSupportedReadingTypes() const;
-  [[nodiscard]] QList<SensorFunctions> getSupportedSensorActions() const;
-  [[nodiscard]] QList<ConnectionKind> getSupportedConnectionTypes() const;
+  [[nodiscard]] std::vector<ReadingTypes> getSupportedReadingTypes() const;
+  [[nodiscard]] std::vector<SensorFunctions> getSupportedSensorActions() const;
+  [[nodiscard]] std::vector<ConnectionKind> getSupportedConnectionTypes() const;
 
   // get default sensor config
   [[nodiscard]] SensorConfiguration getDefaultSensorConfig() const;
@@ -70,8 +71,8 @@ class SensorTableModel : public QAbstractTableModel {
   // get or set currently available plugins
   // ######################################
 
-  [[nodiscard]] const QList<sys::Plugin>& getPlugins() const;
-  void setPlugins(const QList<sys::Plugin>& plugins);
+  [[nodiscard]] const std::vector<sys::Plugin>& getPlugins() const;
+  void setPlugins(const std::vector<sys::Plugin>& plugins);
 
  signals:
 
@@ -102,7 +103,7 @@ class SensorTableModel : public QAbstractTableModel {
   // currently available plugins
   // ###########################
 
-  QList<sys::Plugin> plugins;
+  std::vector<sys::Plugin> plugins;
 
   // ####################
   // save selected plugin

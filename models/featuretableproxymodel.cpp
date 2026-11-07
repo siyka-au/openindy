@@ -1,5 +1,7 @@
 #include "featuretableproxymodel.h"
 
+#include "containers.h"
+
 FeatureTableProxyModel::FeatureTableProxyModel(QObject* parent)
     : QSortFilterProxyModel(parent) {
   this->sort(0);
@@ -90,7 +92,7 @@ QModelIndex FeatureTableProxyModel::mapToSource(
       this->featureTableColumnConfig.getDisplayAttributeAt(proxyIndex.column());
 
   // get the index of the attribute in the list of all available attributes
-  int sourceColumn = getFeatureDisplayAttributes().indexOf(attr);
+  int sourceColumn = oi::indexOf(getFeatureDisplayAttributes(), attr);
 
   // set up correct column position for the source index
   sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);

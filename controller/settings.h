@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QString>
+#include <map>
 
 #if defined(OI_MAIN_LIB)
 #define OI_MAIN_EXPORT Q_DECL_EXPORT
@@ -41,9 +42,9 @@ class OI_MAIN_EXPORT Settings {
  private:
   static bool isInit;
 
-  static QMap<QString, QString> systemLayer;
-  static QMap<QString, QString> userLayer;
-  static QMap<QString, QString> projectLayer;
+  static std::map<QString, QString> systemLayer;
+  static std::map<QString, QString> userLayer;
+  static std::map<QString, QString> projectLayer;
 
   static void loadSystemLayer();
   static void loadUserLayer();

@@ -1,5 +1,7 @@
 #include "parameterdisplayconfig.h"
 
+#include <map>
+
 /*!
  * \brief ParameterDisplayConfig::ParameterDisplayConfig
  */
@@ -114,13 +116,16 @@ void ParameterDisplayConfig::setDisplayDigits(const DimensionType& dimension,
  * \brief ParameterDisplayConfig::getDisplayUnits
  * \return
  */
-QMap<DimensionType, UnitType> ParameterDisplayConfig::getDisplayUnits() const {
-  QMap<DimensionType, UnitType> displayUnits;
+std::map<DimensionType, UnitType> ParameterDisplayConfig::getDisplayUnits()
+    const {
+  std::map<DimensionType, UnitType> displayUnits;
 
-  displayUnits.insert(DimensionType::eMetric, this->metricDisplayUnit);
-  displayUnits.insert(DimensionType::eAngular, this->angularDisplayUnit);
-  displayUnits.insert(DimensionType::eTemperature,
-                      this->temperatureDisplayUnit);
+  displayUnits.insert_or_assign(DimensionType::eMetric,
+                                this->metricDisplayUnit);
+  displayUnits.insert_or_assign(DimensionType::eAngular,
+                                this->angularDisplayUnit);
+  displayUnits.insert_or_assign(DimensionType::eTemperature,
+                                this->temperatureDisplayUnit);
 
   return displayUnits;
 }
@@ -129,15 +134,17 @@ QMap<DimensionType, UnitType> ParameterDisplayConfig::getDisplayUnits() const {
  * \brief ParameterDisplayConfig::getDisplayDigits
  * \return
  */
-QMap<DimensionType, int> ParameterDisplayConfig::getDisplayDigits() const {
-  QMap<DimensionType, int> displayDigits;
+std::map<DimensionType, int> ParameterDisplayConfig::getDisplayDigits() const {
+  std::map<DimensionType, int> displayDigits;
 
-  displayDigits.insert(DimensionType::eMetric, this->metricDisplayDigits);
-  displayDigits.insert(DimensionType::eAngular, this->angularDisplayDigits);
-  displayDigits.insert(DimensionType::eTemperature,
-                       this->temperatureDisplayDigits);
-  displayDigits.insert(DimensionType::eDimensionless,
-                       this->dimensionlessDisplayDigits);
+  displayDigits.insert_or_assign(DimensionType::eMetric,
+                                 this->metricDisplayDigits);
+  displayDigits.insert_or_assign(DimensionType::eAngular,
+                                 this->angularDisplayDigits);
+  displayDigits.insert_or_assign(DimensionType::eTemperature,
+                                 this->temperatureDisplayDigits);
+  displayDigits.insert_or_assign(DimensionType::eDimensionless,
+                                 this->dimensionlessDisplayDigits);
 
   return displayDigits;
 }

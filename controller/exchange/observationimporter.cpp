@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 #include <array>
+#include <vector>
 
 /*!
  * \brief ObservationImporter::ObservationImporter
@@ -101,7 +102,7 @@ bool ObservationImporter::importObservations() {
   }
 
   // create list of imported readings
-  QList<oi::Guarded<Reading> > readings;
+  std::vector<oi::Guarded<Reading> > readings;
 
   // open file and create observations
   try {
@@ -164,7 +165,7 @@ bool ObservationImporter::importObservations() {
       reading->setImported(true);
 
       // add reading to list of imported readings
-      readings.append(reading);
+      readings.push_back(reading);
 
       // update import progress
       int progress = (int)(((float)readSize / (float)fileSize) * 100.0);

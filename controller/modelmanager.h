@@ -8,6 +8,7 @@
 #include <QSerialPortInfo>
 #include <QStandardItemModel>
 #include <QStringListModel>
+#include <vector>
 
 #include "activefeaturefunctionsmodel.h"
 #include "availableelementstreeviewproxymodel.h"
@@ -94,9 +95,9 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   static void init();
 
   static void testInit(
-      QList<FeatureTypes> entityTypes,
+      std::vector<FeatureTypes> entityTypes,
       QPointer<MeasurementConfigManager> measurementConfigManager,
-      QList<sys::Plugin> plugins);
+      std::vector<sys::Plugin> plugins);
 
   // ############################
   // get or set the current OiJob
@@ -315,7 +316,7 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   static QStandardItemModel scalarEntityTypeNamesModel;
 
   static void fillFeatureTypeModel(QStandardItemModel& model,
-                                   const QList<FeatureTypes>& types);
+                                   const std::vector<FeatureTypes>& types);
 
   // function models
   static FunctionTableModel functionTableModel;
@@ -441,7 +442,7 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   // cache PluginRepository's scan so it's only ever done once
   // ##########################################################
 
-  static QList<sys::Plugin> plugins;
+  static std::vector<sys::Plugin> plugins;
 
   // #############################
   // single model manager instance

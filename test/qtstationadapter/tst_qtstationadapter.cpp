@@ -2,6 +2,7 @@
 #include <QThread>
 #include <QtTest>
 #include <atomic>
+#include <map>
 #include <thread>
 #include <vector>
 
@@ -19,7 +20,7 @@ using namespace oi;
 Q_DECLARE_METATYPE(oi::SensorAction)
 Q_DECLARE_METATYPE(oi::MessageTypes)
 Q_DECLARE_METATYPE(oi::MessageDestinations)
-Q_DECLARE_METATYPE(QList<oi::Guarded<oi::Reading>>)
+Q_DECLARE_METATYPE(std::vector<oi::Guarded<oi::Reading>>)
 
 namespace {
 
@@ -31,19 +32,19 @@ class FakeSensor : public Sensor {
   bool getConnectionState() override { return true; }
   bool getIsReadyForMeasurement() override { return true; }
   bool getIsBusy() override { return false; }
-  QMap<QString, QString> getSensorStatus() override { return {{"a", "b"}}; }
-  QList<oi::Guarded<Reading>> measure(const MeasurementConfig&) override {
-    QList<oi::Guarded<Reading>> result;
+  std::map<QString, QString> getSensorStatus() override { return {{"a", "b"}}; }
+  std::vector<oi::Guarded<Reading>> measure(const MeasurementConfig&) override {
+    std::vector<oi::Guarded<Reading>> result;
     for (int i = 0; i < 2; ++i) {
       ReadingCartesian r;
       r.isValid = true;
-      result << new Reading(r);
+      result.push_back(new Reading(r));
     }
     return result;
   }
-  QVariantMap readingStream(const ReadingTypes&) override {
+  std::map<QString, QVariant> readingStream(const ReadingTypes&) override {
     QThread::msleep(1);
-    QVariantMap m;
+    std::map<QString, QVariant> m;
     m["n"] = ++this->streamCounter;
     return m;
   }
@@ -77,8 +78,8 @@ void QtStationAdapterTest::initTestCase() {
   qRegisterMetaType<oi::SensorAction>("oi::SensorAction");
   qRegisterMetaType<oi::MessageTypes>("oi::MessageTypes");
   qRegisterMetaType<oi::MessageDestinations>("oi::MessageDestinations");
-  qRegisterMetaType<QList<oi::Guarded<oi::Reading>>>(
-      "QList<oi::Guarded<oi::Reading>>");
+  qRegisterMetaType<std::vector<oi::Guarded<oi::Reading>>>(
+      "std::vector<oi::Guarded<oi::Reading>>");
 }
 
 void QtStationAdapterTest::ofReturnsTheSameAdapterEachTime() {
@@ -135,7 +136,7 @@ void QtStationAdapterTest::resultsArriveAsSignalsOnTheUiThreadInOrder() {
                      note(QString("finished:%1").arg(ok));
                    });
   QObject::connect(adapter, &QtStationAdapter::measurementFinished, this,
-                   [&](int geomId, QList<oi::Guarded<Reading>> readings) {
+                   [&](int geomId, std::vector<oi::Guarded<Reading>> readings) {
                      note(QString("measurementFinished:%1:%2")
                               .arg(geomId)
                               .arg(readings.size()));

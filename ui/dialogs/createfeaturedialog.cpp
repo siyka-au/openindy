@@ -2,6 +2,7 @@
 
 #include <QAbstractItemView>
 
+#include "containers.h"
 #include "ui_createfeaturedialog.h"
 
 /*!
@@ -361,7 +362,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(
       attributes.nominalSystem =
           this->ui->comboBox_nominalSystem->currentText();
     }
-    if (!this->neededElements.isEmpty()) {
+    if (!this->neededElements.empty()) {
       attributes.measurementConfig =
           this->measurementConfigurationModel->getMeasurementConfig(
               measurementConfigurationModel->index(
@@ -408,7 +409,7 @@ void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(
       sys::Function function = this->functionListModel->getFunctionAtIndex(i);
       if (this->ui->comboBox_function->currentText() == function.name()) {
         this->neededElements.clear();
-        this->neededElements.append(function.neededElements());
+        oi::appendAll(this->neededElements, function.neededElements());
         break;
       }
     }
@@ -436,12 +437,12 @@ void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
       function.name().contains("FromPoints")  // fitfunction
   ) {
     this->neededElements.clear();
-    this->neededElements.append(ElementTypes::eUndefinedElement);
+    this->neededElements.push_back(ElementTypes::eUndefinedElement);
     this->ui->comboBox_mConfig->setVisible(false);
     this->ui->label_mConfig->setVisible(false);
   } else {
     this->neededElements.clear();
-    this->neededElements.append(function.neededElements());
+    oi::appendAll(this->neededElements, function.neededElements());
     this->ui->comboBox_mConfig->setVisible(true);
     this->ui->label_mConfig->setVisible(true);
   }
@@ -463,5 +464,5 @@ bool CreateFeatureDialog::isNominalShapedFunction(
     const sys::Function& function) const {
   return function.interfaceCategory().startsWith(
              "de.openIndy.plugin.function.constructFunction") &&
-         function.neededElements().isEmpty();
+         function.neededElements().empty();
 }

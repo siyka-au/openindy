@@ -1,5 +1,9 @@
 #include "featuretablecolumnconfig.h"
 
+#include <vector>
+
+#include "containers.h"
+
 /*!
  * \brief FeatureTableColumnConfig::FeatureTableColumnConfig
  */
@@ -8,7 +12,7 @@ FeatureTableColumnConfig::FeatureTableColumnConfig() {
   this->init();
 }
 FeatureTableColumnConfig::FeatureTableColumnConfig(
-    QList<FeatureDisplayAttributes> displayColumns)
+    std::vector<FeatureDisplayAttributes> displayColumns)
     : displayColumns(displayColumns) {}
 
 /*!
@@ -18,7 +22,7 @@ FeatureTableColumnConfig::FeatureTableColumnConfig(
  */
 bool FeatureTableColumnConfig::getColumnVisibility(
     const FeatureDisplayAttributes& column) const {
-  return this->displayColumns.contains(column);
+  return oi::contains(this->displayColumns, column);
 }
 
 /*!
@@ -28,10 +32,10 @@ bool FeatureTableColumnConfig::getColumnVisibility(
  */
 void FeatureTableColumnConfig::setColumnVisibility(
     const FeatureDisplayAttributes& column, const bool& isVisible) {
-  if (isVisible && !this->displayColumns.contains(column)) {
-    this->displayColumns.append(column);
+  if (isVisible && !oi::contains(this->displayColumns, column)) {
+    this->displayColumns.push_back(column);
   } else {
-    this->displayColumns.removeOne(column);
+    oi::removeOne(this->displayColumns, column);
   }
 }
 
@@ -44,7 +48,7 @@ void FeatureTableColumnConfig::setColumnVisibility(
  */
 int FeatureTableColumnConfig::getColumnPosition(
     const FeatureDisplayAttributes& column) const {
-  return this->displayColumns.indexOf(column);
+  return oi::indexOf(this->displayColumns, column);
 }
 
 /*!
@@ -54,10 +58,10 @@ int FeatureTableColumnConfig::getColumnPosition(
  */
 void FeatureTableColumnConfig::setColumnPosition(
     const FeatureDisplayAttributes& column, const int& index) {
-  if (this->displayColumns.contains(column) && index >= 0 &&
+  if (oi::contains(this->displayColumns, column) && index >= 0 &&
       index < this->displayColumns.size()) {
-    this->displayColumns.removeOne(column);
-    this->displayColumns.insert(index, column);
+    oi::removeOne(this->displayColumns, column);
+    oi::insertAt(this->displayColumns, index, column);
   }
 }
 
@@ -80,25 +84,25 @@ FeatureDisplayAttributes FeatureTableColumnConfig::getDisplayAttributeAt(
  */
 void FeatureTableColumnConfig::init() {
   // default columns in default order
-  this->displayColumns.append(eFeatureDisplayType);
-  this->displayColumns.append(eFeatureDisplayIsActual);
-  this->displayColumns.append(eFeatureDisplayGroup);
-  this->displayColumns.append(eFeatureDisplayName);
-  this->displayColumns.append(eFeatureDisplayX);
-  this->displayColumns.append(eFeatureDisplayY);
-  this->displayColumns.append(eFeatureDisplayZ);
-  this->displayColumns.append(eFeatureDisplayStDev);
-  this->displayColumns.append(eFeatureDisplayObservations);
-  this->displayColumns.append(eFeatureDisplayMeasurementConfig);
-  this->displayColumns.append(eFeatureDisplayFunctions);
-  this->displayColumns.append(eFeatureDisplayIsCommon);
-  this->displayColumns.append(eFeatureDisplayPrimaryI);
-  this->displayColumns.append(eFeatureDisplayPrimaryJ);
-  this->displayColumns.append(eFeatureDisplayPrimaryK);
-  this->displayColumns.append(eFeatureDisplayRadiusA);
-  this->displayColumns.append(eFeatureDisplayIsSolved);
-  this->displayColumns.append(eFeatureDisplayComment);
-  this->displayColumns.append(eFeatureDisplayAngle);
-  this->displayColumns.append(eFeatureDisplayDistance);
-  this->displayColumns.append(eFeatureDisplayFormError);
+  this->displayColumns.push_back(eFeatureDisplayType);
+  this->displayColumns.push_back(eFeatureDisplayIsActual);
+  this->displayColumns.push_back(eFeatureDisplayGroup);
+  this->displayColumns.push_back(eFeatureDisplayName);
+  this->displayColumns.push_back(eFeatureDisplayX);
+  this->displayColumns.push_back(eFeatureDisplayY);
+  this->displayColumns.push_back(eFeatureDisplayZ);
+  this->displayColumns.push_back(eFeatureDisplayStDev);
+  this->displayColumns.push_back(eFeatureDisplayObservations);
+  this->displayColumns.push_back(eFeatureDisplayMeasurementConfig);
+  this->displayColumns.push_back(eFeatureDisplayFunctions);
+  this->displayColumns.push_back(eFeatureDisplayIsCommon);
+  this->displayColumns.push_back(eFeatureDisplayPrimaryI);
+  this->displayColumns.push_back(eFeatureDisplayPrimaryJ);
+  this->displayColumns.push_back(eFeatureDisplayPrimaryK);
+  this->displayColumns.push_back(eFeatureDisplayRadiusA);
+  this->displayColumns.push_back(eFeatureDisplayIsSolved);
+  this->displayColumns.push_back(eFeatureDisplayComment);
+  this->displayColumns.push_back(eFeatureDisplayAngle);
+  this->displayColumns.push_back(eFeatureDisplayDistance);
+  this->displayColumns.push_back(eFeatureDisplayFormError);
 }

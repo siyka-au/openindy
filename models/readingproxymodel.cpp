@@ -1,5 +1,9 @@
 #include "readingproxymodel.h"
 
+#include <vector>
+
+#include "containers.h"
+
 ReadingProxyModel::ReadingProxyModel(QObject* parent)
     : QSortFilterProxyModel(parent) {}
 
@@ -77,7 +81,8 @@ bool ReadingProxyModel::lessThan(const QModelIndex& source_left,
                                          ->getFeature()
                                          ->getFunctions()
                                          .at(0);
-    QList<InputElement> inputElem = function->getInputElements().value(0);
+    std::vector<InputElement> inputElem =
+        oi::value(function->getInputElements(), 0);
 
     if (source_right.isValid() && source_left.isValid() &&
         source_right.row() < inputElem.size() &&

@@ -1,5 +1,8 @@
 #include "observationmodel.h"
 
+#include <vector>
+
+#include "containers.h"
 #include "jobconnect.h"
 #include "qtjobadapter.h"
 
@@ -194,7 +197,7 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
           oi::Guarded<Function> function = geometry->getFunctions()[0];
 
           bool checked = false;
-          foreach (int key, function->getInputElements().keys()) {
+          foreach (int key, oi::keys(function->getInputElements())) {
             checked = function->getShouldBeUsed(key, observation->getId())
                           ? true
                           : checked;
@@ -276,7 +279,7 @@ Qt::ItemFlags ObservationModel::flags(const QModelIndex& index) const {
     return myFlags;
   }
 
-  QList<ObservationDisplayAttributes> attributes =
+  std::vector<ObservationDisplayAttributes> attributes =
       getObservationDisplayAttributes();
   ObservationDisplayAttributes attr = attributes.at(index.column());
   if (attr == eObservationDisplayIsUsed) {

@@ -3,7 +3,10 @@
 #include <math.h>
 
 #include <algorithm>
+#include <map>
+#include <vector>
 
+#include "containers.h"
 #include "convert.h"
 #include "network_convert.h"
 #include "openindy/network.pb.h"
@@ -737,7 +740,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::stopWatchwindow(
 OiRequestResponse::ErrorCode OiRequestHandler::getFeatures(
     const Request& /*request*/, Response& response) {
   // get a list of all features
-  QList<oi::Guarded<FeatureWrapper> > features =
+  std::vector<oi::Guarded<FeatureWrapper> > features =
       this->currentJob->getFeaturesList();
 
   // sort the list according to the current sorting mode
@@ -801,7 +804,7 @@ OiRequestResponse::ErrorCode OiRequestHandler::addFeatures(
   }
 
   // add features
-  QList<oi::Guarded<FeatureWrapper> > features =
+  std::vector<oi::Guarded<FeatureWrapper> > features =
       this->currentJob->addFeatures(attr);
 
   // get and check measurement config
@@ -915,21 +918,21 @@ OiRequestResponse::ErrorCode OiRequestHandler::removeObservations(
   }
 
   // get a list of observations and functions of the feature
-  QList<oi::Guarded<Observation> > featureObservations =
+  std::vector<oi::Guarded<Observation> > featureObservations =
       feature->getGeometry()->getObservations();
-  QList<oi::Guarded<Function> > featureFunctions =
+  std::vector<oi::Guarded<Function> > featureFunctions =
       feature->getGeometry()->getFunctions();
 
   // get a list of observation id's that shall be removed
-  QList<int> obs2Remove;
+  std::vector<int> obs2Remove;
   for (const int id : message.observations().ids()) {
-    obs2Remove.append(id);
+    obs2Remove.push_back(id);
   }
 
   // run through all observations and remove the marked ones
   foreach (const oi::Guarded<Observation>& obs, featureObservations) {
     // check observation
-    if (obs.isNull() || !obs2Remove.contains(obs->getId())) {
+    if (obs.isNull() || !oi::contains(obs2Remove, obs->getId())) {
       continue;
     }
 
@@ -978,11 +981,11 @@ OiRequestResponse::ErrorCode OiRequestHandler::getParameters(
         feature->getGeometry()->getOwnerDescription().has_value()));
 
   // add parameters
-  const QMap<QString, double> values = parametersOf(feature);
+  const std::map<QString, double> values = parametersOf(feature);
   for (auto it = values.cbegin(); it != values.cend(); ++it) {
     auto* parameter = payload->add_parameters();
-    parameter->set_name(it.key().toStdString());
-    parameter->set_value(it.value());
+    parameter->set_name(it->first.toStdString());
+    parameter->set_value(it->second);
   }
 
   // add standard deviation
@@ -1092,9 +1095,9 @@ OiRequestResponse::ErrorCode OiRequestHandler::setMeasurementConfig(
 OiRequestResponse::ErrorCode OiRequestHandler::getCoordinateSystems(
     const Request& /*request*/, Response& response) {
   // get all coordinate systems
-  QList<oi::Guarded<CoordinateSystem> > systems =
+  std::vector<oi::Guarded<CoordinateSystem> > systems =
       this->currentJob->getCoordinateSystemsList();
-  QList<oi::Guarded<CoordinateSystem> > stations =
+  std::vector<oi::Guarded<CoordinateSystem> > stations =
       this->currentJob->getStationSystemsList();
 
   // describe the coordinate systems, then the station systems
@@ -1121,9 +1124,9 @@ OiRequestResponse::ErrorCode OiRequestHandler::getCoordinateSystems(
  * sorted by name
  * \param feature
  */
-QMap<QString, double> OiRequestHandler::parametersOf(
+std::map<QString, double> OiRequestHandler::parametersOf(
     const oi::Guarded<FeatureWrapper>& feature) {
-  QMap<QString, double> values;
+  std::map<QString, double> values;
 
   // get parameter/value pairs
   switch (feature->getFeatureTypeEnum()) {
@@ -1131,83 +1134,85 @@ QMap<QString, double> OiRequestHandler::parametersOf(
       if (feature->getCircle().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getCircle()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getCircle()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getCircle()->getPosition().getVector().getAt(2));
-      values.insert("i",
-                    feature->getCircle()->getDirection().getVector().getAt(0));
-      values.insert("j",
-                    feature->getCircle()->getDirection().getVector().getAt(1));
-      values.insert("k",
-                    feature->getCircle()->getDirection().getVector().getAt(2));
-      values.insert("radius", feature->getCircle()->getRadius().getRadius());
+      values.insert_or_assign(
+          "x", feature->getCircle()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getCircle()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getCircle()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
+          "i", feature->getCircle()->getDirection().getVector().getAt(0));
+      values.insert_or_assign(
+          "j", feature->getCircle()->getDirection().getVector().getAt(1));
+      values.insert_or_assign(
+          "k", feature->getCircle()->getDirection().getVector().getAt(2));
+      values.insert_or_assign("radius",
+                              feature->getCircle()->getRadius().getRadius());
       break;
     case FeatureTypes::eConeFeature:
       if (feature->getCone().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getCone()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getCone()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getCone()->getPosition().getVector().getAt(2));
-      values.insert("i",
-                    feature->getCone()->getDirection().getVector().getAt(0));
-      values.insert("j",
-                    feature->getCone()->getDirection().getVector().getAt(1));
-      values.insert("k",
-                    feature->getCone()->getDirection().getVector().getAt(2));
-      values.insert("aperture", feature->getCone()->getAperture());
+      values.insert_or_assign(
+          "x", feature->getCone()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getCone()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getCone()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
+          "i", feature->getCone()->getDirection().getVector().getAt(0));
+      values.insert_or_assign(
+          "j", feature->getCone()->getDirection().getVector().getAt(1));
+      values.insert_or_assign(
+          "k", feature->getCone()->getDirection().getVector().getAt(2));
+      values.insert_or_assign("aperture", feature->getCone()->getAperture());
       break;
     case FeatureTypes::eCylinderFeature:
       if (feature->getCylinder().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getCylinder()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getCylinder()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getCylinder()->getPosition().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
+          "x", feature->getCylinder()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getCylinder()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getCylinder()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
           "i", feature->getCylinder()->getDirection().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j", feature->getCylinder()->getDirection().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k", feature->getCylinder()->getDirection().getVector().getAt(2));
-      values.insert("radius", feature->getCylinder()->getRadius().getRadius());
+      values.insert_or_assign("radius",
+                              feature->getCylinder()->getRadius().getRadius());
       break;
     case FeatureTypes::eEllipseFeature:
       if (feature->getEllipse().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getEllipse()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getEllipse()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getEllipse()->getPosition().getVector().getAt(2));
-      values.insert("i",
-                    feature->getEllipse()->getDirection().getVector().getAt(0));
-      values.insert("j",
-                    feature->getEllipse()->getDirection().getVector().getAt(1));
-      values.insert("k",
-                    feature->getEllipse()->getDirection().getVector().getAt(2));
-      values.insert("a", feature->getEllipse()->getA());
-      values.insert("b", feature->getEllipse()->getB());
-      values.insert(
+      values.insert_or_assign(
+          "x", feature->getEllipse()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getEllipse()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getEllipse()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
+          "i", feature->getEllipse()->getDirection().getVector().getAt(0));
+      values.insert_or_assign(
+          "j", feature->getEllipse()->getDirection().getVector().getAt(1));
+      values.insert_or_assign(
+          "k", feature->getEllipse()->getDirection().getVector().getAt(2));
+      values.insert_or_assign("a", feature->getEllipse()->getA());
+      values.insert_or_assign("b", feature->getEllipse()->getB());
+      values.insert_or_assign(
           "i 2",
           feature->getEllipse()->getSemiMajorAxisDirection().getVector().getAt(
               0));
-      values.insert(
+      values.insert_or_assign(
           "j 2",
           feature->getEllipse()->getSemiMajorAxisDirection().getVector().getAt(
               1));
-      values.insert(
+      values.insert_or_assign(
           "k 2",
           feature->getEllipse()->getSemiMajorAxisDirection().getVector().getAt(
               2));
@@ -1216,56 +1221,56 @@ QMap<QString, double> OiRequestHandler::parametersOf(
       if (feature->getEllipsoid().isNull()) {
         return values;
       }
-      values.insert(
+      values.insert_or_assign(
           "x", feature->getEllipsoid()->getPosition().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "y", feature->getEllipsoid()->getPosition().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "z", feature->getEllipsoid()->getPosition().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
           "i", feature->getEllipsoid()->getDirection().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j", feature->getEllipsoid()->getDirection().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k", feature->getEllipsoid()->getDirection().getVector().getAt(2));
-      values.insert("a", feature->getEllipsoid()->getA());
-      values.insert("b", feature->getEllipsoid()->getB());
+      values.insert_or_assign("a", feature->getEllipsoid()->getA());
+      values.insert_or_assign("b", feature->getEllipsoid()->getB());
       break;
     case FeatureTypes::eHyperboloidFeature:
       if (feature->getHyperboloid().isNull()) {
         return values;
       }
-      values.insert(
+      values.insert_or_assign(
           "x", feature->getHyperboloid()->getPosition().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "y", feature->getHyperboloid()->getPosition().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "z", feature->getHyperboloid()->getPosition().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
           "i", feature->getHyperboloid()->getDirection().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j", feature->getHyperboloid()->getDirection().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k", feature->getHyperboloid()->getDirection().getVector().getAt(2));
-      values.insert("a", feature->getHyperboloid()->getA());
-      values.insert("c", feature->getHyperboloid()->getC());
+      values.insert_or_assign("a", feature->getHyperboloid()->getA());
+      values.insert_or_assign("c", feature->getHyperboloid()->getC());
       break;
     case FeatureTypes::eLineFeature:
       if (feature->getLine().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getLine()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getLine()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getLine()->getPosition().getVector().getAt(2));
-      values.insert("i",
-                    feature->getLine()->getDirection().getVector().getAt(0));
-      values.insert("j",
-                    feature->getLine()->getDirection().getVector().getAt(1));
-      values.insert("k",
-                    feature->getLine()->getDirection().getVector().getAt(2));
+      values.insert_or_assign(
+          "x", feature->getLine()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getLine()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getLine()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
+          "i", feature->getLine()->getDirection().getVector().getAt(0));
+      values.insert_or_assign(
+          "j", feature->getLine()->getDirection().getVector().getAt(1));
+      values.insert_or_assign(
+          "k", feature->getLine()->getDirection().getVector().getAt(2));
       break;
     case FeatureTypes::eNurbsFeature:
       break;
@@ -1273,67 +1278,68 @@ QMap<QString, double> OiRequestHandler::parametersOf(
       if (feature->getParaboloid().isNull()) {
         return values;
       }
-      values.insert(
+      values.insert_or_assign(
           "x", feature->getParaboloid()->getPosition().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "y", feature->getParaboloid()->getPosition().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "z", feature->getParaboloid()->getPosition().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
           "i", feature->getParaboloid()->getDirection().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j", feature->getParaboloid()->getDirection().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k", feature->getParaboloid()->getDirection().getVector().getAt(2));
-      values.insert("a", feature->getParaboloid()->getA());
+      values.insert_or_assign("a", feature->getParaboloid()->getA());
       break;
     case FeatureTypes::ePlaneFeature:
       if (feature->getPlane().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getPlane()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getPlane()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getPlane()->getPosition().getVector().getAt(2));
-      values.insert("i",
-                    feature->getPlane()->getDirection().getVector().getAt(0));
-      values.insert("j",
-                    feature->getPlane()->getDirection().getVector().getAt(1));
-      values.insert("k",
-                    feature->getPlane()->getDirection().getVector().getAt(2));
+      values.insert_or_assign(
+          "x", feature->getPlane()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getPlane()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getPlane()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
+          "i", feature->getPlane()->getDirection().getVector().getAt(0));
+      values.insert_or_assign(
+          "j", feature->getPlane()->getDirection().getVector().getAt(1));
+      values.insert_or_assign(
+          "k", feature->getPlane()->getDirection().getVector().getAt(2));
       break;
     case FeatureTypes::ePointFeature:
       if (feature->getPoint().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getPoint()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getPoint()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getPoint()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
+          "x", feature->getPoint()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getPoint()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getPoint()->getPosition().getVector().getAt(2));
     case FeatureTypes::ePointCloudFeature:
       break;
     case FeatureTypes::eScalarEntityAngleFeature:
       if (feature->getScalarEntityAngle().isNull()) {
         return values;
       }
-      values.insert("angle", feature->getScalarEntityAngle()->getAngle());
+      values.insert_or_assign("angle",
+                              feature->getScalarEntityAngle()->getAngle());
       break;
     case FeatureTypes::eScalarEntityDistanceFeature:
       if (feature->getScalarEntityDistance().isNull()) {
         return values;
       }
-      values.insert("distance",
-                    feature->getScalarEntityDistance()->getDistance());
+      values.insert_or_assign(
+          "distance", feature->getScalarEntityDistance()->getDistance());
       break;
     case FeatureTypes::eScalarEntityMeasurementSeriesFeature:
       if (feature->getScalarEntityMeasurementSeries().isNull()) {
         return values;
       }
-      values.insert(
+      values.insert_or_assign(
           "measurement series",
           feature->getScalarEntityMeasurementSeries()->getSeriesValue());
       break;
@@ -1341,102 +1347,105 @@ QMap<QString, double> OiRequestHandler::parametersOf(
       if (feature->getScalarEntityTemperature().isNull()) {
         return values;
       }
-      values.insert("temperature",
-                    feature->getScalarEntityTemperature()->getTemperature());
+      values.insert_or_assign(
+          "temperature",
+          feature->getScalarEntityTemperature()->getTemperature());
       break;
     case FeatureTypes::eSlottedHoleFeature:
       if (feature->getSlottedHole().isNull()) {
         return values;
       }
-      values.insert(
+      values.insert_or_assign(
           "x", feature->getSlottedHole()->getPosition().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "y", feature->getSlottedHole()->getPosition().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "z", feature->getSlottedHole()->getPosition().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
           "i", feature->getSlottedHole()->getDirection().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j", feature->getSlottedHole()->getDirection().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k", feature->getSlottedHole()->getDirection().getVector().getAt(2));
-      values.insert("radius",
-                    feature->getSlottedHole()->getRadius().getRadius());
-      values.insert("length", feature->getSlottedHole()->getLength());
-      values.insert(
+      values.insert_or_assign(
+          "radius", feature->getSlottedHole()->getRadius().getRadius());
+      values.insert_or_assign("length", feature->getSlottedHole()->getLength());
+      values.insert_or_assign(
           "i", feature->getSlottedHole()->getHoleAxis().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j", feature->getSlottedHole()->getHoleAxis().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k", feature->getSlottedHole()->getHoleAxis().getVector().getAt(2));
       break;
     case FeatureTypes::eSphereFeature:
       if (feature->getSphere().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getSphere()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getSphere()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getSphere()->getPosition().getVector().getAt(2));
-      values.insert("radius", feature->getSphere()->getRadius().getRadius());
+      values.insert_or_assign(
+          "x", feature->getSphere()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getSphere()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getSphere()->getPosition().getVector().getAt(2));
+      values.insert_or_assign("radius",
+                              feature->getSphere()->getRadius().getRadius());
       break;
     case FeatureTypes::eTorusFeature:
       if (feature->getTorus().isNull()) {
         return values;
       }
-      values.insert("x",
-                    feature->getTorus()->getPosition().getVector().getAt(0));
-      values.insert("y",
-                    feature->getTorus()->getPosition().getVector().getAt(1));
-      values.insert("z",
-                    feature->getTorus()->getPosition().getVector().getAt(2));
-      values.insert("i",
-                    feature->getTorus()->getDirection().getVector().getAt(0));
-      values.insert("j",
-                    feature->getTorus()->getDirection().getVector().getAt(1));
-      values.insert("k",
-                    feature->getTorus()->getDirection().getVector().getAt(2));
-      values.insert("radius", feature->getTorus()->getRadius().getRadius());
-      values.insert("radius 2",
-                    feature->getTorus()->getSmallRadius().getRadius());
+      values.insert_or_assign(
+          "x", feature->getTorus()->getPosition().getVector().getAt(0));
+      values.insert_or_assign(
+          "y", feature->getTorus()->getPosition().getVector().getAt(1));
+      values.insert_or_assign(
+          "z", feature->getTorus()->getPosition().getVector().getAt(2));
+      values.insert_or_assign(
+          "i", feature->getTorus()->getDirection().getVector().getAt(0));
+      values.insert_or_assign(
+          "j", feature->getTorus()->getDirection().getVector().getAt(1));
+      values.insert_or_assign(
+          "k", feature->getTorus()->getDirection().getVector().getAt(2));
+      values.insert_or_assign("radius",
+                              feature->getTorus()->getRadius().getRadius());
+      values.insert_or_assign(
+          "radius 2", feature->getTorus()->getSmallRadius().getRadius());
       break;
     case FeatureTypes::eCoordinateSystemFeature:
       if (feature->getCoordinateSystem().isNull()) {
         return values;
       }
-      values.insert(
+      values.insert_or_assign(
           "x",
           feature->getCoordinateSystem()->getOrigin().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "y",
           feature->getCoordinateSystem()->getOrigin().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "z",
           feature->getCoordinateSystem()->getOrigin().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
           "i", feature->getCoordinateSystem()->getXAxis().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j", feature->getCoordinateSystem()->getXAxis().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k", feature->getCoordinateSystem()->getXAxis().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
           "i 2",
           feature->getCoordinateSystem()->getYAxis().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j 2",
           feature->getCoordinateSystem()->getYAxis().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k 2",
           feature->getCoordinateSystem()->getYAxis().getVector().getAt(2));
-      values.insert(
+      values.insert_or_assign(
           "i 3",
           feature->getCoordinateSystem()->getZAxis().getVector().getAt(0));
-      values.insert(
+      values.insert_or_assign(
           "j 3",
           feature->getCoordinateSystem()->getZAxis().getVector().getAt(1));
-      values.insert(
+      values.insert_or_assign(
           "k 3",
           feature->getCoordinateSystem()->getZAxis().getVector().getAt(2));
       break;
@@ -1444,15 +1453,15 @@ QMap<QString, double> OiRequestHandler::parametersOf(
       if (feature->getStation().isNull()) {
         return values;
       }
-      values.insert(
+      values.insert_or_assign(
           "x",
           feature->getStation()->getPosition()->getPosition().getVector().getAt(
               0));
-      values.insert(
+      values.insert_or_assign(
           "y",
           feature->getStation()->getPosition()->getPosition().getVector().getAt(
               1));
-      values.insert(
+      values.insert_or_assign(
           "z",
           feature->getStation()->getPosition()->getPosition().getVector().getAt(
               2));
@@ -1461,15 +1470,24 @@ QMap<QString, double> OiRequestHandler::parametersOf(
       if (feature->getTrafoParam().isNull()) {
         return values;
       }
-      values.insert("tx", feature->getTrafoParam()->getTranslation().getAt(0));
-      values.insert("ty", feature->getTrafoParam()->getTranslation().getAt(1));
-      values.insert("tz", feature->getTrafoParam()->getTranslation().getAt(2));
-      values.insert("rx", feature->getTrafoParam()->getRotation().getAt(0));
-      values.insert("ry", feature->getTrafoParam()->getRotation().getAt(1));
-      values.insert("rz", feature->getTrafoParam()->getRotation().getAt(2));
-      values.insert("sx", feature->getTrafoParam()->getScale().getAt(0));
-      values.insert("sy", feature->getTrafoParam()->getScale().getAt(1));
-      values.insert("sz", feature->getTrafoParam()->getScale().getAt(2));
+      values.insert_or_assign(
+          "tx", feature->getTrafoParam()->getTranslation().getAt(0));
+      values.insert_or_assign(
+          "ty", feature->getTrafoParam()->getTranslation().getAt(1));
+      values.insert_or_assign(
+          "tz", feature->getTrafoParam()->getTranslation().getAt(2));
+      values.insert_or_assign("rx",
+                              feature->getTrafoParam()->getRotation().getAt(0));
+      values.insert_or_assign("ry",
+                              feature->getTrafoParam()->getRotation().getAt(1));
+      values.insert_or_assign("rz",
+                              feature->getTrafoParam()->getRotation().getAt(2));
+      values.insert_or_assign("sx",
+                              feature->getTrafoParam()->getScale().getAt(0));
+      values.insert_or_assign("sy",
+                              feature->getTrafoParam()->getScale().getAt(1));
+      values.insert_or_assign("sz",
+                              feature->getTrafoParam()->getScale().getAt(2));
       break;
   }
   return values;

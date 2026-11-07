@@ -5,6 +5,8 @@
 #include <QMap>
 #include <QObject>
 #include <QString>
+#include <map>
+#include <vector>
 
 #include "console.h"
 #include "sensorconfiguration.h"
@@ -43,9 +45,10 @@ class SensorConfigurationManager : public QObject {
       const QString& name) const;
   [[nodiscard]] SensorConfiguration getProjectSensorConfig(
       const QString& name) const;
-  [[nodiscard]] const QList<SensorConfiguration>& getSavedSensorConfigs() const;
-  [[nodiscard]] const QList<SensorConfiguration>& getProjectSensorConfigs()
+  [[nodiscard]] const std::vector<SensorConfiguration>& getSavedSensorConfigs()
       const;
+  [[nodiscard]] const std::vector<SensorConfiguration>&
+  getProjectSensorConfigs() const;
 
   // active config
   [[nodiscard]] const SensorConfiguration& getActiveSensorConfig() const;
@@ -107,11 +110,11 @@ class SensorConfigurationManager : public QObject {
   // save sensor configs
   // ###################
 
-  QMap<QString, SensorConfiguration> savedSensorConfigsMap;
-  QMap<QString, SensorConfiguration> projectSensorConfigsMap;
+  std::map<QString, SensorConfiguration> savedSensorConfigsMap;
+  std::map<QString, SensorConfiguration> projectSensorConfigsMap;
 
-  QList<SensorConfiguration> savedSensorConfigsList;
-  QList<SensorConfiguration> projectSensorConfigsList;
+  std::vector<SensorConfiguration> savedSensorConfigsList;
+  std::vector<SensorConfiguration> projectSensorConfigsList;
 
   SensorConfiguration activeSensorConfig;
 };

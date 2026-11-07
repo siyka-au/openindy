@@ -1,5 +1,9 @@
 #include "dataexchanger.h"
 
+#include <vector>
+
+#include "containers.h"
+
 /*!
  * \brief DataExchanger::DataExchanger
  * \param parent
@@ -111,7 +115,7 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   }
 
   // check nominal system
-  QList<oi::Guarded<FeatureWrapper>> features =
+  std::vector<oi::Guarded<FeatureWrapper>> features =
       this->currentJob->getFeaturesByName(params.nominalSystem);
   if (features.size() != 1 || features.at(0).isNull() ||
       features.at(0)->getCoordinateSystem().isNull() ||
@@ -167,13 +171,13 @@ bool DataExchanger::importData(const ExchangeParams& params) {
           // set user defined columns here hard coded (later selectable in table
           // view)
           // TODO user defined columns
-          QList<ExchangeSimpleAscii::ColumnType> columns;
-          columns.append(ExchangeSimpleAscii::eColumnFeatureName);
-          columns.append(ExchangeSimpleAscii::eColumnX);
-          columns.append(ExchangeSimpleAscii::eColumnY);
-          columns.append(ExchangeSimpleAscii::eColumnZ);
+          std::vector<ExchangeSimpleAscii::ColumnType> columns;
+          columns.push_back(ExchangeSimpleAscii::eColumnFeatureName);
+          columns.push_back(ExchangeSimpleAscii::eColumnX);
+          columns.push_back(ExchangeSimpleAscii::eColumnY);
+          columns.push_back(ExchangeSimpleAscii::eColumnZ);
           if (params.readCommonColumn) {
-            columns.append(ExchangeSimpleAscii::eColumnCommonState);
+            columns.push_back(ExchangeSimpleAscii::eColumnCommonState);
           }
           simpleAscii->setUserDefinedColumns(columns);
 
@@ -186,14 +190,14 @@ bool DataExchanger::importData(const ExchangeParams& params) {
           simpleAscii->setSkipFirstLine(params.skipFirstLine);
           simpleAscii->setDelimiter(params.delimiter);
 
-          QList<ExchangeSimpleAscii::ColumnType> columns;
-          columns.append(ExchangeSimpleAscii::eColumnFeatureName);
-          columns.append(ExchangeSimpleAscii::eColumnX);
-          columns.append(ExchangeSimpleAscii::eColumnY);
-          columns.append(ExchangeSimpleAscii::eColumnZ);
-          columns.append(ExchangeSimpleAscii::eColumnPrimaryI);
-          columns.append(ExchangeSimpleAscii::eColumnPrimaryJ);
-          columns.append(ExchangeSimpleAscii::eColumnPrimaryK);
+          std::vector<ExchangeSimpleAscii::ColumnType> columns;
+          columns.push_back(ExchangeSimpleAscii::eColumnFeatureName);
+          columns.push_back(ExchangeSimpleAscii::eColumnX);
+          columns.push_back(ExchangeSimpleAscii::eColumnY);
+          columns.push_back(ExchangeSimpleAscii::eColumnZ);
+          columns.push_back(ExchangeSimpleAscii::eColumnPrimaryI);
+          columns.push_back(ExchangeSimpleAscii::eColumnPrimaryJ);
+          columns.push_back(ExchangeSimpleAscii::eColumnPrimaryK);
           simpleAscii->setUserDefinedColumns(columns);
 
           /* not working, because of visability
@@ -225,9 +229,9 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   this->exchange->setExportObservations(params.exportObservations);
   this->exchange->setGroupName(params.groupName);
   this->exchange->setNominalSystem(features.at(0)->getCoordinateSystem());
-  QList<DimensionType> dimensions = params.units.keys();
+  std::vector<DimensionType> dimensions = oi::keys(params.units);
   foreach (const DimensionType& dimension, dimensions) {
-    this->exchange->setUnit(dimension, params.units.value(dimension));
+    this->exchange->setUnit(dimension, oi::value(params.units, dimension));
   }
 
   // connect exchange plugin
@@ -302,10 +306,8 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
       simpleAscii->setGeometryType(params.typeOfGeometry);
       simpleAscii->setSkipFirstLine(params.skipFirstLine);
       simpleAscii->setDelimiter(params.delimiter);
-      QMapIterator<DimensionType, UnitType> i(params.units);
-      while (i.hasNext()) {
-        i.next();
-        simpleAscii->setUnit(i.key(), i.value());
+      for (const auto& [dimension, unit] : params.units) {
+        simpleAscii->setUnit(dimension, unit);
       }
       simpleAscii->setDistanceDigits(params.distanceDigits);
       simpleAscii->setAngleDigits(params.angleDigits);
@@ -314,15 +316,15 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
       // set user defined columns here hard coded (later selectable in table
       // view)
       // TODO user defined columns
-      QList<ExchangeSimpleAscii::ColumnType> columns;
-      columns.append(ExchangeSimpleAscii::eColumnFeatureName);
-      columns.append(ExchangeSimpleAscii::eColumnX);
-      columns.append(ExchangeSimpleAscii::eColumnY);
-      columns.append(ExchangeSimpleAscii::eColumnZ);
-      columns.append(ExchangeSimpleAscii::eColumnPrimaryI);
-      columns.append(ExchangeSimpleAscii::eColumnPrimaryJ);
-      columns.append(ExchangeSimpleAscii::eColumnPrimaryK);
-      columns.append(ExchangeSimpleAscii::eColumnRadiusA);
+      std::vector<ExchangeSimpleAscii::ColumnType> columns;
+      columns.push_back(ExchangeSimpleAscii::eColumnFeatureName);
+      columns.push_back(ExchangeSimpleAscii::eColumnX);
+      columns.push_back(ExchangeSimpleAscii::eColumnY);
+      columns.push_back(ExchangeSimpleAscii::eColumnZ);
+      columns.push_back(ExchangeSimpleAscii::eColumnPrimaryI);
+      columns.push_back(ExchangeSimpleAscii::eColumnPrimaryJ);
+      columns.push_back(ExchangeSimpleAscii::eColumnPrimaryK);
+      columns.push_back(ExchangeSimpleAscii::eColumnRadiusA);
 
       simpleAscii->setUserDefinedColumns(columns);
       simpleAscii->setCurrentJob(this->currentJob);
@@ -411,13 +413,13 @@ bool DataExchanger::importObservations(const QString& filename) {
 }
 
 void DataExchanger::importMeasurements(
-    QList<oi::Guarded<FeatureWrapper>> features) {
+    std::vector<oi::Guarded<FeatureWrapper>> features) {
   const auto curDateTime = std::chrono::system_clock::now();
   foreach (oi::Guarded<FeatureWrapper> importedFeature, features) {
-    QList<oi::Guarded<FeatureWrapper>> jobFeatures =
+    std::vector<oi::Guarded<FeatureWrapper>> jobFeatures =
         this->currentJob->getFeaturesByName(
             importedFeature->getFeature()->getFeatureName());
-    if (jobFeatures.isEmpty()) {
+    if (jobFeatures.empty()) {
       qDebug() << "features not found: "
                << importedFeature->getFeature()->getFeatureName();
       continue;
@@ -430,7 +432,7 @@ void DataExchanger::importMeasurements(
         continue;
       }
 
-      QList<oi::Guarded<Reading>> importedReadings;
+      std::vector<oi::Guarded<Reading>> importedReadings;
       oi::Guarded<Reading> reading = nullptr;
 
       switch (jobFeature->getFeatureTypeEnum()) {
@@ -481,7 +483,7 @@ void DataExchanger::importMeasurements(
       reading->setMeasuredAt(curDateTime);
       reading->setImported(true);
 
-      importedReadings.append(reading);
+      importedReadings.push_back(reading);
 
       this->currentJob->addMeasurementResults(
           jobFeature->getGeometry()->getId(), importedReadings);
@@ -494,7 +496,8 @@ void DataExchanger::importMeasurements(
   }
 }
 
-void DataExchanger::createActuals(QList<oi::Guarded<FeatureWrapper>> features) {
+void DataExchanger::createActuals(
+    std::vector<oi::Guarded<FeatureWrapper>> features) {
   foreach (oi::Guarded<FeatureWrapper> fw, features) {
     switch (fw->getFeatureTypeEnum()) {
       case FeatureTypes::ePlaneFeature:
@@ -536,7 +539,7 @@ void DataExchanger::createActuals(QList<oi::Guarded<FeatureWrapper>> features) {
         functionPlugin.second = defaultFunction.plugin().filePath();
         fAttr.functionPlugin = functionPlugin;
 
-        QList<oi::Guarded<FeatureWrapper>> addedFeatures =
+        std::vector<oi::Guarded<FeatureWrapper>> addedFeatures =
             this->currentJob->addFeatures(fAttr);
 
         this->addFunctionsAndMConfigs(addedFeatures, mConfig,
@@ -546,14 +549,14 @@ void DataExchanger::createActuals(QList<oi::Guarded<FeatureWrapper>> features) {
         // this workflow's whole point is "add actuals to nominals at
         // import" (D17): link the new actual to a same-named, same-
         // type nominal already in the job, if there is one
-        if (addedFeatures.size() == 1 && !addedFeatures.first().isNull() &&
-            !addedFeatures.first()->getGeometry().isNull()) {
+        if (addedFeatures.size() == 1 && !addedFeatures.front().isNull() &&
+            !addedFeatures.front()->getGeometry().isNull()) {
           foreach (const oi::Guarded<FeatureWrapper>& candidate,
                    this->currentJob->getFeaturesByName(fAttr.name)) {
             if (!candidate.isNull() && !candidate->getGeometry().isNull() &&
                 candidate->getFeatureTypeEnum() == fAttr.typeOfFeature &&
                 !candidate->getGeometry()->getOwnerDescription().has_value()) {
-              addedFeatures.first()->getGeometry()->setRealises(
+              addedFeatures.front()->getGeometry()->setRealises(
                   candidate->getGeometry());
               break;
             }
@@ -609,7 +612,8 @@ void DataExchanger::importFeatures(const bool& success) {
   }
 
   // add the imported features to current OpenIndy job
-  QList<oi::Guarded<FeatureWrapper>> features = this->exchange->getFeatures();
+  std::vector<oi::Guarded<FeatureWrapper>> features =
+      this->exchange->getFeatures();
 
   bool importSuccess = false;
   if (this->exchangeParams.importMeasurements) {
@@ -629,7 +633,7 @@ void DataExchanger::importFeatures(const bool& success) {
     // get the specified coordinate system by its defined name from exchange
     // parameters and set this one true so destination system from import
     // nominals is active system and all nominal values will be shown directly
-    QList<oi::Guarded<CoordinateSystem>> coordSystemList =
+    std::vector<oi::Guarded<CoordinateSystem>> coordSystemList =
         this->currentJob->getCoordinateSystemsList();
     foreach (oi::Guarded<CoordinateSystem> cs, coordSystemList) {
       if (cs->getFeatureName().compare(this->exchangeParams.nominalSystem) ==
@@ -709,7 +713,7 @@ void DataExchanger::importObservationsFinished(const bool& success) {
  * \param fName
  */
 void DataExchanger::addFunctionsAndMConfigs(
-    const QList<oi::Guarded<FeatureWrapper>>& actuals,
+    const std::vector<oi::Guarded<FeatureWrapper>>& actuals,
     const MeasurementConfig& mConfig, const QString& path,
     const QString& fName) {
   // check job

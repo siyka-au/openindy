@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QShowEvent>
+#include <vector>
 
 #include "featureattributes.h"
 #include "featurewrapper.h"
@@ -103,7 +104,7 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
   // #################
 
   FeatureTypes typeOfFeature;
-  QList<ElementTypes> neededElements;
+  std::vector<ElementTypes> neededElements;
 
   QPointer<AvailableFunctionsListProxyModel> functionListModel;
   QPointer<MeasurementConfigurationProxyModel> measurementConfigurationModel;

@@ -1,5 +1,9 @@
 #include "measurebehaviorlogic.h"
 
+#include <vector>
+
+#include "containers.h"
+
 MeasureBehaviorLogic::MeasureBehaviorLogic(QObject* parent) : QObject(parent) {
   QObject::connect(&this->measureBehaviorDialog,
                    &MeasureBehaviorDialog::setDecision, this,
@@ -11,7 +15,7 @@ MeasureBehaviorLogic::MeasureBehaviorLogic(QObject* parent) : QObject(parent) {
 }
 
 void MeasureBehaviorLogic::init(ControllerSensorActions* control,
-                                QList<int> measureFeatures,
+                                std::vector<int> measureFeatures,
                                 FeatureTableModel* sourceModel) {
   this->resetDecision();
 
@@ -45,7 +49,7 @@ bool MeasureBehaviorLogic::next() {
   if (this->measureFeatures.size() > 0) {
     setActiveFeature(this->sourceModel, this->measureFeatures[0]);
     this->activeFeatureId = this->measureFeatures[0];
-    this->measureFeatures.removeAt(0);
+    oi::removeAt(this->measureFeatures, 0);
     return true;
   } else {
     this->activeFeatureId = -1;

@@ -13,6 +13,8 @@
 #include <QVariantMap>
 #include <atomic>
 #include <functional>
+#include <map>
+#include <vector>
 
 #include "feature.h"
 #include "featurewrapper.h"
@@ -57,7 +59,7 @@ class WatchWindowSettings {
   ReadingTypes readingType{ReadingTypes::eCartesianReading};
 
   // display values and tolerance
-  QMap<DisplayAttributes, double> displayValues;
+  std::map<DisplayAttributes, double> displayValues;
 
   bool showLastMeasurement{true};
 };
@@ -78,7 +80,7 @@ class WatchWindowDialog : public QDialog {
  public:
   explicit WatchWindowDialog(WatchWindowBehavior behavior,
                              oi::Guarded<OiJob> job,
-                             QList<oi::Guarded<FeatureWrapper> > features,
+                             std::vector<oi::Guarded<FeatureWrapper> > features,
                              QWidget* parent = nullptr);
   ~WatchWindowDialog() override;
 
@@ -163,7 +165,7 @@ class WatchWindowDialog : public QDialog {
   // #############################
   WatchWindowBehavior behavior;
   oi::Guarded<OiJob> currentJob;
-  QList<oi::Guarded<FeatureWrapper> > features;
+  std::vector<oi::Guarded<FeatureWrapper> > features;
   // save active station here, to be able to disconnect it
   oi::Guarded<Station> activeStation;
 
@@ -174,7 +176,7 @@ class WatchWindowDialog : public QDialog {
   // watch window values
   QVBoxLayout* masterLayout{};
   QMap<DisplayAttributes, QLabel*> streamData;
-  QMap<DisplayAttributes, int> masterLayoutIndex;
+  std::map<DisplayAttributes, int> masterLayoutIndex;
 
   // ################
   // display settings

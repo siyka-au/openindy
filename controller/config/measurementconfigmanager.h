@@ -5,6 +5,8 @@
 #include <QMap>
 #include <QObject>
 #include <QString>
+#include <map>
+#include <vector>
 
 #include "console.h"
 #include "measurementconfig.h"
@@ -53,11 +55,11 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
   [[nodiscard]] MeasurementConfig getProjectConfig(const QString& name) const;
   [[nodiscard]] MeasurementConfig getStandardConfig(const QString& name) const;
   [[nodiscard]] MeasurementConfig findConfig(const QString& name) const;
-  [[nodiscard]] const QList<MeasurementConfig> getConfigs() const;
-  [[nodiscard]] const QList<MeasurementConfig> getUserConfigs() const;
-  [[nodiscard]] const QList<MeasurementConfig> getProjectConfigs() const;
-  [[nodiscard]] const QList<QString> getUserConfigNames() const;
-  [[nodiscard]] const QList<QString> getProjectConfigNames() const;
+  [[nodiscard]] const std::vector<MeasurementConfig> getConfigs() const;
+  [[nodiscard]] const std::vector<MeasurementConfig> getUserConfigs() const;
+  [[nodiscard]] const std::vector<MeasurementConfig> getProjectConfigs() const;
+  [[nodiscard]] const std::vector<QString> getUserConfigNames() const;
+  [[nodiscard]] const std::vector<QString> getProjectConfigNames() const;
 
   // active config
   [[nodiscard]] MeasurementConfig getActiveConfig(
@@ -114,9 +116,9 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
   // save measurement configs
   // ########################
 
-  QMap<MeasurementConfigKey, MeasurementConfig> configs;
+  std::map<MeasurementConfigKey, MeasurementConfig> configs;
 
-  QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
+  std::map<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 
   // #################
   // helper attributes

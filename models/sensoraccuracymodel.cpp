@@ -1,5 +1,7 @@
 #include "sensoraccuracymodel.h"
 
+#include "containers.h"
+
 using namespace oi;
 
 /*!
@@ -18,7 +20,7 @@ int SensorAccuracyModel::rowCount(const QModelIndex& parent) const {
   if (this->sConfig.getIsValid() &&
       this->sConfig.getPluginName().compare("") != 0 &&
       this->sConfig.getSensorName().compare("") != 0) {
-    return (15 + this->sConfig.getAccuracy().sigmaUndefined.values().size());
+    return (15 + oi::values(this->sConfig.getAccuracy().sigmaUndefined).size());
   }
   return 0;
 }
@@ -132,7 +134,7 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
         if (index >= 0 &&
             index < this->sConfig.getAccuracy().sigmaUndefined.size()) {
           return QString::number(
-              this->sConfig.getAccuracy().sigmaUndefined.values().at(index),
+              oi::values(this->sConfig.getAccuracy().sigmaUndefined).at(index),
               'f', 6);
         }
     }
@@ -193,7 +195,7 @@ QVariant SensorAccuracyModel::headerData(int section,
         int index = section - 15;
         if (index >= 0 &&
             index < this->sConfig.getAccuracy().sigmaUndefined.size()) {
-          return this->sConfig.getAccuracy().sigmaUndefined.keys().at(index);
+          return oi::keys(this->sConfig.getAccuracy().sigmaUndefined).at(index);
         }
     }
 
@@ -333,8 +335,8 @@ bool SensorAccuracyModel::setData(const QModelIndex& index,
         int index = rowIndex - 15;
         if (index >= 0 &&
             index < this->sConfig.getAccuracy().sigmaUndefined.size()) {
-          accuracy.sigmaUndefined.insert(
-              this->sConfig.getAccuracy().sigmaUndefined.keys().at(index),
+          accuracy.sigmaUndefined.insert_or_assign(
+              oi::keys(this->sConfig.getAccuracy().sigmaUndefined).at(index),
               value.toDouble());
         }
         break;

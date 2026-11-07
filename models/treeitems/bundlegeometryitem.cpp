@@ -1,5 +1,7 @@
 #include "bundlegeometryitem.h"
 
+#include "containers.h"
+
 /*!
  * \brief BundleGeometryItem::BundleGeometryItem
  * \param key
@@ -26,7 +28,7 @@ BundleGeometryItem::~BundleGeometryItem() {
  * \param child
  */
 void BundleGeometryItem::appendChild(BundleGeometryItem* child) {
-  this->m_childItems.append(child);
+  this->m_childItems.push_back(child);
   child->setParentItem(this);
 }
 
@@ -45,7 +47,7 @@ void BundleGeometryItem::removeAllChildren() {
  */
 BundleGeometryItem* BundleGeometryItem::child(int row) {
   if (this->m_childItems.size() > row) {
-    return this->m_childItems.value(row);
+    return oi::value(this->m_childItems, row);
   }
   return nullptr;
 }
@@ -54,7 +56,7 @@ BundleGeometryItem* BundleGeometryItem::child(int row) {
  * \brief BundleGeometryItem::childCount
  * \return
  */
-int BundleGeometryItem::childCount() const { return m_childItems.count(); }
+int BundleGeometryItem::childCount() const { return m_childItems.size(); }
 
 /*!
  * \brief BundleGeometryItem::columnCount
@@ -86,8 +88,8 @@ int BundleGeometryItem::row() const {
     return 0;
   }
 
-  return this->m_parentItem->m_childItems.indexOf(
-      const_cast<BundleGeometryItem*>(this));
+  return oi::indexOf(this->m_parentItem->m_childItems,
+                     const_cast<BundleGeometryItem*>(this));
 }
 
 /*!

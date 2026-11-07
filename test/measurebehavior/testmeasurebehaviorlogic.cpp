@@ -10,5 +10,5 @@ void TestMeasureBehaviorLogic::showCentered(QDialog& dialog) {
 void TestMeasureBehaviorLogic::setActiveFeature(FeatureTableModel* sourceModel,
                                                 int featureId) {
   qDebug() << "setActiveFeature: featureId: " << featureId;
-  this->featureIds.append(featureId);
+  this->featureIds.push_back(featureId);
 }

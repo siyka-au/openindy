@@ -1,5 +1,9 @@
 #include "nominalpropertiesdialog.h"
 
+#include <map>
+#include <vector>
+
+#include "containers.h"
 #include "ui_nominalpropertiesdialog.h"
 
 /*!
@@ -80,7 +84,7 @@ void NominalPropertiesDialog::setCurrentNominal(const int& id,
  * \brief NominalPropertiesDialog::getUnknownNominalParameters
  * \return
  */
-const QMap<GeometryParameters, QString>&
+const std::map<GeometryParameters, QString>&
 NominalPropertiesDialog::getUnknownNominalParameters() const {
   return this->parameters;
 }
@@ -90,7 +94,7 @@ NominalPropertiesDialog::getUnknownNominalParameters() const {
  * \param parameters
  */
 void NominalPropertiesDialog::setUnknownNominalParameters(
-    const QMap<GeometryParameters, QString>& parameters) {
+    const std::map<GeometryParameters, QString>& parameters) {
   this->parameters = parameters;
 }
 
@@ -104,7 +108,7 @@ void NominalPropertiesDialog::on_toolButton_cancel_clicked() { this->close(); }
  */
 void NominalPropertiesDialog::on_toolButton_ok_clicked() {
   // get a map of unknown parameters
-  QMap<GeometryParameters, double> parameters;
+  std::map<GeometryParameters, double> parameters;
   this->getParametersFromGUI(parameters);
 
   emit this->nominalParametersChanged(this->id, parameters);
@@ -134,25 +138,25 @@ void NominalPropertiesDialog::initGUI() {
   GeometryTypes type = getGeometryTypeEnum(this->type);
 
   // get a list of all available unknown parameters
-  QList<GeometryParameters> availableUnknownParameters =
+  std::vector<GeometryParameters> availableUnknownParameters =
       getAvailableGeometryParameters();
 
   // get a list of unknown parameters that correspond to the current geometry
   // type
-  QList<GeometryParameters> currentUnknownParameters =
+  std::vector<GeometryParameters> currentUnknownParameters =
       getGeometryParameters(type);
 
   // filter GUI elements depending on the type of geometry
   foreach (const GeometryParameters& param, availableUnknownParameters) {
     // set visibility
-    if (currentUnknownParameters.contains(param)) {  // set visible
+    if (oi::contains(currentUnknownParameters, param)) {  // set visible
       this->setVisibility(param, true);
     } else {  // set invisible
       this->setVisibility(param, false);
     }
 
     // set default input
-    this->setParametersToGUI(param, this->parameters.value(param, "0.0"));
+    this->setParametersToGUI(param, oi::value(this->parameters, param, "0.0"));
   }
 }
 
@@ -323,7 +327,7 @@ void NominalPropertiesDialog::setParametersToGUI(
  * \param parameters
  */
 void NominalPropertiesDialog::getParametersFromGUI(
-    QMap<GeometryParameters, double>& parameters) {
+    std::map<GeometryParameters, double>& parameters) {
   // check if the current nominal is a geometry
   if (!getIsGeometry(this->type)) {
     return;
@@ -332,7 +336,7 @@ void NominalPropertiesDialog::getParametersFromGUI(
 
   // get a list of unknown parameters that correspond to the current geometry
   // type
-  QList<GeometryParameters> currentUnknownParameters =
+  std::vector<GeometryParameters> currentUnknownParameters =
       getGeometryParameters(type);
 
   // get parameter display config
@@ -345,186 +349,188 @@ void NominalPropertiesDialog::getParametersFromGUI(
     switch (param) {
       case GeometryParameters::eUnknownX:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalX->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalX->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalX->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownY:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalY->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalY->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalY->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownZ:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalZ->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalZ->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalZ->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownPrimaryI:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalI1->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalI1->text()) == 0) {
           break;
         }
-        parameters.insert(param,
-                          this->ui->lineEdit_nominalI1->text().toDouble());
+        parameters.insert_or_assign(
+            param, this->ui->lineEdit_nominalI1->text().toDouble());
         break;
       case GeometryParameters::eUnknownPrimaryJ:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalJ1->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalJ1->text()) == 0) {
           break;
         }
-        parameters.insert(param,
-                          this->ui->lineEdit_nominalJ1->text().toDouble());
+        parameters.insert_or_assign(
+            param, this->ui->lineEdit_nominalJ1->text().toDouble());
         break;
       case GeometryParameters::eUnknownPrimaryK:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalK1->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalK1->text()) == 0) {
           break;
         }
-        parameters.insert(param,
-                          this->ui->lineEdit_nominalK1->text().toDouble());
+        parameters.insert_or_assign(
+            param, this->ui->lineEdit_nominalK1->text().toDouble());
         break;
       case GeometryParameters::eUnknownSecondaryI:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalI2->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalI2->text()) == 0) {
           break;
         }
-        parameters.insert(param,
-                          this->ui->lineEdit_nominalI2->text().toDouble());
+        parameters.insert_or_assign(
+            param, this->ui->lineEdit_nominalI2->text().toDouble());
         break;
       case GeometryParameters::eUnknownSecondaryJ:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalJ2->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalJ2->text()) == 0) {
           break;
         }
-        parameters.insert(param,
-                          this->ui->lineEdit_nominalJ2->text().toDouble());
+        parameters.insert_or_assign(
+            param, this->ui->lineEdit_nominalJ2->text().toDouble());
         break;
       case GeometryParameters::eUnknownSecondaryK:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalK2->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalK2->text()) == 0) {
           break;
         }
-        parameters.insert(param,
-                          this->ui->lineEdit_nominalK2->text().toDouble());
+        parameters.insert_or_assign(
+            param, this->ui->lineEdit_nominalK2->text().toDouble());
         break;
       case GeometryParameters::eUnknownRadiusA:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalR1->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalR1->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalR1->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownRadiusB:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalR2->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalR2->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalR2->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownAperture:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalAperture->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalAperture->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param, convertToDefault(
                        this->ui->lineEdit_nominalAperture->text().toDouble(),
                        dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
       case GeometryParameters::eUnknownA:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalA->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalA->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalA->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownB:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalB->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalB->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalB->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownC:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalC->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalC->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalC->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownAngle:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalAngle->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalAngle->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(this->ui->lineEdit_nominalAngle->text().toDouble(),
                              dConfig.getDisplayUnit(DimensionType::eAngular)));
         break;
       case GeometryParameters::eUnknownDistance:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalDistance->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalDistance->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param, convertToDefault(
                        this->ui->lineEdit_nominalDistance->text().toDouble(),
                        dConfig.getDisplayUnit(DimensionType::eMetric)));
         break;
       case GeometryParameters::eUnknownMeasurementSeries:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalMeasurementSeries->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(
+                        this->ui->lineEdit_nominalMeasurementSeries->text()) ==
+                0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param,
             convertToDefault(
                 this->ui->lineEdit_nominalMeasurementSeries->text().toDouble(),
@@ -532,22 +538,23 @@ void NominalPropertiesDialog::getParametersFromGUI(
         break;
       case GeometryParameters::eUnknownTemperature:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalTemperature->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalTemperature->text()) ==
+                0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param, convertToDefault(
                        this->ui->lineEdit_nominalTemperature->text().toDouble(),
                        dConfig.getDisplayUnit(DimensionType::eTemperature)));
         break;
       case GeometryParameters::eUnknownLength:
         if (this->parameters.contains(param) &&
-            this->parameters.value(param).compare(
-                this->ui->lineEdit_nominalLength->text()) == 0) {
+            oi::value(this->parameters, param)
+                    .compare(this->ui->lineEdit_nominalLength->text()) == 0) {
           break;
         }
-        parameters.insert(
+        parameters.insert_or_assign(
             param, convertToDefault(
                        this->ui->lineEdit_nominalLength->text().toDouble(),
                        dConfig.getDisplayUnit(DimensionType::eMetric)));

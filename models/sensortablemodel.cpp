@@ -1,5 +1,11 @@
 #include "sensortablemodel.h"
 
+#include <map>
+#include <vector>
+
+#include "containers.h"
+#include "controller/qtconvert.h"
+
 /*!
  * \brief SensorTableModel::SensorTableModel
  * \param parent
@@ -411,8 +417,8 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex& index) const {
  * \brief SensorTableModel::getSupportedReadingTypes
  * \return
  */
-QList<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const {
-  QList<ReadingTypes> types;
+std::vector<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const {
+  std::vector<ReadingTypes> types;
 
   // get and check sensor name and plugin file path
   QString sensorName = this->selectedSensor.second;
@@ -439,8 +445,9 @@ QList<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const {
  * \brief SensorTableModel::getSupportedSensorActions
  * \return
  */
-QList<SensorFunctions> SensorTableModel::getSupportedSensorActions() const {
-  QList<SensorFunctions> functions;
+std::vector<SensorFunctions> SensorTableModel::getSupportedSensorActions()
+    const {
+  std::vector<SensorFunctions> functions;
 
   // get and check sensor name and plugin file path
   QString sensorName = this->selectedSensor.second;
@@ -467,8 +474,9 @@ QList<SensorFunctions> SensorTableModel::getSupportedSensorActions() const {
  * \brief SensorTableModel::getSupportedConnectionTypes
  * \return
  */
-QList<ConnectionKind> SensorTableModel::getSupportedConnectionTypes() const {
-  QList<ConnectionKind> types;
+std::vector<ConnectionKind> SensorTableModel::getSupportedConnectionTypes()
+    const {
+  std::vector<ConnectionKind> types;
 
   // get and check sensor name and plugin file path
   QString sensorName = this->selectedSensor.second;
@@ -526,17 +534,18 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const {
   sConfig.setIntegerParameter(sensor->getIntegerParameter());
   sConfig.setDoubleParameter(sensor->getDoubleParameter());
   sConfig.setAvailableStringParameter(sensor->getStringParameter());
-  QStringList keys = sensor->getStringParameter().keys();
-  QMap<QString, QString> stringParams;
+  QStringList keys = toQStringList(oi::keys(sensor->getStringParameter()));
+  std::map<QString, QString> stringParams;
   foreach (const QString& key, keys) {
-    stringParams.insert(key, sensor->getStringParameter().value(key));
+    stringParams.insert_or_assign(key,
+                                  oi::value(sensor->getStringParameter(), key));
   }
   sConfig.setStringParameter(stringParams);
 
   // set connection type
   ConnectionConfig cConfig;
   if (sensor->getSupportedConnectionTypes().size() > 0) {
-    cConfig.typeOfConnection = sensor->getSupportedConnectionTypes().first();
+    cConfig.typeOfConnection = sensor->getSupportedConnectionTypes().front();
   }
   sConfig.setConnectionConfig(cConfig);
 
@@ -549,7 +558,7 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const {
  * \brief SensorTableModel::getPlugins
  * \return
  */
-const QList<sys::Plugin>& SensorTableModel::getPlugins() const {
+const std::vector<sys::Plugin>& SensorTableModel::getPlugins() const {
   return plugins;
 }
 
@@ -557,7 +566,7 @@ const QList<sys::Plugin>& SensorTableModel::getPlugins() const {
  * \brief SensorTableModel::setPlugins
  * \param plugins
  */
-void SensorTableModel::setPlugins(const QList<sys::Plugin>& plugins) {
+void SensorTableModel::setPlugins(const std::vector<sys::Plugin>& plugins) {
   emit this->beginResetModel();
   this->plugins = plugins;
   emit this->endResetModel();

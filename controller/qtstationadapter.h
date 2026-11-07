@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QPointer>
 #include <QVariantMap>
+#include <map>
+#include <vector>
 
 #include "stationobserver.h"
 
@@ -42,7 +44,7 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
 
   // real time data
   void realTimeReading(QVariantMap reading);
-  void realTimeStatus(QMap<QString, QString> status);
+  void realTimeStatus(std::map<QString, QString> status);
 
   // connection information
   void connectionLost();
@@ -55,7 +57,7 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   void commandFinished(bool success, QString msg,
                        oi::SensorAction sensorAction);
   void measurementFinished(int geomId,
-                           QList<oi::Guarded<oi::Reading>> readings);
+                           std::vector<oi::Guarded<oi::Reading>> readings);
   void measurementDone(bool success);
 
   // what the driver reports
@@ -67,15 +69,16 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   QtStationAdapter() = default;
 
   void onStationDestroyed(oi::Station* station) override;
-  void onRealTimeReading(const QVariantMap& reading) override;
-  void onRealTimeStatus(const QMap<QString, QString>& status) override;
+  void onRealTimeReading(const std::map<QString, QVariant>& reading) override;
+  void onRealTimeStatus(const std::map<QString, QString>& status) override;
   void onConnectionLost() override;
   void onConnectionReceived() override;
   void onIsReadyForMeasurement(bool isReady) override;
   void onCommandFinished(bool success, const QString& msg,
                          oi::SensorAction sensorAction) override;
   void onMeasurementFinished(
-      int geomId, const QList<oi::Guarded<oi::Reading>>& readings) override;
+      int geomId,
+      const std::vector<oi::Guarded<oi::Reading>>& readings) override;
   void onMeasurementDone(bool success) override;
   void onSensorMessage(const QString& msg, oi::MessageTypes msgType,
                        oi::MessageDestinations msgDest) override;

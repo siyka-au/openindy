@@ -1,5 +1,9 @@
 #include "availablefunctionslistmodel.h"
 
+#include <vector>
+
+#include "containers.h"
+
 /*!
  * \brief AvailableFunctionsListModel::AvailableFunctionsListModel
  * \param parent
@@ -117,7 +121,7 @@ QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(
     foreach (const sys::Plugin& plugin, this->plugins) {
       foreach (const sys::Function& function, plugin.functions()) {
         if (function.name().compare(name) == 0 &&
-            function.applicableFor().contains(type)) {
+            oi::contains(function.applicableFor(), type)) {
           QPair<QString, QString> result;
           result.first = function.name();
           result.second = function.plugin().filePath();
@@ -134,7 +138,8 @@ QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(
  * \brief AvailableFunctionsListModel::getPlugins
  * \return
  */
-const QList<sys::Plugin>& AvailableFunctionsListModel::getPlugins() const {
+const std::vector<sys::Plugin>& AvailableFunctionsListModel::getPlugins()
+    const {
   return this->plugins;
 }
 
@@ -143,7 +148,7 @@ const QList<sys::Plugin>& AvailableFunctionsListModel::getPlugins() const {
  * \param plugins
  */
 void AvailableFunctionsListModel::setPlugins(
-    const QList<sys::Plugin>& plugins) {
+    const std::vector<sys::Plugin>& plugins) {
   this->plugins = plugins;
   this->updateModel();
 }

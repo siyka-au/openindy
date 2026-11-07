@@ -1,5 +1,7 @@
 #include "bundleoverviewdelegate.h"
 
+#include <vector>
+
 BundleOverviewDelegate::BundleOverviewDelegate(QObject* parent)
     : QAbstractItemDelegate(parent) {}
 void BundleOverviewDelegate::paint(QPainter* painter,
@@ -14,12 +16,12 @@ void BundleOverviewDelegate::paint(QPainter* painter,
     return;
   }
 
-  QList<oi::Guarded<FeatureWrapper> > stations =
+  std::vector<oi::Guarded<FeatureWrapper> > stations =
       job->getFeaturesByName(stationName);
-  if (stations.isEmpty()) {
+  if (stations.empty()) {
     return;
   }
-  oi::Guarded<Station> station = stations.first()->getStation();
+  oi::Guarded<Station> station = stations.front()->getStation();
   if (station.isNull()) {
     return;
   }

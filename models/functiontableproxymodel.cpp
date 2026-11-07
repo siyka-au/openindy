@@ -1,5 +1,6 @@
 #include "functiontableproxymodel.h"
 
+#include "containers.h"
 #include "jobconnect.h"
 #include "qtjobadapter.h"
 
@@ -112,7 +113,8 @@ bool FunctionTableProxyModel::filterAcceptsRow(
       if (source_row == numFunctionPlugins) {
         // check if the function is applicable for the active feature's feature
         // type
-        if (!function.applicableFor().contains(
+        if (!oi::contains(
+                function.applicableFor(),
                 this->currentJob->getActiveFeature()->getFeatureTypeEnum())) {
           return false;
         }

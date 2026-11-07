@@ -1,6 +1,7 @@
 #include <QByteArray>
 #include <QPointer>
 #include <QtTest>
+#include <vector>
 
 #include "chooselalib.h"
 #include "coordinatesystem.h"
@@ -152,11 +153,11 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY2(!reloaded.isNull(), "the project should reload without error");
 
-  const QList<oi::Guarded<FeatureWrapper> > reloadedGroups =
+  const std::vector<oi::Guarded<FeatureWrapper> > reloadedGroups =
       reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
   QCOMPARE(reloadedGroups.size(), 1);
 
-  oi::Guarded<Group> reloadedGroup = reloadedGroups.first()->getGroup();
+  oi::Guarded<Group> reloadedGroup = reloadedGroups.front()->getGroup();
   QVERIFY(!reloadedGroup.isNull());
   QCOMPARE(reloadedGroup->getFeatureName(), QString("MixedGroup"));
 
@@ -206,12 +207,12 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
 
   // must come back as a PointGroup, not a plain Group
   QCOMPARE(reloaded->getFeaturesByType(FeatureTypes::eGroupFeature).size(), 0);
-  const QList<oi::Guarded<FeatureWrapper> > reloadedPointGroups =
+  const std::vector<oi::Guarded<FeatureWrapper> > reloadedPointGroups =
       reloaded->getFeaturesByType(FeatureTypes::ePointGroupFeature);
   QCOMPARE(reloadedPointGroups.size(), 1);
 
   oi::Guarded<PointGroup> reloadedGroup =
-      reloadedPointGroups.first()->getPointGroup();
+      reloadedPointGroups.front()->getPointGroup();
   QVERIFY(!reloadedGroup.isNull());
   QCOMPARE(reloadedGroup->getFeatureName(), QString("Wall"));
   QCOMPARE(reloadedGroup->memberCount(), 3);
@@ -249,11 +250,11 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   oi::Guarded<OiJob> reloaded = exchanger.loadProject(xml).job;
   QVERIFY(!reloaded.isNull());
 
-  const QList<oi::Guarded<FeatureWrapper> > reloadedGroups =
+  const std::vector<oi::Guarded<FeatureWrapper> > reloadedGroups =
       reloaded->getFeaturesByType(FeatureTypes::eGroupFeature);
   QCOMPARE(reloadedGroups.size(), 1);
 
-  oi::Guarded<Group> reloadedGroup = reloadedGroups.first()->getGroup();
+  oi::Guarded<Group> reloadedGroup = reloadedGroups.front()->getGroup();
   QVERIFY(!reloadedGroup.isNull());
   QVERIFY2(reloadedGroup->getConstraint().has_value(),
            "the constraint itself must survive reload");

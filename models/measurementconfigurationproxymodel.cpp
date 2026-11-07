@@ -1,5 +1,7 @@
 #include "measurementconfigurationproxymodel.h"
 
+#include <vector>
+
 /*!
  * \brief MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel
  * \param parent
@@ -24,8 +26,9 @@ void MeasurementConfigurationProxyModel::setFilter(const bool& showAll) {
   this->sort(0);
 }
 void MeasurementConfigurationProxyModel::setFilter(
-    const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature,
-    QList<FeatureTypes> applicableFor, const SensorType& activeSensorType) {
+    const std::vector<ElementTypes> neededElements, FeatureTypes typeOfFeature,
+    std::vector<FeatureTypes> applicableFor,
+    const SensorType& activeSensorType) {
   this->resetFilter();
 
   this->filterType = MeasurementConfigurationFilterTypes::
@@ -99,7 +102,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(
     return false;
   }
 
-  const QList<MeasurementConfig> configs =
+  const std::vector<MeasurementConfig> configs =
       sourceModel->getMeasurementConfigurationManager()->getConfigs();
   if (source_row < 0 || source_row >= configs.size()) {
     return false;
@@ -147,7 +150,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(
         eAll_MeasurementConfigurationFilter:
     default:
       if (isUser || isProject) {
-        if (this->neededElements.isEmpty()) {
+        if (this->neededElements.empty()) {
           return true;
         }
 

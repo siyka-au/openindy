@@ -1,5 +1,7 @@
 #include "featuretreeitem.h"
 
+#include "containers.h"
+
 /*!
  * \brief FeatureTreeItem::FeatureTreeItem
  * Creates a tree item that holds a header
@@ -36,17 +38,17 @@ FeatureTreeItem::FeatureTreeItem(const oi::Guarded<FeatureWrapper>& feature,
   }
 
   // set information about child items
-  this->containedElementTypes.append(
+  this->containedElementTypes.push_back(
       getElementTypeEnum(feature->getFeatureTypeEnum()));
   if (!feature->getGeometry().isNull()) {
     if (feature->getGeometry()->hasDirection()) {
-      this->containedElementTypes.append(ElementTypes::eDirectionElement);
+      this->containedElementTypes.push_back(ElementTypes::eDirectionElement);
     }
     if (feature->getGeometry()->hasPosition()) {
-      this->containedElementTypes.append(ElementTypes::ePositionElement);
+      this->containedElementTypes.push_back(ElementTypes::ePositionElement);
     }
     if (feature->getGeometry()->hasRadius()) {
-      this->containedElementTypes.append(ElementTypes::eRadiusElement);
+      this->containedElementTypes.push_back(ElementTypes::eRadiusElement);
     }
   }
 
@@ -77,7 +79,7 @@ FeatureTreeItem::FeatureTreeItem(const oi::Guarded<Observation>& observation,
   }
 
   // set information about child items
-  this->containedElementTypes.append(ElementTypes::eObservationElement);
+  this->containedElementTypes.push_back(ElementTypes::eObservationElement);
 
   // set observation
   this->observation = observation;
@@ -106,7 +108,7 @@ FeatureTreeItem::FeatureTreeItem(const oi::Guarded<Reading>& reading,
   }
 
   // set information about child items
-  this->containedElementTypes.append(
+  this->containedElementTypes.push_back(
       getElementTypeEnum(reading->getTypeOfReading()));
 
   // set reading
@@ -255,7 +257,7 @@ ElementTypes FeatureTreeItem::getElementType() const {
  * \return
  */
 bool FeatureTreeItem::getHasElement(const ElementTypes& typeOfElement) const {
-  return this->containedElementTypes.contains(typeOfElement);
+  return oi::contains(this->containedElementTypes, typeOfElement);
 }
 
 /*!
@@ -406,10 +408,10 @@ void FeatureTreeItem::setIsReading() {
 void FeatureTreeItem::setHasElement(const bool& hasElement,
                                     const ElementTypes& typeOfElement) {
   // update contained elements for this item
-  if (hasElement && !this->containedElementTypes.contains(typeOfElement)) {
-    this->containedElementTypes.append(typeOfElement);
+  if (hasElement && !oi::contains(this->containedElementTypes, typeOfElement)) {
+    this->containedElementTypes.push_back(typeOfElement);
   } else if (!hasElement) {
-    this->containedElementTypes.removeOne(typeOfElement);
+    oi::removeOne(this->containedElementTypes, typeOfElement);
   }
 
   // update contained elements for this item's parent item

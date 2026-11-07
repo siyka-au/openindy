@@ -7,6 +7,7 @@
 #include <QPair>
 #include <QPixmap>
 #include <QPointer>
+#include <vector>
 
 #include "function.h"
 #include "pluginrepository.h"
@@ -60,8 +61,8 @@ class AvailableFunctionsListModel : public QAbstractListModel {
   // get or set available plugins
   // ############################
 
-  [[nodiscard]] const QList<sys::Plugin>& getPlugins() const;
-  void setPlugins(const QList<sys::Plugin>& plugins);
+  [[nodiscard]] const std::vector<sys::Plugin>& getPlugins() const;
+  void setPlugins(const std::vector<sys::Plugin>& plugins);
 
  signals:
 
@@ -95,7 +96,7 @@ class AvailableFunctionsListModel : public QAbstractListModel {
   // available plugins
   // #################
 
-  QList<sys::Plugin> plugins;
+  std::vector<sys::Plugin> plugins;
 };
 
 #endif  // AVAILABLEFUNCTIONSLISTMODEL_H

@@ -1,5 +1,7 @@
 #include "bundlegeometriesmodel.h"
 
+#include <vector>
+
 #include "qtjobadapter.h"
 
 /*!
@@ -242,7 +244,7 @@ void BundleGeometriesModel::updateModel() {
     BundleGeometryItem* stationItem = new BundleGeometryItem(name);
 
     // get target geometries
-    QList<oi::Guarded<oi::Geometry> > geometries =
+    std::vector<oi::Guarded<oi::Geometry> > geometries =
         feature->getStation()->getTargetGeometries();
     struct {
       bool operator()(oi::Guarded<oi::Geometry> a,

@@ -2,6 +2,7 @@
 #include <QPointer>
 #include <QtTest>
 #include <string>
+#include <vector>
 
 #include "chooselalib.h"
 #include "coordinatesystem.h"
@@ -127,18 +128,19 @@ class RequestHandlerTest : public QObject {
 
   Answer sendBytes(const QByteArray& bytes, int requesterId = 7) {
     Answer answer;
-    QList<OiRequestResponse> sent;
+    std::vector<OiRequestResponse> sent;
     const auto connection = QObject::connect(
         &handler, &OiRequestHandler::sendResponse, this,
-        [&sent](OiRequestResponse r) { sent.append(r); }, Qt::DirectConnection);
+        [&sent](OiRequestResponse r) { sent.push_back(r); },
+        Qt::DirectConnection);
     OiRequestResponse request;
     request.requesterId = requesterId;
     request.request = bytes;
     answer.accepted = handler.receiveRequest(request);
     QObject::disconnect(connection);
     answer.sent = static_cast<int>(sent.size());
-    if (!sent.isEmpty()) {
-      answer.carrier = sent.last();
+    if (!sent.empty()) {
+      answer.carrier = sent.back();
       answer.envelope.ParseFromArray(
           answer.carrier.response.constData(),
           static_cast<int>(answer.carrier.response.size()));
@@ -422,19 +424,19 @@ void RequestHandlerTest::measurementConfigs() {
   bare.setCurrentJob(job);
   oipb::Envelope envelope;
   envelope.mutable_request()->mutable_get_measurement_configs();
-  QList<OiRequestResponse> sent;
+  std::vector<OiRequestResponse> sent;
   QObject::connect(&bare, &OiRequestHandler::sendResponse, this,
-                   [&sent](OiRequestResponse r) { sent.append(r); });
+                   [&sent](OiRequestResponse r) { sent.push_back(r); });
   OiRequestResponse request;
   request.request = bytesOf(envelope);
   bare.receiveRequest(request);
   QCOMPARE(sent.size(), 1);
-  QCOMPARE(static_cast<int>(sent.first().errorCode),
+  QCOMPARE(static_cast<int>(sent.front().errorCode),
            static_cast<int>(
                OiRequestResponse::ErrorCode::eNoMeasurementConfigManager));
   oipb::Envelope reply;
-  QVERIFY(reply.ParseFromArray(sent.first().response.constData(),
-                               static_cast<int>(sent.first().response.size())));
+  QVERIFY(reply.ParseFromArray(sent.front().response.constData(),
+                               static_cast<int>(sent.front().response.size())));
   QCOMPARE(static_cast<int>(reply.response().error()),
            static_cast<int>(oipb::ERROR_CODE_NO_MEASUREMENT_CONFIG_MANAGER));
 }
@@ -596,9 +598,9 @@ void RequestHandlerTest::watchwindowChecks() {
 
 void RequestHandlerTest::noJob() {
   OiRequestHandler empty;
-  QList<OiRequestResponse> sent;
+  std::vector<OiRequestResponse> sent;
   QObject::connect(&empty, &OiRequestHandler::sendResponse, this,
-                   [&sent](OiRequestResponse r) { sent.append(r); });
+                   [&sent](OiRequestResponse r) { sent.push_back(r); });
 
   oipb::Envelope envelope;
   envelope.set_request_id(5);
@@ -609,12 +611,12 @@ void RequestHandlerTest::noJob() {
   QVERIFY(!empty.receiveRequest(request));
 
   QCOMPARE(sent.size(), 1);
-  QCOMPARE(sent.first().requesterId, 3);
-  QCOMPARE(static_cast<int>(sent.first().errorCode),
+  QCOMPARE(sent.front().requesterId, 3);
+  QCOMPARE(static_cast<int>(sent.front().errorCode),
            static_cast<int>(OiRequestResponse::ErrorCode::eNoJob));
   oipb::Envelope reply;
-  QVERIFY(reply.ParseFromArray(sent.first().response.constData(),
-                               static_cast<int>(sent.first().response.size())));
+  QVERIFY(reply.ParseFromArray(sent.front().response.constData(),
+                               static_cast<int>(sent.front().response.size())));
   QCOMPARE(reply.request_id(), 5);
   QCOMPARE(static_cast<int>(reply.response().error()),
            static_cast<int>(oipb::ERROR_CODE_NO_JOB));
@@ -696,12 +698,12 @@ void RequestHandlerTest::toolRequestIsNotAnswered() {
 }
 
 void RequestHandlerTest::notifications() {
-  QList<OiRequestResponse> sent;
+  std::vector<OiRequestResponse> sent;
   QObject::connect(&handler, &OiRequestHandler::sendResponse, this,
-                   [&sent](OiRequestResponse r) { sent.append(r); });
+                   [&sent](OiRequestResponse r) { sent.push_back(r); });
   const auto last = [&sent] {
     oipb::Envelope envelope;
-    const auto& carrier = sent.last();
+    const auto& carrier = sent.back();
     [&] {
       QVERIFY(
           envelope.ParseFromArray(carrier.response.constData(),
@@ -712,9 +714,9 @@ void RequestHandlerTest::notifications() {
 
   handler.sensorActionStarted("measure");
   QCOMPARE(sent.size(), 1);
-  QCOMPARE(sent.last().requesterId, -1);
+  QCOMPARE(sent.back().requesterId, -1);
   QCOMPARE(
-      static_cast<int>(sent.last().myRequestType),
+      static_cast<int>(sent.back().myRequestType),
       static_cast<int>(OiRequestResponse::RequestType::eSensorActionStarted));
   auto envelope = last();
   QCOMPARE(envelope.content_case(), oipb::Envelope::kNotification);
@@ -756,9 +758,9 @@ void RequestHandlerTest::notifications() {
 }
 
 void RequestHandlerTest::realTimeReadingWithoutWatchwindow() {
-  QList<OiRequestResponse> sent;
+  std::vector<OiRequestResponse> sent;
   QObject::connect(&handler, &OiRequestHandler::sendResponse, this,
-                   [&sent](OiRequestResponse r) { sent.append(r); });
+                   [&sent](OiRequestResponse r) { sent.push_back(r); });
   QVariantMap reading;
   reading["x"] = 1.0;
   reading["y"] = 2.0;

@@ -3,8 +3,10 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <vector>
 
 #include "configfile.h"
+#include "containers.h"
 
 /*!
  * \brief MeasurementConfigManager::MeasurementConfigManager
@@ -18,7 +20,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject* parent)
   // what let "level" default to being offered for every sensor before,
   // including ones (LeicaTachymeter) that can't produce a level reading.
   foreach (MeasurementConfig c, PluginRepository::getAllMeasurementConfigs()) {
-    this->configs.insert(c.getKey(), c);
+    this->configs.insert_or_assign(c.getKey(), c);
     this->addProjectConfig(c);
   }
 }
@@ -71,20 +73,23 @@ void MeasurementConfigManager::setCurrentJob(const oi::Guarded<OiJob>& job) {
 
 MeasurementConfig MeasurementConfigManager::getUserConfig(
     const QString& name) const {
-  return configs.value(MeasurementConfigKey(name, ConfigTypes::eUserConfig),
-                       MeasurementConfig());
+  return oi::value(configs,
+                   MeasurementConfigKey(name, ConfigTypes::eUserConfig),
+                   MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getProjectConfig(
     const QString& name) const {
-  return configs.value(MeasurementConfigKey(name, ConfigTypes::eProjectConfig),
-                       MeasurementConfig());
+  return oi::value(configs,
+                   MeasurementConfigKey(name, ConfigTypes::eProjectConfig),
+                   MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getStandardConfig(
     const QString& name) const {
-  return configs.value(MeasurementConfigKey(name, ConfigTypes::eStandardConfig),
-                       MeasurementConfig());
+  return oi::value(configs,
+                   MeasurementConfigKey(name, ConfigTypes::eStandardConfig),
+                   MeasurementConfig());
 }
 
 /**
@@ -103,47 +108,49 @@ MeasurementConfig MeasurementConfigManager::findConfig(
 
 MeasurementConfig MeasurementConfigManager::getConfig(
     const MeasurementConfigKey& key) const {
-  return configs.value(key, MeasurementConfig());
+  return oi::value(configs, key, MeasurementConfig());
 }
 
 /*!
  * \brief MeasurementConfigManager::getUserConfigs
  * \return
  */
-const QList<MeasurementConfig> MeasurementConfigManager::getUserConfigs()
+const std::vector<MeasurementConfig> MeasurementConfigManager::getUserConfigs()
     const {
-  QList<MeasurementConfig> l;
-  for (const MeasurementConfig c : configs) {
+  std::vector<MeasurementConfig> l;
+  for (const auto& [key, c] : configs) {
     if (c.isUserConfig()) {
-      l.append(c);
+      l.push_back(c);
     }
   }
   return l;
 }
 
-const QList<MeasurementConfig> MeasurementConfigManager::getConfigs() const {
-  return configs.values();
+const std::vector<MeasurementConfig> MeasurementConfigManager::getConfigs()
+    const {
+  return oi::values(configs);
 }
 
 /*!
  * \brief MeasurementConfigManager::getProjectConfigs
  * \return
  */
-const QList<MeasurementConfig> MeasurementConfigManager::getProjectConfigs()
-    const {
-  QList<MeasurementConfig> l;
-  for (const MeasurementConfig c : configs) {
+const std::vector<MeasurementConfig>
+MeasurementConfigManager::getProjectConfigs() const {
+  std::vector<MeasurementConfig> l;
+  for (const auto& [key, c] : configs) {
     if (c.isProjectConfig()) {
-      l.append(c);
+      l.push_back(c);
     }
   }
   return l;
 }
-const QList<QString> MeasurementConfigManager::getUserConfigNames() const {
-  QList<QString> l;
-  foreach (const MeasurementConfig c, configs) {
+const std::vector<QString> MeasurementConfigManager::getUserConfigNames()
+    const {
+  std::vector<QString> l;
+  for (const auto& [key, c] : configs) {
     if (c.isUserConfig()) {
-      l.append(c.getName());
+      l.push_back(c.getName());
     }
   }
   return l;
@@ -153,11 +160,12 @@ const QList<QString> MeasurementConfigManager::getUserConfigNames() const {
  * \brief MeasurementConfigManager::getProjectConfigs
  * \return
  */
-const QList<QString> MeasurementConfigManager::getProjectConfigNames() const {
-  QList<QString> l;
-  foreach (const MeasurementConfig c, configs) {
+const std::vector<QString> MeasurementConfigManager::getProjectConfigNames()
+    const {
+  std::vector<QString> l;
+  for (const auto& [key, c] : configs) {
     if (c.isProjectConfig()) {
-      l.append(c.getName());
+      l.push_back(c.getName());
     }
   }
   return l;
@@ -169,7 +177,7 @@ const QList<QString> MeasurementConfigManager::getProjectConfigNames() const {
  */
 MeasurementConfig MeasurementConfigManager::getActiveConfig(
     const GeometryTypes& type) const {
-  return this->activeMeasurementConfigs.value(type, MeasurementConfig());
+  return oi::value(this->activeMeasurementConfigs, type, MeasurementConfig());
 }
 
 /*!
@@ -251,7 +259,7 @@ void MeasurementConfigManager::addProjectConfig(
 
   // save mConfig
   MeasurementConfig projectConfig = mConfig;
-  this->configs.insert(projectConfig.getKey(), projectConfig);
+  this->configs.insert_or_assign(projectConfig.getKey(), projectConfig);
 
   emit this->measurementConfigurationsChanged();
 }
@@ -270,7 +278,7 @@ void MeasurementConfigManager::removeUserConfig(const QString& name) {
   }
 
   // check if the measurement config exists
-  if (!getUserConfigNames().contains(name)) {
+  if (!oi::contains(getUserConfigNames(), name)) {
     emit this->sendMessage(
         QString("A measurement configuration with the name %1 does not exist")
             .arg(name),
@@ -289,7 +297,7 @@ void MeasurementConfigManager::removeUserConfig(const QString& name) {
 void MeasurementConfigManager::removeProjectConfig(const QString& name) {
   MeasurementConfigKey key(name, ConfigTypes::eProjectConfig);
   if (this->configs.contains(key)) {
-    this->configs.remove(key);
+    this->configs.erase(key);
 
     emit this->measurementConfigurationsChanged();
   }
@@ -313,8 +321,8 @@ void MeasurementConfigManager::replaceMeasurementConfig(
   }
 
   // replace mConfig in map
-  this->configs.remove(oldKey);
-  this->configs.insert(mConfig.getKey(), mConfig);
+  this->configs.erase(oldKey);
+  this->configs.insert_or_assign(mConfig.getKey(), mConfig);
 }
 
 void MeasurementConfigManager::saveToConfigFolder(
@@ -392,7 +400,7 @@ void MeasurementConfigManager::loadFromConfigFolder() {
 
     // add the loaded measurement config to the list of saved configs
     if (!this->configs.contains(userConfig.getKey())) {
-      this->configs.insert(userConfig.getKey(), userConfig);
+      this->configs.insert_or_assign(userConfig.getKey(), userConfig);
     }
   }
 
@@ -420,17 +428,18 @@ void MeasurementConfigManager::loadFromConfigFolder() {
       userMConfigNames.append(userConfig.getName());
 
       // shadow a same-named system-tier entry, if any
-      foreach (const MeasurementConfigKey& key, this->configs.keys()) {
-        if (this->configs.value(key).getName().compare(userConfig.getName()) ==
-            0) {
+      foreach (const MeasurementConfigKey& key, oi::keys(this->configs)) {
+        if (oi::value(this->configs, key)
+                .getName()
+                .compare(userConfig.getName()) == 0) {
           qWarning() << "MeasurementConfigManager: user measurement config"
                      << filePath << "shadows a system one sharing the name"
                      << userConfig.getName();
-          this->configs.remove(key);
+          this->configs.erase(key);
           break;
         }
       }
-      this->configs.insert(userConfig.getKey(), userConfig);
+      this->configs.insert_or_assign(userConfig.getKey(), userConfig);
     }
   }
 
@@ -490,7 +499,7 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig& mConfig) {
   // ########################################
 
   if (!this->configs.contains(mConfig.getKey())) {  // TODO pull up
-    this->configs.insert(mConfig.getKey(), mConfig);
+    this->configs.insert_or_assign(mConfig.getKey(), mConfig);
   }
 
   // ############
@@ -525,7 +534,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString& name) {
   // #############################################
 
   MeasurementConfigKey key(name, ConfigTypes::eUserConfig);
-  this->configs.remove(key);
+  this->configs.erase(key);
 
   emit this->measurementConfigurationsChanged();
 }

@@ -1,5 +1,6 @@
 #include <QPointer>
 #include <QtTest>
+#include <map>
 
 #include "chooselalib.h"
 #include "controller.h"
@@ -27,7 +28,7 @@ class SetPlaneFunction : public ConstructFunction, public Producer<Plane> {
  public:
   explicit SetPlaneFunction() : ConstructFunction() {
     this->metaData.name = "SetPlaneFunction";
-    this->applicableFor.append(FeatureTypes::ePlaneFeature);
+    this->applicableFor.push_back(FeatureTypes::ePlaneFeature);
   }
   Position position;
   Direction direction;
@@ -176,8 +177,8 @@ void OwnedSubGeometryUiTest::
   QCOMPARE(line->getDirection().getVector().getAt(2), 1.0);
 
   // read-only enforcement: an edit attempt must not take effect
-  QMap<GeometryParameters, double> edit;
-  edit.insert(GeometryParameters::eUnknownX, 99.0);
+  std::map<GeometryParameters, double> edit;
+  edit.insert_or_assign(GeometryParameters::eUnknownX, 99.0);
   line->setUnknownParameters(edit);
   QCOMPARE(line->getPosition().getVector().getAt(0), 1.0);
 }
@@ -236,7 +237,7 @@ void OwnedSubGeometryUiTest::actionDoesNothingWithoutASolvedActivePlane() {
   Controller controller;
   const oi::Guarded<OiJob>& job = controller.createDefaultJob();
   controller.generateOwnedNormalLine();
-  QVERIFY2(job->getGeometriesList().isEmpty(),
+  QVERIFY2(job->getGeometriesList().empty(),
            "no active feature - the action must be a silent no-op");
 
   // an active feature that is not a solved Plane
