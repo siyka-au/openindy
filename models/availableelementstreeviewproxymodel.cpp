@@ -283,8 +283,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(
     if (!this->currentJob->getActiveFeature()->getGeometry().isNull()) {
       this->currentJob->getActiveFeature()
           ->getGeometry()
-          ->geomObservationsChanged(
-              this->currentJob->getActiveFeature()->getFeature()->getId());
+          ->announceObservationsChanged();
     }
 
   } else if (getIsReading(neededElementType)) {  // reading
