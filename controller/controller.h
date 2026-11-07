@@ -25,6 +25,7 @@
 #include "parameterdisplayconfig.h"
 #include "pluginloader.h"
 #include "projectexchanger.h"
+#include "qtexecutor.h"
 #include "sensorconfigurationmanager.h"
 #include "settings.h"
 #include "trafoparamtablecolumnconfig.h"
@@ -406,6 +407,9 @@ class Controller : public QObject, public ControllerSensorActions {
   // feature updater
   FeatureUpdater featureUpdater;
 
+  // delivers the sensor results of the job's stations on the UI thread
+  QtExecutor executor;
+
   // config manager
   QPointer<SensorConfigurationManager> sensorConfigManager;
   QPointer<MeasurementConfigManager> measurementConfigManager;
@@ -428,7 +432,6 @@ class Controller : public QObject, public ControllerSensorActions {
 
   QPointer<Station> getConnectedActiveStation();
 
-  QPointer<QThread> sensorWorkerThread;
   QPointer<Station> getActiveStation();
 };
 

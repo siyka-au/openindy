@@ -146,6 +146,10 @@ add_library(OpenIndyApp SHARED
     controller/qtjobadapter.h
     controller/qtfunctionadapter.cpp
     controller/qtfunctionadapter.h
+    controller/qtstationadapter.cpp
+    controller/qtstationadapter.h
+    controller/qtexecutor.cpp
+    controller/qtexecutor.h
     controller/config/featuretablecolumnconfig.cpp
     controller/config/featuretablesortingconfig.cpp
     controller/config/measurementconfigmanager.cpp
@@ -583,6 +587,11 @@ add_test(NAME qtjobadapter COMMAND tst_qtjobadapter)
 add_executable(tst_qtfunctionadapter test/qtfunctionadapter/tst_qtfunctionadapter.cpp)
 target_link_libraries(tst_qtfunctionadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME qtfunctionadapter COMMAND tst_qtfunctionadapter)
+
+# QtStationAdapter / QtExecutor: the sensor path's observer and executor on the UI thread
+add_executable(tst_qtstationadapter test/qtstationadapter/tst_qtstationadapter.cpp)
+target_link_libraries(tst_qtstationadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
+add_test(NAME qtstationadapter COMMAND tst_qtstationadapter)
 
 # DataExchanger: reports of an exchange plugin's worker thread reach the UI thread
 add_executable(tst_dataexchanger test/dataexchanger/tst_dataexchanger.cpp)

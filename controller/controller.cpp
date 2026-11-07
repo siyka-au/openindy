@@ -2,6 +2,7 @@
 
 #include "featureutil.h"
 #include "qtjobadapter.h"
+#include "qtstationadapter.h"
 /*!
  * \brief Controller::Controller
  * \param parent
@@ -67,10 +68,6 @@ void Controller::init() {
 #ifdef OI_WEBSOCKETSERVER_ENABLED
   this->connectRequestHandler();
 #endif
-
-  this->sensorWorkerThread = new QThread();
-  this->sensorWorkerThread->setObjectName("Sensor Worker");
-  this->sensorWorkerThread->start();
 }
 
 /*!
@@ -90,11 +87,10 @@ Controller::~Controller() {
     delete Console::getInstance().data();
   }
 
-  if (!this->sensorWorkerThread.isNull()) {
-    if (this->sensorWorkerThread->isRunning()) {
-      this->sensorWorkerThread->quit();
-      this->sensorWorkerThread->wait();
-    }
+  // the stations' sensor workers must not post to the executor member any
+  // more once it is destroyed
+  if (!this->job.isNull()) {
+    this->job->setExecutor(nullptr);
   }
 }
 
@@ -415,8 +411,9 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
               MessageDestinations::eMessageBoxMessage);
     return;
   }
-  QObject::connect(sensor, &Sensor::sensorStatus, this,
-                   &Controller::sensorStatus);
+  QObject::connect(QtStationAdapter::of(activeStation),
+                   &QtStationAdapter::sensorStatus, this,
+                   &Controller::sensorStatus, Qt::UniqueConnection);
 
   // set active station's sensor
   sensor->setSensorConfiguration(sConfig);
@@ -1827,11 +1824,7 @@ QPointer<Station> Controller::getConnectedActiveStation() {
 }
 
 QPointer<Station> Controller::getActiveStation() {
-  QPointer<Station> activeStation = this->job->getActiveStation();
-  if (!activeStation.isNull()) {
-    activeStation->setSensorWorkerThread(this->sensorWorkerThread);
-  }
-  return activeStation;
+  return this->job->getActiveStation();
 }
 
 /*!
@@ -1871,7 +1864,7 @@ void Controller::finishMeasurement() {
 
   qDebug() << "Controller::finishMeasurement() emit";
   // finish Measurement streaming
-  emit activeStation->finishMeasurement();
+  activeStation->finishMeasurement();
 }
 /*!
  * \brief Controller::log
@@ -1931,21 +1924,26 @@ void Controller::activeStationChangedCallback() {
     }
 
     // disconnect all slots from signals
-    QObject::disconnect(station, &Station::commandFinished, nullptr, nullptr);
-    QObject::disconnect(station, &Station::measurementFinished, nullptr,
+    QtStationAdapter* adapter = QtStationAdapter::of(station);
+    QObject::disconnect(adapter, &QtStationAdapter::commandFinished, nullptr,
                         nullptr);
-    QObject::disconnect(station, &Station::measurementDone, nullptr, nullptr);
-    QObject::disconnect(station, &Station::sensorMessage, nullptr, nullptr);
+    QObject::disconnect(adapter, &QtStationAdapter::measurementFinished,
+                        nullptr, nullptr);
+    QObject::disconnect(adapter, &QtStationAdapter::measurementDone, nullptr,
+                        nullptr);
+    QObject::disconnect(adapter, &QtStationAdapter::sensorMessage, nullptr,
+                        nullptr);
   }
 
   // connect sensor action results of active station
-  QObject::connect(activeStation, &Station::commandFinished, this,
+  QtStationAdapter* adapter = QtStationAdapter::of(activeStation);
+  QObject::connect(adapter, &QtStationAdapter::commandFinished, this,
                    &Controller::sensorActionFinished, Qt::AutoConnection);
-  QObject::connect(activeStation, &Station::measurementFinished, this,
+  QObject::connect(adapter, &QtStationAdapter::measurementFinished, this,
                    &Controller::measurementFinished, Qt::AutoConnection);
-  QObject::connect(activeStation, &Station::measurementDone, this,
+  QObject::connect(adapter, &QtStationAdapter::measurementDone, this,
                    &Controller::measurementDone, Qt::AutoConnection);
-  QObject::connect(activeStation, &Station::sensorMessage, this,
+  QObject::connect(adapter, &QtStationAdapter::sensorMessage, this,
                    &Controller::log, Qt::AutoConnection);
 }
 
@@ -2034,6 +2032,9 @@ void Controller::setJob(const QPointer<OiJob>& job) {
 
   // set and connect new job
   this->job = job;
+
+  // the stations' sensor results are delivered on the UI thread
+  this->job->setExecutor(&this->executor);
 
   // log messages to console
   QObject::connect(QtJobAdapter::of(this->job.data()),

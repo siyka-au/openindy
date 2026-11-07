@@ -1,5 +1,6 @@
 #include "watchwindowdialog.h"
 
+#include "qtstationadapter.h"
 #include "ui_watchwindowdialog.h"
 
 /*!
@@ -291,13 +292,15 @@ void WatchWindowDialog::connectSensor() {
 
   // check and disconnect the old station
   if (!this->activeStation.isNull()) {
-    QObject::disconnect(this->activeStation, &Station::realTimeReading, this,
+    QObject::disconnect(QtStationAdapter::of(this->activeStation),
+                        &QtStationAdapter::realTimeReading, this,
                         &WatchWindowDialog::realTimeReading);
   }
 
   // save and connect active station
   this->activeStation = station;
-  QObject::connect(this->activeStation, &Station::realTimeReading, this,
+  QObject::connect(QtStationAdapter::of(this->activeStation),
+                   &QtStationAdapter::realTimeReading, this,
                    &WatchWindowDialog::realTimeReading);
 }
 

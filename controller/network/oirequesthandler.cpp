@@ -7,6 +7,7 @@
 #include "convert.h"
 #include "network_convert.h"
 #include "openindy/network.pb.h"
+#include "qtstationadapter.h"
 
 namespace oipb = openindy::v1;
 
@@ -682,7 +683,8 @@ OiRequestResponse::ErrorCode OiRequestHandler::startWatchwindow(
   }
 
   // connect the reading stream to the request handler
-  QObject::connect(activeStation, &Station::realTimeReading, this,
+  QObject::connect(QtStationAdapter::of(activeStation),
+                   &QtStationAdapter::realTimeReading, this,
                    &OiRequestHandler::realTimeReading, Qt::AutoConnection);
 
   // start watch window
@@ -714,7 +716,8 @@ OiRequestResponse::ErrorCode OiRequestHandler::stopWatchwindow(
   }
 
   // disconnect the reading stream from the request handler
-  QObject::disconnect(activeStation, &Station::realTimeReading, this,
+  QObject::disconnect(QtStationAdapter::of(activeStation),
+                      &QtStationAdapter::realTimeReading, this,
                       &OiRequestHandler::realTimeReading);
 
   // stop watch window
