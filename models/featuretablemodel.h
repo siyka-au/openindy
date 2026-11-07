@@ -12,7 +12,7 @@
 #include "measurementconfigmanager.h"
 #include "oijob.h"
 #include "parameterdisplayconfig.h"
-#include "pluginloader.h"
+#include "pluginmanager.h"
 #include "pluginrepository.h"
 #include "types.h"
 #include "util.h"

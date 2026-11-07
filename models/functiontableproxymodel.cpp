@@ -45,7 +45,7 @@ void FunctionTableProxyModel::addFunction(const QModelIndex& index) {
 
   // load and check function
   oi::Guarded<Function> function =
-      PluginLoader::loadFunctionPlugin(filePath, functionName);
+      PluginManager::loadFunctionPlugin(filePath, functionName);
   if (function.isNull()) {
     return;
   }

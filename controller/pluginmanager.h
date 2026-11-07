@@ -1,5 +1,5 @@
-#ifndef PLUGINLOADER_H
-#define PLUGINLOADER_H
+#ifndef PLUGINMANAGER_H
+#define PLUGINMANAGER_H
 
 #include <QApplication>
 #include <QDir>
@@ -28,21 +28,21 @@
 using namespace oi;
 
 /*!
- * \brief The PluginLoader class
+ * \brief The PluginManager class
  * Loads OpenIndy plugins
  */
-class PluginLoader : public QObject {
+class PluginManager : public QObject {
   Q_OBJECT
 
  private:
-  explicit PluginLoader(QObject* parent = nullptr);
+  explicit PluginManager(QObject* parent = nullptr);
 
  public:
   // ##########################
   // get plugin loader instance
   // ##########################
 
-  static QPointer<PluginLoader> getInstance();
+  static QPointer<PluginManager> getInstance();
 
   // #################################
   // get plugin meta data as a preview
@@ -123,7 +123,7 @@ class PluginLoader : public QObject {
   // single plugin loader instance
   // #############################
 
-  static QPointer<PluginLoader> myInstance;
+  static QPointer<PluginManager> myInstance;
 
   // ########################
   // plugin copier and thread
@@ -133,4 +133,4 @@ class PluginLoader : public QObject {
   static QThread copierThread;
 };
 
-#endif  // PLUGINLOADER_H
+#endif  // PLUGINMANAGER_H

@@ -7,7 +7,7 @@
 #include <QShowEvent>
 #include <QtWidgets/QMessageBox>
 
-#include "pluginloader.h"
+#include "pluginmanager.h"
 
 using namespace oi;
 

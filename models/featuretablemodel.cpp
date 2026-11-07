@@ -791,7 +791,7 @@ oi::Guarded<Function> FeatureTableModel::loadFunctionByName(QString name) {
   foreach (const sys::Function& f, PluginRepository::getAllFunctions()) {
     if (f.name() == name) {
       function =
-          PluginLoader::loadFunctionPlugin(f.plugin().filePath(), f.name());
+          PluginManager::loadFunctionPlugin(f.plugin().filePath(), f.name());
       break;
     }
   }

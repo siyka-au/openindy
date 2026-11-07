@@ -35,7 +35,7 @@
 #include "oijob.h"
 #include "oimetadata.h"
 #include "parameterdisplayconfig.h"
-#include "pluginloader.h"
+#include "pluginmanager.h"
 #include "pluginrepository.h"
 #include "plugintreeviewmodel.h"
 #include "readingmodel.h"

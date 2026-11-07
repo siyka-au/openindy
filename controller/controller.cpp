@@ -46,8 +46,8 @@ void Controller::init() {
     timer->start(250);
   }
 
-  QObject::connect(PluginLoader::getInstance().data(),
-                   &PluginLoader::sendMessage, this, &Controller::log,
+  QObject::connect(PluginManager::getInstance().data(),
+                   &PluginManager::sendMessage, this, &Controller::log,
                    Qt::QueuedConnection);
 
   // initialize display configs
@@ -339,7 +339,7 @@ void Controller::generateOwnedSubGeometry(const FeatureTypes& subType,
   oi::Guarded<Function> producerFunction(nullptr);
   for (const sys::Function& candidate : candidates) {
     if (candidate.name().compare(functionName) == 0) {
-      producerFunction = PluginLoader::loadFunctionPlugin(
+      producerFunction = PluginManager::loadFunctionPlugin(
           candidate.plugin().filePath(), candidate.name());
       break;
     }
@@ -409,7 +409,7 @@ void Controller::setSensorConfig(const SensorConfiguration& sConfig,
   }
 
   // create sensor instance and assign it to the active station
-  oi::Guarded<Sensor> sensor = PluginLoader::loadSensorPlugin(
+  oi::Guarded<Sensor> sensor = PluginManager::loadSensorPlugin(
       plugin->filePath(), toQString(sConfig.getSensorName()));
   if (sensor.isNull()) {
     this->log(QString("No sensor available with the name %1")
@@ -901,7 +901,7 @@ void Controller::loadBundleTemplate(const QJsonObject& bundleTemplate) {
 
   // load bundle plugin
   oi::Guarded<BundleAdjustment> bundlePlugin =
-      PluginLoader::loadBundleAdjustmentPlugin(plugin->filePath(), bundleName);
+      PluginManager::loadBundleAdjustmentPlugin(plugin->filePath(), bundleName);
   if (bundlePlugin.isNull()) {
     this->log(QString("Cannot load bundle template %1")
                   .arg(bundleTemplate.value("name").toString()),
@@ -1247,8 +1247,8 @@ void Controller::loadProject(const QString& projectName,
 
           // load bundle plugin
           oi::Guarded<BundleAdjustment> bundlePlugin =
-              PluginLoader::loadBundleAdjustmentPlugin(plugin->filePath(),
-                                                       bundleName);
+              PluginManager::loadBundleAdjustmentPlugin(plugin->filePath(),
+                                                        bundleName);
           if (bundlePlugin.isNull()) {
             this->log(QString("Cannot load bundle template %1")
                           .arg(bundleTemplate.value("name").toString()),
@@ -2272,7 +2272,7 @@ void Controller::initToolPlugins() {
   this->toolPlugins.clear();
   foreach (const sys::Tool& tool, toolPlugins) {
     QPointer<Tool> toolPlugin =
-        PluginLoader::loadToolPlugin(tool.plugin().filePath(), tool.name());
+        PluginManager::loadToolPlugin(tool.plugin().filePath(), tool.name());
     if (!toolPlugin.isNull()) {
       toolPlugin->setAttribute(Qt::WA_DeleteOnClose, false);
       this->connectToolPlugin(toolPlugin);
@@ -2476,7 +2476,7 @@ void Controller::addFunctionsAndMConfigs(
     // load function plugin
     oi::Guarded<Function> function(nullptr);
     if (!path.isEmpty() && !fName.isEmpty()) {
-      function = PluginLoader::loadFunctionPlugin(path, fName);
+      function = PluginManager::loadFunctionPlugin(path, fName);
     }
 
     // assign function and measurement config to feature

@@ -46,7 +46,7 @@ class SetPlaneFunction : public ConstructFunction, public Producer<Plane> {
  * generateOwnedOriginPoint() - the new feature-table context-menu actions
  * (mainwindow.cpp's on_tableView_features_customContextMenuRequested) -
  * actually reach OiJob::addOwnedSubGeometry through the real
- * PluginRepository/PluginLoader path, not just that the underlying
+ * PluginRepository/PluginManager path, not just that the underlying
  * mechanism works (tst_ownedplaneaccessors.cpp in openindy-default-plugin
  * already proves that at the API level with a directly-constructed
  * function). This is the first test in the openindy app repo to call

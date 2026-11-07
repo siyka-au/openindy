@@ -17,10 +17,10 @@
 
 using namespace oi;
 
-class PluginLoader;
+class PluginManager;
 
 class PluginCopier : public QObject {
-  friend class PluginLoader;
+  friend class PluginManager;
   Q_OBJECT
 
  public:

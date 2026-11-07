@@ -1,6 +1,7 @@
 #include "plugincopier.h"
 
-#include "pluginloader.h"
+#include "pluginhost.h"
+#include "pluginmanager.h"
 #include "qtconvert.h"
 
 /*!
@@ -121,48 +122,7 @@ void PluginCopier::deletePlugin(const QString& name) {
  */
 void PluginCopier::readPluginMetaData(PluginMetaData& metaData,
                                       const QString& path) {
-  QPluginLoader pluginLoader(path);
-  metaData.iid = toStd(pluginLoader.metaData().value("IID").toString());
-  metaData.name = toStd(pluginLoader.metaData()
-                            .value("MetaData")
-                            .toObject()
-                            .value("name")
-                            .toString());
-  metaData.pluginVersion = toStd(pluginLoader.metaData()
-                                     .value("MetaData")
-                                     .toObject()
-                                     .value("pluginVersion")
-                                     .toString());
-  metaData.author = toStd(pluginLoader.metaData()
-                              .value("MetaData")
-                              .toObject()
-                              .value("author")
-                              .toString());
-  metaData.compiler = toStd(pluginLoader.metaData()
-                                .value("MetaData")
-                                .toObject()
-                                .value("compiler")
-                                .toString());
-  metaData.operatingSystem = toStd(pluginLoader.metaData()
-                                       .value("MetaData")
-                                       .toObject()
-                                       .value("operatingSystem")
-                                       .toString());
-  metaData.dependencies = pluginLoader.metaData()
-                              .value("MetaData")
-                              .toObject()
-                              .value("dependencies")
-                              .toBool();
-  metaData.description = toStd(pluginLoader.metaData()
-                                   .value("MetaData")
-                                   .toObject()
-                                   .value("description")
-                                   .toString());
-  metaData.dependenciesPath = toDependencies(pluginLoader.metaData()
-                                                 .value("MetaData")
-                                                 .toObject()
-                                                 .value("libPaths")
-                                                 .toArray());
+  PluginHost::readMetaData(path, metaData);
 }
 
 /*!

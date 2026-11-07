@@ -7,7 +7,7 @@
 #include "availablefunctionslistmodel.h"
 #include "oijob.h"
 #include "oimetadata.h"
-#include "pluginloader.h"
+#include "pluginmanager.h"
 #include "types.h"
 #include "util.h"
 

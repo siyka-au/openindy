@@ -4,7 +4,7 @@
 
 #include "console.h"
 #include "featureutil.h"
-#include "pluginloader.h"
+#include "pluginmanager.h"
 #include "pluginrepository.h"
 #include "project_codec.h"
 #include "qtconvert.h"
@@ -21,18 +21,18 @@ class ApplicationHost : public oi::codec::ProjectHost {
 
   std::unique_ptr<Function> createFunction(const std::string& plugin,
                                            const std::string& name) override {
-    return create<Function>(plugin, name, PluginLoader::loadFunctionPlugin);
+    return create<Function>(plugin, name, PluginManager::loadFunctionPlugin);
   }
 
   std::unique_ptr<BundleAdjustment> createBundleAdjustment(
       const std::string& plugin, const std::string& name) override {
     return create<BundleAdjustment>(plugin, name,
-                                    PluginLoader::loadBundleAdjustmentPlugin);
+                                    PluginManager::loadBundleAdjustmentPlugin);
   }
 
   std::unique_ptr<Sensor> createSensor(const std::string& plugin,
                                        const std::string& name) override {
-    return create<Sensor>(plugin, name, PluginLoader::loadSensorPlugin);
+    return create<Sensor>(plugin, name, PluginManager::loadSensorPlugin);
   }
 
   MeasurementConfig measurementConfig(

@@ -12,11 +12,11 @@ PluginLoaderDialog::PluginLoaderDialog(QWidget* parent)
   ui->setupUi(this);
 
   // connect plugin loader
-  QObject::connect(PluginLoader::getInstance().data(),
-                   &PluginLoader::updateProgress, this->ui->progressBar,
+  QObject::connect(PluginManager::getInstance().data(),
+                   &PluginManager::updateProgress, this->ui->progressBar,
                    &QProgressBar::setValue, Qt::AutoConnection);
-  QObject::connect(PluginLoader::getInstance().data(),
-                   &PluginLoader::importFinished, this,
+  QObject::connect(PluginManager::getInstance().data(),
+                   &PluginManager::importFinished, this,
                    &PluginLoaderDialog::importFinished, Qt::AutoConnection);
 }
 
@@ -35,7 +35,7 @@ void PluginLoaderDialog::on_toolButton_Path_clicked() {
       QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
   // get and check plugin meta data as a preview
-  PluginMetaData metaData = PluginLoader::getPluginMetaData(pluginDir);
+  PluginMetaData metaData = PluginManager::getPluginMetaData(pluginDir);
   if (metaData.iid.compare("") == 0) {
     Console::getInstance()->addLine(
         QString("No plugin found at path: %1").arg(pluginDir),
@@ -94,7 +94,7 @@ void PluginLoaderDialog::on_pushButton_Cancel_clicked() { this->close(); }
  */
 void PluginLoaderDialog::on_pushButton_Ok_clicked() {
   if (this->ui->lineEdit_Path->text().compare("") != 0) {
-    PluginLoader::importPlugin(this->ui->lineEdit_Path->text());
+    PluginManager::importPlugin(this->ui->lineEdit_Path->text());
     this->ui->textBrowser_description->append("<hr /><p />");
   }
 }

@@ -20,7 +20,7 @@
 #include "messagesink.h"
 #include "observationimporter.h"
 #include "oijob.h"
-#include "pluginloader.h"
+#include "pluginmanager.h"
 #include "pluginrepository.h"
 #include "settings.h"
 #include "util.h"

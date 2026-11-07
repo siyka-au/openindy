@@ -26,7 +26,7 @@
 #include "modelmanager.h"
 #include "oijob.h"
 #include "parameterdisplayconfig.h"
-#include "pluginloader.h"
+#include "pluginmanager.h"
 #include "projectexchanger.h"
 #include "qtexecutor.h"
 #include "sensorconfigurationmanager.h"

@@ -657,7 +657,7 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(
 
   // get and check exchange plugin
   oi::Guarded<ExchangeSimpleAscii> exchange =
-      PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
+      PluginManager::loadExchangeSimpleAsciiPlugin(path, exchangeName);
   if (!exchange.isNull()) {
     delimiters = toQStringList(exchange->getSupportedDelimiters());
   }
@@ -689,7 +689,7 @@ ModelManager::getExchangeSimpleAsciiSupportedGeometries(
 
   // get and check exchange plugin
   oi::Guarded<ExchangeSimpleAscii> exchange =
-      PluginLoader::loadExchangeSimpleAsciiPlugin(path, exchangeName);
+      PluginManager::loadExchangeSimpleAsciiPlugin(path, exchangeName);
   if (!exchange.isNull()) {
     foreach (const GeometryTypes& type, exchange->getSupportedGeometries()) {
       // display name for the user; the GeometryTypes value rides along in

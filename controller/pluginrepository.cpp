@@ -4,13 +4,12 @@
 #include <QDebug>
 #include <QDir>
 #include <QJsonObject>
-#include <QPluginLoader>
 #include <vector>
 
 #include "containers.h"
 #include "oimetadata.h"
-#include "pluginabi.h"
-#include "pluginloader.h"
+#include "pluginhost.h"
+#include "pluginmanager.h"
 #include "qtconvert.h"
 #include "settings.h"
 #include "util.h"
@@ -78,18 +77,17 @@ std::vector<sys::Plugin> PluginRepository::scanDirectory(
       dir.entryList(QStringList() << "p_*.dll" << "libp_*.so", QDir::Files)) {
     QString filePath = dir.absoluteFilePath(fileName);
 
-    QPluginLoader probe(filePath);
-    QJsonObject meta = probe.metaData().value("MetaData").toObject();
-    if (!meta.value("isOiPlugin").toBool()) {
+    const PluginProbe probe = PluginHost::probe(filePath);
+    if (probe.status == oi::PluginLoadStatus::kAbiMismatch) {
+      // An ABI mismatch used to be indistinguishable from "not an OpenIndy
+      // plugin": the driver simply vanished with no message. The core loader
+      // checks the version before the factory is ever created, and its error
+      // names the file, both versions and the fix.
+      qWarning().noquote() << "PluginRepository: rejected" << probe.error;
+      PluginRepository::rejected.append(probe.error);
       continue;
     }
-
-    // An ABI mismatch used to be indistinguishable from "not an OpenIndy
-    // plugin": qobject_cast<Plugin*> simply returned null and the driver
-    // vanished with no message. It is checked here, from metadata, before
-    // the library is ever instantiated - so the diagnosis names the file,
-    // both versions, and the fix.
-    if (!PluginRepository::checkAbiVersion(filePath, meta)) {
+    if (!probe.isOiPlugin) {
       continue;
     }
 
@@ -97,48 +95,6 @@ std::vector<sys::Plugin> PluginRepository::scanDirectory(
   }
 
   return result;
-}
-
-/*!
- * \brief PluginRepository::checkAbiVersion
- * \param filePath
- * \param meta the plugin's "MetaData" object, read without loading the library
- * \return true if this plugin was built against the ABI this app speaks
- */
-bool PluginRepository::checkAbiVersion(const QString& filePath,
-                                       const QJsonObject& meta) {
-  const QJsonValue declared = meta.value("abiVersion");
-
-  if (!declared.isDouble()) {
-    // predates abiVersion entirely, so it cannot be checked and cannot be
-    // assumed compatible - loading it risks a vtable mismatch at runtime,
-    // which is far worse than not loading it
-    const QString reason = QString(
-                               "%1: no abiVersion in its metadata (built "
-                               "against a core older than "
-                               "plugin ABI %2). Rebuild the plugin.")
-                               .arg(filePath)
-                               .arg(OI_PLUGIN_ABI_VERSION);
-    qWarning().noquote() << "PluginRepository: rejected" << reason;
-    PluginRepository::rejected.append(reason);
-    return false;
-  }
-
-  const int pluginAbi = declared.toInt();
-  if (pluginAbi != OI_PLUGIN_ABI_VERSION) {
-    const QString reason = QString(
-                               "%1: built against plugin ABI %2, this build of "
-                               "OpenIndy requires %3. "
-                               "Rebuild the plugin against the current core.")
-                               .arg(filePath)
-                               .arg(pluginAbi)
-                               .arg(OI_PLUGIN_ABI_VERSION);
-    qWarning().noquote() << "PluginRepository: rejected" << reason;
-    PluginRepository::rejected.append(reason);
-    return false;
-  }
-
-  return true;
 }
 
 /*!
@@ -155,6 +111,16 @@ const QStringList& PluginRepository::getRejectedPlugins() {
 }
 
 /*!
+ * \brief loadIf
+ * A library that only carries UI tools has no compute factory to ask.
+ */
+template <typename Result>
+static Result loadIf(bool compute, Result (*loader)(const QString&),
+                     const QString& path) {
+  return compute ? loader(path) : Result();
+}
+
+/*!
  * \brief PluginRepository::scanPluginFile
  * Instantiates every Function/Sensor/Tool/Exchange/Simulation a plugin file
  * offers and calls init() on each - the same work PluginCopier::savePlugin()
@@ -163,8 +129,8 @@ const QStringList& PluginRepository::getRejectedPlugins() {
  * \return
  */
 sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
-  QPluginLoader pluginLoader(filePath);
-  QJsonObject meta = pluginLoader.metaData().value("MetaData").toObject();
+  const PluginProbe probe = PluginHost::probe(filePath);
+  const QJsonObject& meta = probe.meta;
 
   QString name = meta.value("name").toString();
   QString description = meta.value("description").toString();
@@ -181,7 +147,8 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
 
   std::vector<sys::Function> functions;
   foreach (const oi::Guarded<Function>& f,
-           PluginLoader::loadFunctionPlugins(filePath)) {
+           loadIf(probe.plugin != nullptr, &PluginManager::loadFunctionPlugins,
+                  filePath)) {
     if (f.isNull()) {
       continue;
     }
@@ -198,7 +165,8 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
 
   std::vector<sys::Sensor> sensors;
   foreach (const oi::Guarded<Sensor>& s,
-           PluginLoader::loadSensorPlugins(filePath)) {
+           loadIf(probe.plugin != nullptr, &PluginManager::loadSensorPlugins,
+                  filePath)) {
     if (s.isNull()) {
       continue;
     }
@@ -221,7 +189,7 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
   }
 
   std::vector<sys::Tool> tools;
-  foreach (const QPointer<Tool>& t, PluginLoader::loadToolPlugins(filePath)) {
+  foreach (const QPointer<Tool>& t, PluginManager::loadToolPlugins(filePath)) {
     if (t.isNull()) {
       continue;
     }
@@ -232,7 +200,8 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
 
   std::vector<sys::Exchange> exchanges;
   foreach (const oi::Guarded<ExchangeSimpleAscii>& e,
-           PluginLoader::loadExchangeSimpleAsciiPlugins(filePath)) {
+           loadIf(probe.plugin != nullptr,
+                  &PluginManager::loadExchangeSimpleAsciiPlugins, filePath)) {
     if (e.isNull()) {
       continue;
     }
@@ -242,7 +211,8 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
                                       toQString(e->getMetaData().iid)));
   }
   foreach (const oi::Guarded<ExchangeDefinedFormat>& e,
-           PluginLoader::loadExchangeDefinedFormatPlugins(filePath)) {
+           loadIf(probe.plugin != nullptr,
+                  &PluginManager::loadExchangeDefinedFormatPlugins, filePath)) {
     if (e.isNull()) {
       continue;
     }
@@ -254,7 +224,8 @@ sys::Plugin PluginRepository::scanPluginFile(const QString& filePath) {
 
   std::vector<sys::Simulation> simulations;
   foreach (const oi::Guarded<SimulationModel>& sim,
-           PluginLoader::loadSimulationPlugins(filePath)) {
+           loadIf(probe.plugin != nullptr,
+                  &PluginManager::loadSimulationPlugins, filePath)) {
     if (sim.isNull()) {
       continue;
     }

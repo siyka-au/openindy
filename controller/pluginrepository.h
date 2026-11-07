@@ -93,10 +93,11 @@ class OI_MAIN_EXPORT PluginRepository {
   // fails this check is recorded here precisely so it can be surfaced
   static const QStringList& getRejectedPlugins();
 
- private:
+  // every valid plugin found directly in dirPath (public for tests)
   static std::vector<sys::Plugin> scanDirectory(const QString& dirPath);
+
+ private:
   static sys::Plugin scanPluginFile(const QString& filePath);
-  static bool checkAbiVersion(const QString& filePath, const QJsonObject& meta);
 
   static std::vector<sys::Plugin> plugins;
   static QStringList rejected;

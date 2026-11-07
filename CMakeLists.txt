@@ -178,7 +178,9 @@ add_library(OpenIndyApp SHARED
     controller/network/oiwebsocketstreamer.cpp
     controller/oimetadata.cpp
     controller/plugincopier.cpp
-    controller/pluginloader.cpp
+    controller/pluginmanager.cpp
+    controller/pluginhost.cpp
+    controller/qtprogresssink.cpp
     controller/pluginrepository.cpp
     controller/settings.cpp
     controller/sortlistbyname.cpp
@@ -287,7 +289,9 @@ add_library(OpenIndyApp SHARED
     controller/network/oiwebsocketstreamer.h
     controller/param/exchangeParams.h
     controller/plugincopier.h
-    controller/pluginloader.h
+    controller/pluginmanager.h
+    controller/pluginhost.h
+    controller/qtprogresssink.h
     controller/plugininfo.h
     controller/pluginrepository.h
     controller/settings.h
@@ -600,3 +604,14 @@ add_test(NAME qtstationadapter COMMAND tst_qtstationadapter)
 add_executable(tst_dataexchanger test/dataexchanger/tst_dataexchanger.cpp)
 target_link_libraries(tst_dataexchanger PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME dataexchanger COMMAND tst_dataexchanger)
+
+# compute plugins are loaded through core's oi::PluginLoader (PluginHost)
+add_executable(tst_pluginhost test/pluginhost/tst_pluginhost.cpp)
+target_compile_definitions(tst_pluginhost PRIVATE
+    DEFAULT_PLUGIN_PATH="$<TARGET_FILE:OpenIndyDefaultPlugin>"
+    LEICA_PLUGIN_PATH="$<TARGET_FILE:OpenIndyLeicaPlugin>"
+    PLUGIN_DIR="$<TARGET_FILE_DIR:OpenIndyDefaultPlugin>"
+    NOT_A_PLUGIN_PATH="${CMAKE_CURRENT_SOURCE_DIR}/test/pluginhost/tst_pluginhost.cpp")
+target_link_libraries(tst_pluginhost PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
+add_dependencies(tst_pluginhost OpenIndyDefaultPlugin OpenIndyLeicaPlugin)
+add_test(NAME pluginhost COMMAND tst_pluginhost)

@@ -432,7 +432,7 @@ std::vector<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const {
 
   // load and check sensor plugin
   oi::Guarded<Sensor> sensor =
-      PluginLoader::loadSensorPlugin(filePath, sensorName);
+      PluginManager::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return types;
   }
@@ -461,7 +461,7 @@ std::vector<SensorFunctions> SensorTableModel::getSupportedSensorActions()
 
   // load and check sensor plugin
   oi::Guarded<Sensor> sensor =
-      PluginLoader::loadSensorPlugin(filePath, sensorName);
+      PluginManager::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return functions;
   }
@@ -490,7 +490,7 @@ std::vector<ConnectionKind> SensorTableModel::getSupportedConnectionTypes()
 
   // load and check sensor plugin
   oi::Guarded<Sensor> sensor =
-      PluginLoader::loadSensorPlugin(filePath, sensorName);
+      PluginManager::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return types;
   }
@@ -519,7 +519,7 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const {
 
   // load and check sensor plugin
   oi::Guarded<Sensor> sensor =
-      PluginLoader::loadSensorPlugin(filePath, sensorName);
+      PluginManager::loadSensorPlugin(filePath, sensorName);
   if (sensor.isNull()) {
     return sConfig;
   }

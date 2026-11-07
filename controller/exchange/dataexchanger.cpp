@@ -153,16 +153,16 @@ bool DataExchanger::importData(const ExchangeParams& params) {
   oi::Guarded<ExchangeInterface> exchange(nullptr);
   if (params.isDefinedFormat) {
     oi::Guarded<ExchangeDefinedFormat> definedFormat =
-        PluginLoader::loadExchangeDefinedFormatPlugin(plugin->filePath(),
-                                                      params.exchangeName);
+        PluginManager::loadExchangeDefinedFormatPlugin(plugin->filePath(),
+                                                       params.exchangeName);
     if (!definedFormat.isNull()) {
       definedFormat->setUsedElements(params.usedElements);
     }
     exchange = definedFormat;
   } else {
     oi::Guarded<ExchangeSimpleAscii> simpleAscii =
-        PluginLoader::loadExchangeSimpleAsciiPlugin(plugin->filePath(),
-                                                    params.exchangeName);
+        PluginManager::loadExchangeSimpleAsciiPlugin(plugin->filePath(),
+                                                     params.exchangeName);
     if (!simpleAscii.isNull()) {
       switch (params.typeOfGeometry) {
         case GeometryTypes::ePointGeometry: {
@@ -293,7 +293,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
   oi::Guarded<ExchangeInterface> exchange(nullptr);
   if (params.isDefinedFormat) {
     oi::Guarded<ExchangeDefinedFormat> definedFormat =
-        PluginLoader::loadExchangeDefinedFormatPlugin(
+        PluginManager::loadExchangeDefinedFormatPlugin(
             qApp->applicationDirPath() + "/" + plugin->filePath(),
             params.exchangeName);
     if (!definedFormat.isNull()) {
@@ -302,7 +302,7 @@ bool DataExchanger::exportData(const ExchangeParams& params) {
     exchange = definedFormat;
   } else {
     oi::Guarded<ExchangeSimpleAscii> simpleAscii =
-        PluginLoader::loadExchangeSimpleAsciiPlugin(
+        PluginManager::loadExchangeSimpleAsciiPlugin(
             qApp->applicationDirPath() + "/" + plugin->filePath(),
             params.exchangeName);
     if (!simpleAscii.isNull()) {
@@ -737,7 +737,7 @@ void DataExchanger::addFunctionsAndMConfigs(
     // load function plugin
     oi::Guarded<Function> function(nullptr);
     if (!path.isEmpty() && !fName.isEmpty()) {
-      function = PluginLoader::loadFunctionPlugin(path, fName);
+      function = PluginManager::loadFunctionPlugin(path, fName);
     }
 
     // assign function and measurement config to feature

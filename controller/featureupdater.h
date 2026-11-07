@@ -12,7 +12,7 @@
 #include "featurewrapper.h"
 #include "function.h"
 #include "oijob.h"
-#include "pluginloader.h"
+#include "pluginmanager.h"
 #include "sortlistbyname.h"
 #include "trafocontroller.h"
 #include "trafoparam.h"
