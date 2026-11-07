@@ -1,5 +1,7 @@
 #include "readingmodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief ReadingModel::ReadingModel
  * \param parent
@@ -323,10 +325,12 @@ void ReadingModel::connectJob() {
     return;
   }
 
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &ReadingModel::activeFeatureChanged, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged,
-                   this, &ReadingModel::geometryObservationsChanged,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::geometryObservationsChanged, this,
+                   &ReadingModel::geometryObservationsChanged,
                    Qt::AutoConnection);
 }
 
@@ -339,9 +343,10 @@ void ReadingModel::disconnectJob() {
     return;
   }
 
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &ReadingModel::activeFeatureChanged);
-  QObject::disconnect(this->currentJob.data(),
-                      &OiJob::geometryObservationsChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
+                      &ReadingModel::activeFeatureChanged);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::geometryObservationsChanged, this,
                       &ReadingModel::geometryObservationsChanged);
 }

@@ -1,5 +1,7 @@
 #include "featureupdater.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief FeatureUpdater::FeatureUpdater
  * \param parent
@@ -371,18 +373,20 @@ void FeatureUpdater::connectJob() {
                    this->currentJob.data(), &OiJob::trafoParamRecalculated,
                    Qt::AutoConnection);
 
-  QObject::connect(this->currentJob.data(), &OiJob::recalcFeature, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::recalcFeature, this,
                    &FeatureUpdater::recalcFeature, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(),
-                   &OiJob::activeCoordinateSystemChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeCoordinateSystemChanged, this,
                    &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::trafoParamParametersChanged,
-                   this, &FeatureUpdater::switchCoordinateSystem,
-                   Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::trafoParamIsUsedChanged,
-                   this, &FeatureUpdater::switchCoordinateSystem,
-                   Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::recalcFeatureSet, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::trafoParamParametersChanged, this,
+                   &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::trafoParamIsUsedChanged, this,
+                   &FeatureUpdater::switchCoordinateSystem, Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::recalcFeatureSet, this,
                    &FeatureUpdater::recalcFeatureSet, Qt::AutoConnection);
 }
 
@@ -397,10 +401,11 @@ void FeatureUpdater::disconnectJob() {
   QObject::disconnect(this, &FeatureUpdater::trafoParamRecalculated,
                       this->currentJob.data(), &OiJob::trafoParamRecalculated);
 
-  QObject::disconnect(this->currentJob.data(), &OiJob::recalcFeature, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::recalcFeature, this,
                       &FeatureUpdater::recalcFeature);
-  QObject::disconnect(this->currentJob.data(),
-                      &OiJob::activeCoordinateSystemChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeCoordinateSystemChanged, this,
                       &FeatureUpdater::switchCoordinateSystem);
 }
 

@@ -1,5 +1,7 @@
 #include "modelmanager.h"
 
+#include "qtjobadapter.h"
+
 // single model manager instance
 QPointer<ModelManager> ModelManager::myInstance = new ModelManager();
 
@@ -943,19 +945,24 @@ void ModelManager::updateJob() {
       ModelManager::currentJob);
 
   // connect the job to slots in model manager
-  QObject::connect(
-      ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged,
-      ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged);
-  QObject::connect(ModelManager::currentJob.data(), &OiJob::stationSetChanged,
+  QObject::connect(QtJobAdapter::of(ModelManager::currentJob.data()),
+                   &QtJobAdapter::coordSystemSetChanged,
+                   ModelManager::myInstance.data(),
+                   &ModelManager::coordSystemSetChanged);
+  QObject::connect(QtJobAdapter::of(ModelManager::currentJob.data()),
+                   &QtJobAdapter::stationSetChanged,
                    ModelManager::myInstance.data(),
                    &ModelManager::stationSetChanged);
-  QObject::connect(
-      ModelManager::currentJob.data(), &OiJob::availableGroupsChanged,
-      ModelManager::myInstance.data(), &ModelManager::availableGroupsChanged);
-  QObject::connect(ModelManager::currentJob.data(), &OiJob::featureSetChanged,
+  QObject::connect(QtJobAdapter::of(ModelManager::currentJob.data()),
+                   &QtJobAdapter::availableGroupsChanged,
+                   ModelManager::myInstance.data(),
+                   &ModelManager::availableGroupsChanged);
+  QObject::connect(QtJobAdapter::of(ModelManager::currentJob.data()),
+                   &QtJobAdapter::featureSetChanged,
                    ModelManager::myInstance.data(),
                    &ModelManager::featureSetChanged);
-  QObject::connect(ModelManager::currentJob.data(), &OiJob::featureNameChanged,
+  QObject::connect(QtJobAdapter::of(ModelManager::currentJob.data()),
+                   &QtJobAdapter::featureNameChanged,
                    ModelManager::myInstance.data(),
                    &ModelManager::featureNameChanged);
 

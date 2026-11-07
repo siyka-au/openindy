@@ -1,0 +1,151 @@
+#include <QSignalSpy>
+#include <QtTest>
+
+#include "chooselalib.h"
+#include "oijob.h"
+#include "point.h"
+#include "qtjobadapter.h"
+#include "station.h"
+
+using namespace oi;
+
+class QtJobAdapterTest : public QObject {
+  Q_OBJECT
+
+ private slots:
+  void initTestCase();
+
+  void ofReturnsTheSameAdapterEachTime();
+  void nullJobHasNoAdapter();
+  void eachJobHasItsOwnAdapter();
+  void signalsKeepTheirOldNamesAndArguments();
+  void messagesAndRecalculationArriveAsSignals();
+  void deferredIsSolvedStaysDeferred();
+  void adapterIsCleanedUpWithTheJob();
+  void jobDeletedLaterLeavesNothingBehind();
+};
+
+void QtJobAdapterTest::initTestCase() {
+  ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);
+}
+
+void QtJobAdapterTest::ofReturnsTheSameAdapterEachTime() {
+  {
+    OiJob job;
+    QtJobAdapter* first = QtJobAdapter::of(&job);
+    QVERIFY(first != nullptr);
+    QCOMPARE(QtJobAdapter::of(&job), first);
+    QCOMPARE(QtJobAdapter::of(QPointer<OiJob>(&job)), first);
+    QCOMPARE(QtJobAdapter::registrySize(), 1);
+  }
+  QCOMPARE(QtJobAdapter::registrySize(), 0);
+}
+
+void QtJobAdapterTest::nullJobHasNoAdapter() {
+  QVERIFY(QtJobAdapter::of(static_cast<OiJob*>(nullptr)) == nullptr);
+  QVERIFY(QtJobAdapter::of(QPointer<OiJob>()) == nullptr);
+  QCOMPARE(QtJobAdapter::registrySize(), 0);
+}
+
+void QtJobAdapterTest::eachJobHasItsOwnAdapter() {
+  {
+    OiJob a, b;
+    QVERIFY(QtJobAdapter::of(&a) != QtJobAdapter::of(&b));
+    QCOMPARE(QtJobAdapter::registrySize(), 2);
+  }
+  QCOMPARE(QtJobAdapter::registrySize(), 0);
+}
+
+void QtJobAdapterTest::signalsKeepTheirOldNamesAndArguments() {
+  OiJob job;
+  QtJobAdapter* adapter = QtJobAdapter::of(&job);
+  QSignalSpy setSpy(adapter, &QtJobAdapter::featureSetChanged);
+  QSignalSpy geomSpy(adapter, &QtJobAdapter::geometrySetChanged);
+  QSignalSpy nameSpy(adapter, &QtJobAdapter::featureNameChanged);
+  QSignalSpy activeSpy(adapter, &QtJobAdapter::activeFeatureChanged);
+  QSignalSpy attrSpy(adapter, &QtJobAdapter::featureAttributesChanged);
+
+  Point point;
+  point.setFeatureName("P1");
+  QVERIFY(job.addFeature(point.getFeatureWrapper()));
+  QCOMPARE(setSpy.count(), 1);
+  QCOMPARE(geomSpy.count(), 1);
+
+  point.setFeatureName("renamed");
+  QCOMPARE(nameSpy.count(), 1);
+  QCOMPARE(nameSpy.first().at(0).toInt(), point.getId());
+  QCOMPARE(nameSpy.first().at(1).toString(), QString("P1"));
+  QCOMPARE(attrSpy.count(), 1);
+
+  point.setActiveFeatureState(true);
+  QCOMPARE(activeSpy.count(), 1);
+}
+
+void QtJobAdapterTest::messagesAndRecalculationArriveAsSignals() {
+  OiJob job;
+  QtJobAdapter* adapter = QtJobAdapter::of(&job);
+  QSignalSpy msgSpy(adapter, &QtJobAdapter::sendMessage);
+  QSignalSpy featSpy(adapter, &QtJobAdapter::featureRecalculated);
+  QSignalSpy allSpy(adapter, &QtJobAdapter::featuresRecalculated);
+  QSignalSpy setSpy(adapter, &QtJobAdapter::recalcFeatureSet);
+
+  job.sendMessage("hi", MessageTypes::eInformationMessage);
+  QCOMPARE(msgSpy.count(), 1);
+  QCOMPARE(msgSpy.first().at(0).toString(), QString("hi"));
+
+  job.featureRecalculated(3);
+  job.featuresRecalculated();
+  QCOMPARE(featSpy.count(), 1);
+  QCOMPARE(featSpy.first().at(0).toInt(), 3);
+  QCOMPARE(allSpy.count(), 1);
+
+  Point* point = new Point();
+  point->setFeatureName("P");
+  QVERIFY(job.addFeature(point->getFeatureWrapper()));
+  QVERIFY(job.removeFeature(point->getId()));
+  QCOMPARE(setSpy.count(), 1);
+}
+
+void QtJobAdapterTest::deferredIsSolvedStaysDeferred() {
+  OiJob job;
+  QSignalSpy spy(QtJobAdapter::of(&job), &QtJobAdapter::featureIsSolvedChanged);
+  Point point;
+  point.setFeatureName("P");
+  QVERIFY(job.addFeature(point.getFeatureWrapper()));
+  point.setIsSolved(true);
+  QCOMPARE(spy.count(), 0);
+  QCoreApplication::processEvents();
+  QCOMPARE(spy.count(), 1);
+}
+
+void QtJobAdapterTest::adapterIsCleanedUpWithTheJob() {
+  QCOMPARE(QtJobAdapter::registrySize(), 0);
+  OiJob* job = new OiJob();
+  QPointer<QtJobAdapter> adapter = QtJobAdapter::of(job);
+  QVERIFY(!adapter.isNull());
+  QCOMPARE(QtJobAdapter::registrySize(), 1);
+  delete job;
+  QVERIFY(adapter.isNull());
+  QCOMPARE(QtJobAdapter::registrySize(), 0);
+}
+
+void QtJobAdapterTest::jobDeletedLaterLeavesNothingBehind() {
+  // a job with features in it and a connected consumer, deleted through the
+  // event loop, must not leave a registry entry or observer behind
+  OiJob* job = new OiJob();
+  QtJobAdapter* adapter = QtJobAdapter::of(job);
+  int notified = 0;
+  QObject context;
+  QObject::connect(adapter, &QtJobAdapter::featureSetChanged, &context,
+                   [&notified] { ++notified; });
+  Point* point = new Point();
+  point->setFeatureName("P");
+  QVERIFY(job->addFeature(point->getFeatureWrapper()));
+  QCOMPARE(notified, 1);
+  job->deleteLater();
+  QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+  QCOMPARE(QtJobAdapter::registrySize(), 0);
+}
+
+QTEST_MAIN(QtJobAdapterTest)
+#include "tst_qtjobadapter.moc"

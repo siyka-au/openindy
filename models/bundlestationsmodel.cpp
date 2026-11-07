@@ -1,5 +1,7 @@
 #include "bundlestationsmodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief BundleStationsModel::BundleStationsModel
  * \param parent
@@ -440,9 +442,11 @@ void BundleStationsModel::connectJob() {
     return;
   }
 
-  QObject::connect(this->currentJob, &oi::OiJob::stationSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob),
+                   &QtJobAdapter::stationSetChanged, this,
                    &BundleStationsModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob, &oi::OiJob::featureAttributesChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob),
+                   &QtJobAdapter::featureAttributesChanged, this,
                    &BundleStationsModel::updateModel, Qt::AutoConnection);
 }
 
@@ -455,10 +459,12 @@ void BundleStationsModel::disconnectJob() {
     return;
   }
 
-  QObject::disconnect(this->currentJob, &oi::OiJob::stationSetChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob),
+                      &QtJobAdapter::stationSetChanged, this,
                       &BundleStationsModel::updateModel);
-  QObject::disconnect(this->currentJob, &oi::OiJob::featureAttributesChanged,
-                      this, &BundleStationsModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob),
+                      &QtJobAdapter::featureAttributesChanged, this,
+                      &BundleStationsModel::updateModel);
 }
 
 /*!

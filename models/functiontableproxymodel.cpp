@@ -1,5 +1,7 @@
 #include "functiontableproxymodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief FunctionTableProxyModel::FunctionTableProxyModel
  * \param parent
@@ -213,11 +215,13 @@ bool FunctionTableProxyModel::filterAcceptsColumn(
  * \brief FunctionTableProxyModel::connectJob
  */
 void FunctionTableProxyModel::connectJob() {
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &FunctionTableProxyModel::invalidateFilter,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featureFunctionsChanged,
-                   this, &FunctionTableProxyModel::invalidateFilter,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureFunctionsChanged, this,
+                   &FunctionTableProxyModel::invalidateFilter,
                    Qt::AutoConnection);
 
   QObject::connect(this, &FunctionTableProxyModel::startAddFunction,
@@ -229,10 +233,12 @@ void FunctionTableProxyModel::connectJob() {
  * \brief FunctionTableProxyModel::disconnectJob
  */
 void FunctionTableProxyModel::disconnectJob() {
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &FunctionTableProxyModel::invalidateFilter);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureFunctionsChanged,
-                      this, &FunctionTableProxyModel::invalidateFilter);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
+                      &FunctionTableProxyModel::invalidateFilter);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureFunctionsChanged, this,
+                      &FunctionTableProxyModel::invalidateFilter);
 
   QObject::disconnect(this, &FunctionTableProxyModel::startAddFunction,
                       this->currentJob.data(), &OiJob::addFunction);

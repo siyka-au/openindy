@@ -1,5 +1,7 @@
 #include "activefeaturefunctionsmodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief ActiveFeatureFunctionsModel::ActiveFeatureFunctionsModel
  * \param job
@@ -587,11 +589,13 @@ void ActiveFeatureFunctionsModel::updateModel() {
  * \brief ActiveFeatureFunctionsModel::connectJob
  */
 void ActiveFeatureFunctionsModel::connectJob() {
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &ActiveFeatureFunctionsModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featureFunctionsChanged,
-                   this, &ActiveFeatureFunctionsModel::updateModel,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureFunctionsChanged, this,
+                   &ActiveFeatureFunctionsModel::updateModel,
                    Qt::AutoConnection);
 
   QObject::connect(this, &ActiveFeatureFunctionsModel::startRemoveFunction,
@@ -603,10 +607,12 @@ void ActiveFeatureFunctionsModel::connectJob() {
  * \brief ActiveFeatureFunctionsModel::disconnectJob
  */
 void ActiveFeatureFunctionsModel::disconnectJob() {
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &ActiveFeatureFunctionsModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureFunctionsChanged,
-                      this, &ActiveFeatureFunctionsModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
+                      &ActiveFeatureFunctionsModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureFunctionsChanged, this,
+                      &ActiveFeatureFunctionsModel::updateModel);
 
   QObject::disconnect(this, &ActiveFeatureFunctionsModel::startRemoveFunction,
                       this->currentJob.data(), &OiJob::removeFunction);

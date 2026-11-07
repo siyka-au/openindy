@@ -1,5 +1,7 @@
 #include "functionweightstablemodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief FunctionWeightsTableModel::FunctionWeightsTableModel
  * \param parent
@@ -435,19 +437,22 @@ void FunctionWeightsTableModel::updateModel() {
  * \brief FunctionWeightsTableModel::connectJob
  */
 void FunctionWeightsTableModel::connectJob() {
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &FunctionWeightsTableModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featureFunctionsChanged,
-                   this, &FunctionWeightsTableModel::updateModel,
-                   Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureFunctionsChanged, this,
+                   &FunctionWeightsTableModel::updateModel, Qt::AutoConnection);
 }
 
 /*!
  * \brief FunctionWeightsTableModel::disconnectJob
  */
 void FunctionWeightsTableModel::disconnectJob() {
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &FunctionWeightsTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureFunctionsChanged,
-                      this, &FunctionWeightsTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
+                      &FunctionWeightsTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureFunctionsChanged, this,
+                      &FunctionWeightsTableModel::updateModel);
 }

@@ -1,6 +1,7 @@
 #include "controller.h"
 
 #include "featureutil.h"
+#include "qtjobadapter.h"
 /*!
  * \brief Controller::Controller
  * \param parent
@@ -2035,108 +2036,142 @@ void Controller::setJob(const QPointer<OiJob>& job) {
   this->job = job;
 
   // log messages to console
-  QObject::connect(this->job.data(), &OiJob::sendMessage, this,
-                   &Controller::log, Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::sendMessage, this, &Controller::log,
+                   Qt::AutoConnection);
 
   // active feature changes
-  QObject::connect(this->job.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &Controller::activeFeatureChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::activeStationChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::activeStationChanged, this,
                    &Controller::activeStationChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::activeStationChanged, this,
-                   &Controller::activeStationChangedCallback,
-                   Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::activeCoordinateSystemChanged,
-                   this, &Controller::activeCoordinateSystemChanged,
+  QObject::connect(
+      QtJobAdapter::of(this->job.data()), &QtJobAdapter::activeStationChanged,
+      this, &Controller::activeStationChangedCallback, Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::activeCoordinateSystemChanged, this,
+                   &Controller::activeCoordinateSystemChanged,
                    Qt::AutoConnection);
 
   // feature(s) added or removed
-  QObject::connect(this->job.data(), &OiJob::featureSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureSetChanged, this,
                    &Controller::featureSetChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::coordSystemSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::coordSystemSetChanged, this,
                    &Controller::coordSystemSetChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::stationSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::stationSetChanged, this,
                    &Controller::stationSetChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::trafoParamSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::trafoParamSetChanged, this,
                    &Controller::trafoParamSetChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::geometrySetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometrySetChanged, this,
                    &Controller::geometrySetChanged, Qt::AutoConnection);
 
   // group(s) added or removed
-  QObject::connect(this->job.data(), &OiJob::availableGroupsChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::availableGroupsChanged, this,
                    &Controller::availableGroupsChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::activeGroupChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::activeGroupChanged, this,
                    &Controller::activeGroupChanged, Qt::AutoConnection);
 
   // general feature attributes changed
-  QObject::connect(this->job.data(), &OiJob::featureAttributesChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureAttributesChanged, this,
                    &Controller::featureAttributesChanged, Qt::AutoConnection);
 
   // feature specific attributes changed
-  QObject::connect(this->job.data(), &OiJob::featureNameChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureNameChanged, this,
                    &Controller::featureNameChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::featureGroupChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureGroupChanged, this,
                    &Controller::featureGroupChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::featureCommentChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureCommentChanged, this,
                    &Controller::featureCommentChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::featureIsUpdatedChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureIsUpdatedChanged, this,
                    &Controller::featureIsUpdatedChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::featureIsSolvedChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureIsSolvedChanged, this,
                    &Controller::featureIsSolvedChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::featureFunctionsChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureFunctionsChanged, this,
                    &Controller::featureFunctionsChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::featureUsedForChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featureUsedForChanged, this,
                    &Controller::featureUsedForChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::featurePreviouslyNeededChanged,
-                   this, &Controller::featurePreviouslyNeededChanged,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::featurePreviouslyNeededChanged, this,
+                   &Controller::featurePreviouslyNeededChanged,
                    Qt::AutoConnection);
 
   // geometry specific attributes changed
-  QObject::connect(this->job.data(), &OiJob::geometryIsCommonChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometryIsCommonChanged, this,
                    &Controller::geometryIsCommonChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::geometryRealisesChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometryRealisesChanged, this,
                    &Controller::geometryRealisesChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::geometryObservationsChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometryObservationsChanged, this,
                    &Controller::geometryObservationsChanged,
                    Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::geometryNominalSystemChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometryNominalSystemChanged, this,
                    &Controller::geometryNominalSystemChanged,
                    Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::geometryStatisticChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometryStatisticChanged, this,
                    &Controller::geometryStatisticChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::geometrySimulationDataChanged,
-                   this, &Controller::geometrySimulationDataChanged,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometrySimulationDataChanged, this,
+                   &Controller::geometrySimulationDataChanged,
                    Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::geometryMeasurementConfigChanged,
-                   this, &Controller::geometryMeasurementConfigChanged,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::geometryMeasurementConfigChanged, this,
+                   &Controller::geometryMeasurementConfigChanged,
                    Qt::AutoConnection);
 
   // coordinate system specific attributes changed
-  QObject::connect(this->job.data(), &OiJob::systemObservationsChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::systemObservationsChanged, this,
                    &Controller::systemObservationsChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::systemTrafoParamsChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::systemTrafoParamsChanged, this,
                    &Controller::systemTrafoParamsChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::systemsNominalsChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::systemsNominalsChanged, this,
                    &Controller::systemsNominalsChanged, Qt::AutoConnection);
 
   // station specific attributes changed
-  QObject::connect(this->job.data(), &OiJob::stationSensorChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::stationSensorChanged, this,
                    &Controller::stationSensorChanged, Qt::AutoConnection);
 
   // transformation parameter specific attributes changed
-  QObject::connect(this->job.data(), &OiJob::trafoParamParametersChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::trafoParamParametersChanged, this,
                    &Controller::trafoParamParametersChanged,
                    Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::trafoParamSystemsChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::trafoParamSystemsChanged, this,
                    &Controller::trafoParamSystemsChanged, Qt::AutoConnection);
-  QObject::connect(this->job.data(), &OiJob::trafoParamIsUsedChanged, this,
+  QObject::connect(QtJobAdapter::of(this->job.data()),
+                   &QtJobAdapter::trafoParamIsUsedChanged, this,
                    &Controller::trafoParamIsUsedChanged, Qt::AutoConnection);
-  /*QObject::connect(this->job.data(), &OiJob::trafoParamValidTimeChanged,
-                   this, &Controller::trafoParamValidTimeChanged,
-     Qt::AutoConnection);*/
-  /*QObject::connect(this->job.data(), &OiJob::trafoParamIsMovementChanged,
-                   this, &Controller::trafoParamIsMovementChanged,
-     Qt::AutoConnection);*/
+  /*QObject::connect(QtJobAdapter::of(this->job.data()),
+     &QtJobAdapter::trafoParamValidTimeChanged, this,
+     &Controller::trafoParamValidTimeChanged, Qt::AutoConnection);*/
+  /*QObject::connect(QtJobAdapter::of(this->job.data()),
+     &QtJobAdapter::trafoParamIsMovementChanged, this,
+     &Controller::trafoParamIsMovementChanged, Qt::AutoConnection);*/
 
   // pass the new job around
   ModelManager::setCurrentJob(this->job);

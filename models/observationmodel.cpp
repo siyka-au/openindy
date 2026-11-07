@@ -1,5 +1,7 @@
 #include "observationmodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief ObservationModel::ObservationModel
  * \param parent
@@ -492,12 +494,15 @@ void ObservationModel::connectJob() {
     return;
   }
 
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &ObservationModel::activeFeatureChanged, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged,
-                   this, &ObservationModel::geometryObservationsChanged,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::geometryObservationsChanged, this,
+                   &ObservationModel::geometryObservationsChanged,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureRecalculated, this,
                    &ObservationModel::featureRecalculated, Qt::AutoConnection);
 
   QObject::connect(this, &ObservationModel::setShouldBeUsed,
@@ -514,13 +519,15 @@ void ObservationModel::disconnectJob() {
     return;
   }
 
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &ObservationModel::activeFeatureChanged);
-  QObject::disconnect(this->currentJob.data(),
-                      &OiJob::geometryObservationsChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
+                      &ObservationModel::activeFeatureChanged);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::geometryObservationsChanged, this,
                       &ObservationModel::geometryObservationsChanged);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated,
-                      this, &ObservationModel::featureRecalculated);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureRecalculated, this,
+                      &ObservationModel::featureRecalculated);
 
   QObject::disconnect(this, &ObservationModel::setShouldBeUsed,
                       this->currentJob.data(), &OiJob::setShouldBeUsed);

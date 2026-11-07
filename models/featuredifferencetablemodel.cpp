@@ -1,5 +1,7 @@
 #include "featuredifferencetablemodel.h"
 
+#include "qtjobadapter.h"
+
 inline double rnd(double value, int digits) {
   return ((floor(((value)*pow(10, digits)) + .5)) / pow(10, digits));
 }
@@ -226,38 +228,49 @@ void FeatureDifferenceTableModel::updateModel() {
  * \brief FeatureDifferenceTableModel::connectJob
  */
 void FeatureDifferenceTableModel::connectJob() {
-  QObject::connect(this->currentJob.data(), &OiJob::featureSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureSetChanged, this,
                    &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(
-      this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this,
-      &FeatureDifferenceTableModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeCoordinateSystemChanged, this,
                    &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged,
-                   this, &FeatureDifferenceTableModel::updateModel,
-                   Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeStationChanged, this,
                    &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureAttributesChanged, this,
                    &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(
-      this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this,
-      &FeatureDifferenceTableModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::activeGroupChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureRecalculated, this,
                    &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::geometryIsCommonChanged,
-                   this, &FeatureDifferenceTableModel::updateModel,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featuresRecalculated, this,
+                   &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged,
-                   this, &FeatureDifferenceTableModel::updateModel,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::geometryMeasurementConfigChanged, this,
+                   &FeatureDifferenceTableModel::updateModel,
+                   Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeGroupChanged, this,
+                   &FeatureDifferenceTableModel::updateModel,
+                   Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::geometryIsCommonChanged, this,
+                   &FeatureDifferenceTableModel::updateModel,
+                   Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::trafoParamIsDatumChanged, this,
+                   &FeatureDifferenceTableModel::updateModel,
                    Qt::AutoConnection);
 }
 
@@ -265,30 +278,39 @@ void FeatureDifferenceTableModel::connectJob() {
  * \brief FeatureDifferenceTableModel::disconnectJob
  */
 void FeatureDifferenceTableModel::disconnectJob() {
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureSetChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureSetChanged, this,
                       &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(),
-                      &OiJob::activeCoordinateSystemChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeCoordinateSystemChanged, this,
                       &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeStationChanged,
-                      this, &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged,
-                      this, &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated,
-                      this, &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated,
-                      this, &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(),
-                      &OiJob::geometryMeasurementConfigChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
                       &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeGroupChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeStationChanged, this,
                       &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::geometryIsCommonChanged,
-                      this, &FeatureDifferenceTableModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged,
-                      this, &FeatureDifferenceTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureAttributesChanged, this,
+                      &FeatureDifferenceTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureRecalculated, this,
+                      &FeatureDifferenceTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featuresRecalculated, this,
+                      &FeatureDifferenceTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::geometryMeasurementConfigChanged, this,
+                      &FeatureDifferenceTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeGroupChanged, this,
+                      &FeatureDifferenceTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::geometryIsCommonChanged, this,
+                      &FeatureDifferenceTableModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::trafoParamIsDatumChanged, this,
+                      &FeatureDifferenceTableModel::updateModel);
 }
 
 /*!

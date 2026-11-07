@@ -1,5 +1,7 @@
 #include "availableelementstreeviewproxymodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief
  * AvailableElementsTreeViewProxyModel::AvailableElementsTreeViewProxyModel
@@ -466,7 +468,8 @@ void AvailableElementsTreeViewProxyModel::connectJob() {
   }
 
   QObject::connect(
-      this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+      QtJobAdapter::of(this->currentJob.data()),
+      &QtJobAdapter::activeFeatureChanged, this,
       &AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition,
       Qt::AutoConnection);
 
@@ -491,7 +494,8 @@ void AvailableElementsTreeViewProxyModel::disconnectJob() {
   }
 
   QObject::disconnect(
-      this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+      QtJobAdapter::of(this->currentJob.data()),
+      &QtJobAdapter::activeFeatureChanged, this,
       &AvailableElementsTreeViewProxyModel::resetSelectedFunctionPosition);
 
   QObject::disconnect(this,

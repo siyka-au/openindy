@@ -1,5 +1,7 @@
 #include "featuretreeviewmodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief FeatureTreeViewModel::FeatureTreeViewModel
  * \param job
@@ -238,15 +240,17 @@ void FeatureTreeViewModel::updateModel() {
  * \brief FeatureTreeViewModel::connectJob
  */
 void FeatureTreeViewModel::connectJob() {
-  QObject::connect(this->currentJob.data(), &OiJob::featureSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureSetChanged, this,
                    &FeatureTreeViewModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::featureNameChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::featureNameChanged, this,
                    &FeatureTreeViewModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged,
-                   this, &FeatureTreeViewModel::updateModel,
-                   Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(),
-                   &OiJob::geometryNominalSystemChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::geometryObservationsChanged, this,
+                   &FeatureTreeViewModel::updateModel, Qt::AutoConnection);
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::geometryNominalSystemChanged, this,
                    &FeatureTreeViewModel::updateModel, Qt::AutoConnection);
 }
 
@@ -254,15 +258,17 @@ void FeatureTreeViewModel::connectJob() {
  * \brief FeatureTreeViewModel::disconnectJob
  */
 void FeatureTreeViewModel::disconnectJob() {
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureSetChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureSetChanged, this,
                       &FeatureTreeViewModel::updateModel);
-  QObject::disconnect(this->currentJob.data(), &OiJob::featureNameChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::featureNameChanged, this,
                       &FeatureTreeViewModel::updateModel);
-  QObject::disconnect(this->currentJob.data(),
-                      &OiJob::geometryObservationsChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::geometryObservationsChanged, this,
                       &FeatureTreeViewModel::updateModel);
-  QObject::disconnect(this->currentJob.data(),
-                      &OiJob::geometryNominalSystemChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::geometryNominalSystemChanged, this,
                       &FeatureTreeViewModel::updateModel);
 }
 

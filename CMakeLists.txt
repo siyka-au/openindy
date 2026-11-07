@@ -142,6 +142,8 @@ FetchContent_MakeAvailable(OpenIndyLeicaPlugin)
 
 add_library(OpenIndyApp SHARED
     controller/clipboardutil.cpp
+    controller/qtjobadapter.cpp
+    controller/qtjobadapter.h
     controller/config/featuretablecolumnconfig.cpp
     controller/config/featuretablesortingconfig.cpp
     controller/config/measurementconfigmanager.cpp
@@ -569,3 +571,8 @@ add_test(NAME configfiles COMMAND tst_configfiles)
 add_executable(tst_ownedsubgeometryui test/ownedsubgeometryui/tst_ownedsubgeometryui.cpp)
 target_link_libraries(tst_ownedsubgeometryui PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME ownedsubgeometryui COMMAND tst_ownedsubgeometryui)
+
+# QtJobAdapter: the OiJob observer turned back into the Qt signals
+add_executable(tst_qtjobadapter test/qtjobadapter/tst_qtjobadapter.cpp)
+target_link_libraries(tst_qtjobadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
+add_test(NAME qtjobadapter COMMAND tst_qtjobadapter)

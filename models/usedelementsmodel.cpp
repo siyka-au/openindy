@@ -1,5 +1,7 @@
 #include "usedelementsmodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief UsedElementsModel::UsedElementsModel
  * \param parent
@@ -380,10 +382,12 @@ void UsedElementsModel::updateModel() {
  * \brief UsedElementsModel::connectJob
  */
 void UsedElementsModel::connectJob() {
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &UsedElementsModel::resetSelectedFunctionPosition,
                    Qt::AutoConnection);
-  QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob.data()),
+                   &QtJobAdapter::activeFeatureChanged, this,
                    &UsedElementsModel::updateModel, Qt::AutoConnection);
 
   QObject::connect(this, &UsedElementsModel::startRemoveUsedElements,
@@ -395,10 +399,12 @@ void UsedElementsModel::connectJob() {
  * \brief UsedElementsModel::disconnectJob
  */
 void UsedElementsModel::disconnectJob() {
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &UsedElementsModel::resetSelectedFunctionPosition);
-  QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged,
-                      this, &UsedElementsModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
+                      &UsedElementsModel::resetSelectedFunctionPosition);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob.data()),
+                      &QtJobAdapter::activeFeatureChanged, this,
+                      &UsedElementsModel::updateModel);
 
   QObject::disconnect(this, &UsedElementsModel::startRemoveUsedElements,
                       this->currentJob.data(), &OiJob::removeInputElement);

@@ -1,5 +1,7 @@
 #include "bundlegeometriesmodel.h"
 
+#include "qtjobadapter.h"
+
 /*!
  * \brief BundleGeometriesModel::BundleGeometriesModel
  * \param parent
@@ -277,11 +279,14 @@ void BundleGeometriesModel::connectJob() {
     return;
   }
 
-  QObject::connect(this->currentJob, &oi::OiJob::featureSetChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob),
+                   &QtJobAdapter::featureSetChanged, this,
                    &BundleGeometriesModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob, &oi::OiJob::featureNameChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob),
+                   &QtJobAdapter::featureNameChanged, this,
                    &BundleGeometriesModel::updateModel, Qt::AutoConnection);
-  QObject::connect(this->currentJob, &oi::OiJob::geometryIsCommonChanged, this,
+  QObject::connect(QtJobAdapter::of(this->currentJob),
+                   &QtJobAdapter::geometryIsCommonChanged, this,
                    &BundleGeometriesModel::updateModel, Qt::AutoConnection);
 }
 
@@ -294,10 +299,13 @@ void BundleGeometriesModel::disconnectJob() {
     return;
   }
 
-  QObject::disconnect(this->currentJob, &oi::OiJob::featureSetChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob),
+                      &QtJobAdapter::featureSetChanged, this,
                       &BundleGeometriesModel::updateModel);
-  QObject::disconnect(this->currentJob, &oi::OiJob::featureNameChanged, this,
+  QObject::disconnect(QtJobAdapter::of(this->currentJob),
+                      &QtJobAdapter::featureNameChanged, this,
                       &BundleGeometriesModel::updateModel);
-  QObject::disconnect(this->currentJob, &oi::OiJob::geometryIsCommonChanged,
-                      this, &BundleGeometriesModel::updateModel);
+  QObject::disconnect(QtJobAdapter::of(this->currentJob),
+                      &QtJobAdapter::geometryIsCommonChanged, this,
+                      &BundleGeometriesModel::updateModel);
 }
