@@ -1,0 +1,61 @@
+#ifndef SENSORTABLEPROXYMODEL_H
+#define SENSORTABLEPROXYMODEL_H
+
+#include <QPointer>
+#include <QSortFilterProxyModel>
+
+#include "oi_job.h"
+#include "oi_meta_data.h"
+#include "plugin_manager.h"
+#include "sensor_table_model.h"
+#include "types.h"
+#include "util.h"
+
+using namespace oi;
+
+/*!
+ * \brief The SensorTableProxyModel class
+ * Model that holds all available sensor plugins filtered by sensor type
+ */
+class SensorTableProxyModel : public QSortFilterProxyModel {
+  Q_OBJECT
+
+ public:
+  explicit SensorTableProxyModel(QObject* parent = nullptr);
+
+  // ######################
+  // set sensor type filter
+  // ######################
+
+  [[nodiscard]] const SensorType& getSensorType() const;
+  void setSensorType(const SensorType& type);
+
+ signals:
+
+  // #########################
+  // send messages to OpenIndy
+  // #########################
+
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage);
+
+ protected:
+  // ###########################################
+  // override methods of sort filter proxy model
+  // ###########################################
+
+  [[nodiscard]] bool filterAcceptsRow(
+      int source_row, const QModelIndex& source_parent) const override;
+  [[nodiscard]] bool filterAcceptsColumn(
+      int source_column, const QModelIndex& source_parent) const override;
+
+ private:
+  // ###################
+  // current sensor type
+  // ###################
+
+  SensorType sensorType;
+};
+
+#endif  // SENSORTABLEPROXYMODEL_H

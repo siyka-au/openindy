@@ -1,0 +1,28 @@
+#include "measure_behavior_dialog.h"
+
+#include "ui_measure_behavior_dialog.h"
+
+MeasureBehaviorDialog::MeasureBehaviorDialog(QWidget* parent)
+    : QDialog(parent), ui(new Ui::MeasureBehaviorDialog) {
+  ui->setupUi(this);
+}
+
+MeasureBehaviorDialog::~MeasureBehaviorDialog() { delete ui; }
+
+void MeasureBehaviorDialog::on_pushButton_searchSMR_clicked() {
+  this->clicked(Decision::eSearch);
+}
+
+void MeasureBehaviorDialog::on_pushButton_tryAgain_clicked() {
+  this->clicked(Decision::eTryAgain);
+}
+
+void MeasureBehaviorDialog::on_pushButton_skip_clicked() {
+  this->clicked(Decision::eSkip);
+}
+
+void MeasureBehaviorDialog::clicked(Decision decision) {
+  emit setDecision(decision);
+
+  accept();  // close dialog
+}

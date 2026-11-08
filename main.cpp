@@ -7,11 +7,11 @@
 #include <ctime>
 #include <iostream>
 
-#include "chooselalib.h"
+#include "choose_la_lib.h"
 #include "console.h"
 #include "log.h"
-#include "mainwindow.h"
-#include "qtconvert.h"
+#include "main_window.h"
+#include "qt_convert.h"
 #include "version.h"
 
 const QString _date = __DATE__;

@@ -10,10 +10,10 @@ tests key off. Ping me once a piece is built and I'll wire it up.
 
 ## 1. `CreateFeatureDialog` — scalar parameter entry
 
-**File:** `openindy/ui/dialogs/createfeaturedialog.ui`
+**File:** `openindy/ui/dialogs/create_feature_dialog.ui`
 
 Add **one** plain, empty `QWidget` (no children, no layout assigned in Designer — I build both in
-C++, same as the existing `widget_customParameter` in `featurefunctionsdialog.ui`), named:
+C++, same as the existing `widget_customParameter` in `feature_functions_dialog.ui`), named:
 
 - `widget_scalarParameters`
 
@@ -21,7 +21,7 @@ C++, same as the existing `widget_customParameter` in `featurefunctionsdialog.ui
 `horizontalLayout_4` row (`label_nominalSystem` / `comboBox_nominalSystem`, ~line 178-196) and
 before `verticalLayout_3` (the start/destination coordinate-system rows). This is where the
 existing `initMeasurementConfigUI()` visibility-toggle logic already operates
-(`createfeaturedialog.cpp:418-442`), so I can extend that same mechanism to show/hide this new
+(`create_feature_dialog.cpp:418-442`), so I can extend that same mechanism to show/hide this new
 widget based on whether the currently-selected function has any declared parameters.
 
 I fill it with a `ScalarParameterWidget` at runtime (same pattern `FeatureFunctionsDialog` already
@@ -32,7 +32,7 @@ just leave this one placeholder empty.
 
 ## 2. `NominalPropertiesDialog` — rebuilt around the same mechanism
 
-**File:** `openindy/ui/dialogs/nominalpropertiesdialog.ui`
+**File:** `openindy/ui/dialogs/nominal_properties_dialog.ui`
 
 **Remove:** the entire flat list of `label_nominal*` / `lineEdit_nominal*` row pairs (currently ~18
 hardcoded pairs — x/y/z, i/j/k, r1/r2, angle, distance, temperature, aperture, length,
@@ -53,7 +53,7 @@ existing OK/Cancel button row.
 
 ## 3. Filter pipeline panel
 
-**File:** `openindy/ui/dialogs/featurefunctionsdialog.ui`
+**File:** `openindy/ui/dialogs/feature_functions_dialog.ui`
 
 The target container already exists and is currently empty: `widget_filter`, with an assigned
 `QGridLayout` named `gridLayout_3` (~line 314-338). Add real controls directly into it in Designer:
@@ -72,6 +72,6 @@ Arrangement within the grid is entirely your call — I only ever look these up 
 
 ## Not needed: owned sub-geometry
 
-The "generate normal line / origin point" action is a context-menu item in `mainwindow.cpp`, not a
+The "generate normal line / origin point" action is a context-menu item in `main_window.cpp`, not a
 new dialog or panel — no `.ui` work needed for it. I can build and test that one independently, any
 time.

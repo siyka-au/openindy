@@ -141,260 +141,260 @@ FetchContent_MakeAvailable(OpenIndyLeicaPlugin)
 # --- appui library ---
 
 add_library(OpenIndyApp SHARED
-    controller/clipboardutil.cpp
-    controller/qtjobadapter.cpp
-    controller/qtjobadapter.h
-    controller/qtfunctionadapter.cpp
-    controller/qtfunctionadapter.h
-    controller/qtstationadapter.cpp
-    controller/qtstationadapter.h
-    controller/qtexecutor.cpp
-    controller/qtexecutor.h
-    controller/config/featuretablecolumnconfig.cpp
-    controller/config/featuretablesortingconfig.cpp
-    controller/config/measurementconfigmanager.cpp
-    controller/config/observationtablecolumnconfig.cpp
-    controller/config/parameterdisplayconfig.cpp
-    controller/config/projectconfig.cpp
-    controller/config/readingtablecolumnconfig.cpp
-    controller/config/sensorconfigurationmanager.cpp
-    controller/config/trafoparamtablecolumnconfig.cpp
+    controller/clipboard_util.cpp
+    controller/qt_job_adapter.cpp
+    controller/qt_job_adapter.h
+    controller/qt_function_adapter.cpp
+    controller/qt_function_adapter.h
+    controller/qt_station_adapter.cpp
+    controller/qt_station_adapter.h
+    controller/qt_executor.cpp
+    controller/qt_executor.h
+    controller/config/feature_table_column_config.cpp
+    controller/config/feature_table_sorting_config.cpp
+    controller/config/measurement_config_manager.cpp
+    controller/config/observation_table_column_config.cpp
+    controller/config/parameter_display_config.cpp
+    controller/config/project_config.cpp
+    controller/config/reading_table_column_config.cpp
+    controller/config/sensor_configuration_manager.cpp
+    controller/config/trafo_param_table_column_config.cpp
     controller/console.cpp
     controller/tool.cpp
     controller/tool.h
-    controller/jobconnect.h
+    controller/job_connect.h
     controller/controller.cpp
-    controller/exchange/dataexchanger.cpp
-    controller/exchange/observationimporter.cpp
-    controller/exchange/projectexchanger.cpp
-    controller/featuresorter.cpp
-    controller/featureupdater.cpp
-    controller/featureutil.cpp
-    controller/measurebehaviorlogic.cpp
-    controller/modelmanager.cpp
-    controller/network/oirequesthandler.cpp
-    controller/network/oiwebsocket.cpp
-    controller/network/oiwebsocketserver.cpp
-    controller/network/oiwebsocketstreamer.cpp
-    controller/oimetadata.cpp
-    controller/plugincopier.cpp
-    controller/pluginmanager.cpp
-    controller/pluginhost.cpp
-    controller/qtprogresssink.cpp
-    controller/pluginrepository.cpp
+    controller/exchange/data_exchanger.cpp
+    controller/exchange/observation_importer.cpp
+    controller/exchange/project_exchanger.cpp
+    controller/feature_sorter.cpp
+    controller/feature_updater.cpp
+    controller/feature_util.cpp
+    controller/measure_behavior_logic.cpp
+    controller/model_manager.cpp
+    controller/network/oi_request_handler.cpp
+    controller/network/oi_web_socket.cpp
+    controller/network/oi_web_socket_server.cpp
+    controller/network/oi_web_socket_streamer.cpp
+    controller/oi_meta_data.cpp
+    controller/plugin_copier.cpp
+    controller/plugin_manager.cpp
+    controller/plugin_host.cpp
+    controller/qt_progress_sink.cpp
+    controller/plugin_repository.cpp
     controller/settings.cpp
-    controller/sortlistbyname.cpp
-    controller/trafocontroller.cpp
-    models/activefeaturefunctionsmodel.cpp
-    models/availableelementstreeviewproxymodel.cpp
-    models/availablefunctionslistmodel.cpp
-    models/availablefunctionslistproxymodel.cpp
-    models/bundlegeometriesmodel.cpp
-    models/bundleparametertableproxymodel.cpp
-    models/bundlestationsmodel.cpp
-    models/featuredifferenceproxymodel.cpp
-    models/featuredifferencetablemodel.cpp
-    models/featuretablemodel.cpp
-    models/featuretableproxymodel.cpp
-    models/featuretreeviewmodel.cpp
-    models/functionstatisticmodel.cpp
-    models/functiontablemodel.cpp
-    models/functiontableproxymodel.cpp
-    models/functionweightdelegate.cpp
-    models/functionweightproxymodel.cpp
-    models/functionweightstablemodel.cpp
-    models/measurementconfigurationmodel.cpp
-    models/measurementconfigurationproxymodel.cpp
-    models/observationmodel.cpp
-    models/observationproxymodel.cpp
-    models/plugintreeviewmodel.cpp
-    models/readingmodel.cpp
-    models/readingproxymodel.cpp
-    models/sensoraccuracymodel.cpp
-    models/sensorconfigurationmodel.cpp
-    models/sensorconfigurationproxymodel.cpp
-    models/sensorparametersmodel.cpp
-    models/sensortablemodel.cpp
-    models/sensortableproxymodel.cpp
-    models/trafoparamtableproxymodel.cpp
-    models/treeitems/bundlegeometryitem.cpp
-    models/treeitems/bundlestationitem.cpp
-    models/treeitems/featuretreeitem.cpp
-    models/treeitems/functiontreeitem.cpp
-    models/treeitems/plugintreeitem.cpp
-    models/usedelementsmodel.cpp
-    ui/actions/toolaction.cpp
-    ui/delegates/bundleoverviewdelegate.cpp
-    ui/delegates/featuretabledelegate.cpp
-    ui/delegates/measurementconfigurationlistdelegate.cpp
-    ui/delegates/observationtabledelegate.cpp
-    ui/delegates/readingtabledelegate.cpp
-    ui/delegates/sensoraccuracydelegate.cpp
-    ui/delegates/sensorconfigurationlistdelegate.cpp
-    ui/delegates/sensorparametersdelegate.cpp
-    ui/delegates/trafoparamtabledelegate.cpp
-    ui/dialogs/aboutdialog.cpp
-    ui/dialogs/actualpropertiesdialog.cpp
-    ui/dialogs/createfeaturedialog.cpp
-    ui/dialogs/exportdialog.cpp
-    ui/dialogs/featurefunctionsdialog.cpp
-    ui/dialogs/importnominaldialog.cpp
-    ui/dialogs/loadingdialog.cpp
-    ui/dialogs/measurebehaviordialog.cpp
-    ui/dialogs/measurementconfigurationdialog.cpp
-    ui/dialogs/movesensordialog.cpp
-    ui/dialogs/nominalpropertiesdialog.cpp
-    ui/dialogs/pluginloaderdialog.cpp
-    ui/dialogs/pluginmanagerdialog.cpp
-    ui/dialogs/sensorconfigurationdialog.cpp
-    ui/dialogs/sensortaskinfodialog.cpp
-    ui/dialogs/settingsdialog.cpp
-    ui/dialogs/showlicensesdialog.cpp
-    ui/dialogs/stationpropertiesdialog.cpp
-    ui/dialogs/trafoparampropertiesdialog.cpp
-    ui/dialogs/uiutil.cpp
-    ui/dialogs/watchwindowdialog.cpp
-    ui/dialogs/watchwindowutil.cpp
-    ui/mainwindow.cpp
-    ui/selectionmodels/multiselectionmodel.cpp
-    ui/widgets/plugininfowidget.cpp
-    ui/widgets/scalarparameterwidget.cpp
-    ui/widgets/stationstatus.cpp
+    controller/sort_list_by_name.cpp
+    controller/trafo_controller.cpp
+    models/active_feature_functions_model.cpp
+    models/available_elements_tree_view_proxy_model.cpp
+    models/available_functions_list_model.cpp
+    models/available_functions_list_proxy_model.cpp
+    models/bundle_geometries_model.cpp
+    models/bundle_parameter_table_proxy_model.cpp
+    models/bundle_stations_model.cpp
+    models/feature_difference_proxy_model.cpp
+    models/feature_difference_table_model.cpp
+    models/feature_table_model.cpp
+    models/feature_table_proxy_model.cpp
+    models/feature_tree_view_model.cpp
+    models/function_statistic_model.cpp
+    models/function_table_model.cpp
+    models/function_table_proxy_model.cpp
+    models/function_weight_delegate.cpp
+    models/function_weight_proxy_model.cpp
+    models/function_weights_table_model.cpp
+    models/measurement_configuration_model.cpp
+    models/measurement_configuration_proxy_model.cpp
+    models/observation_model.cpp
+    models/observation_proxy_model.cpp
+    models/plugin_tree_view_model.cpp
+    models/reading_model.cpp
+    models/reading_proxy_model.cpp
+    models/sensor_accuracy_model.cpp
+    models/sensor_configuration_model.cpp
+    models/sensor_configuration_proxy_model.cpp
+    models/sensor_parameters_model.cpp
+    models/sensor_table_model.cpp
+    models/sensor_table_proxy_model.cpp
+    models/trafo_param_table_proxy_model.cpp
+    models/treeitems/bundle_geometry_item.cpp
+    models/treeitems/bundle_station_item.cpp
+    models/treeitems/feature_tree_item.cpp
+    models/treeitems/function_tree_item.cpp
+    models/treeitems/plugin_tree_item.cpp
+    models/used_elements_model.cpp
+    ui/actions/tool_action.cpp
+    ui/delegates/bundle_overview_delegate.cpp
+    ui/delegates/feature_table_delegate.cpp
+    ui/delegates/measurement_configuration_list_delegate.cpp
+    ui/delegates/observation_table_delegate.cpp
+    ui/delegates/reading_table_delegate.cpp
+    ui/delegates/sensor_accuracy_delegate.cpp
+    ui/delegates/sensor_configuration_list_delegate.cpp
+    ui/delegates/sensor_parameters_delegate.cpp
+    ui/delegates/trafo_param_table_delegate.cpp
+    ui/dialogs/about_dialog.cpp
+    ui/dialogs/actual_properties_dialog.cpp
+    ui/dialogs/create_feature_dialog.cpp
+    ui/dialogs/export_dialog.cpp
+    ui/dialogs/feature_functions_dialog.cpp
+    ui/dialogs/import_nominal_dialog.cpp
+    ui/dialogs/loading_dialog.cpp
+    ui/dialogs/measure_behavior_dialog.cpp
+    ui/dialogs/measurement_configuration_dialog.cpp
+    ui/dialogs/move_sensor_dialog.cpp
+    ui/dialogs/nominal_properties_dialog.cpp
+    ui/dialogs/plugin_loader_dialog.cpp
+    ui/dialogs/plugin_manager_dialog.cpp
+    ui/dialogs/sensor_configuration_dialog.cpp
+    ui/dialogs/sensor_task_info_dialog.cpp
+    ui/dialogs/settings_dialog.cpp
+    ui/dialogs/show_licenses_dialog.cpp
+    ui/dialogs/station_properties_dialog.cpp
+    ui/dialogs/trafo_param_properties_dialog.cpp
+    ui/dialogs/gui_util.cpp
+    ui/dialogs/watch_window_dialog.cpp
+    ui/dialogs/watch_window_util.cpp
+    ui/main_window.cpp
+    ui/selectionmodels/multi_selection_model.cpp
+    ui/widgets/plugin_info_widget.cpp
+    ui/widgets/scalar_parameter_widget.cpp
+    ui/widgets/station_status.cpp
 
-    controller/clipboardutil.h
-    controller/config/featuretablecolumnconfig.h
-    controller/config/featuretablesortingconfig.h
-    controller/config/measurementconfigmanager.h
-    controller/config/observationtablecolumnconfig.h
-    controller/config/parameterdisplayconfig.h
-    controller/config/projectconfig.h
-    controller/config/readingtablecolumnconfig.h
-    controller/config/sensorconfigurationmanager.h
-    controller/config/trafoparamtablecolumnconfig.h
+    controller/clipboard_util.h
+    controller/config/feature_table_column_config.h
+    controller/config/feature_table_sorting_config.h
+    controller/config/measurement_config_manager.h
+    controller/config/observation_table_column_config.h
+    controller/config/parameter_display_config.h
+    controller/config/project_config.h
+    controller/config/reading_table_column_config.h
+    controller/config/sensor_configuration_manager.h
+    controller/config/trafo_param_table_column_config.h
     controller/console.h
     controller/controller.h
-    controller/controllersensoractions.h
-    controller/exchange/dataexchanger.h
-    controller/exchange/observationimporter.h
-    controller/exchange/projectexchanger.h
-    controller/featuresorter.h
-    controller/featureupdater.h
-    controller/featureutil.h
-    controller/measurebehaviorlogic.h
-    controller/measurebehaviortypes.h
-    controller/modelmanager.h
-    controller/network/oirequesthandler.h
-    controller/network/oiwebsocket.h
-    controller/network/oiwebsocketserver.h
-    controller/network/oiwebsocketstreamer.h
-    controller/param/exchangeParams.h
-    controller/plugincopier.h
-    controller/pluginmanager.h
-    controller/pluginhost.h
-    controller/qtprogresssink.h
-    controller/plugininfo.h
-    controller/pluginrepository.h
+    controller/controller_sensor_actions.h
+    controller/exchange/data_exchanger.h
+    controller/exchange/observation_importer.h
+    controller/exchange/project_exchanger.h
+    controller/feature_sorter.h
+    controller/feature_updater.h
+    controller/feature_util.h
+    controller/measure_behavior_logic.h
+    controller/measure_behavior_types.h
+    controller/model_manager.h
+    controller/network/oi_request_handler.h
+    controller/network/oi_web_socket.h
+    controller/network/oi_web_socket_server.h
+    controller/network/oi_web_socket_streamer.h
+    controller/param/exchange_params.h
+    controller/plugin_copier.h
+    controller/plugin_manager.h
+    controller/plugin_host.h
+    controller/qt_progress_sink.h
+    controller/plugin_info.h
+    controller/plugin_repository.h
     controller/settings.h
-    controller/sortlistbyname.h
-    controller/trafocontroller.h
-    models/activefeaturefunctionsmodel.h
-    models/availableelementstreeviewproxymodel.h
-    models/availablefunctionslistmodel.h
-    models/availablefunctionslistproxymodel.h
-    models/bundlegeometriesmodel.h
-    models/bundleparametertableproxymodel.h
-    models/bundlestationsmodel.h
-    models/featuredifferenceproxymodel.h
-    models/featuredifferencetablemodel.h
-    models/featuretablemodel.h
-    models/featuretableproxymodel.h
-    models/featuretreeviewmodel.h
-    models/functionstatisticmodel.h
-    models/functiontablemodel.h
-    models/functiontableproxymodel.h
-    models/functionweightdelegate.h
-    models/functionweightproxymodel.h
-    models/functionweightstablemodel.h
-    models/measurementconfigurationmodel.h
-    models/measurementconfigurationproxymodel.h
-    models/observationmodel.h
-    models/observationproxymodel.h
-    models/plugintreeviewmodel.h
-    models/readingmodel.h
-    models/readingproxymodel.h
-    models/sensoraccuracymodel.h
-    models/sensorconfigurationmodel.h
-    models/sensorconfigurationproxymodel.h
-    models/sensorparametersmodel.h
-    models/sensortablemodel.h
-    models/sensortableproxymodel.h
-    models/trafoparamtableproxymodel.h
-    models/treeitems/bundlegeometryitem.h
-    models/treeitems/bundlestationitem.h
-    models/treeitems/featuretreeitem.h
-    models/treeitems/functiontreeitem.h
-    models/treeitems/plugintreeitem.h
-    models/usedelementsmodel.h
-    ui/actions/toolaction.h
-    ui/delegates/bundleoverviewdelegate.h
-    ui/delegates/featuretabledelegate.h
-    ui/delegates/measurementconfigurationlistdelegate.h
-    ui/delegates/observationtabledelegate.h
-    ui/delegates/readingtabledelegate.h
-    ui/delegates/sensoraccuracydelegate.h
-    ui/delegates/sensorconfigurationlistdelegate.h
-    ui/delegates/sensorparametersdelegate.h
-    ui/delegates/trafoparamtabledelegate.h
-    ui/dialogs/aboutdialog.h
-    ui/dialogs/actualpropertiesdialog.h
-    ui/dialogs/createfeaturedialog.h
-    ui/dialogs/exportdialog.h
-    ui/dialogs/featurefunctionsdialog.h
-    ui/dialogs/importnominaldialog.h
-    ui/dialogs/loadingdialog.h
-    ui/dialogs/measurebehaviordialog.h
-    ui/dialogs/measurementconfigurationdialog.h
-    ui/dialogs/movesensordialog.h
-    ui/dialogs/nominalpropertiesdialog.h
-    ui/dialogs/pluginloaderdialog.h
-    ui/dialogs/pluginmanagerdialog.h
-    ui/dialogs/sensorconfigurationdialog.h
-    ui/dialogs/sensortaskinfodialog.h
-    ui/dialogs/settingsdialog.h
-    ui/dialogs/showlicensesdialog.h
-    ui/dialogs/stationpropertiesdialog.h
-    ui/dialogs/trafoparampropertiesdialog.h
-    ui/dialogs/uiutil.h
-    ui/dialogs/watchwindowdialog.h
-    ui/dialogs/watchwindowutil.h
-    ui/mainwindow.h
-    ui/selectionmodels/multiselectionmodel.h
-    ui/widgets/plugininfowidget.h
-    ui/widgets/scalarparameterwidget.h
-    ui/widgets/stationstatus.h
+    controller/sort_list_by_name.h
+    controller/trafo_controller.h
+    models/active_feature_functions_model.h
+    models/available_elements_tree_view_proxy_model.h
+    models/available_functions_list_model.h
+    models/available_functions_list_proxy_model.h
+    models/bundle_geometries_model.h
+    models/bundle_parameter_table_proxy_model.h
+    models/bundle_stations_model.h
+    models/feature_difference_proxy_model.h
+    models/feature_difference_table_model.h
+    models/feature_table_model.h
+    models/feature_table_proxy_model.h
+    models/feature_tree_view_model.h
+    models/function_statistic_model.h
+    models/function_table_model.h
+    models/function_table_proxy_model.h
+    models/function_weight_delegate.h
+    models/function_weight_proxy_model.h
+    models/function_weights_table_model.h
+    models/measurement_configuration_model.h
+    models/measurement_configuration_proxy_model.h
+    models/observation_model.h
+    models/observation_proxy_model.h
+    models/plugin_tree_view_model.h
+    models/reading_model.h
+    models/reading_proxy_model.h
+    models/sensor_accuracy_model.h
+    models/sensor_configuration_model.h
+    models/sensor_configuration_proxy_model.h
+    models/sensor_parameters_model.h
+    models/sensor_table_model.h
+    models/sensor_table_proxy_model.h
+    models/trafo_param_table_proxy_model.h
+    models/treeitems/bundle_geometry_item.h
+    models/treeitems/bundle_station_item.h
+    models/treeitems/feature_tree_item.h
+    models/treeitems/function_tree_item.h
+    models/treeitems/plugin_tree_item.h
+    models/used_elements_model.h
+    ui/actions/tool_action.h
+    ui/delegates/bundle_overview_delegate.h
+    ui/delegates/feature_table_delegate.h
+    ui/delegates/measurement_configuration_list_delegate.h
+    ui/delegates/observation_table_delegate.h
+    ui/delegates/reading_table_delegate.h
+    ui/delegates/sensor_accuracy_delegate.h
+    ui/delegates/sensor_configuration_list_delegate.h
+    ui/delegates/sensor_parameters_delegate.h
+    ui/delegates/trafo_param_table_delegate.h
+    ui/dialogs/about_dialog.h
+    ui/dialogs/actual_properties_dialog.h
+    ui/dialogs/create_feature_dialog.h
+    ui/dialogs/export_dialog.h
+    ui/dialogs/feature_functions_dialog.h
+    ui/dialogs/import_nominal_dialog.h
+    ui/dialogs/loading_dialog.h
+    ui/dialogs/measure_behavior_dialog.h
+    ui/dialogs/measurement_configuration_dialog.h
+    ui/dialogs/move_sensor_dialog.h
+    ui/dialogs/nominal_properties_dialog.h
+    ui/dialogs/plugin_loader_dialog.h
+    ui/dialogs/plugin_manager_dialog.h
+    ui/dialogs/sensor_configuration_dialog.h
+    ui/dialogs/sensor_task_info_dialog.h
+    ui/dialogs/settings_dialog.h
+    ui/dialogs/show_licenses_dialog.h
+    ui/dialogs/station_properties_dialog.h
+    ui/dialogs/trafo_param_properties_dialog.h
+    ui/dialogs/gui_util.h
+    ui/dialogs/watch_window_dialog.h
+    ui/dialogs/watch_window_util.h
+    ui/main_window.h
+    ui/selectionmodels/multi_selection_model.h
+    ui/widgets/plugin_info_widget.h
+    ui/widgets/scalar_parameter_widget.h
+    ui/widgets/station_status.h
 
-    ui/dialogs/aboutdialog.ui
-    ui/dialogs/actualpropertiesdialog.ui
-    ui/dialogs/createfeaturedialog.ui
-    ui/dialogs/exportdialog.ui
-    ui/dialogs/featurefunctionsdialog.ui
-    ui/dialogs/importnominaldialog.ui
-    ui/dialogs/loadingdialog.ui
-    ui/dialogs/measurebehaviordialog.ui
-    ui/dialogs/measurementconfigurationdialog.ui
-    ui/dialogs/movesensordialog.ui
-    ui/dialogs/nominalpropertiesdialog.ui
-    ui/dialogs/pluginloaderdialog.ui
-    ui/dialogs/pluginmanagerdialog.ui
-    ui/dialogs/sensorconfigurationdialog.ui
-    ui/dialogs/sensortaskinfodialog.ui
-    ui/dialogs/settingsdialog.ui
-    ui/dialogs/showlicensesdialog.ui
-    ui/dialogs/stationpropertiesdialog.ui
-    ui/dialogs/trafoparampropertiesdialog.ui
-    ui/dialogs/watchwindowdialog.ui
-    ui/mainwindow.ui
-    ui/widgets/stationstatus.ui
+    ui/dialogs/about_dialog.ui
+    ui/dialogs/actual_properties_dialog.ui
+    ui/dialogs/create_feature_dialog.ui
+    ui/dialogs/export_dialog.ui
+    ui/dialogs/feature_functions_dialog.ui
+    ui/dialogs/import_nominal_dialog.ui
+    ui/dialogs/loading_dialog.ui
+    ui/dialogs/measure_behavior_dialog.ui
+    ui/dialogs/measurement_configuration_dialog.ui
+    ui/dialogs/move_sensor_dialog.ui
+    ui/dialogs/nominal_properties_dialog.ui
+    ui/dialogs/plugin_loader_dialog.ui
+    ui/dialogs/plugin_manager_dialog.ui
+    ui/dialogs/sensor_configuration_dialog.ui
+    ui/dialogs/sensor_task_info_dialog.ui
+    ui/dialogs/settings_dialog.ui
+    ui/dialogs/show_licenses_dialog.ui
+    ui/dialogs/station_properties_dialog.ui
+    ui/dialogs/trafo_param_properties_dialog.ui
+    ui/dialogs/watch_window_dialog.ui
+    ui/main_window.ui
+    ui/widgets/station_status.ui
 
     res/res.qrc
 )
@@ -522,33 +522,33 @@ enable_testing()
 find_package(Qt6 REQUIRED COMPONENTS Test)
 
 # pure logic, no GUI
-add_executable(tst_featuresorter test/featuresorter/featuresortertest.cpp)
+add_executable(tst_featuresorter test/feature_sorter/feature_sorter_test.cpp)
 target_compile_definitions(tst_featuresorter PRIVATE
-    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/featuresorter")
+    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/feature_sorter")
 target_link_libraries(tst_featuresorter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME featuresorter COMMAND tst_featuresorter)
 
 # mock-based; exercises the controller's sensor-action surface
 add_executable(tst_measurebehavior
-    test/measurebehavior/measurebehaviortest.cpp
-    test/measurebehavior/testcontrollersensoractions.cpp
-    test/measurebehavior/testmeasurebehaviorlogic.cpp
+    test/measure_behavior/measure_behavior_test.cpp
+    test/measure_behavior/test_controller_sensor_actions.cpp
+    test/measure_behavior/test_measure_behavior_logic.cpp
 )
-target_include_directories(tst_measurebehavior PRIVATE test/measurebehavior)
+target_include_directories(tst_measurebehavior PRIVATE test/measure_behavior)
 target_compile_definitions(tst_measurebehavior PRIVATE
-    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/measurebehavior")
+    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/measure_behavior")
 target_link_libraries(tst_measurebehavior PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME measurebehavior COMMAND tst_measurebehavior)
 
 # GUI suites - need an offscreen platform plugin in headless environments
-add_executable(tst_watchwindow test/watchwindow/tst_watchwindowtest.cpp)
+add_executable(tst_watchwindow test/watch_window/tst_watch_window_test.cpp)
 target_compile_definitions(tst_watchwindow PRIVATE
-    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/watchwindow")
+    SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/watch_window")
 target_link_libraries(tst_watchwindow PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME watchwindow COMMAND tst_watchwindow)
 set_tests_properties(watchwindow PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
-add_executable(tst_dialogs test/dialogs/dialogstest.cpp)
+add_executable(tst_dialogs test/dialogs/dialogs_test.cpp)
 target_compile_definitions(tst_dialogs PRIVATE
     SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/test/dialogs")
 target_link_libraries(tst_dialogs PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyCodec)
@@ -557,19 +557,19 @@ set_tests_properties(dialogs PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
 # pure logic, no GUI - Group/PointGroup save/load through the real
 # ProjectExchanger entry points (Stage 7e)
-add_executable(tst_projectexchange test/projectexchange/tst_projectexchange.cpp)
+add_executable(tst_projectexchange test/project_exchange/tst_project_exchange.cpp)
 target_link_libraries(tst_projectexchange PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME projectexchange COMMAND tst_projectexchange)
 
 # websocket remote-control protocol (protobuf): requests go into
 # OiRequestHandler as bytes, the answers are decoded from what it sends back
-add_executable(tst_requesthandler test/requesthandler/tst_requesthandler.cpp)
+add_executable(tst_requesthandler test/request_handler/tst_request_handler.cpp)
 target_link_libraries(tst_requesthandler PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyCodec)
 add_test(NAME requesthandler COMMAND tst_requesthandler)
 
 # config files (JSON): the shipped ones load and say what the old XML said;
 # bad files fall back
-add_executable(tst_configfiles test/configfiles/tst_configfiles.cpp)
+add_executable(tst_configfiles test/config_files/tst_config_files.cpp)
 target_compile_definitions(tst_configfiles PRIVATE
     RESDIR="${CMAKE_CURRENT_SOURCE_DIR}/res-rt/config")
 target_include_directories(tst_configfiles PRIVATE controller/config)
@@ -581,37 +581,37 @@ add_test(NAME configfiles COMMAND tst_configfiles)
 # through a real PluginRepository scan (not ModelManager::testInit()'s fake
 # seam), so this needs the plugins/ directory the post-build copy step
 # already deploys next to every test binary in this file
-add_executable(tst_ownedsubgeometryui test/ownedsubgeometryui/tst_ownedsubgeometryui.cpp)
+add_executable(tst_ownedsubgeometryui test/owned_subgeometry_ui/tst_owned_subgeometry_ui.cpp)
 target_link_libraries(tst_ownedsubgeometryui PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME ownedsubgeometryui COMMAND tst_ownedsubgeometryui)
 
 # QtJobAdapter: the OiJob observer turned back into the Qt signals
-add_executable(tst_qtjobadapter test/qtjobadapter/tst_qtjobadapter.cpp)
+add_executable(tst_qtjobadapter test/qt_job_adapter/tst_qt_job_adapter.cpp)
 target_link_libraries(tst_qtjobadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME qtjobadapter COMMAND tst_qtjobadapter)
 
 # QtFunctionAdapter: the Function observer turned back into the Qt signals
-add_executable(tst_qtfunctionadapter test/qtfunctionadapter/tst_qtfunctionadapter.cpp)
+add_executable(tst_qtfunctionadapter test/qt_function_adapter/tst_qt_function_adapter.cpp)
 target_link_libraries(tst_qtfunctionadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME qtfunctionadapter COMMAND tst_qtfunctionadapter)
 
 # QtStationAdapter / QtExecutor: the sensor path's observer and executor on the UI thread
-add_executable(tst_qtstationadapter test/qtstationadapter/tst_qtstationadapter.cpp)
+add_executable(tst_qtstationadapter test/qt_station_adapter/tst_qt_station_adapter.cpp)
 target_link_libraries(tst_qtstationadapter PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME qtstationadapter COMMAND tst_qtstationadapter)
 
 # DataExchanger: reports of an exchange plugin's worker thread reach the UI thread
-add_executable(tst_dataexchanger test/dataexchanger/tst_dataexchanger.cpp)
+add_executable(tst_dataexchanger test/data_exchanger/tst_data_exchanger.cpp)
 target_link_libraries(tst_dataexchanger PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_test(NAME dataexchanger COMMAND tst_dataexchanger)
 
 # compute plugins are loaded through core's oi::PluginLoader (PluginHost)
-add_executable(tst_pluginhost test/pluginhost/tst_pluginhost.cpp)
+add_executable(tst_pluginhost test/plugin_host/tst_plugin_host.cpp)
 target_compile_definitions(tst_pluginhost PRIVATE
     DEFAULT_PLUGIN_PATH="$<TARGET_FILE:OpenIndyDefaultPlugin>"
     LEICA_PLUGIN_PATH="$<TARGET_FILE:OpenIndyLeicaPlugin>"
     PLUGIN_DIR="$<TARGET_FILE_DIR:OpenIndyDefaultPlugin>"
-    NOT_A_PLUGIN_PATH="${CMAKE_CURRENT_SOURCE_DIR}/test/pluginhost/tst_pluginhost.cpp")
+    NOT_A_PLUGIN_PATH="${CMAKE_CURRENT_SOURCE_DIR}/test/plugin_host/tst_plugin_host.cpp")
 target_link_libraries(tst_pluginhost PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
 add_dependencies(tst_pluginhost OpenIndyDefaultPlugin OpenIndyLeicaPlugin)
 add_test(NAME pluginhost COMMAND tst_pluginhost)

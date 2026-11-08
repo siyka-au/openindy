@@ -1,0 +1,44 @@
+#ifndef BUNDLEOVERVIEWDELEGATE_H
+#define BUNDLEOVERVIEWDELEGATE_H
+
+#include <QAbstractItemDelegate>
+#include <QPainter>
+#include <atomic>
+
+#include "bundle_adjustment.h"
+#include "bundle_geometries_model.h"
+#include "feature_wrapper.h"
+#include "oi_job.h"
+#include "station.h"
+
+using namespace oi;
+
+class BundleOverviewDelegate : public QAbstractItemDelegate {
+ public:
+  explicit BundleOverviewDelegate(QObject* parent);
+  void paint(QPainter* painter, const QStyleOptionViewItem& option,
+             const QModelIndex& index) const override;
+  [[nodiscard]] bool isBundleStationTrafo(
+      const oi::Guarded<TrafoParam>& param) const;
+  [[nodiscard]] QSize sizeHint(const QStyleOptionViewItem& option,
+                               const QModelIndex& index) const override;
+
+  QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
+                        const QModelIndex& index) const override;
+
+  void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+
+  void setModelData(QWidget* editor, QAbstractItemModel* model,
+                    const QModelIndex& index) const override;
+
+  void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option,
+                            const QModelIndex& index) const override;
+
+ public:
+  atomic<double> maxError;
+  atomic<double> maxStdDev;
+  atomic<double> maxScaleDev;
+  atomic<int> minCommonPoints;
+};
+
+#endif  // BUNDLEOVERVIEWDELEGATE_H

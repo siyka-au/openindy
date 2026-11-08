@@ -1,0 +1,87 @@
+#ifndef BUNDLEGEOMETRIESMODEL_H
+#define BUNDLEGEOMETRIESMODEL_H
+
+#include <QAbstractItemModel>
+#include <QAbstractTableModel>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QObject>
+
+#include "bundle_geometry_item.h"
+#include "oi_job.h"
+
+/*!
+ * \brief The BundleGeometriesModel class
+ * Model with all bundle geometries
+ */
+class BundleGeometriesModel : public QAbstractItemModel {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(BundleGeometriesModel)
+
+ public:
+  explicit BundleGeometriesModel(QObject* parent = nullptr);
+  ~BundleGeometriesModel() override;
+
+  // ########################################
+  // override methods of abstract table model
+  // ########################################
+
+  [[nodiscard]] int rowCount(
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] int columnCount(
+      const QModelIndex& parent = QModelIndex()) const override;
+
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const override;
+  [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role = Qt::DisplayRole) const override;
+  [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
+  bool setData(const QModelIndex& index, const QVariant& value,
+               int role = Qt::EditRole) override;
+
+  [[nodiscard]] QModelIndex index(
+      int row, int column,
+      const QModelIndex& parent = QModelIndex()) const override;
+  [[nodiscard]] QModelIndex parent(const QModelIndex& index) const override;
+
+  // ###############
+  // getter / setter
+  // ###############
+
+  // job
+  [[nodiscard]] const oi::Guarded<oi::OiJob>& getCurrentJob() const;
+  void setCurrentJob(const oi::Guarded<oi::OiJob>& job);
+
+  // stations
+  const QJsonArray& getStations();
+  void setStations(const QJsonArray& stations);
+
+  // ###########################################
+  // update the model when settings have changed
+  // ###########################################
+
+  void updateModel();
+
+ private slots:
+
+ private:
+  // ##############
+  // helper methods
+  // ##############
+
+  void connectJob();
+  void disconnectJob();
+
+  // #################
+  // helper attributes
+  // #################
+
+  // root item and job
+  BundleGeometryItem* rootItem;
+  oi::Guarded<oi::OiJob> currentJob;
+
+  // used stations
+  QJsonArray usedStations;
+};
+
+#endif  // BUNDLEGEOMETRIESMODEL_H

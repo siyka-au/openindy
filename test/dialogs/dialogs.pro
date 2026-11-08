@@ -18,7 +18,7 @@ include(../../appui/dependencies.pri)
 
 # OpenIndy/db/oisystemdb.sql
 DEFINES += INIT_SQL=\\\"../../db/oisystemdb.sql\\\"
-SOURCES += dialogstest.cpp
+SOURCES += dialogs_test.cpp
 
 DEFINES += SRCDIR=$$shell_quote($$PWD)
 

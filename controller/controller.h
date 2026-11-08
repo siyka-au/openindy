@@ -15,29 +15,29 @@
 #include <set>
 #include <vector>
 
-#include "calibratedconstellation.h"
+#include "calibrated_constellation.h"
 #include "console.h"
-#include "dataexchanger.h"
-#include "exchangeParams.h"
-#include "featureattributes.h"
-#include "featuretablecolumnconfig.h"
-#include "featureupdater.h"
-#include "measurementconfigmanager.h"
-#include "modelmanager.h"
-#include "oijob.h"
-#include "parameterdisplayconfig.h"
-#include "pluginmanager.h"
-#include "projectexchanger.h"
-#include "qtexecutor.h"
-#include "qtstationadapter.h"
-#include "sensorconfigurationmanager.h"
+#include "data_exchanger.h"
+#include "exchange_params.h"
+#include "feature_attributes.h"
+#include "feature_table_column_config.h"
+#include "feature_updater.h"
+#include "measurement_config_manager.h"
+#include "model_manager.h"
+#include "oi_job.h"
+#include "parameter_display_config.h"
+#include "plugin_manager.h"
+#include "project_exchanger.h"
+#include "qt_executor.h"
+#include "qt_station_adapter.h"
+#include "sensor_configuration_manager.h"
 #include "settings.h"
-#include "trafoparamtablecolumnconfig.h"
+#include "trafo_param_table_column_config.h"
 #ifdef OI_WEBSOCKETSERVER_ENABLED
-#include "oiwebsocketserver.h"
+#include "oi_web_socket_server.h"
 #endif
-#include "controllersensoractions.h"
-#include "projectconfig.h"
+#include "controller_sensor_actions.h"
+#include "project_config.h"
 
 using namespace oi;
 

@@ -1,0 +1,28 @@
+#ifndef READINGTABLEDELEGATE_H
+#define READINGTABLEDELEGATE_H
+
+#include <QAbstractTableModel>
+#include <QItemDelegate>
+#include <QLineEdit>
+#include <QModelIndex>
+
+#include "reading_model.h"
+#include "reading_proxy_model.h"
+
+using namespace oi;
+
+/*!
+ * \brief The ReadingTableDelegate class
+ */
+class ReadingTableDelegate : public QItemDelegate {
+ public:
+  explicit ReadingTableDelegate(QObject* parent = nullptr);
+
+  QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
+                        const QModelIndex& index) const override;
+  void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+  void setModelData(QWidget* editor, QAbstractItemModel* model,
+                    const QModelIndex& index) const override;
+};
+
+#endif  // READINGTABLEDELEGATE_H

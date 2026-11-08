@@ -8,9 +8,9 @@
 #include <QWidget>
 
 #include "guarded.h"
-#include "oijob.h"
-#include "oirequestresponse.h"
-#include "pluginmetadata.h"
+#include "oi_job.h"
+#include "oi_request_response.h"
+#include "plugin_metadata.h"
 #include "types.h"
 
 namespace oi {
@@ -117,7 +117,7 @@ class Tool : public QWidget {
 #define CONCAT2(a, b) CONCAT(a, b)
 #endif
 
-#include "pluginabi.h"
+#include "plugin_abi.h"
 
 #define TOOL_PREFIX de.openIndy.plugin.tool.v
 #define Tool_iidd STR2(CONCAT2(TOOL_PREFIX, OI_PLUGIN_ABI_VERSION))

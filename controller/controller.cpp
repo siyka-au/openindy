@@ -5,10 +5,10 @@
 #include <set>
 #include <vector>
 
-#include "featureutil.h"
-#include "qtconvert.h"
-#include "qtjobadapter.h"
-#include "qtstationadapter.h"
+#include "feature_util.h"
+#include "qt_convert.h"
+#include "qt_job_adapter.h"
+#include "qt_station_adapter.h"
 /*!
  * \brief Controller::Controller
  * \param parent
@@ -305,7 +305,7 @@ void Controller::generateOwnedOriginPoint() {
  * Creates a bare subType feature with no function attached, then attaches
  * functionName as its owned producer via OiJob::addOwnedSubGeometry - the
  * same three-step shape (bare feature -> instantiate producer -> attach as
- * owned) tst_ownedplaneaccessors.cpp already exercises at the API level,
+ * owned) tst_owned_plane_accessors.cpp already exercises at the API level,
  * now reachable from the UI. Silently no-ops on a missing/unsuitable active
  * feature or an unresolvable producer function, matching
  * recalcActiveFeature()'s own silent-return convention for "nothing to do

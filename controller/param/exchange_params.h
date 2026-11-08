@@ -1,0 +1,64 @@
+#ifndef EXCHANGEPARAMS_H
+#define EXCHANGEPARAMS_H
+
+#include <QList>
+#include <QMap>
+#include <QPointer>
+#include <QString>
+#include <map>
+#include <vector>
+
+#include "coordinate_system.h"
+#include "exchange_defined_format.h"
+#include "exchange_interface.h"
+#include "exchange_simple_ascii.h"
+#include "feature_wrapper.h"
+#include "types.h"
+
+using namespace oi;
+
+/*!
+ * \brief The ExchangeParams class
+ * Holds parameters for all exchange plugins, even if the current plugin does
+ * not need all parameters
+ */
+class ExchangeParams {
+ public:
+  // file path of the file that shall be im- or exported
+  QString exchangeFilePath;
+
+  // plugin information
+  QString pluginName;      // name of the plugin
+  QString exchangeName;    // name of the exchange implementation
+  bool isDefinedFormat{};  // true if the exchange is a defined format exchange,
+                           // false if it is a simple ascii one
+
+  // general exchange parameters
+  std::vector<oi::Guarded<FeatureWrapper> >
+      exportFeatures;         // features that shall be exported
+  bool exportObservations{};  // true if observations shall be exported
+  QString groupName;
+  QString nominalSystem;
+  std::map<DimensionType, UnitType> units;
+
+  // simple ascii parameters
+  QString delimiter;
+  bool skipFirstLine{};
+  GeometryTypes typeOfGeometry;
+  std::vector<ExchangeSimpleAscii::ColumnType> userDefinedColumns;
+
+  // defined format parameters
+  std::vector<ElementTypes> usedElements;
+
+  double distanceDigits{};
+  double angleDigits{};
+  double temperatureDigits{};
+
+  bool createActual{};
+  bool overwrite{};
+  bool importMeasurements{};
+  bool readCommonColumn{};  // read "common point" column and mark actual point
+                            // as common
+};
+
+#endif  // EXCHANGEPARAMS_H

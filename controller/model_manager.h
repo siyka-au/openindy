@@ -1,0 +1,454 @@
+#ifndef MODELMANAGER_H
+#define MODELMANAGER_H
+
+#include <QHostAddress>
+#include <QNetworkInterface>
+#include <QObject>
+#include <QPointer>
+#include <QSerialPortInfo>
+#include <QStandardItemModel>
+#include <QStringListModel>
+#include <vector>
+
+#include "active_feature_functions_model.h"
+#include "available_elements_tree_view_proxy_model.h"
+#include "available_functions_list_model.h"
+#include "available_functions_list_proxy_model.h"
+#include "bundle_geometries_model.h"
+#include "bundle_parameter_table_proxy_model.h"
+#include "bundle_stations_model.h"
+#include "feature_difference_proxy_model.h"
+#include "feature_difference_table_model.h"
+#include "feature_table_column_config.h"
+#include "feature_table_model.h"
+#include "feature_table_proxy_model.h"
+#include "feature_tree_view_model.h"
+#include "function_statistic_model.h"
+#include "function_table_model.h"
+#include "function_table_proxy_model.h"
+#include "function_weight_proxy_model.h"
+#include "function_weights_table_model.h"
+#include "measurement_configuration_model.h"
+#include "measurement_configuration_proxy_model.h"
+#include "observation_model.h"
+#include "observation_proxy_model.h"
+#include "oi_job.h"
+#include "oi_meta_data.h"
+#include "parameter_display_config.h"
+#include "plugin_manager.h"
+#include "plugin_repository.h"
+#include "plugin_tree_view_model.h"
+#include "reading_model.h"
+#include "reading_proxy_model.h"
+#include "sensor_accuracy_model.h"
+#include "sensor_configuration_manager.h"
+#include "sensor_configuration_model.h"
+#include "sensor_configuration_proxy_model.h"
+#include "sensor_parameters_model.h"
+#include "sensor_table_model.h"
+#include "sensor_table_proxy_model.h"
+#include "trafo_param_table_column_config.h"
+#include "trafo_param_table_proxy_model.h"
+#include "used_elements_model.h"
+
+#if defined(OI_MAIN_LIB)
+#define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
+using namespace oi;
+
+class Controller;
+
+/*!
+ * \brief The ModelManager class
+ */
+class OI_MAIN_EXPORT ModelManager : public QObject {
+  friend class Controller;
+  Q_OBJECT
+
+ private:
+  explicit ModelManager(QObject* parent = nullptr);
+
+ signals:
+
+  // ############
+  // log messages
+  // ############
+
+  void sendMessage(const QString& msg, const MessageTypes& msgType,
+                   const MessageDestinations& msgDest =
+                       MessageDestinations::eConsoleMessage) const;
+
+  // #######################
+  // display configs changed
+  // #######################
+
+  void parameterDisplayConfigChanged(const ParameterDisplayConfig& dConfig);
+
+ public:
+  // ################################################################
+  // init models in model manager (only called once at the beginning)
+  // ################################################################
+
+  static void init();
+
+  static void testInit(
+      std::vector<FeatureTypes> entityTypes,
+      QPointer<MeasurementConfigManager> measurementConfigManager,
+      std::vector<sys::Plugin> plugins);
+
+  // ############################
+  // get or set the current OiJob
+  // ############################
+
+  static const oi::Guarded<OiJob>& getCurrentJob();
+  static void setCurrentJob(const oi::Guarded<OiJob>& job);
+
+  // ##########################
+  // get or set config managers
+  // ##########################
+
+  static const QPointer<SensorConfigurationManager>& getSensorConfigManager();
+  static void setSensorConfigManager(
+      const QPointer<SensorConfigurationManager>& sensorConfigManager);
+
+  static const QPointer<MeasurementConfigManager>&
+  getMeasurementConfigManager();
+  static void setMeasurementConfigManager(
+      const QPointer<MeasurementConfigManager>& measurementConfigManager);
+
+  // ##########################
+  // get or set display configs
+  // ##########################
+
+  static const FeatureTableColumnConfig& getFeatureTableColumnConfig();
+  static void setFeatureTableColumnConfig(
+      const FeatureTableColumnConfig& config);
+
+  static const TrafoParamTableColumnConfig& getTrafoParamTableColumnConfig();
+  static void setTrafoParamColumnConfig(
+      const TrafoParamTableColumnConfig& config);
+
+  static const ObservationTableColumnConfig& getObservationTableColumnConfig();
+  static void setObservationTableColumnConfig(
+      const ObservationTableColumnConfig& config);
+
+  static const ReadingTableColumnConfig& getReadingTableColumnConfig();
+  static void setReadingTableColumnConfig(
+      const ReadingTableColumnConfig& config);
+
+  static const ParameterDisplayConfig& getParameterDisplayConfig();
+  static void setParameterDisplayConfig(const ParameterDisplayConfig& config);
+
+  // #############################################
+  // get static models (models that may be reused)
+  // #############################################
+
+  // general feature models
+  static FeatureTableModel& getFeatureTableModel();
+  static FeatureTableProxyModel& getFeatureTableProxyModel();
+  static TrafoParamTableProxyModel& getTrafoParamTableProxyModel();
+  static FeatureTreeViewModel& getFeatureTreeViewModel();
+  static AvailableElementsTreeViewProxyModel&
+  getAvailableElementsTreeViewProxyModel();
+  static UsedElementsModel& getUsedElementsModel();
+  static BundleParameterTableProxyModel& getBundleParameterTableProxyModel();
+  static FeatureDifferenceTableModel& getFeatureDifferenceTableModel();
+  static FeatureDifferenceProxyModel& getFeatureDifferenceProxyModel();
+
+  // coordinate system models
+  static QStringListModel& getCoordinateSystemsModel();
+  static QStringListModel& getNominalSystemsModel();
+
+  // group name model
+  static QStringListModel& getGroupNamesModel();
+
+  // actual nominal filter model
+  static QStringListModel& getActualNominalFilterModel();
+
+  // unit types models
+  static QStringListModel& getUnitTypesModel(const DimensionType& dimension);
+
+  // plugin models
+  static QStringListModel& getPluginNamesModel();
+  static PluginTreeViewModel& getPluginTreeViewModel();
+
+  // reading types models
+  static QStringListModel& getReadingTypeNamesModel();
+
+  // scalar entity type model
+  //
+  // Items display a *display name* and carry their FeatureTypes in
+  // Qt::UserRole. Read the type back with combo->currentData(), never by
+  // feeding currentText() to getFeatureTypeEnum() - that coupling is what
+  // forced this combo to show the user a persisted token.
+  static QStandardItemModel& getScalarEntityTypeNamesModel();
+
+  // function models
+  static FunctionTableModel& getFunctionTableModel();
+  static FunctionTableProxyModel& getFunctionTableProxyModel();
+  static ActiveFeatureFunctionsModel& getActiveFeatureFunctionsModel();
+  static FunctionWeightsTableModel& getFunctionWeightTableModel();
+  static FunctionWeightProxyModel& getFunctionWeightProxyModel();
+
+  // sensor models
+  static QStringListModel& getSensorTypeNamesModel();
+  static SensorTableModel& getSensorTableModel();
+  static SensorTableProxyModel& getSensorTableProxyModel();
+
+  // sensor connection models
+  static QStandardItemModel& getBaudRateTypesModel();
+  static QStandardItemModel& getDataBitTypesModel();
+  static QStandardItemModel& getFlowControlTypesModel();
+  static QStandardItemModel& getParityTypesModel();
+  static QStandardItemModel& getStopBitTypesModel();
+  static QStandardItemModel& getAvailableSerialPortsModel();
+  static QStandardItemModel& getAvailableIpAdressesModel();
+
+  // measurement config models
+  static MeasurementConfigurationModel& getMeasurementConfigurationModel();
+  static MeasurementConfigurationProxyModel&
+  getMeasurementConfigurationProxyModel();
+
+  // get observation and reading models
+  static ObservationModel& getObservationModel();
+  static ObservationProxyModel& getObservationProxyModel();
+  static ReadingModel& getReadingModel();
+  static ReadingProxyModel& getReadingProxyModel();
+
+  // ############################################################
+  // get dynamic models (models that are newly created each time)
+  // ############################################################
+
+  // plugin models
+  static QPointer<QStringListModel> getExchangeSimpleAsciiNames(
+      const QString& pluginName);
+  static QPointer<QStringListModel> getExchangeSimpleAsciiDelimiters(
+      const QString& pluginName, const QString& exchangeName);
+  static QPointer<QStandardItemModel> getExchangeSimpleAsciiSupportedGeometries(
+      const QString& pluginName, const QString& exchangeName);
+
+  // function list filter model
+  static QPointer<AvailableFunctionsListProxyModel>
+  getAvailableFunctionsProxyModel();
+
+  // statistic models
+  static QPointer<FunctionStatisticModel> getFunctionStatisticModel();
+
+  // sensor models
+  static QPointer<SensorConfigurationModel> getSensorConfigurationModel(
+      QObject* parent = nullptr);
+  static QPointer<SensorConfigurationProxyModel>
+  getSensorConfigurationProxyModel(
+      QPointer<SensorConfigurationModel> sourceModel);
+  static QPointer<SensorAccuracyModel> getSensorAccuracyModel(
+      QObject* parent = nullptr);
+  static QPointer<SensorParametersModel> getSensorParametersModel(
+      QObject* parent = nullptr);
+
+  // bundle models
+  static QPointer<BundleStationsModel> getBundleStationsModel(
+      QObject* parent = nullptr);
+  static QPointer<BundleGeometriesModel> getBundleGeometriesModel(
+      QObject* parent = nullptr);
+
+ private slots:
+
+  // ##########################################
+  // update models on current job state changes
+  // ##########################################
+
+  // feature(s) added or removed
+  void featureSetChanged();
+  void coordSystemSetChanged();
+  void stationSetChanged();
+
+  // groups added or removed
+  void availableGroupsChanged();
+
+  // feature specific attributes changed
+  void featureNameChanged(const int& featureId, const QString& oldName);
+
+ private:
+  static oi::Guarded<OiJob> currentJob;
+
+  // #############
+  // static models
+  // #############
+
+  // general feature models
+  static FeatureTableModel featureTableModel;
+  static FeatureTableProxyModel featureTableProxyModel;
+  static TrafoParamTableProxyModel trafoParamTableProxyModel;
+  static FeatureTreeViewModel featureTreeViewModel;
+  static AvailableElementsTreeViewProxyModel
+      availableElementsTreeViewProxyModel;
+  static UsedElementsModel usedElementsModel;
+  static BundleParameterTableProxyModel bundleParameterTableProxyModel;
+  static FeatureDifferenceTableModel featureDifferenceTableModel;
+  static FeatureDifferenceProxyModel featureDifferenceProxyModel;
+
+  // coordinate systems models
+  static QStringListModel coordinateSystemsModel;
+  static QStringListModel nominalSystemsModel;
+
+  // group name model
+  static QStringListModel groupNamesModel;
+
+  // actual nominal filter model
+  static QStringListModel actualNominalFilterModel;
+
+  // unit types models
+  static QStringListModel metricUnitTypesModel;
+  static QStringListModel angularUnitTypesModel;
+  static QStringListModel temperatureUnitTypesModel;
+
+  // plugin models
+  static QStringListModel pluginNamesModel;
+  static PluginTreeViewModel pluginTreeViewModel;
+
+  // reading models
+  static QStringListModel readingTypeNamesModel;
+
+  // scalar entity type model
+  static QStandardItemModel scalarEntityTypeNamesModel;
+
+  static void fillFeatureTypeModel(QStandardItemModel& model,
+                                   const std::vector<FeatureTypes>& types);
+
+  // function models
+  static FunctionTableModel functionTableModel;
+  static FunctionTableProxyModel functionTableProxyModel;
+  static ActiveFeatureFunctionsModel activeFeatureFunctionsModel;
+  static AvailableFunctionsListModel functionsListModel;
+  static FunctionWeightsTableModel functionWeightsTableModel;
+  static FunctionWeightProxyModel functionWeightProxyModel;
+
+  // sensor models
+  static QStringListModel sensorTypeNamesModel;
+  static SensorTableModel sensorTableModel;
+  static SensorTableProxyModel sensorTableProxyModel;
+
+  // sensor connection models
+  static QStandardItemModel baudRateTypesModel;
+  static QStandardItemModel dataBitTypesModel;
+  static QStandardItemModel flowControlTypesModel;
+  static QStandardItemModel parityTypesModel;
+  static QStandardItemModel stopBitTypesModel;
+  static QStandardItemModel availableSerialPortsModel;
+  static QStandardItemModel availableIpAdressesModel;
+
+  // measurement config models
+  static MeasurementConfigurationModel measurementConfigurationModel;
+  static MeasurementConfigurationProxyModel measurementConfigurationProxyModel;
+
+  // observation and reading models
+  static ObservationModel observationModel;
+  static ObservationProxyModel observationProxyModel;
+  static ReadingModel readingModel;
+  static ReadingProxyModel readingProxyModel;
+
+  // ##################
+  // empty dummy models
+  // ##################
+
+  static QStringListModel dummyStringListModel;
+
+ private:
+  // ##############
+  // helper methods
+  // ##############
+
+  static void updateJob();
+  static void updateFeatureTableColumnConfig();
+  static void updateTrafoParamTableColumnConfig();
+  static void updateObservationTableColumnConfig();
+  static void updateReadingTableColumnConfig();
+  static void updateParameterDisplayConfig();
+  static void updateSensorConfigManager();
+  static void updateMeasurementConfigManager();
+
+  // ################################################################
+  // update models (called every time a connected event is triggered)
+  // ################################################################
+
+  static void updateCoordinateSystemsModel();
+  static void updateNominalSystemsModel();
+  static void updateGroupsModel();
+  static void updateSensorConfigNamesModel();
+
+  // ########################################################
+  // model initialization (called only once at the beginning)
+  // ########################################################
+
+  static void initFeatureTableModels();
+  static void initFeatureTreeViewModels();
+
+  static void initFunctionTableModels();
+
+  static void initSensorTypeNamesModel();
+  static void initSensorTableModels();
+  static void initSensorListViewModels();
+
+  static void initMeasurementConfigModels();
+
+  static void initSensorConnectionModels();
+
+  static void initUnitTypesModels();
+
+  static void initReadingTypesModels();
+
+  static void initScalarEntityTypesModels();
+
+  static void initPluginModels();
+
+  static void initGroupsModel();
+
+  static void initActualNominalFilterModel();
+
+  static void initObservationModels();
+  static void initReadingModels();
+
+  // ###############
+  // display configs
+  // ###############
+
+  static FeatureTableColumnConfig
+      featureTableColumnConfig;  // defines which columns shall be visible in
+                                 // feature table proxy model
+  static TrafoParamTableColumnConfig
+      trafoParamTableColumnConfig;  // defines which columns shall be visible in
+                                    // trafo param proxy model
+  static ObservationTableColumnConfig
+      observationTableColumnConfig;  // defines which columns shall be visible
+                                     // in observation proxy model
+  static ReadingTableColumnConfig
+      readingTableColumnConfig;  // defines which columns shall be visible in
+                                 // reading proxy model
+  static ParameterDisplayConfig
+      parameterDisplayConfig;  // defines in which unit and with how many digits
+                               // a parameter value shall be displayed
+
+  // ##############
+  // config manager
+  // ##############
+
+  static QPointer<SensorConfigurationManager> sensorConfigManager;
+  static QPointer<MeasurementConfigManager> measurementConfigManager;
+
+  // ##########################################################
+  // cache PluginRepository's scan so it's only ever done once
+  // ##########################################################
+
+  static std::vector<sys::Plugin> plugins;
+
+  // #############################
+  // single model manager instance
+  // #############################
+
+  static QPointer<ModelManager> myInstance;
+};
+
+#endif  // MODELMANAGER_H
