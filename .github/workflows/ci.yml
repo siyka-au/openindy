@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CC: gcc-14
+  CXX: g++-14
+  CLANG_TOOLS_VERSION: 23.1.3   # PyPI clang-format; keep in sync with the developers' version
+  QT_VERSION: 6.8.3
+
+# Layout: CMake FetchContent prefers sibling checkouts (../openindy-core,
+# ../openindy-math, ../openindy-default-plugin, ../openindy-leica-plugin), so all repositories are checked out side by side in
+# $GITHUB_WORKSPACE. If a sibling repository is private, add a repository
+# secret SIBLING_REPO_TOKEN (read access to it); the default token only reaches
+# this repository.
+
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: openindy }
+      - uses: actions/checkout@v4
+        with:
+          repository: siyka-au/openindy-core
+          path: openindy-core
+          token: ${{ secrets.SIBLING_REPO_TOKEN || github.token }}
+      - uses: actions/checkout@v4
+        with:
+          repository: siyka-au/openindy-math
+          path: openindy-math
+          token: ${{ secrets.SIBLING_REPO_TOKEN || github.token }}
+      - uses: actions/checkout@v4
+        with:
+          repository: siyka-au/openindy-default-plugin
+          path: openindy-default-plugin
+          token: ${{ secrets.SIBLING_REPO_TOKEN || github.token }}
+      - uses: actions/checkout@v4
+        with:
+          repository: siyka-au/openindy-leica-plugin
+          path: openindy-leica-plugin
+          token: ${{ secrets.SIBLING_REPO_TOKEN || github.token }}
+      - uses: astral-sh/setup-uv@v6
+      - name: System packages
+        run: >
+          sudo apt-get update && sudo apt-get install -y ninja-build g++-14
+          libarmadillo-dev libblas-dev liblapack-dev libgl1-mesa-dev libxkbcommon-dev libegl1
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          modules: qtserialport qtwebsockets
+          cache: true
+      - uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-gcc14-${{ hashFiles('openindy-core/conanfile.txt', 'openindy-core/conan/profiles/*') }}
+      - name: Conan packages (Release only, the packages are Release)
+        working-directory: openindy-core
+        run: uvx conan install . -pr:a conan/profiles/linux-gcc -s:a compiler.version=14 --build=missing -of build/conan
+      - name: Configure
+        working-directory: openindy
+        run: >
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_TOOLCHAIN_FILE=../openindy-core/build/conan/conan_toolchain.cmake
+      - name: Build
+        working-directory: openindy
+        run: cmake --build build -j$(nproc)
+      # The app's CMake also builds both plugins (sibling checkouts) and core as
+      # subprojects; ctest runs their tests too. Qt tests run on the offscreen platform.
+      - name: Test
+        working-directory: openindy/build
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --output-on-failure
+
+  format-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: clang-format --dry-run -Werror
+        run: |
+          git ls-files | grep -E '\.(cpp|h|hpp|cc)$' | grep -vE '^(lib|third_party|3rdparty|build)/' \
+            | xargs uvx clang-format==$CLANG_TOOLS_VERSION --dry-run -Werror --style=file
