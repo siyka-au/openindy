@@ -24,6 +24,7 @@
 #include "group.h"
 #include "oi_job.h"
 #include "project_dirty_tracker.h"
+#include "qt_convert.h"
 #include "qt_executor.h"
 #include "reading.h"
 #include "sensor.h"
@@ -180,6 +181,7 @@ class ProjectDirtyTrackerTest : public QObject {
   void controllerNewProjectIsClean();
   void controllerChangesSaveAndLoad();
   void controllerFailedSaveKeepsTheFlag();
+  void controllerNamesTheJobAfterTheFile();
   void controllerMarkProjectDirtyForChangesOutsideTheJob();
 };
 
@@ -461,7 +463,7 @@ void ProjectDirtyTrackerTest::controllerChangesSaveAndLoad() {
 
   // a loaded project is clean, however much the load touches the job
   controller.markProjectDirty();
-  controller.loadProject("project", file);
+  controller.loadProject(file);
   QVERIFY(!controller.isProjectDirty());
 
   // and it tracks the loaded job, not the old one
@@ -487,6 +489,46 @@ void ProjectDirtyTrackerTest::
   QVERIFY(controller.isProjectDirty());
   controller.markProjectClean();
   QVERIFY(!controller.isProjectDirty());
+}
+
+void ProjectDirtyTrackerTest::controllerNamesTheJobAfterTheFile() {
+  QTemporaryDir dir;
+  QVERIFY(dir.isValid());
+  const QString first = dir.filePath("first.oip");
+  const QString second = dir.filePath("second.oip");
+
+  Controller controller;
+  const oi::Guarded<OiJob> job = controller.createDefaultJob();
+  QVERIFY(job->getJobName().empty());  // never saved: no name
+
+  QVERIFY(controller.saveProject(first));
+  QCOMPARE(QString::fromStdString(job->getJobName()), QString("first.oip"));
+  QVERIFY(!controller.isProjectDirty());
+
+  // the file holds neither the directory nor the name
+  QFile file(first);
+  QVERIFY(file.open(QIODevice::ReadOnly));
+  QByteArray bytes = file.readAll();
+  file.close();
+  QVERIFY(!bytes.contains(dir.path().toUtf8()));
+  QVERIFY(!bytes.contains("first.oip"));
+
+  // save as: the job is renamed, and the rename alone is not a change
+  QVERIFY(controller.saveProject(second));
+  QCOMPARE(QString::fromStdString(job->getJobName()), QString("second.oip"));
+  QCOMPARE(fromPath(job->getJobFile()), second);
+  QVERIFY(!controller.isProjectDirty());
+
+  // loading names the job after the file, whatever it was called when saved
+  oi::Guarded<OiJob> reloaded;
+  QObject::connect(&controller, &Controller::setCurrentJob,
+                   [&reloaded](const oi::Guarded<OiJob>& j) { reloaded = j; });
+  controller.loadProject(first);
+  QVERIFY(!controller.isProjectDirty());
+  QVERIFY(!reloaded.isNull());
+  QCOMPARE(QString::fromStdString(reloaded->getJobName()),
+           QString("first.oip"));
+  QCOMPARE(fromPath(reloaded->getJobFile()), first);
 }
 
 QTEST_GUILESS_MAIN(ProjectDirtyTrackerTest)

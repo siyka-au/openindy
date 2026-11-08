@@ -162,7 +162,7 @@ class Controller : public QObject, public ControllerSensorActions {
   // save or load a job
   bool saveProject();
   bool saveProject(const QString& fileName);
-  void loadProject(const QString& projectName, const QString& filePath);
+  void loadProject(const QString& filePath);
   const oi::Guarded<OiJob>& createDefaultJob();
 
   // sensor actions

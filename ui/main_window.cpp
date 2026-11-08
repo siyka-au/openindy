@@ -1357,15 +1357,13 @@ void MainWindow::loadProjectFile(QString file) {
     return;
   }
 
-  QString projectName = info.fileName();
-
   ProjectConfig::setProjectPath(info.absolutePath());
 
   // clear current selection in table view
   this->ui->tableView_features->clearSelection();
   this->ui->tableView_trafoParams->clearSelection();
 
-  emit this->loadProject(projectName, file);
+  emit this->loadProject(file);
 }
 
 /*!

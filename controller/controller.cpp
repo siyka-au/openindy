@@ -1051,9 +1051,8 @@ bool Controller::saveProject() {
   }
 
   // get and check name and file path
-  QString name = toQString(this->job->getJobName());
   const QString filePath = fromPath(this->job->getJobFile());
-  if (name.compare("") == 0 || filePath.isEmpty()) {
+  if (filePath.isEmpty()) {
     emit this->saveAsTriggered();
     return false;
   }
@@ -1125,10 +1124,10 @@ bool Controller::saveProject(const QString& fileName) {
               MessageDestinations::eMessageBoxMessage);
     return false;
   }
-  this->job->setJobName(toStd(fileName));
-
-  // set device
+  // the job is named after the file, without its directory (the name is
+  // runtime only: neither it nor the path is written to the project file)
   this->job->setJobFile(toPath(fileName));
+  this->job->setJobName(toStd(info.fileName()));
 
   const bool saved = this->saveProject();
 
@@ -1138,11 +1137,9 @@ bool Controller::saveProject(const QString& fileName) {
 
 /*!
  * \brief Controller::loadProject
- * \param projectName
- * \param filePath
+ * \param filePath the project file; the job is named after its file name
  */
-void Controller::loadProject(const QString& projectName,
-                             const QString& filePath) {
+void Controller::loadProject(const QString& filePath) {
   // read the project file
   QByteArray project;
   QFile file(filePath);
@@ -1213,7 +1210,7 @@ void Controller::loadProject(const QString& projectName,
        QMessageBox::Yes)) {
     // set project meta data
     newJob->setJobFile(toPath(filePath));
-    newJob->setJobName(toStd(projectName));
+    newJob->setJobName(toStd(QFileInfo(filePath).fileName()));
 
     // set new job (the old one is freed)
     this->setJob(std::move(newJob));
