@@ -423,7 +423,7 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
 
   void startAutoSave();
 
-  int saveProjectIfDigestChanged();
+  int saveProjectIfDirty();
 
   // ############################
   // OpenIndy dialogs and widgets

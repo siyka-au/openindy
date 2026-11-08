@@ -1334,7 +1334,7 @@ void MainWindow::on_actionWatch_window_triggered() {
  * \brief MainWindow::on_actionOpen_triggered
  */
 void MainWindow::on_actionOpen_triggered() {
-  saveProjectIfDigestChanged();
+  saveProjectIfDirty();
 
   QString filename = QFileDialog::getOpenFileName(
       this, "Choose a file", ProjectConfig::getProjectPath(),
@@ -1387,10 +1387,10 @@ void MainWindow::on_actionSave_as_template_triggered() {
  */
 void MainWindow::on_actionClose_triggered() { this->close(); }
 
-int MainWindow::saveProjectIfDigestChanged() {
+int MainWindow::saveProjectIfDirty() {
   // direct call (no "emit" use), therefore is no need to handle the event in
   // the controller
-  if (this->control.hasProjectDigestChanged()) {
+  if (this->control.isProjectDirty()) {
     QMessageBox msgBox;
     msgBox.setWindowTitle("close project");
     msgBox.setText("Do you want to save changes?");
@@ -1410,7 +1410,7 @@ int MainWindow::saveProjectIfDigestChanged() {
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {
-  if (saveProjectIfDigestChanged() == QMessageBox::Cancel) {
+  if (saveProjectIfDirty() == QMessageBox::Cancel) {
     event->ignore();
   } else {
     QApplication::closeAllWindows();  // close all windows on exit e.g. watch
@@ -2178,13 +2178,13 @@ void MainWindow::connectController() {
   QObject::connect(
       this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
       &this->control,
-      static_cast<void (Controller::*)()>(&Controller::saveProject),
+      static_cast<bool (Controller::*)()>(&Controller::saveProject),
       Qt::AutoConnection);
   QObject::connect(this,
                    static_cast<void (MainWindow::*)(const QString&)>(
                        &MainWindow::saveProject),
                    &this->control,
-                   static_cast<void (Controller::*)(const QString&)>(
+                   static_cast<bool (Controller::*)(const QString&)>(
                        &Controller::saveProject),
                    Qt::AutoConnection);
   QObject::connect(this, &MainWindow::loadProject, &this->control,
@@ -3159,7 +3159,7 @@ void MainWindow::startAutoSave() {
 }
 
 void MainWindow::autoSaveProject() {
-  if (this->control.hasProjectDigestChanged()) {
+  if (this->control.isProjectDirty()) {
     emit this->saveProject();
   }
 }

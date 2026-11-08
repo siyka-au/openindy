@@ -27,6 +27,7 @@
 #include "oi_job.h"
 #include "parameter_display_config.h"
 #include "plugin_manager.h"
+#include "project_dirty_tracker.h"
 #include "project_exchanger.h"
 #include "qt_executor.h"
 #include "qt_station_adapter.h"
@@ -66,7 +67,12 @@ class Controller : public QObject, public ControllerSensorActions {
 
   [[nodiscard]] const QList<QPointer<Tool>>& getAvailableTools() const;
 
-  bool hasProjectDigestChanged();
+  // Has the project changed since it was last saved or loaded? A flag set by
+  // the job's change notifications (ProjectDirtyTracker) and by the few
+  // actions that change saved state outside the job.
+  [[nodiscard]] bool isProjectDirty() const;
+  void markProjectClean();
+  void markProjectDirty();
 
   void _startMeasurement(bool dummyPoint);
 
@@ -154,8 +160,8 @@ class Controller : public QObject, public ControllerSensorActions {
   void runBundle();
 
   // save or load a job
-  void saveProject();
-  void saveProject(const QString& fileName);
+  bool saveProject();
+  bool saveProject(const QString& fileName);
   void loadProject(const QString& projectName, const QString& filePath);
   const oi::Guarded<OiJob>& createDefaultJob();
 
@@ -418,6 +424,7 @@ class Controller : public QObject, public ControllerSensorActions {
   QPointer<SensorConfigurationManager> sensorConfigManager;
   QPointer<MeasurementConfigManager> measurementConfigManager;
   ProjectExchanger projectExchanger;
+  ProjectDirtyTracker projectDirtyTracker;
 
 #ifdef OI_WEBSOCKETSERVER_ENABLED
   // thread and server instance

@@ -142,6 +142,8 @@ FetchContent_MakeAvailable(OpenIndyLeicaPlugin)
 
 add_library(OpenIndyApp SHARED
     controller/clipboard_util.cpp
+    controller/project_dirty_tracker.cpp
+    controller/project_dirty_tracker.h
     controller/qt_job_adapter.cpp
     controller/qt_job_adapter.h
     controller/qt_function_adapter.cpp
@@ -587,6 +589,11 @@ add_test(NAME configfiles COMMAND tst_configfiles)
 add_executable(tst_ownedsubgeometryui test/owned_subgeometry_ui/tst_owned_subgeometry_ui.cpp)
 target_link_libraries(tst_ownedsubgeometryui PRIVATE Qt6::Test OpenIndyApp OpenIndyCore)
 add_test(NAME ownedsubgeometryui COMMAND tst_ownedsubgeometryui)
+
+# ProjectDirtyTracker / Controller::isProjectDirty: change tracking instead of a content digest
+add_executable(tst_projectdirtytracker test/project_dirty_tracker/tst_project_dirty_tracker.cpp)
+target_link_libraries(tst_projectdirtytracker PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyMath)
+add_test(NAME projectdirtytracker COMMAND tst_projectdirtytracker)
 
 # QtJobAdapter: the OiJob observer turned back into the Qt signals
 add_executable(tst_qtjobadapter test/qt_job_adapter/tst_qt_job_adapter.cpp)

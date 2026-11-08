@@ -1,5 +1,6 @@
 #include "controller.h"
 
+#include <QScopeGuard>
 #include <format>
 #include <map>
 #include <set>
@@ -956,6 +957,9 @@ void Controller::runBundle() {
     return;
   }
 
+  // the bundle adjustment's results are saved with the project
+  this->markProjectDirty();
+
   // calculate bundle adjustment
   try {
     if (!this->featureUpdater.recalcBundle(bundleSystem)) {
@@ -1005,27 +1009,32 @@ void Controller::runBundle() {
 }
 
 /*!
- * \brief check if digest has changed and update digest in job
+ * \brief has the project changed since it was last saved or loaded?
  */
-bool Controller::hasProjectDigestChanged() {
-  if (this->job.isNull()) {
-    return false;
-  }
-  QString preDigest = toQString(this->job->getDigest());
-  projectExchanger.saveProject(this->job);
-  return preDigest !=
-         job->getDigest();  // not equal, that means project data changed
+bool Controller::isProjectDirty() const {
+  return !this->job.isNull() && this->projectDirtyTracker.isDirty();
 }
+
+/*!
+ * \brief the project equals what is on disk (after a save, a load, or for a
+ * newly created project)
+ */
+void Controller::markProjectClean() { this->projectDirtyTracker.markClean(); }
+
+/*!
+ * \brief for changes of saved state that no job notification reports
+ */
+void Controller::markProjectDirty() { this->projectDirtyTracker.markDirty(); }
 
 /*!
  * \brief Controller::saveProject
  */
-void Controller::saveProject() {
+bool Controller::saveProject() {
   // check job
   if (this->job.isNull()) {
     this->log("No job available", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
-    return;
+    return false;
   }
 
   QList<QPointer<Tool>> tools = this->getAvailableTools();
@@ -1037,7 +1046,7 @@ void Controller::saveProject() {
                     .arg(tool->getMetaData().name),
                 MessageTypes::eErrorMessage,
                 MessageDestinations::eMessageBoxMessage);
-      return;
+      return false;
     }
   }
 
@@ -1046,7 +1055,7 @@ void Controller::saveProject() {
   const QString filePath = fromPath(this->job->getJobFile());
   if (name.compare("") == 0 || filePath.isEmpty()) {
     emit this->saveAsTriggered();
-    return;
+    return false;
   }
 
   QMutexLocker locker(&saveProjectMutex);  // synchronize write file
@@ -1058,8 +1067,12 @@ void Controller::saveProject() {
     this->log("Error while creating the project file",
               MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
-    return;
+    return false;
   }
+
+  // what is written is what the project is now; a failed write marks it as
+  // changed again (events that arrive meanwhile keep it marked)
+  this->markProjectClean();
 
   // write the project file
   QSaveFile saveFile(filePath);
@@ -1068,13 +1081,15 @@ void Controller::saveProject() {
       this->log(QString("Cannot write file \"%1\"").arg(filePath),
                 MessageTypes::eErrorMessage,
                 MessageDestinations::eMessageBoxMessage);
-      return;
+      this->markProjectDirty();
+      return false;
     }
 
     this->log(
         QString("OpenIndy project \"%1\" successfully stored.").arg(filePath),
         MessageTypes::eInformationMessage,
         MessageDestinations::eStatusBarMessage);
+    return true;
   } else {
     this->log(QString("Cannot open file  \"%1\"").arg(filePath),
               MessageTypes::eInformationMessage,
@@ -1085,8 +1100,9 @@ void Controller::saveProject() {
         "Please check your saved data, before you continue.");
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
-    int ret = msgBox.exec();
-    return;
+    msgBox.exec();
+    this->markProjectDirty();
+    return false;
   }
 }
 
@@ -1094,12 +1110,12 @@ void Controller::saveProject() {
  * \brief Controller::saveProject
  * \param fileName
  */
-void Controller::saveProject(const QString& fileName) {
+bool Controller::saveProject(const QString& fileName) {
   // check job
   if (this->job.isNull()) {
     this->log("No job available", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
-    return;
+    return false;
   }
 
   // set name
@@ -1107,17 +1123,17 @@ void Controller::saveProject(const QString& fileName) {
   if (!info.absoluteDir().exists()) {
     this->log("Directory not exists", MessageTypes::eErrorMessage,
               MessageDestinations::eMessageBoxMessage);
-    return;
+    return false;
   }
   this->job->setJobName(toStd(fileName));
 
   // set device
   this->job->setJobFile(toPath(fileName));
 
-  this->saveProject();
+  const bool saved = this->saveProject();
 
-  emit this->currentJobChanged();  // maybe changed TODO: emit if
-                                   // this->saveProject(); is successful
+  emit this->currentJobChanged();  // maybe changed TODO: emit if saved
+  return saved;
 }
 
 /*!
@@ -1201,6 +1217,11 @@ void Controller::loadProject(const QString& projectName,
 
     // set new job (the old one is freed)
     this->setJob(std::move(newJob));
+
+    // whatever the rest of the load does to the job (bundle template, plugin),
+    // a freshly loaded project is clean
+    const auto markLoadedClean =
+        qScopeGuard([this]() { this->markProjectClean(); });
 
     // switch to active coordinate system
     this->featureUpdater.switchCoordinateSystem();
@@ -1335,6 +1356,9 @@ const oi::Guarded<OiJob>& Controller::createDefaultJob() {
   station->getCoordinateSystem()->setActiveCoordinateSystemState(true);
 
   this->addBundleSystem();
+
+  // a newly created project has nothing to save yet
+  this->markProjectClean();
 
   return this->job;
 }
@@ -2024,6 +2048,9 @@ void Controller::setJob(std::unique_ptr<OiJob> newJob) {
   this->job = newJob.get();
   this->ownedJob = std::move(newJob);
 
+  // track what changes in the new job from here on (starts out clean)
+  this->projectDirtyTracker.attach(this->job.data());
+
   // the stations' sensor results are delivered on the UI thread
   this->job->setExecutor(&this->executor);
 
@@ -2221,6 +2248,13 @@ void Controller::initConfigManager() {
     this->sensorConfigManager->loadFromConfigFolder();
     this->measurementConfigManager = new MeasurementConfigManager();
     this->measurementConfigManager->loadFromConfigFolder();
+
+    // the configs a project uses are saved with it: any edit of a measurement
+    // configuration (project or user) changes what a save would write
+    QObject::connect(
+        this->measurementConfigManager,
+        &MeasurementConfigManager::measurementConfigurationsChanged, this,
+        &Controller::markProjectDirty);
 
     // pass config managers to model manager
     ModelManager::setSensorConfigManager(this->sensorConfigManager);
