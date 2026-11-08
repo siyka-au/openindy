@@ -1,6 +1,7 @@
 #include "oi_meta_data.h"
 
 #include "qt_convert.h"
+#include "toolchain.h"
 
 // define version of the main program (src)
 QString OiMetaData::version = "0.0.1";
@@ -169,56 +170,12 @@ QString OiMetaData::getExchangeTypeName(const QString& iid) {
 }
 
 /*!
- * \brief OiMetaData::getCompiler
- * \return
+ * \brief The compiler family this build was made with: "gcc", "clang",
+ * "mingw" or "msvc" (core's OI_TOOLCHAIN_COMPILER). Plugins write the same
+ * words into the "compiler" field of their metadata; informational only, the
+ * loader compares the toolchain string (plugin/toolchain.h).
  */
-QString OiMetaData::getCompiler() {
-  QString c;
-
-#if defined(__clang__)
-  /* Clang/LLVM. ---------------------------------------------- */
-  c = "clang 64bit";
-  return c;
-
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-  /* Intel ICC/ICPC. ------------------------------------------ */
-  c = "intel";
-  return c;
-
-#elif defined(__GNUC__) || defined(__GNUG__)
-  /* GNU GCC/G++. --------------------------------------------- */
-  c = "minGW";
-  return c;
-
-#elif defined(__HP_cc) || defined(__HP_aCC)
-  /* Hewlett-Packard C/aC++. ---------------------------------- */
-  c = "hewlett";
-  return c;
-
-#elif defined(__IBMC__) || defined(__IBMCPP__)
-  /* IBM XL C/C++. -------------------------------------------- */
-  c = "intelC";
-  return c;
-
-#elif defined(_MSC_VER)
-  /* Microsoft Visual Studio. --------------------------------- */
-  c = "MVSC 64bit";
-  return c;
-
-#elif defined(__PGI)
-  /* Portland Group PGCC/PGCPP. ------------------------------- */
-  c = "portland";
-  return c;
-
-#elif defined(__SUNPRO_C) || defined(__SUNPRO_CC)
-  /* Oracle Solaris Studio. ----------------------------------- */
-  c = "oracle";
-  return c;
-
-#endif
-
-  return c;
-}
+QString OiMetaData::getCompiler() { return QString(OI_TOOLCHAIN_COMPILER); }
 
 /*!
  * \brief OiMetaData::getOperatingSys

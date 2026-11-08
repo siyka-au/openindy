@@ -3,6 +3,7 @@
 #include <QtTest>
 
 #include "choose_la_lib.h"
+#include "oi_meta_data.h"
 #include "plugin_host.h"
 #include "plugin_manager.h"
 #include "plugin_repository.h"
@@ -40,6 +41,10 @@ void PluginHostTest::probesDefaultPlugin() {
   QVERIFY(!probe.meta.value("name").toString().isEmpty());
   QVERIFY(!probe.meta.value("compiler").toString().isEmpty());
   QVERIFY(!probe.meta.value("operatingSystem").toString().isEmpty());
+  // the plugin was built with this application's compiler family and OS
+  QCOMPARE(probe.meta.value("compiler").toString(), OiMetaData::getCompiler());
+  QCOMPARE(probe.meta.value("operatingSystem").toString(),
+           OiMetaData::getOperatingSys());
   QCOMPARE(probe.iid, QString(Plugin_iidd));
 }
 
