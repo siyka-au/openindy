@@ -89,7 +89,7 @@ class Tool : public QWidget {
   void startChangeMotorState();
   void startCustomAction(const QString& task);
 
- protected:
+ private:
   // ###########################
   // input and output parameters
   // ###########################

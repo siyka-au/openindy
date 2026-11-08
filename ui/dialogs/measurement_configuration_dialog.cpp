@@ -3,8 +3,10 @@
 #include "qt_convert.h"
 #include "ui_measurement_configuration_dialog.h"
 
-#define MIN_TIME_INTERVAL 0.005
-#define MIN_DISTANCE_INTERVAL 0.0001
+namespace {
+constexpr double MIN_TIME_INTERVAL = 0.005;
+constexpr double MIN_DISTANCE_INTERVAL = 0.0001;
+}  // namespace
 
 /*!
  * \brief MeasurementConfigurationDialog::MeasurementConfigurationDialog

@@ -1,0 +1,4 @@
+# Tests state expected values as literals in their assertions (QCOMPARE(x, 3.5)); naming
+# every one would hide what is being checked, so avoid-magic-numbers is off here.
+InheritParentConfig: true
+Checks: '-cppcoreguidelines-avoid-magic-numbers'

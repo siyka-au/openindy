@@ -9,8 +9,12 @@
 #include "util.h"
 #include "watch_window_util.h"
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage): QVERIFY needs the macro to
+// report the caller's line
 #define COMPARE_DOUBLE(actual, expected, threshold) \
   QVERIFY(std::abs(actual - expected) < threshold);
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage): expands to a stream expression
+// for the DEBUG_RESULT macro
 #define _OI_VEC(v) v.getAt(0) << "," << v.getAt(1) << "," << v.getAt(2)
 #define DEBUG_RESULT(result)                                    \
   qDebug() << qSetRealNumberPrecision(10)                       \

@@ -6,6 +6,7 @@
 #include <QSplashScreen>
 #include <ctime>
 #include <iostream>
+#include <span>
 
 #include "choose_la_lib.h"
 #include "console.h"
@@ -43,6 +44,7 @@ extern Q_CORE_EXPORT QBasicAtomicInt qt_qhash_seed;
  */
 int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
+  const std::span<char*> args(argv, static_cast<std::size_t>(argc));
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 9, 0)
   qt_qhash_seed.store(0);  // ensures that saved output is written the same way
@@ -100,7 +102,7 @@ int main(int argc, char* argv[]) {
     splash = new QSplashScreen(pixmap);
 
     splash->show();
-    QString msg = argc == 2 ? QString("loading: %1").arg(argv[1])
+    QString msg = argc == 2 ? QString("loading: %1").arg(args[1])
                             : QString("%1\n%2\n%3")
                                   .arg(AppUrl)
                                   .arg(AppAuthorMail)
@@ -112,7 +114,7 @@ int main(int argc, char* argv[]) {
   MainWindow w;
 
   if (argc == 2) {
-    w.loadProjectFile(argv[1]);
+    w.loadProjectFile(args[1]);
   }
 
   w.showMaximized();
