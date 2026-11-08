@@ -567,7 +567,7 @@ add_executable(tst_requesthandler test/request_handler/tst_request_handler.cpp)
 target_link_libraries(tst_requesthandler PRIVATE Qt6::Test OpenIndyApp OpenIndyCore OpenIndyCodec)
 add_test(NAME requesthandler COMMAND tst_requesthandler)
 
-# config files (JSON): the shipped ones load and say what the old XML said;
+# config files (JSON): the shipped ones load and say what the old config files said;
 # bad files fall back
 add_executable(tst_configfiles test/config_files/tst_config_files.cpp)
 target_compile_definitions(tst_configfiles PRIVATE

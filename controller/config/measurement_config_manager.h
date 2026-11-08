@@ -77,7 +77,7 @@ class OI_MAIN_EXPORT MeasurementConfigManager : public QObject {
 
   void saveToConfigFolder(const QString& name,
                           const MeasurementConfig& mConfig);
-  // load configs from xml
+  // load configs from the config folder
   void loadFromConfigFolder();
 
   // synchronize config manager

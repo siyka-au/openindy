@@ -69,7 +69,7 @@ class SensorConfigurationManager : public QObject {
                            const SensorConfiguration& sConfig,
                            bool save = true);
 
-  // load configs from xml
+  // load configs from the config folder
   void loadFromConfigFolder();
 
   // synchronize config manager

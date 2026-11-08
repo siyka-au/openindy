@@ -24,11 +24,11 @@ using namespace oi::math;
  * Stage 7e acceptance criterion: "a Group of planes and a Group of spheres
  * both persist and reload correctly as organizational folders." Before this
  * stage a Group was not wired into ProjectExchanger at all - not written to
- * the project XML on save, not read back on load, and Group::pendingMemberIds
- * (populated by Group::fromOpenIndyXML) was never resolved into real member
+ * the project file on save, not read back on load, and Group::pendingMemberIds
+ * (populated by the project loader) was never resolved into real member
  * references anywhere. This file exercises the real save/load round trip
  * through ProjectExchanger, the same entry points the application uses,
- * rather than testing Group::toOpenIndyXML/fromOpenIndyXML in isolation
+ * rather than testing the group serialisers in isolation
  * (tst_point_collection.cpp already covers Group's own membership mechanics).
  */
 namespace {
@@ -65,7 +65,7 @@ std::unique_ptr<OiJob> makeJobWithStationAndSystem() {
 
   // ProjectExchanger::loadProject auto-creates "Bundle01_1" on load if it
   // is missing - create it up front so save/load round trips through the
-  // ordinary path (present in the saved XML, restored like anything else)
+  // ordinary path (present in the saved project, restored like anything else)
   // rather than the auto-create fallback, which is unrelated to what this
   // file is testing
   FeatureUtil().createInitialBundleTransformation(job);
@@ -151,9 +151,9 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   QCOMPARE(group->memberCount(), 2);
 
   ProjectExchanger exchanger;
-  const QByteArray xml = exchanger.saveProject(job);
+  const QByteArray bytes = exchanger.saveProject(job);
 
-  const auto reloaded = exchanger.loadProject(xml).job;
+  const auto reloaded = exchanger.loadProject(bytes).job;
   QVERIFY2(reloaded != nullptr, "the project should reload without error");
 
   const std::vector<oi::Guarded<FeatureWrapper> > reloadedGroups =
@@ -165,7 +165,7 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
   QCOMPARE(reloadedGroup->getFeatureName(), QString("MixedGroup"));
 
   // this is the assertion that would have failed before Stage 7e:
-  // pendingMemberIds was populated by fromOpenIndyXML and never resolved,
+  // pendingMemberIds was populated by the project loader and never resolved,
   // so a reloaded group was always empty regardless of what was saved
   QCOMPARE(reloadedGroup->memberCount(), 2);
 
@@ -183,7 +183,7 @@ void ProjectExchangeTest::groupOfMixedTypesSurvivesSaveAndReload() {
 /*!
  * PointGroup is a Group under the hood (FeatureWrapper::setPointGroup sets
  * both handles), so save/load must tell it apart from a plain Group on
- * reload - Group::toOpenIndyXML/PointGroup::toOpenIndyXML's "type"
+ * reload - the persisted "type"
  * attribute is what makes that possible.
  */
 void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
@@ -205,9 +205,9 @@ void ProjectExchangeTest::pointGroupSurvivesSaveAndReload() {
   QVERIFY(job->addFeature(std::move(own_pointGroup)));
 
   ProjectExchanger exchanger;
-  const QByteArray xml = exchanger.saveProject(job);
+  const QByteArray bytes = exchanger.saveProject(job);
 
-  const auto reloaded = exchanger.loadProject(xml).job;
+  const auto reloaded = exchanger.loadProject(bytes).job;
   QVERIFY(reloaded != nullptr);
 
   // must come back as a PointGroup, not a plain Group
@@ -252,9 +252,9 @@ void ProjectExchangeTest::typeConstraintSurvivesSaveAndReload() {
   QVERIFY(job->addFeature(std::move(own_group)));
 
   ProjectExchanger exchanger;
-  const QByteArray xml = exchanger.saveProject(job);
+  const QByteArray bytes = exchanger.saveProject(job);
 
-  const auto reloaded = exchanger.loadProject(xml).job;
+  const auto reloaded = exchanger.loadProject(bytes).job;
   QVERIFY(reloaded != nullptr);
 
   const std::vector<oi::Guarded<FeatureWrapper> > reloadedGroups =

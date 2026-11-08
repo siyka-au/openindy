@@ -45,9 +45,9 @@ int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 9, 0)
-  qt_qhash_seed.store(0);  // ensures that xml is written the same way
+  qt_qhash_seed.store(0);  // ensures that saved output is written the same way
 #else
-  qSetGlobalQHashSeed(0);  // ensures that xml is written the same way
+  qSetGlobalQHashSeed(0);  // ensures that saved output is written the same way
 #endif
 
   ChooseLALib::setLinearAlgebra(ChooseLALib::LinearAlgebraLibrary::Armadillo);

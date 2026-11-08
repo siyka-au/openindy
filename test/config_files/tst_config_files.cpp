@@ -15,7 +15,8 @@ using namespace oi;
  * The human-editable config files are JSON (protobuf JSON mapping for the
  * measurement and sensor configs, plain Qt JSON for the project settings).
  * This loads every file the application ships and checks it says what the old
- * XML said, and that missing or corrupt files fall back instead of crashing.
+ * config files said, and that missing or corrupt files fall back instead of
+ * crashing.
  */
 class ConfigFilesTest : public QObject {
   Q_OBJECT
@@ -148,7 +149,7 @@ void ConfigFilesTest::configFileHelpersRejectBadFiles() {
   QVERIFY(!configfile::readMeasurementConfig(dir.filePath("missing.json")));
   QVERIFY(!configfile::readSensorConfiguration(dir.filePath("missing.json")));
 
-  // an old XML config is not a config any more
+  // an old-format config is not a config any more
   writeFile(dir.filePath("old.json"),
             "<?xml version=\"1.0\"?><measurementConfig name=\"x\"/>");
   QVERIFY(!configfile::readMeasurementConfig(dir.filePath("old.json")));
