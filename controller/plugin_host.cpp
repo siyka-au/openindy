@@ -61,7 +61,7 @@ PluginProbe PluginHost::probe(const QString& path) {
 
   if (*loaded) {
     result.plugin = loaded->plugin.get();
-    result.iid = Plugin_iidd;
+    result.iid = toQString(Plugin_iidd);
     const std::string& json = loaded->plugin.metadataJson();
     const QJsonDocument doc = QJsonDocument::fromJson(
         QByteArray(json.data(), static_cast<qsizetype>(json.size())));

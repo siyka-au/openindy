@@ -428,6 +428,9 @@ qt_add_translations(OpenIndyApp
 target_compile_definitions(OpenIndyApp
     PRIVATE
         OI_MAIN_LIB
+    PUBLIC
+        # the tool plugin interface id, for Q_DECLARE_INTERFACE (see controller/tool.h)
+        "OI_TOOL_IID=\"de.openIndy.plugin.tool.v${OI_PLUGIN_ABI_VERSION}\""
 )
 
 target_include_directories(OpenIndyApp PRIVATE "${CMAKE_BINARY_DIR}/generated")

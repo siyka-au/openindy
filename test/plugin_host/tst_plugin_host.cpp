@@ -7,6 +7,7 @@
 #include "plugin_host.h"
 #include "plugin_manager.h"
 #include "plugin_repository.h"
+#include "qt_convert.h"
 
 /*!
  * The application loads compute plugins with core's oi::PluginLoader through
@@ -37,7 +38,7 @@ void PluginHostTest::probesDefaultPlugin() {
   QVERIFY2(probe.status == oi::PluginLoadStatus::kOk, qPrintable(probe.error));
   QVERIFY(probe.plugin != nullptr);
   QVERIFY(probe.isOiPlugin);
-  QCOMPARE(probe.meta.value("abiVersion").toInt(), OI_PLUGIN_ABI_VERSION);
+  QCOMPARE(probe.meta.value("abiVersion").toInt(), kPluginAbiVersion);
   QVERIFY(!probe.meta.value("name").toString().isEmpty());
   QVERIFY(!probe.meta.value("compiler").toString().isEmpty());
   QVERIFY(!probe.meta.value("operatingSystem").toString().isEmpty());
@@ -45,13 +46,15 @@ void PluginHostTest::probesDefaultPlugin() {
   QCOMPARE(probe.meta.value("compiler").toString(), OiMetaData::getCompiler());
   QCOMPARE(probe.meta.value("operatingSystem").toString(),
            OiMetaData::getOperatingSys());
-  QCOMPARE(probe.iid, QString(Plugin_iidd));
+  QCOMPARE(probe.iid, toQString(Plugin_iidd));
+  // the iid the build derives for Q_DECLARE_INTERFACE matches the runtime one
+  QCOMPARE(QString(OI_TOOL_IID), toQString(Tool_iidd));
 }
 
 void PluginHostTest::probesLeicaPlugin() {
   const PluginProbe probe = PluginHost::probe(LEICA_PLUGIN_PATH);
   QVERIFY2(probe.isOiPlugin, qPrintable(probe.error));
-  QCOMPARE(probe.meta.value("abiVersion").toInt(), OI_PLUGIN_ABI_VERSION);
+  QCOMPARE(probe.meta.value("abiVersion").toInt(), kPluginAbiVersion);
 }
 
 void PluginHostTest::readsMetaDataForTheCopier() {

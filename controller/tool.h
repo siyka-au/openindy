@@ -103,24 +103,9 @@ class Tool : public QWidget {
 
 }  // namespace oi
 
-#ifndef STR
-#define STR(x) #x
-#endif
-#ifndef STR2
-#define STR2(x) STR(x)
-#endif
-
-#ifndef CONCAT
-#define CONCAT(a, b) a##b
-#endif
-#ifndef CONCAT2
-#define CONCAT2(a, b) CONCAT(a, b)
-#endif
-
 #include "plugin_abi.h"
 
-#define TOOL_PREFIX de.openIndy.plugin.tool.v
-#define Tool_iidd STR2(CONCAT2(TOOL_PREFIX, OI_PLUGIN_ABI_VERSION))
+inline const std::string Tool_iidd = oi::pluginIid("de.openIndy.plugin.tool.v");
 
 namespace oi {
 
@@ -139,6 +124,9 @@ class ToolPlugin {
 
 }  // namespace oi
 
-Q_DECLARE_INTERFACE(oi::ToolPlugin, Tool_iidd)
+// moc parses this declaration and needs the iid as a string literal, so the
+// build passes it as a definition built from the same core ABI version
+// (tst_pluginhost checks it equals Tool_iidd).
+Q_DECLARE_INTERFACE(oi::ToolPlugin, OI_TOOL_IID)
 
 #endif  // OI_APP_CONTROLLER_TOOL_H_

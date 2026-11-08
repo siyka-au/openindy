@@ -7,22 +7,26 @@
 QString OiMetaData::version = "0.0.1";
 
 // define plugin interface versions
-QString OiMetaData::iid_Plugin = Plugin_iidd;
-QString OiMetaData::iid_Sensor = Sensor_iidd;
-QString OiMetaData::iid_LaserTracker = LaserTracker_iidd;
-QString OiMetaData::iid_TotalStation = TotalStation_iidd;
-QString OiMetaData::iid_ConstructFunction = ConstructFunction_iidd;
-QString OiMetaData::iid_FitFunction = FitFunction_iidd;
-QString OiMetaData::iid_SpecialFunction = SpecialFunction_iidd;
-QString OiMetaData::iid_GeodeticFunction = GeodeticFunction_iidd;
-QString OiMetaData::iid_BundleAdjustment = BundleAdjustment_iidd;
-QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
-QString OiMetaData::iid_SystemTransformation = SystemTransformation_iidd;
-QString OiMetaData::iid_Simulation = Simulation_iidd;
-QString OiMetaData::iid_Tool = Tool_iidd;
-QString OiMetaData::iid_Exchange = Exchange_iidd;
-QString OiMetaData::iid_ExchangeSimpleAscii = ExchangeSimpleAscii_iidd;
-QString OiMetaData::iid_ExchangeDefinedFormat = ExchangeDefinedFormat_iidd;
+QString OiMetaData::iid_Plugin = toQString(Plugin_iidd);
+QString OiMetaData::iid_Sensor = toQString(Sensor_iidd);
+QString OiMetaData::iid_LaserTracker = toQString(LaserTracker_iidd);
+QString OiMetaData::iid_TotalStation = toQString(TotalStation_iidd);
+QString OiMetaData::iid_ConstructFunction = toQString(ConstructFunction_iidd);
+QString OiMetaData::iid_FitFunction = toQString(FitFunction_iidd);
+QString OiMetaData::iid_SpecialFunction = toQString(SpecialFunction_iidd);
+QString OiMetaData::iid_GeodeticFunction = toQString(GeodeticFunction_iidd);
+QString OiMetaData::iid_BundleAdjustment = toQString(BundleAdjustment_iidd);
+QString OiMetaData::iid_ObjectTransformation =
+    toQString(ObjectTransformation_iidd);
+QString OiMetaData::iid_SystemTransformation =
+    toQString(SystemTransformation_iidd);
+QString OiMetaData::iid_Simulation = toQString(Simulation_iidd);
+QString OiMetaData::iid_Tool = toQString(Tool_iidd);
+QString OiMetaData::iid_Exchange = toQString(Exchange_iidd);
+QString OiMetaData::iid_ExchangeSimpleAscii =
+    toQString(ExchangeSimpleAscii_iidd);
+QString OiMetaData::iid_ExchangeDefinedFormat =
+    toQString(ExchangeDefinedFormat_iidd);
 
 /*!
  * \brief OiMetaData::findIID
@@ -171,11 +175,11 @@ QString OiMetaData::getExchangeTypeName(const QString& iid) {
 
 /*!
  * \brief The compiler family this build was made with: "gcc", "clang",
- * "mingw" or "msvc" (core's OI_TOOLCHAIN_COMPILER). Plugins write the same
+ * "mingw" or "msvc" (core's oi::kToolchainCompiler). Plugins write the same
  * words into the "compiler" field of their metadata; informational only, the
  * loader compares the toolchain string (plugin/toolchain.h).
  */
-QString OiMetaData::getCompiler() { return QString(OI_TOOLCHAIN_COMPILER); }
+QString OiMetaData::getCompiler() { return toQString(oi::kToolchainCompiler); }
 
 /*!
  * \brief OiMetaData::getOperatingSys
