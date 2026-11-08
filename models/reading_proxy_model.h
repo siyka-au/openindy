@@ -1,5 +1,5 @@
-#ifndef READINGPROXYMODEL_H
-#define READINGPROXYMODEL_H
+#ifndef OI_APP_MODELS_READING_PROXY_MODEL_H_
+#define OI_APP_MODELS_READING_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -57,4 +57,4 @@ class ReadingProxyModel : public QSortFilterProxyModel {
   ReadingTableColumnConfig readingTableColumnConfig;
 };
 
-#endif  // READINGPROXYMODEL_H
+#endif  // OI_APP_MODELS_READING_PROXY_MODEL_H_

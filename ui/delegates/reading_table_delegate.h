@@ -1,5 +1,5 @@
-#ifndef READINGTABLEDELEGATE_H
-#define READINGTABLEDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_READING_TABLE_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_READING_TABLE_DELEGATE_H_
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
@@ -25,4 +25,4 @@ class ReadingTableDelegate : public QItemDelegate {
                     const QModelIndex& index) const override;
 };
 
-#endif  // READINGTABLEDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_READING_TABLE_DELEGATE_H_

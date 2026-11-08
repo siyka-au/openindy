@@ -1,5 +1,5 @@
-#ifndef QTCONVERT_H
-#define QTCONVERT_H
+#ifndef OI_APP_CONTROLLER_QT_CONVERT_H_
+#define OI_APP_CONTROLLER_QT_CONVERT_H_
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -187,4 +187,4 @@ template <typename OutMap, typename InMap>
   return QString::fromStdU16String(p.u16string());
 }
 
-#endif  // QTCONVERT_H
+#endif  // OI_APP_CONTROLLER_QT_CONVERT_H_

@@ -1,5 +1,5 @@
-#ifndef SENSORCONFIGURATIONDELEGATE_H
-#define SENSORCONFIGURATIONDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_SENSOR_CONFIGURATION_LIST_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_SENSOR_CONFIGURATION_LIST_DELEGATE_H_
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
@@ -26,4 +26,4 @@ class SensorConfigurationListDelegate : public QItemDelegate {
                     const QModelIndex& index) const override;
 };
 
-#endif  // SENSORCONFIGURATIONDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_SENSOR_CONFIGURATION_LIST_DELEGATE_H_

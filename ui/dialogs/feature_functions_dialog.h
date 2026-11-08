@@ -1,5 +1,5 @@
-#ifndef FEATUREFUNCTIONSDIALOG_H
-#define FEATUREFUNCTIONSDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_FEATURE_FUNCTIONS_DIALOG_H_
+#define OI_APP_UI_DIALOGS_FEATURE_FUNCTIONS_DIALOG_H_
 
 #include <QCloseEvent>
 #include <QCompleter>
@@ -126,4 +126,4 @@ class FeatureFunctionsDialog : public QDialog {
   void selectFunctionItem(Row row);
 };
 
-#endif  // FEATUREFUNCTIONSDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_FEATURE_FUNCTIONS_DIALOG_H_

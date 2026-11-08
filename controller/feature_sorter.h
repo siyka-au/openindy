@@ -1,5 +1,5 @@
-#ifndef FEATURESORTER_H
-#define FEATURESORTER_H
+#ifndef OI_APP_CONTROLLER_FEATURE_SORTER_H_
+#define OI_APP_CONTROLLER_FEATURE_SORTER_H_
 
 #include <QPointer>
 
@@ -91,4 +91,4 @@ class OI_MAIN_EXPORT FeatureSorter {
                                        oi::Guarded<FeatureWrapper> right) const;
 };
 
-#endif  // FEATURESORTER_H
+#endif  // OI_APP_CONTROLLER_FEATURE_SORTER_H_

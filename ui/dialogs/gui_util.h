@@ -1,5 +1,5 @@
-#ifndef UIUTIL_H
-#define UIUTIL_H
+#ifndef OI_APP_UI_DIALOGS_GUI_UTIL_H_
+#define OI_APP_UI_DIALOGS_GUI_UTIL_H_
 
 #include <QFont>
 #include <QFontMetrics>
@@ -16,4 +16,4 @@ const int Q_DECL_EXPORT getDropDownMenuSize(QStringList list,
 
 }
 
-#endif  // UIUTIL_H
+#endif  // OI_APP_UI_DIALOGS_GUI_UTIL_H_

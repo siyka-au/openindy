@@ -1,5 +1,5 @@
-#ifndef FUNCTIONTABLEMODEL_H
-#define FUNCTIONTABLEMODEL_H
+#ifndef OI_APP_MODELS_FUNCTION_TABLE_MODEL_H_
+#define OI_APP_MODELS_FUNCTION_TABLE_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QList>
@@ -80,4 +80,4 @@ class FunctionTableModel : public QAbstractTableModel {
   std::vector<sys::Plugin> plugins;
 };
 
-#endif  // FUNCTIONTABLEMODEL_H
+#endif  // OI_APP_MODELS_FUNCTION_TABLE_MODEL_H_

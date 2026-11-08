@@ -1,5 +1,5 @@
-#ifndef QTEXECUTOR_H
-#define QTEXECUTOR_H
+#ifndef OI_APP_CONTROLLER_QT_EXECUTOR_H_
+#define OI_APP_CONTROLLER_QT_EXECUTOR_H_
 
 #include <QObject>
 #include <functional>
@@ -27,4 +27,4 @@ class QtExecutor : public QObject, public oi::Executor {
   void post(std::function<void()> task) override;
 };
 
-#endif  // QTEXECUTOR_H
+#endif  // OI_APP_CONTROLLER_QT_EXECUTOR_H_

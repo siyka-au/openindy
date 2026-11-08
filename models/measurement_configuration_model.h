@@ -1,5 +1,5 @@
-#ifndef MEASUREMENTCONFIGURATIONMODEL_H
-#define MEASUREMENTCONFIGURATIONMODEL_H
+#ifndef OI_APP_MODELS_MEASUREMENT_CONFIGURATION_MODEL_H_
+#define OI_APP_MODELS_MEASUREMENT_CONFIGURATION_MODEL_H_
 
 #include <QAbstractListModel>
 #include <QModelIndex>
@@ -118,4 +118,4 @@ class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel {
   QPointer<MeasurementConfigManager> measurementConfigManager;
 };
 
-#endif  // MEASUREMENTCONFIGURATIONMODEL_H
+#endif  // OI_APP_MODELS_MEASUREMENT_CONFIGURATION_MODEL_H_

@@ -1,5 +1,5 @@
-#ifndef EXPORTDIALOG_H
-#define EXPORTDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_EXPORT_DIALOG_H_
+#define OI_APP_UI_DIALOGS_EXPORT_DIALOG_H_
 
 #include <QDialog>
 #include <QFileDialog>
@@ -53,4 +53,4 @@ class ExportDialog : public QDialog {
   Ui::ExportDialog* ui;
 };
 
-#endif  // EXPORTDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_EXPORT_DIALOG_H_

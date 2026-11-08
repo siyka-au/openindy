@@ -1,5 +1,5 @@
-#ifndef SENSORCONFIGURATIONDIALOG_H
-#define SENSORCONFIGURATIONDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_SENSOR_CONFIGURATION_DIALOG_H_
+#define OI_APP_UI_DIALOGS_SENSOR_CONFIGURATION_DIALOG_H_
 
 #include <QCloseEvent>
 #include <QComboBox>
@@ -148,4 +148,4 @@ class SensorConfigurationDialog : public QDialog {
   QPointer<SensorParametersModel> sensorParametersModel;
 };
 
-#endif  // SENSORCONFIGURATIONDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_SENSOR_CONFIGURATION_DIALOG_H_

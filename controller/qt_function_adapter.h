@@ -1,5 +1,5 @@
-#ifndef QTFUNCTIONADAPTER_H
-#define QTFUNCTIONADAPTER_H
+#ifndef OI_APP_CONTROLLER_QT_FUNCTION_ADAPTER_H_
+#define OI_APP_CONTROLLER_QT_FUNCTION_ADAPTER_H_
 
 #include <QObject>
 #include <QPointer>
@@ -49,4 +49,4 @@ class QtFunctionAdapter : public QObject, public oi::FunctionObserver {
   void onScalarInputParametersChanged() override;
 };
 
-#endif  // QTFUNCTIONADAPTER_H
+#endif  // OI_APP_CONTROLLER_QT_FUNCTION_ADAPTER_H_

@@ -1,5 +1,5 @@
-#ifndef QTSTATIONADAPTER_H
-#define QTSTATIONADAPTER_H
+#ifndef OI_APP_CONTROLLER_QT_STATION_ADAPTER_H_
+#define OI_APP_CONTROLLER_QT_STATION_ADAPTER_H_
 
 #include <QList>
 #include <QMap>
@@ -94,4 +94,4 @@ class QtStationAdapter : public QObject, public oi::StationObserver {
   void onSensorStatus(oi::SensorStatus status, const std::string& msg) override;
 };
 
-#endif  // QTSTATIONADAPTER_H
+#endif  // OI_APP_CONTROLLER_QT_STATION_ADAPTER_H_

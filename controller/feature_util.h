@@ -1,5 +1,5 @@
-#ifndef FEATUREUTIL_H
-#define FEATUREUTIL_H
+#ifndef OI_APP_CONTROLLER_FEATURE_UTIL_H_
+#define OI_APP_CONTROLLER_FEATURE_UTIL_H_
 
 #include <QList>
 #include <QPointer>
@@ -16,4 +16,4 @@ class FeatureUtil {
   bool createInitialBundleTransformation(oi::Guarded<OiJob> job);
 };
 
-#endif  // FEATUREUTIL_H
+#endif  // OI_APP_CONTROLLER_FEATURE_UTIL_H_

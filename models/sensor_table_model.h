@@ -1,5 +1,5 @@
-#ifndef SENSORTABLEMODEL_H
-#define SENSORTABLEMODEL_H
+#ifndef OI_APP_MODELS_SENSOR_TABLE_MODEL_H_
+#define OI_APP_MODELS_SENSOR_TABLE_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QList>
@@ -112,4 +112,4 @@ class SensorTableModel : public QAbstractTableModel {
   QPair<QString, QString> selectedSensor;  // first=plugin, second=sensor
 };
 
-#endif  // SENSORTABLEMODEL_H
+#endif  // OI_APP_MODELS_SENSOR_TABLE_MODEL_H_

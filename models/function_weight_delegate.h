@@ -1,5 +1,5 @@
-#ifndef FUNCTIONWEIGHTDELEGATE_H
-#define FUNCTIONWEIGHTDELEGATE_H
+#ifndef OI_APP_MODELS_FUNCTION_WEIGHT_DELEGATE_H_
+#define OI_APP_MODELS_FUNCTION_WEIGHT_DELEGATE_H_
 
 #include <QAbstractTableModel>
 #include <QCheckBox>
@@ -22,4 +22,4 @@ class FunctionWeightDelegate : public QItemDelegate {
                     const QModelIndex& index) const override;
 };
 
-#endif  // FUNCTIONWEIGHTDELEGATE_H
+#endif  // OI_APP_MODELS_FUNCTION_WEIGHT_DELEGATE_H_

@@ -1,5 +1,5 @@
-#ifndef CONFIGFILE_H
-#define CONFIGFILE_H
+#ifndef OI_APP_CONTROLLER_CONFIG_CONFIG_FILE_H_
+#define OI_APP_CONTROLLER_CONFIG_CONFIG_FILE_H_
 
 // Reading and writing the JSON config files (see config_codec.h for the
 // format). Header-only so the config managers share one implementation.
@@ -45,4 +45,4 @@ inline std::optional<oi::SensorConfiguration> readSensorConfiguration(
 
 }  // namespace configfile
 
-#endif  // CONFIGFILE_H
+#endif  // OI_APP_CONTROLLER_CONFIG_CONFIG_FILE_H_

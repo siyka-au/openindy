@@ -1,5 +1,5 @@
-#ifndef PLUGINMANAGER_H
-#define PLUGINMANAGER_H
+#ifndef OI_APP_CONTROLLER_PLUGIN_MANAGER_H_
+#define OI_APP_CONTROLLER_PLUGIN_MANAGER_H_
 
 #include <QApplication>
 #include <QDir>
@@ -134,4 +134,4 @@ class PluginManager : public QObject {
   static QThread copierThread;
 };
 
-#endif  // PLUGINMANAGER_H
+#endif  // OI_APP_CONTROLLER_PLUGIN_MANAGER_H_

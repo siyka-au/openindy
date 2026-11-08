@@ -1,5 +1,5 @@
-#ifndef PLUGININFOWIDGET_H
-#define PLUGININFOWIDGET_H
+#ifndef OI_APP_UI_WIDGETS_PLUGIN_INFO_WIDGET_H_
+#define OI_APP_UI_WIDGETS_PLUGIN_INFO_WIDGET_H_
 
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -64,4 +64,4 @@ class PluginInfoWidget : public QWidget {
   void clearLayout(QLayout* layout);
 };
 
-#endif  // PLUGININFOWIDGET_H
+#endif  // OI_APP_UI_WIDGETS_PLUGIN_INFO_WIDGET_H_

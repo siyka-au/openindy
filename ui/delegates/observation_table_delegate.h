@@ -1,5 +1,5 @@
-#ifndef OBSERVATIONTABLEDELEGATE_H
-#define OBSERVATIONTABLEDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_OBSERVATION_TABLE_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_OBSERVATION_TABLE_DELEGATE_H_
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
@@ -25,4 +25,4 @@ class ObservationTableDelegate : public QItemDelegate {
                     const QModelIndex& index) const override;
 };
 
-#endif  // OBSERVATIONTABLEDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_OBSERVATION_TABLE_DELEGATE_H_

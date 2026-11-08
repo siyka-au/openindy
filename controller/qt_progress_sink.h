@@ -1,5 +1,5 @@
-#ifndef QTPROGRESSSINK_H
-#define QTPROGRESSSINK_H
+#ifndef OI_APP_CONTROLLER_QT_PROGRESS_SINK_H_
+#define OI_APP_CONTROLLER_QT_PROGRESS_SINK_H_
 
 #include <QObject>
 #include <QString>
@@ -33,4 +33,4 @@ class QtProgressSink : public QObject, public oi::ProgressSink {
   QtExecutor executor;
 };
 
-#endif  // QTPROGRESSSINK_H
+#endif  // OI_APP_CONTROLLER_QT_PROGRESS_SINK_H_

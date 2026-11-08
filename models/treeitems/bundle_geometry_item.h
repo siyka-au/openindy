@@ -1,5 +1,5 @@
-#ifndef BUNDLEGEOMETRYITEM_H
-#define BUNDLEGEOMETRYITEM_H
+#ifndef OI_APP_MODELS_TREEITEMS_BUNDLE_GEOMETRY_ITEM_H_
+#define OI_APP_MODELS_TREEITEMS_BUNDLE_GEOMETRY_ITEM_H_
 
 #include <QVariant>
 #include <vector>
@@ -52,4 +52,4 @@ class BundleGeometryItem {
   BundleGeometryItem* m_parentItem;
 };
 
-#endif  // BUNDLEGEOMETRYITEM_H
+#endif  // OI_APP_MODELS_TREEITEMS_BUNDLE_GEOMETRY_ITEM_H_

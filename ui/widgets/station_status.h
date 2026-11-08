@@ -1,5 +1,5 @@
-#ifndef STATIONSTATUS_H
-#define STATIONSTATUS_H
+#ifndef OI_APP_UI_WIDGETS_STATION_STATUS_H_
+#define OI_APP_UI_WIDGETS_STATION_STATUS_H_
 
 #include <QWidget>
 
@@ -25,4 +25,4 @@ class StationStatus : public QWidget {
   Ui::StationStatus* ui;
 };
 
-#endif  // STATIONSTATUS_H
+#endif  // OI_APP_UI_WIDGETS_STATION_STATUS_H_

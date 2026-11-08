@@ -1,5 +1,5 @@
-#ifndef TRAFOPARAMPROPERTIESDIALOG_H
-#define TRAFOPARAMPROPERTIESDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_TRAFO_PARAM_PROPERTIES_DIALOG_H_
+#define OI_APP_UI_DIALOGS_TRAFO_PARAM_PROPERTIES_DIALOG_H_
 
 #include <QDialog>
 #include <QMap>
@@ -92,4 +92,4 @@ class TrafoParamPropertiesDialog : public QDialog {
   std::map<TrafoParamParameters, QString> parameters;
 };
 
-#endif  // TRAFOPARAMPROPERTIESDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_TRAFO_PARAM_PROPERTIES_DIALOG_H_

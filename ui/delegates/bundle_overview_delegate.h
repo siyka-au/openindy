@@ -1,5 +1,5 @@
-#ifndef BUNDLEOVERVIEWDELEGATE_H
-#define BUNDLEOVERVIEWDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_BUNDLE_OVERVIEW_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_BUNDLE_OVERVIEW_DELEGATE_H_
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
@@ -41,4 +41,4 @@ class BundleOverviewDelegate : public QAbstractItemDelegate {
   atomic<int> minCommonPoints;
 };
 
-#endif  // BUNDLEOVERVIEWDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_BUNDLE_OVERVIEW_DELEGATE_H_

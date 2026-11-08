@@ -1,5 +1,5 @@
-#ifndef FEATURETREEVIEWMODEL_H
-#define FEATURETREEVIEWMODEL_H
+#ifndef OI_APP_MODELS_FEATURE_TREE_VIEW_MODEL_H_
+#define OI_APP_MODELS_FEATURE_TREE_VIEW_MODEL_H_
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -96,4 +96,4 @@ class FeatureTreeViewModel : public QAbstractItemModel {
   QPointer<FeatureTreeItem> rootItem;
 };
 
-#endif  // FEATURETREEVIEWMODEL_H
+#endif  // OI_APP_MODELS_FEATURE_TREE_VIEW_MODEL_H_

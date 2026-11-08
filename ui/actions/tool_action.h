@@ -1,5 +1,5 @@
-#ifndef TOOLACTION_H
-#define TOOLACTION_H
+#ifndef OI_APP_UI_ACTIONS_TOOL_ACTION_H_
+#define OI_APP_UI_ACTIONS_TOOL_ACTION_H_
 
 #include <QAction>
 
@@ -29,4 +29,4 @@ class ToolAction : public QAction {
   void clickCallback();
 };
 
-#endif  // TOOLACTION_H
+#endif  // OI_APP_UI_ACTIONS_TOOL_ACTION_H_

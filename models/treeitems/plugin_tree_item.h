@@ -1,5 +1,5 @@
-#ifndef PLUGINTREEITEM_H
-#define PLUGINTREEITEM_H
+#ifndef OI_APP_MODELS_TREEITEMS_PLUGIN_TREE_ITEM_H_
+#define OI_APP_MODELS_TREEITEMS_PLUGIN_TREE_ITEM_H_
 
 #include <QList>
 #include <QVariant>
@@ -120,4 +120,4 @@ class PluginTreeItem : public QObject {
   sys::Exchange exchange;
 };
 
-#endif  // PLUGINTREEITEM_H
+#endif  // OI_APP_MODELS_TREEITEMS_PLUGIN_TREE_ITEM_H_

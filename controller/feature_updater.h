@@ -1,5 +1,5 @@
-#ifndef FEATUREUPDATER_H
-#define FEATUREUPDATER_H
+#ifndef OI_APP_CONTROLLER_FEATURE_UPDATER_H_
+#define OI_APP_CONTROLLER_FEATURE_UPDATER_H_
 
 #include <QObject>
 #include <QPointer>
@@ -130,4 +130,4 @@ class FeatureUpdater : public QObject {
                         // in the right coordinate system
 };
 
-#endif  // FEATUREUPDATER_H
+#endif  // OI_APP_CONTROLLER_FEATURE_UPDATER_H_

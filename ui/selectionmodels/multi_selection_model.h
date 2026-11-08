@@ -1,5 +1,5 @@
-#ifndef MULTISELECTIONMODEL_H
-#define MULTISELECTIONMODEL_H
+#ifndef OI_APP_UI_SELECTIONMODELS_MULTI_SELECTION_MODEL_H_
+#define OI_APP_UI_SELECTIONMODELS_MULTI_SELECTION_MODEL_H_
 
 #include <QAbstractItemModel>
 #include <QDebug>
@@ -22,4 +22,4 @@ class MultiSelectionModel : public QItemSelectionModel {
   bool checkIndex(const QModelIndex& index, const QItemSelection& selection);
 };
 
-#endif  // MULTISELECTIONMODEL_H
+#endif  // OI_APP_UI_SELECTIONMODELS_MULTI_SELECTION_MODEL_H_

@@ -1,5 +1,5 @@
-#ifndef TRAFOPARAMTABLEPROXYMODEL_H
-#define TRAFOPARAMTABLEPROXYMODEL_H
+#ifndef OI_APP_MODELS_TRAFO_PARAM_TABLE_PROXY_MODEL_H_
+#define OI_APP_MODELS_TRAFO_PARAM_TABLE_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -70,4 +70,4 @@ class TrafoParamTableProxyModel : public QSortFilterProxyModel {
       const oi::Guarded<TrafoParam>& param) const;
 };
 
-#endif  // TRAFOPARAMTABLEPROXYMODEL_H
+#endif  // OI_APP_MODELS_TRAFO_PARAM_TABLE_PROXY_MODEL_H_

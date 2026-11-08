@@ -1,5 +1,5 @@
-#ifndef USEDELEMENTSMODEL_H
-#define USEDELEMENTSMODEL_H
+#ifndef OI_APP_MODELS_USED_ELEMENTS_MODEL_H_
+#define OI_APP_MODELS_USED_ELEMENTS_MODEL_H_
 
 #include <QAbstractListModel>
 #include <QList>
@@ -112,4 +112,4 @@ class UsedElementsModel : public QAbstractListModel {
   oi::Guarded<Function> connectedFunction;
 };
 
-#endif  // USEDELEMENTSMODEL_H
+#endif  // OI_APP_MODELS_USED_ELEMENTS_MODEL_H_

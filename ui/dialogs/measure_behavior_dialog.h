@@ -1,5 +1,5 @@
-#ifndef MEASUREBEHAVIORDIALOG_H
-#define MEASUREBEHAVIORDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_MEASURE_BEHAVIOR_DIALOG_H_
+#define OI_APP_UI_DIALOGS_MEASURE_BEHAVIOR_DIALOG_H_
 
 #include <QDialog>
 
@@ -31,4 +31,4 @@ class MeasureBehaviorDialog : public QDialog {
   void clicked(Decision decision);
 };
 
-#endif  // MEASUREBEHAVIORDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_MEASURE_BEHAVIOR_DIALOG_H_

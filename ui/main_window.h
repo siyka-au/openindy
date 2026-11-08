@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef OI_APP_UI_MAIN_WINDOW_H_
+#define OI_APP_UI_MAIN_WINDOW_H_
 
 #include <QClipboard>
 #include <QCloseEvent>
@@ -516,4 +516,4 @@ class OI_MAIN_EXPORT MainWindow : public QMainWindow {
   BundleOverviewDelegate* bundleOverviewDelegate{};
 };
 
-#endif  // MAINWINDOW_H
+#endif  // OI_APP_UI_MAIN_WINDOW_H_

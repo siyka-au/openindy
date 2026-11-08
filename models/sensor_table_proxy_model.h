@@ -1,5 +1,5 @@
-#ifndef SENSORTABLEPROXYMODEL_H
-#define SENSORTABLEPROXYMODEL_H
+#ifndef OI_APP_MODELS_SENSOR_TABLE_PROXY_MODEL_H_
+#define OI_APP_MODELS_SENSOR_TABLE_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -58,4 +58,4 @@ class SensorTableProxyModel : public QSortFilterProxyModel {
   SensorType sensorType;
 };
 
-#endif  // SENSORTABLEPROXYMODEL_H
+#endif  // OI_APP_MODELS_SENSOR_TABLE_PROXY_MODEL_H_

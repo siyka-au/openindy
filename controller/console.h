@@ -1,5 +1,5 @@
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#ifndef OI_APP_CONTROLLER_CONSOLE_H_
+#define OI_APP_CONTROLLER_CONSOLE_H_
 
 #include <QDateTime>
 #include <QFile>
@@ -76,4 +76,4 @@ class Console : public QObject {
   QStringList messageBuffer;
 };
 
-#endif  // CONSOLE_H
+#endif  // OI_APP_CONTROLLER_CONSOLE_H_

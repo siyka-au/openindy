@@ -1,5 +1,5 @@
-#ifndef JOBCONNECT_H
-#define JOBCONNECT_H
+#ifndef OI_APP_CONTROLLER_JOB_CONNECT_H_
+#define OI_APP_CONTROLLER_JOB_CONNECT_H_
 
 #include <QHash>
 #include <QList>
@@ -70,4 +70,4 @@ QMetaObject::Connection connectToJob(
   return c;
 }
 
-#endif  // JOBCONNECT_H
+#endif  // OI_APP_CONTROLLER_JOB_CONNECT_H_

@@ -1,5 +1,5 @@
-#ifndef SHOWLICENSESDIALOG_H
-#define SHOWLICENSESDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_SHOW_LICENSES_DIALOG_H_
+#define OI_APP_UI_DIALOGS_SHOW_LICENSES_DIALOG_H_
 
 #include <QDebug>
 #include <QDialog>
@@ -29,4 +29,4 @@ class ShowLicensesDialog : public QDialog {
   QStandardItemModel model;
 };
 
-#endif  // SHOWLICENSESDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_SHOW_LICENSES_DIALOG_H_

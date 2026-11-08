@@ -1,5 +1,5 @@
-#ifndef STATIONPROPERTIESDIALOG_H
-#define STATIONPROPERTIESDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_STATION_PROPERTIES_DIALOG_H_
+#define OI_APP_UI_DIALOGS_STATION_PROPERTIES_DIALOG_H_
 
 #include <QAbstractButton>
 #include <QAbstractItemView>
@@ -114,4 +114,4 @@ class StationPropertiesDialog : public QDialog {
   ClipBoardUtil clipBoardUtil;
 };
 
-#endif  // STATIONPROPERTIESDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_STATION_PROPERTIES_DIALOG_H_

@@ -1,5 +1,5 @@
-#ifndef SENSORTASKINFODIALOG_H
-#define SENSORTASKINFODIALOG_H
+#ifndef OI_APP_UI_DIALOGS_SENSOR_TASK_INFO_DIALOG_H_
+#define OI_APP_UI_DIALOGS_SENSOR_TASK_INFO_DIALOG_H_
 
 #include <QDialog>
 #include <QShowEvent>
@@ -46,4 +46,4 @@ class SensorTaskInfoDialog : public QDialog {
   Ui::SensorTaskInfoDialog* ui;
 };
 
-#endif  // SENSORTASKINFODIALOG_H
+#endif  // OI_APP_UI_DIALOGS_SENSOR_TASK_INFO_DIALOG_H_

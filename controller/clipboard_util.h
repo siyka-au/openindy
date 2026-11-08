@@ -1,5 +1,5 @@
-#ifndef CLIPBOARDUTIL_H
-#define CLIPBOARDUTIL_H
+#ifndef OI_APP_CONTROLLER_CLIPBOARD_UTIL_H_
+#define OI_APP_CONTROLLER_CLIPBOARD_UTIL_H_
 
 #include <QApplication>
 #include <QClipboard>
@@ -32,4 +32,4 @@ class ClipBoardUtil : public QObject {
                        MessageDestinations::eConsoleMessage) const;
 };
 
-#endif  // CLIPBOARDUTIL_H
+#endif  // OI_APP_CONTROLLER_CLIPBOARD_UTIL_H_

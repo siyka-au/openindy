@@ -1,5 +1,5 @@
-#ifndef MEASUREBEHAVIORLOGIC_H
-#define MEASUREBEHAVIORLOGIC_H
+#ifndef OI_APP_CONTROLLER_MEASURE_BEHAVIOR_LOGIC_H_
+#define OI_APP_CONTROLLER_MEASURE_BEHAVIOR_LOGIC_H_
 
 #include <QList>
 #include <QObject>
@@ -65,4 +65,4 @@ class OI_MAIN_EXPORT MeasureBehaviorLogic : public QObject {
   Decision decision;
 };
 
-#endif  // MEASUREBEHAVIORLOGIC_H
+#endif  // OI_APP_CONTROLLER_MEASURE_BEHAVIOR_LOGIC_H_

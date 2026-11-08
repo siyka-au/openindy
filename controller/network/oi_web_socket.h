@@ -1,5 +1,5 @@
-#ifndef OIWEBSOCKET_H
-#define OIWEBSOCKET_H
+#ifndef OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_H_
+#define OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_H_
 
 #include <QObject>
 #include <QPointer>
@@ -78,4 +78,4 @@ class OiWebSocket : public QObject {
   int internalRef;
 };
 
-#endif  // OIWEBSOCKET_H
+#endif  // OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_H_

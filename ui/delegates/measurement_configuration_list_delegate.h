@@ -1,5 +1,5 @@
-#ifndef MEASUREMENTCONFIGURATIONDELEGATE_H
-#define MEASUREMENTCONFIGURATIONDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_MEASUREMENT_CONFIGURATION_LIST_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_MEASUREMENT_CONFIGURATION_LIST_DELEGATE_H_
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
@@ -26,4 +26,4 @@ class MeasurementConfigurationListDelegate : public QItemDelegate {
                     const QModelIndex& index) const override;
 };
 
-#endif  // MEASUREMENTCONFIGURATIONDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_MEASUREMENT_CONFIGURATION_LIST_DELEGATE_H_

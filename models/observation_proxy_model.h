@@ -1,5 +1,5 @@
-#ifndef OBSERVATIONPROXYMODEL_H
-#define OBSERVATIONPROXYMODEL_H
+#ifndef OI_APP_MODELS_OBSERVATION_PROXY_MODEL_H_
+#define OI_APP_MODELS_OBSERVATION_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -58,4 +58,4 @@ class ObservationProxyModel : public QSortFilterProxyModel {
   ObservationTableColumnConfig observationTableColumnConfig;
 };
 
-#endif  // OBSERVATIONPROXYMODEL_H
+#endif  // OI_APP_MODELS_OBSERVATION_PROXY_MODEL_H_

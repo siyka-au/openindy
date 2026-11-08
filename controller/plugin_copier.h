@@ -1,5 +1,5 @@
-#ifndef PLUGINCOPIER_H
-#define PLUGINCOPIER_H
+#ifndef OI_APP_CONTROLLER_PLUGIN_COPIER_H_
+#define OI_APP_CONTROLLER_PLUGIN_COPIER_H_
 
 #include <QApplication>
 #include <QDir>
@@ -63,4 +63,4 @@ class PluginCopier : public QObject {
                          const PluginMetaData& metaData);
 };
 
-#endif  // PLUGINCOPIER_H
+#endif  // OI_APP_CONTROLLER_PLUGIN_COPIER_H_

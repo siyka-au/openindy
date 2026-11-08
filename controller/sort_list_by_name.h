@@ -1,5 +1,5 @@
-#ifndef SORTLISTBYNAME_H
-#define SORTLISTBYNAME_H
+#ifndef OI_APP_CONTROLLER_SORT_LIST_BY_NAME_H_
+#define OI_APP_CONTROLLER_SORT_LIST_BY_NAME_H_
 
 #include <QPointer>
 #include <QtCore>
@@ -76,4 +76,4 @@ class SortListByName {
   std::map<std::string, LocRefBool> scalarEntityAngle;
 };
 
-#endif  // SORTLISTBYNAME_H
+#endif  // OI_APP_CONTROLLER_SORT_LIST_BY_NAME_H_

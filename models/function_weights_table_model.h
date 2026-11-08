@@ -1,5 +1,5 @@
-#ifndef FUNCTIONWEIGHTSTABLEMODEL_H
-#define FUNCTIONWEIGHTSTABLEMODEL_H
+#ifndef OI_APP_MODELS_FUNCTION_WEIGHTS_TABLE_MODEL_H_
+#define OI_APP_MODELS_FUNCTION_WEIGHTS_TABLE_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QList>
@@ -66,4 +66,4 @@ class FunctionWeightsTableModel : public QAbstractTableModel {
   void featureFunctionChanged();
 };
 
-#endif  // FUNCTIONWEIGHTSTABLEMODEL_H
+#endif  // OI_APP_MODELS_FUNCTION_WEIGHTS_TABLE_MODEL_H_

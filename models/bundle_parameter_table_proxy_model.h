@@ -1,5 +1,5 @@
-#ifndef BUNDLEPARAMETERTABLEPROXYMODEL_H
-#define BUNDLEPARAMETERTABLEPROXYMODEL_H
+#ifndef OI_APP_MODELS_BUNDLE_PARAMETER_TABLE_PROXY_MODEL_H_
+#define OI_APP_MODELS_BUNDLE_PARAMETER_TABLE_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -63,4 +63,4 @@ class BundleParameterTableProxyModel : public QSortFilterProxyModel {
       const oi::Guarded<TrafoParam>& param) const;
 };
 
-#endif  // BUNDLEPARAMETERTABLEPROXYMODEL_H
+#endif  // OI_APP_MODELS_BUNDLE_PARAMETER_TABLE_PROXY_MODEL_H_

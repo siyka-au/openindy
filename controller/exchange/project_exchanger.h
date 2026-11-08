@@ -1,5 +1,5 @@
-#ifndef OIPROJECTEXCHANGER_H
-#define OIPROJECTEXCHANGER_H
+#ifndef OI_APP_CONTROLLER_EXCHANGE_PROJECT_EXCHANGER_H_
+#define OI_APP_CONTROLLER_EXCHANGE_PROJECT_EXCHANGER_H_
 
 #include <QByteArray>
 #include <QPointer>
@@ -40,4 +40,4 @@ class ProjectExchanger {
   QPointer<MeasurementConfigManager> mConfigManager;
 };
 
-#endif  // OIPROJECTEXCHANGER_H
+#endif  // OI_APP_CONTROLLER_EXCHANGE_PROJECT_EXCHANGER_H_

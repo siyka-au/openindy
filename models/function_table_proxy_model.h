@@ -1,5 +1,5 @@
-#ifndef FUNCTIONTABLEPROXYMODEL_H
-#define FUNCTIONTABLEPROXYMODEL_H
+#ifndef OI_APP_MODELS_FUNCTION_TABLE_PROXY_MODEL_H_
+#define OI_APP_MODELS_FUNCTION_TABLE_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -79,4 +79,4 @@ class FunctionTableProxyModel : public QSortFilterProxyModel {
   oi::Guarded<OiJob> currentJob;
 };
 
-#endif  // FUNCTIONTABLEPROXYMODEL_H
+#endif  // OI_APP_MODELS_FUNCTION_TABLE_PROXY_MODEL_H_

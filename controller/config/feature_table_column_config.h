@@ -1,5 +1,5 @@
-#ifndef FEATURETABLECOLUMNCONFIG_H
-#define FEATURETABLECOLUMNCONFIG_H
+#ifndef OI_APP_CONTROLLER_CONFIG_FEATURE_TABLE_COLUMN_CONFIG_H_
+#define OI_APP_CONTROLLER_CONFIG_FEATURE_TABLE_COLUMN_CONFIG_H_
 
 #include <QList>
 #include <vector>
@@ -37,4 +37,4 @@ class FeatureTableColumnConfig {
   std::vector<FeatureDisplayAttributes> displayColumns;
 };
 
-#endif  // FEATURETABLECOLUMNCONFIG_H
+#endif  // OI_APP_CONTROLLER_CONFIG_FEATURE_TABLE_COLUMN_CONFIG_H_

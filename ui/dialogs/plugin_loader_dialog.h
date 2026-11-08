@@ -1,5 +1,5 @@
-#ifndef PLUGINLOADERDIALOG_H
-#define PLUGINLOADERDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_PLUGIN_LOADER_DIALOG_H_
+#define OI_APP_UI_DIALOGS_PLUGIN_LOADER_DIALOG_H_
 
 #include <QDialog>
 #include <QFile>
@@ -56,4 +56,4 @@ class PluginLoaderDialog : public QDialog {
   Ui::PluginLoaderDialog* ui;
 };
 
-#endif  // PLUGINLOADERDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_PLUGIN_LOADER_DIALOG_H_

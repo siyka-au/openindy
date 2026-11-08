@@ -1,5 +1,5 @@
-#ifndef FEATURETABLEPROXYMODEL_H
-#define FEATURETABLEPROXYMODEL_H
+#ifndef OI_APP_MODELS_FEATURE_TABLE_PROXY_MODEL_H_
+#define OI_APP_MODELS_FEATURE_TABLE_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -85,4 +85,4 @@ class FeatureTableProxyModel : public QSortFilterProxyModel {
   FeatureSorter sorter;
 };
 
-#endif  // FEATURETABLEPROXYMODEL_H
+#endif  // OI_APP_MODELS_FEATURE_TABLE_PROXY_MODEL_H_

@@ -1,5 +1,5 @@
-#ifndef OIWEBSOCKETSTREAMER_H
-#define OIWEBSOCKETSTREAMER_H
+#ifndef OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_STREAMER_H_
+#define OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_STREAMER_H_
 
 #include <QObject>
 #include <QPointer>
@@ -46,4 +46,4 @@ class OiWebSocketStreamer : public QObject {
  private slots:
 };
 
-#endif  // OIWEBSOCKETSTREAMER_H
+#endif  // OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_STREAMER_H_

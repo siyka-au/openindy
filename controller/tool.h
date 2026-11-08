@@ -1,5 +1,5 @@
-#ifndef TOOL_H
-#define TOOL_H
+#ifndef OI_APP_CONTROLLER_TOOL_H_
+#define OI_APP_CONTROLLER_TOOL_H_
 
 #include <QCloseEvent>
 #include <QList>
@@ -141,4 +141,4 @@ class ToolPlugin {
 
 Q_DECLARE_INTERFACE(oi::ToolPlugin, Tool_iidd)
 
-#endif  // TOOL_H
+#endif  // OI_APP_CONTROLLER_TOOL_H_

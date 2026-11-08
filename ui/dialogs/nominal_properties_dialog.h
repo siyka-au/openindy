@@ -1,5 +1,5 @@
-#ifndef NOMINALPROPERTIESDIALOG_H
-#define NOMINALPROPERTIESDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_NOMINAL_PROPERTIES_DIALOG_H_
+#define OI_APP_UI_DIALOGS_NOMINAL_PROPERTIES_DIALOG_H_
 
 #include <QDialog>
 #include <QMap>
@@ -98,4 +98,4 @@ class NominalPropertiesDialog : public QDialog {
   std::map<GeometryParameters, QString> parameters;
 };
 
-#endif  // NOMINALPROPERTIESDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_NOMINAL_PROPERTIES_DIALOG_H_

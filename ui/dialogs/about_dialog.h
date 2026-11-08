@@ -1,5 +1,5 @@
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_ABOUT_DIALOG_H_
+#define OI_APP_UI_DIALOGS_ABOUT_DIALOG_H_
 
 #ifndef OPENINDY_BUILD
 #define OPENINDY_BUILD -1
@@ -28,4 +28,4 @@ class AboutDialog : public QDialog {
   Ui::AboutDialog* ui;
 };
 
-#endif  // ABOUTDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_ABOUT_DIALOG_H_

@@ -1,5 +1,5 @@
-#ifndef FEATURETREEITEM_H
-#define FEATURETREEITEM_H
+#ifndef OI_APP_MODELS_TREEITEMS_FEATURE_TREE_ITEM_H_
+#define OI_APP_MODELS_TREEITEMS_FEATURE_TREE_ITEM_H_
 
 #include <QList>
 #include <QObject>
@@ -129,4 +129,4 @@ class FeatureTreeItem : public QObject {
   QVariant displayValue;
 };
 
-#endif  // FEATURETREEITEM_H
+#endif  // OI_APP_MODELS_TREEITEMS_FEATURE_TREE_ITEM_H_

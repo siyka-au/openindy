@@ -1,5 +1,5 @@
-#ifndef OIDATAEXCHANGER_H
-#define OIDATAEXCHANGER_H
+#ifndef OI_APP_CONTROLLER_EXCHANGE_DATA_EXCHANGER_H_
+#define OI_APP_CONTROLLER_EXCHANGE_DATA_EXCHANGER_H_
 
 #include <QApplication>
 #include <QObject>
@@ -172,4 +172,4 @@ class DataExchanger : public QObject,
   void createActuals(std::vector<oi::Guarded<FeatureWrapper> > features);
 };
 
-#endif  // OIDATAEXCHANGER_H
+#endif  // OI_APP_CONTROLLER_EXCHANGE_DATA_EXCHANGER_H_

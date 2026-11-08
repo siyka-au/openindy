@@ -1,5 +1,5 @@
-#ifndef PLUGINTREEVIEWMODEL_H
-#define PLUGINTREEVIEWMODEL_H
+#ifndef OI_APP_MODELS_PLUGIN_TREE_VIEW_MODEL_H_
+#define OI_APP_MODELS_PLUGIN_TREE_VIEW_MODEL_H_
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -72,4 +72,4 @@ class PluginTreeViewModel : public QAbstractItemModel {
   PluginTreeItem* rootItem;
 };
 
-#endif  // PLUGINTREEVIEWMODEL_H
+#endif  // OI_APP_MODELS_PLUGIN_TREE_VIEW_MODEL_H_

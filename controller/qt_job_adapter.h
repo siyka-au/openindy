@@ -1,5 +1,5 @@
-#ifndef QTJOBADAPTER_H
-#define QTJOBADAPTER_H
+#ifndef OI_APP_CONTROLLER_QT_JOB_ADAPTER_H_
+#define OI_APP_CONTROLLER_QT_JOB_ADAPTER_H_
 
 #include <QObject>
 #include <QPointer>
@@ -139,4 +139,4 @@ class QtJobAdapter : public QObject, public oi::JobObserver {
   QtJobAdapter() = default;
 };
 
-#endif  // QTJOBADAPTER_H
+#endif  // OI_APP_CONTROLLER_QT_JOB_ADAPTER_H_

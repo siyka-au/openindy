@@ -1,5 +1,5 @@
-#ifndef SENSORCONFIGURATIONPROXYMODEL_H
-#define SENSORCONFIGURATIONPROXYMODEL_H
+#ifndef OI_APP_MODELS_SENSOR_CONFIGURATION_PROXY_MODEL_H_
+#define OI_APP_MODELS_SENSOR_CONFIGURATION_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -58,4 +58,4 @@ class SensorConfigurationProxyModel : public QSortFilterProxyModel {
   bool showAll;
 };
 
-#endif  // SENSORCONFIGURATIONPROXYMODEL_H
+#endif  // OI_APP_MODELS_SENSOR_CONFIGURATION_PROXY_MODEL_H_

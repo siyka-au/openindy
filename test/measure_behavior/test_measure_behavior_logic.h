@@ -1,5 +1,5 @@
-#ifndef TESTMEASUREBEHAVIORLOGIC_H
-#define TESTMEASUREBEHAVIORLOGIC_H
+#ifndef OI_APP_TEST_MEASURE_BEHAVIOR_TEST_MEASURE_BEHAVIOR_LOGIC_H_
+#define OI_APP_TEST_MEASURE_BEHAVIOR_TEST_MEASURE_BEHAVIOR_LOGIC_H_
 
 #include <vector>
 
@@ -17,4 +17,4 @@ class TestMeasureBehaviorLogic : public MeasureBehaviorLogic {
   void setActiveFeature(FeatureTableModel* sourceModel, int featureId);
 };
 
-#endif  // TESTMEASUREBEHAVIORLOGIC_H
+#endif  // OI_APP_TEST_MEASURE_BEHAVIOR_TEST_MEASURE_BEHAVIOR_LOGIC_H_

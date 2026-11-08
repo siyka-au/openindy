@@ -1,5 +1,5 @@
-#ifndef FUNCTIONSTATISTICMODEL_H
-#define FUNCTIONSTATISTICMODEL_H
+#ifndef OI_APP_MODELS_FUNCTION_STATISTIC_MODEL_H_
+#define OI_APP_MODELS_FUNCTION_STATISTIC_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QPointer>
@@ -81,4 +81,4 @@ class FunctionStatisticModel : public QAbstractTableModel {
   ParameterDisplayConfig parameterDisplayConfig;
 };
 
-#endif  // FUNCTIONSTATISTICMODEL_H
+#endif  // OI_APP_MODELS_FUNCTION_STATISTIC_MODEL_H_

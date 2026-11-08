@@ -1,5 +1,5 @@
-#ifndef WATCHWINDOWUTIL_H
-#define WATCHWINDOWUTIL_H
+#ifndef OI_APP_UI_DIALOGS_WATCH_WINDOW_UTIL_H_
+#define OI_APP_UI_DIALOGS_WATCH_WINDOW_UTIL_H_
 
 #include <QtCore>
 
@@ -32,4 +32,4 @@ class OI_MAIN_EXPORT WatchWindowUtil {
   Result getPosition(oi::Guarded<FeatureWrapper> feature, OiVec trackerXYZ);
 };
 }  // namespace oi
-#endif  // WATCHWINDOWUTIL_H
+#endif  // OI_APP_UI_DIALOGS_WATCH_WINDOW_UTIL_H_

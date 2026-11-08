@@ -1,5 +1,5 @@
-#ifndef IMPORTNOMINALGEOMETRYDIALOG_H
-#define IMPORTNOMINALGEOMETRYDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_IMPORT_NOMINAL_DIALOG_H_
+#define OI_APP_UI_DIALOGS_IMPORT_NOMINAL_DIALOG_H_
 
 #include <QDialog>
 #include <QFileDialog>
@@ -64,4 +64,4 @@ class ImportNominalDialog : public QDialog {
   Ui::ImportNominalDialog* ui;
 };
 
-#endif  // IMPORTNOMINALGEOMETRYDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_IMPORT_NOMINAL_DIALOG_H_

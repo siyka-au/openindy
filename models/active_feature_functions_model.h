@@ -1,5 +1,5 @@
-#ifndef ACTIVEFEATUREFUNCTIONSMODEL_H
-#define ACTIVEFEATUREFUNCTIONSMODEL_H
+#ifndef OI_APP_MODELS_ACTIVE_FEATURE_FUNCTIONS_MODEL_H_
+#define OI_APP_MODELS_ACTIVE_FEATURE_FUNCTIONS_MODEL_H_
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -141,4 +141,4 @@ class ActiveFeatureFunctionsModel : public QAbstractItemModel {
   QPointer<FunctionTreeItem> rootItem;
 };
 
-#endif  // ACTIVEFEATUREFUNCTIONSMODEL_H
+#endif  // OI_APP_MODELS_ACTIVE_FEATURE_FUNCTIONS_MODEL_H_

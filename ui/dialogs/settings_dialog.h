@@ -1,5 +1,5 @@
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_SETTINGS_DIALOG_H_
+#define OI_APP_UI_DIALOGS_SETTINGS_DIALOG_H_
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -67,4 +67,4 @@ class SettingsDialog : public QDialog {
   void on_lineEdit_temperatureDigits_textChanged(const QString& arg1);
 };
 
-#endif  // SETTINGSDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_SETTINGS_DIALOG_H_

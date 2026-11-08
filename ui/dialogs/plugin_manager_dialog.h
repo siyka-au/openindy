@@ -1,5 +1,5 @@
-#ifndef PLUGINMANAGERDIALOG_H
-#define PLUGINMANAGERDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_PLUGIN_MANAGER_DIALOG_H_
+#define OI_APP_UI_DIALOGS_PLUGIN_MANAGER_DIALOG_H_
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -120,4 +120,4 @@ private:
   PluginInfoWidget *myPluginInformation;*/
 };
 
-#endif  // PLUGINMANAGERDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_PLUGIN_MANAGER_DIALOG_H_

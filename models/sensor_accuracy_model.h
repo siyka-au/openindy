@@ -1,5 +1,5 @@
-#ifndef SENSORACCURACYMODEL_H
-#define SENSORACCURACYMODEL_H
+#ifndef OI_APP_MODELS_SENSOR_ACCURACY_MODEL_H_
+#define OI_APP_MODELS_SENSOR_ACCURACY_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QColor>
@@ -92,4 +92,4 @@ class SensorAccuracyModel : public QAbstractTableModel {
   ParameterDisplayConfig parameterDisplayConfig;
 };
 
-#endif  // SENSORACCURACYMODEL_H
+#endif  // OI_APP_MODELS_SENSOR_ACCURACY_MODEL_H_

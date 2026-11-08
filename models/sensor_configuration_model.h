@@ -1,5 +1,5 @@
-#ifndef SENSORCONFIGURATIONMODEL_H
-#define SENSORCONFIGURATIONMODEL_H
+#ifndef OI_APP_MODELS_SENSOR_CONFIGURATION_MODEL_H_
+#define OI_APP_MODELS_SENSOR_CONFIGURATION_MODEL_H_
 
 #include <QAbstractListModel>
 #include <QModelIndex>
@@ -99,4 +99,4 @@ class SensorConfigurationModel : public QAbstractListModel {
   SensorConfigurationManager sensorConfigManager;
 };
 
-#endif  // SENSORCONFIGURATIONMODEL_H
+#endif  // OI_APP_MODELS_SENSOR_CONFIGURATION_MODEL_H_

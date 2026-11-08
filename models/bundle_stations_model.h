@@ -1,5 +1,5 @@
-#ifndef BUNDLESTATIONSMODEL_H
-#define BUNDLESTATIONSMODEL_H
+#ifndef OI_APP_MODELS_BUNDLE_STATIONS_MODEL_H_
+#define OI_APP_MODELS_BUNDLE_STATIONS_MODEL_H_
 
 #include <QAbstractItemModel>
 #include <QAbstractTableModel>
@@ -100,4 +100,4 @@ class BundleStationsModel : public QAbstractItemModel {
   QJsonArray usedStations;
 };
 
-#endif  // BUNDLESTATIONSMODEL_H
+#endif  // OI_APP_MODELS_BUNDLE_STATIONS_MODEL_H_

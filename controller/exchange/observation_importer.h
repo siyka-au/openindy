@@ -1,5 +1,5 @@
-#ifndef OBSERVATIONIMPORTER_H
-#define OBSERVATIONIMPORTER_H
+#ifndef OI_APP_CONTROLLER_EXCHANGE_OBSERVATION_IMPORTER_H_
+#define OI_APP_CONTROLLER_EXCHANGE_OBSERVATION_IMPORTER_H_
 
 #include <QApplication>
 #include <QObject>
@@ -69,4 +69,4 @@ class ObservationImporter : public QObject {
   oi::ProgressSink* progressSink = nullptr;
 };
 
-#endif  // OBSERVATIONIMPORTER_H
+#endif  // OI_APP_CONTROLLER_EXCHANGE_OBSERVATION_IMPORTER_H_

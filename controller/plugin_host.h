@@ -1,5 +1,5 @@
-#ifndef PLUGINHOST_H
-#define PLUGINHOST_H
+#ifndef OI_APP_CONTROLLER_PLUGIN_HOST_H_
+#define OI_APP_CONTROLLER_PLUGIN_HOST_H_
 
 #include <QJsonObject>
 #include <QString>
@@ -47,4 +47,4 @@ class PluginHost {
   static bool readMetaData(const QString& path, oi::PluginMetaData& metaData);
 };
 
-#endif  // PLUGINHOST_H
+#endif  // OI_APP_CONTROLLER_PLUGIN_HOST_H_

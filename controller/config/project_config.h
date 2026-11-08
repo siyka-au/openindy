@@ -1,5 +1,5 @@
-#ifndef PROJECTCONFIG_H
-#define PROJECTCONFIG_H
+#ifndef OI_APP_CONTROLLER_CONFIG_PROJECT_CONFIG_H_
+#define OI_APP_CONTROLLER_CONFIG_PROJECT_CONFIG_H_
 
 #include <QCoreApplication>
 #include <QList>
@@ -78,4 +78,4 @@ class ProjectConfig {
   static std::vector<oi::FeatureDisplayAttributes> displayColumns;
 };
 
-#endif  // PROJECTCONFIG_H
+#endif  // OI_APP_CONTROLLER_CONFIG_PROJECT_CONFIG_H_

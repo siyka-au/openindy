@@ -1,5 +1,5 @@
-#ifndef LOADINGDIALOG_H
-#define LOADINGDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_LOADING_DIALOG_H_
+#define OI_APP_UI_DIALOGS_LOADING_DIALOG_H_
 
 #include <QCloseEvent>
 #include <QDialog>
@@ -41,4 +41,4 @@ class LoadingDialog : public QDialog {
   Ui::LoadingDialog* ui;
 };
 
-#endif  // LOADINGDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_LOADING_DIALOG_H_

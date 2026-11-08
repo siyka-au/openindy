@@ -1,5 +1,5 @@
-#ifndef MOVESENSORDIALOG_H
-#define MOVESENSORDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_MOVE_SENSOR_DIALOG_H_
+#define OI_APP_UI_DIALOGS_MOVE_SENSOR_DIALOG_H_
 
 #include <QDialog>
 #include <QRegularExpression>
@@ -69,4 +69,4 @@ class MoveSensorDialog : public QDialog {
   Ui::MoveSensorDialog* ui;
 };
 
-#endif  // MOVESENSORDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_MOVE_SENSOR_DIALOG_H_

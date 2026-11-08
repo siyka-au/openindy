@@ -1,5 +1,5 @@
-#ifndef WATCHWINDOW_H
-#define WATCHWINDOW_H
+#ifndef OI_APP_UI_DIALOGS_WATCH_WINDOW_DIALOG_H_
+#define OI_APP_UI_DIALOGS_WATCH_WINDOW_DIALOG_H_
 
 #include <QCheckBox>
 #include <QDialog>
@@ -212,4 +212,4 @@ class WatchWindowDialog : public QDialog {
   WatchWindowUtil util;
 };
 
-#endif  // WATCHWINDOW_H
+#endif  // OI_APP_UI_DIALOGS_WATCH_WINDOW_DIALOG_H_

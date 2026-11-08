@@ -1,5 +1,5 @@
-#ifndef FEATUREDIFFERENCETABLEMODEL_H
-#define FEATUREDIFFERENCETABLEMODEL_H
+#ifndef OI_APP_MODELS_FEATURE_DIFFERENCE_TABLE_MODEL_H_
+#define OI_APP_MODELS_FEATURE_DIFFERENCE_TABLE_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QColor>
@@ -99,4 +99,4 @@ class FeatureDifferenceTableModel : public QAbstractTableModel {
   double tolerance;
 };
 
-#endif  // FEATUREDIFFERENCETABLEMODEL_H
+#endif  // OI_APP_MODELS_FEATURE_DIFFERENCE_TABLE_MODEL_H_

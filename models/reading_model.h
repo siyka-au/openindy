@@ -1,5 +1,5 @@
-#ifndef READINGMODEL_H
-#define READINGMODEL_H
+#ifndef OI_APP_MODELS_READING_MODEL_H_
+#define OI_APP_MODELS_READING_MODEL_H_
 
 #include <QAbstractTableModel>
 
@@ -92,4 +92,4 @@ class ReadingModel : public QAbstractTableModel {
   ParameterDisplayConfig parameterDisplayConfig;
 };
 
-#endif  // READINGMODEL_H
+#endif  // OI_APP_MODELS_READING_MODEL_H_

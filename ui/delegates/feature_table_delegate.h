@@ -1,5 +1,5 @@
-#ifndef FEATURETABLEDELEGATE_H
-#define FEATURETABLEDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_FEATURE_TABLE_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_FEATURE_TABLE_DELEGATE_H_
 
 #include <QAbstractTableModel>
 #include <QCheckBox>
@@ -30,4 +30,4 @@ class FeatureTableDelegate : public QItemDelegate {
       const FeatureTableProxyModel* featureTablePM) const;
 };
 
-#endif  // FEATURETABLEDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_FEATURE_TABLE_DELEGATE_H_

@@ -1,5 +1,5 @@
-#ifndef SENSORPARAMETERSDELEGATE_H
-#define SENSORPARAMETERSDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_SENSOR_PARAMETERS_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_SENSOR_PARAMETERS_DELEGATE_H_
 
 #include <QAbstractTableModel>
 #include <QItemDelegate>
@@ -24,4 +24,4 @@ class SensorParametersDelegate : public QItemDelegate {
                     const QModelIndex& index) const override;
 };
 
-#endif  // SENSORPARAMETERSDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_SENSOR_PARAMETERS_DELEGATE_H_

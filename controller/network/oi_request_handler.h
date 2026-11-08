@@ -1,5 +1,5 @@
-#ifndef OIREQUESTHANDLER_H
-#define OIREQUESTHANDLER_H
+#ifndef OI_APP_CONTROLLER_NETWORK_OI_REQUEST_HANDLER_H_
+#define OI_APP_CONTROLLER_NETWORK_OI_REQUEST_HANDLER_H_
 
 #include <QMap>
 #include <QObject>
@@ -208,4 +208,4 @@ class OiRequestHandler : public QObject {
   WatchWindowTask watchWindowTask;
 };
 
-#endif  // OIREQUESTHANDLER_H
+#endif  // OI_APP_CONTROLLER_NETWORK_OI_REQUEST_HANDLER_H_

@@ -1,5 +1,5 @@
-#ifndef TRAFOPARAMDELEGATE_H
-#define TRAFOPARAMDELEGATE_H
+#ifndef OI_APP_UI_DELEGATES_TRAFO_PARAM_TABLE_DELEGATE_H_
+#define OI_APP_UI_DELEGATES_TRAFO_PARAM_TABLE_DELEGATE_H_
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -22,4 +22,4 @@ class TrafoParamDelegate : public QItemDelegate {
                     const QModelIndex& index) const override;
 };
 
-#endif  // TRAFOPARAMDELEGATE_H
+#endif  // OI_APP_UI_DELEGATES_TRAFO_PARAM_TABLE_DELEGATE_H_

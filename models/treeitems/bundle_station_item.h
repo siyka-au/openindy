@@ -1,5 +1,5 @@
-#ifndef BUNDLESTATIONITEM_H
-#define BUNDLESTATIONITEM_H
+#ifndef OI_APP_MODELS_TREEITEMS_BUNDLE_STATION_ITEM_H_
+#define OI_APP_MODELS_TREEITEMS_BUNDLE_STATION_ITEM_H_
 
 #include <QVariant>
 #include <vector>
@@ -61,4 +61,4 @@ class BundleStationItem {
   BundleStationItem* m_parentItem;
 };
 
-#endif  // BUNDLESTATIONITEM_H
+#endif  // OI_APP_MODELS_TREEITEMS_BUNDLE_STATION_ITEM_H_

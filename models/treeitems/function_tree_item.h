@@ -1,5 +1,5 @@
-#ifndef FUNCTIONTREEITEM_H
-#define FUNCTIONTREEITEM_H
+#ifndef OI_APP_MODELS_TREEITEMS_FUNCTION_TREE_ITEM_H_
+#define OI_APP_MODELS_TREEITEMS_FUNCTION_TREE_ITEM_H_
 
 #include <QList>
 #include <QObject>
@@ -65,4 +65,4 @@ class FunctionTreeItem : public QObject {
   QVariant displayValue;
 };
 
-#endif  // FUNCTIONTREEITEM_H
+#endif  // OI_APP_MODELS_TREEITEMS_FUNCTION_TREE_ITEM_H_

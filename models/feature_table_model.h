@@ -1,5 +1,5 @@
-#ifndef FEATURETABLEMODEL_H
-#define FEATURETABLEMODEL_H
+#ifndef OI_APP_MODELS_FEATURE_TABLE_MODEL_H_
+#define OI_APP_MODELS_FEATURE_TABLE_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QColor>
@@ -187,4 +187,4 @@ class FeatureTableModel : public QAbstractTableModel {
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(FeatureTableModel::EditModes)
 
-#endif  // FEATURETABLEMODEL_H
+#endif  // OI_APP_MODELS_FEATURE_TABLE_MODEL_H_

@@ -1,5 +1,5 @@
-#ifndef READINGTABLECOLUMNCONFIG_H
-#define READINGTABLECOLUMNCONFIG_H
+#ifndef OI_APP_CONTROLLER_CONFIG_READING_TABLE_COLUMN_CONFIG_H_
+#define OI_APP_CONTROLLER_CONFIG_READING_TABLE_COLUMN_CONFIG_H_
 
 #include <QList>
 #include <vector>
@@ -32,4 +32,4 @@ class ReadingTableColumnConfig {
   std::vector<ReadingDisplayAttributes> displayColumns;
 };
 
-#endif  // READINGTABLECOLUMNCONFIG_H
+#endif  // OI_APP_CONTROLLER_CONFIG_READING_TABLE_COLUMN_CONFIG_H_

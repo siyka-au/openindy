@@ -1,5 +1,5 @@
-#ifndef OIMETADATA_H
-#define OIMETADATA_H
+#ifndef OI_APP_CONTROLLER_OI_META_DATA_H_
+#define OI_APP_CONTROLLER_OI_META_DATA_H_
 
 #include <QJsonArray>
 #include <QString>
@@ -86,4 +86,4 @@ class OI_MAIN_EXPORT OiMetaData {
   static QString getOperatingSys();
 };
 
-#endif  // OIMETADATA_H
+#endif  // OI_APP_CONTROLLER_OI_META_DATA_H_

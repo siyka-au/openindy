@@ -1,5 +1,5 @@
-#ifndef CREATEFEATUREDIALOG_H
-#define CREATEFEATUREDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_CREATE_FEATURE_DIALOG_H_
+#define OI_APP_UI_DIALOGS_CREATE_FEATURE_DIALOG_H_
 
 #include <QDialog>
 #include <QShowEvent>
@@ -7,9 +7,9 @@
 
 #include "feature_attributes.h"
 #include "feature_wrapper.h"
+#include "gui_util.h"
 #include "model_manager.h"
 #include "settings.h"
-#include "gui_util.h"
 #include "util.h"
 
 #if defined(OI_MAIN_LIB)
@@ -116,4 +116,4 @@ class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog {
   bool created{};
 };
 
-#endif  // CREATEFEATUREDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_CREATE_FEATURE_DIALOG_H_

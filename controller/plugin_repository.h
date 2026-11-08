@@ -1,5 +1,5 @@
-#ifndef PLUGINREPOSITORY_H
-#define PLUGINREPOSITORY_H
+#ifndef OI_APP_CONTROLLER_PLUGIN_REPOSITORY_H_
+#define OI_APP_CONTROLLER_PLUGIN_REPOSITORY_H_
 
 #include <QJsonObject>
 #include <QList>
@@ -104,4 +104,4 @@ class OI_MAIN_EXPORT PluginRepository {
   static bool isInit;
 };
 
-#endif  // PLUGINREPOSITORY_H
+#endif  // OI_APP_CONTROLLER_PLUGIN_REPOSITORY_H_

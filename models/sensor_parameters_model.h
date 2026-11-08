@@ -1,5 +1,5 @@
-#ifndef SENSORPARAMETERSMODEL_H
-#define SENSORPARAMETERSMODEL_H
+#ifndef OI_APP_MODELS_SENSOR_PARAMETERS_MODEL_H_
+#define OI_APP_MODELS_SENSOR_PARAMETERS_MODEL_H_
 
 #include <QAbstractTableModel>
 #include <QObject>
@@ -89,4 +89,4 @@ class SensorParametersModel : public QAbstractTableModel {
   ParameterDisplayConfig parameterDisplayConfig;
 };
 
-#endif  // SENSORPARAMETERSMODEL_H
+#endif  // OI_APP_MODELS_SENSOR_PARAMETERS_MODEL_H_

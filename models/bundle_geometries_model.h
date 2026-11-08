@@ -1,5 +1,5 @@
-#ifndef BUNDLEGEOMETRIESMODEL_H
-#define BUNDLEGEOMETRIESMODEL_H
+#ifndef OI_APP_MODELS_BUNDLE_GEOMETRIES_MODEL_H_
+#define OI_APP_MODELS_BUNDLE_GEOMETRIES_MODEL_H_
 
 #include <QAbstractItemModel>
 #include <QAbstractTableModel>
@@ -84,4 +84,4 @@ class BundleGeometriesModel : public QAbstractItemModel {
   QJsonArray usedStations;
 };
 
-#endif  // BUNDLEGEOMETRIESMODEL_H
+#endif  // OI_APP_MODELS_BUNDLE_GEOMETRIES_MODEL_H_

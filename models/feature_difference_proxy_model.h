@@ -1,5 +1,5 @@
-#ifndef FEATUREDIFFERENCEPROXYMODEL_H
-#define FEATUREDIFFERENCEPROXYMODEL_H
+#ifndef OI_APP_MODELS_FEATURE_DIFFERENCE_PROXY_MODEL_H_
+#define OI_APP_MODELS_FEATURE_DIFFERENCE_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -57,4 +57,4 @@ class FeatureDifferenceProxyModel : public QSortFilterProxyModel {
   FeatureSorter sorter;
 };
 
-#endif  // FEATUREDIFFERENCEPROXYMODEL_H
+#endif  // OI_APP_MODELS_FEATURE_DIFFERENCE_PROXY_MODEL_H_

@@ -1,5 +1,5 @@
-#ifndef PLUGININFO_H
-#define PLUGININFO_H
+#ifndef OI_APP_CONTROLLER_PLUGIN_INFO_H_
+#define OI_APP_CONTROLLER_PLUGIN_INFO_H_
 
 #include <QList>
 #include <QString>
@@ -255,4 +255,4 @@ class OI_MAIN_EXPORT Function {
 
 }  // namespace sys
 
-#endif  // PLUGININFO_H
+#endif  // OI_APP_CONTROLLER_PLUGIN_INFO_H_

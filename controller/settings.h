@@ -1,5 +1,5 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef OI_APP_CONTROLLER_SETTINGS_H_
+#define OI_APP_CONTROLLER_SETTINGS_H_
 
 #include <QMap>
 #include <QString>
@@ -53,4 +53,4 @@ class OI_MAIN_EXPORT Settings {
   static QString userSettingsFilePath();
 };
 
-#endif  // SETTINGS_H
+#endif  // OI_APP_CONTROLLER_SETTINGS_H_

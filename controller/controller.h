@@ -1,5 +1,5 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#ifndef OI_APP_CONTROLLER_CONTROLLER_H_
+#define OI_APP_CONTROLLER_CONTROLLER_H_
 
 #include <QFile>
 #include <QFileDevice>
@@ -443,4 +443,4 @@ class Controller : public QObject, public ControllerSensorActions {
   std::unique_ptr<OiJob> ownedJob;
 };
 
-#endif  // CONTROLLER_H
+#endif  // OI_APP_CONTROLLER_CONTROLLER_H_

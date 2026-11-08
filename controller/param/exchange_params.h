@@ -1,5 +1,5 @@
-#ifndef EXCHANGEPARAMS_H
-#define EXCHANGEPARAMS_H
+#ifndef OI_APP_CONTROLLER_PARAM_EXCHANGE_PARAMS_H_
+#define OI_APP_CONTROLLER_PARAM_EXCHANGE_PARAMS_H_
 
 #include <QList>
 #include <QMap>
@@ -61,4 +61,4 @@ class ExchangeParams {
                             // as common
 };
 
-#endif  // EXCHANGEPARAMS_H
+#endif  // OI_APP_CONTROLLER_PARAM_EXCHANGE_PARAMS_H_

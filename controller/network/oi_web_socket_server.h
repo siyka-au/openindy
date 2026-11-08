@@ -1,5 +1,5 @@
-#ifndef OIWEBSOCKETSERVER_H
-#define OIWEBSOCKETSERVER_H
+#ifndef OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_SERVER_H_
+#define OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_SERVER_H_
 
 #include <QList>
 #include <QPointer>
@@ -74,4 +74,4 @@ class OiWebSocketServer : public QWebSocketServer {
   QList<QPointer<OiWebSocket> > usedSockets;
 };
 
-#endif  // OIWEBSOCKETSERVER_H
+#endif  // OI_APP_CONTROLLER_NETWORK_OI_WEB_SOCKET_SERVER_H_

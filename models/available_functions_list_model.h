@@ -1,5 +1,5 @@
-#ifndef AVAILABLEFUNCTIONSLISTMODEL_H
-#define AVAILABLEFUNCTIONSLISTMODEL_H
+#ifndef OI_APP_MODELS_AVAILABLE_FUNCTIONS_LIST_MODEL_H_
+#define OI_APP_MODELS_AVAILABLE_FUNCTIONS_LIST_MODEL_H_
 
 #include <QAbstractListModel>
 #include <QList>
@@ -99,4 +99,4 @@ class AvailableFunctionsListModel : public QAbstractListModel {
   std::vector<sys::Plugin> plugins;
 };
 
-#endif  // AVAILABLEFUNCTIONSLISTMODEL_H
+#endif  // OI_APP_MODELS_AVAILABLE_FUNCTIONS_LIST_MODEL_H_

@@ -1,5 +1,5 @@
-#ifndef OBSERVATIONMODEL_H
-#define OBSERVATIONMODEL_H
+#ifndef OI_APP_MODELS_OBSERVATION_MODEL_H_
+#define OI_APP_MODELS_OBSERVATION_MODEL_H_
 
 #include <QAbstractTableModel>
 
@@ -114,4 +114,4 @@ class ObservationModel : public QAbstractTableModel {
   oi::Guarded<Observation> getObservation(const QModelIndex& index);
 };
 
-#endif  // OBSERVATIONMODEL_H
+#endif  // OI_APP_MODELS_OBSERVATION_MODEL_H_

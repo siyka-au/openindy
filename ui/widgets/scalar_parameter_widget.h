@@ -1,5 +1,5 @@
-#ifndef SCALARPARAMETERWIDGET_H
-#define SCALARPARAMETERWIDGET_H
+#ifndef OI_APP_UI_WIDGETS_SCALAR_PARAMETER_WIDGET_H_
+#define OI_APP_UI_WIDGETS_SCALAR_PARAMETER_WIDGET_H_
 
 #include <QComboBox>
 #include <QFormLayout>
@@ -83,4 +83,4 @@ class ScalarParameterWidget : public QWidget {
   void getParameterFromGUI();
 };
 
-#endif  // SCALARPARAMETERWIDGET_H
+#endif  // OI_APP_UI_WIDGETS_SCALAR_PARAMETER_WIDGET_H_

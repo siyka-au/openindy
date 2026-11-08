@@ -1,5 +1,5 @@
-#ifndef TRAFOCONTROLLER_H
-#define TRAFOCONTROLLER_H
+#ifndef OI_APP_CONTROLLER_TRAFO_CONTROLLER_H_
+#define OI_APP_CONTROLLER_TRAFO_CONTROLLER_H_
 
 #include <QObject>
 #include <QPointer>
@@ -53,4 +53,4 @@ class TrafoController : public QObject {
       const oi::Guarded<CoordinateSystem>& startSystem, bool isStation);
 };
 
-#endif  // TRAFOCONTROLLER_H
+#endif  // OI_APP_CONTROLLER_TRAFO_CONTROLLER_H_

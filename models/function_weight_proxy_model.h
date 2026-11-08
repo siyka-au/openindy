@@ -1,5 +1,5 @@
-#ifndef FUNCTIONWEIGHTPROXYMODEL_H
-#define FUNCTIONWEIGHTPROXYMODEL_H
+#ifndef OI_APP_MODELS_FUNCTION_WEIGHT_PROXY_MODEL_H_
+#define OI_APP_MODELS_FUNCTION_WEIGHT_PROXY_MODEL_H_
 
 #include <QPointer>
 #include <QSortFilterProxyModel>
@@ -46,4 +46,4 @@ class FunctionWeightProxyModel : public QSortFilterProxyModel {
   oi::Guarded<OiJob> job;
 };
 
-#endif  // FUNCTIONWEIGHTPROXYMODEL_H
+#endif  // OI_APP_MODELS_FUNCTION_WEIGHT_PROXY_MODEL_H_

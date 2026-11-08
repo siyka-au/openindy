@@ -1,5 +1,5 @@
-#ifndef ACTUALPROPERTIESDIALOG_H
-#define ACTUALPROPERTIESDIALOG_H
+#ifndef OI_APP_UI_DIALOGS_ACTUAL_PROPERTIES_DIALOG_H_
+#define OI_APP_UI_DIALOGS_ACTUAL_PROPERTIES_DIALOG_H_
 
 #include <QClipboard>
 #include <QCloseEvent>
@@ -115,4 +115,4 @@ class ActualPropertiesDialog : public QDialog {
   Ui::ActualPropertiesDialog* ui;
 };
 
-#endif  // ACTUALPROPERTIESDIALOG_H
+#endif  // OI_APP_UI_DIALOGS_ACTUAL_PROPERTIES_DIALOG_H_

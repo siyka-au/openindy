@@ -1,5 +1,5 @@
-#ifndef MODELMANAGER_H
-#define MODELMANAGER_H
+#ifndef OI_APP_CONTROLLER_MODEL_MANAGER_H_
+#define OI_APP_CONTROLLER_MODEL_MANAGER_H_
 
 #include <QHostAddress>
 #include <QNetworkInterface>
@@ -451,4 +451,4 @@ class OI_MAIN_EXPORT ModelManager : public QObject {
   static QPointer<ModelManager> myInstance;
 };
 
-#endif  // MODELMANAGER_H
+#endif  // OI_APP_CONTROLLER_MODEL_MANAGER_H_
