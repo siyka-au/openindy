@@ -6,6 +6,10 @@
 #include "qt_convert.h"
 #include "ui_create_feature_dialog.h"
 
+namespace {
+constexpr int kLastSingleDigit = 9;  // numbers below 10 get a leading zero
+}  // namespace
+
 /*!
  * \brief CreateFeatureDialog::CreateFeatureDialog
  * \param parent
@@ -130,7 +134,7 @@ void CreateFeatureDialog::initGUI() {
     // set default feature name depending on existing features
     int featureCount = this->currentJob->getFeatureCount();
     QString featureName = "";
-    if (featureCount < 9) {
+    if (featureCount < kLastSingleDigit) {
       featureName.append("Feature").append("0").append(
           QString::number(featureCount + 1));
     } else {
@@ -165,7 +169,7 @@ void CreateFeatureDialog::initGUI() {
       if (this->typeOfFeature == FeatureTypes::eStationFeature) {
         int count = this->currentJob->getStationsList().size();
         QString stationName = "";
-        if (count < 9) {
+        if (count < kLastSingleDigit) {
           stationName.append("STATION").append("0").append(
               QString::number(count + 1));
         } else {

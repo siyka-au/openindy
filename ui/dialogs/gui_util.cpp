@@ -1,5 +1,10 @@
 #include "gui_util.h"
 
+namespace {
+constexpr double kPopupMargin =
+    0.1;  // extra popup width relative to the widest entry
+}  // namespace
+
 namespace oi {
 
 /*!
@@ -23,8 +28,8 @@ const int getDropDownMenuSize(QStringList list, const int menuSize) {
   int width = fm.horizontalAdvance(largestString);
 
   // get largest width
-  if ((width + (0.1 * width)) > menuSize) {
-    return static_cast<int>(width + (0.1 * width));
+  if ((width + (kPopupMargin * width)) > menuSize) {
+    return static_cast<int>(width + (kPopupMargin * width));
   } else {
     return menuSize;
   }

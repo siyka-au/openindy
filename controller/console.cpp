@@ -1,5 +1,10 @@
 #include "console.h"
 
+namespace {
+constexpr int kFlushIntervalMs = 250;  // console view refresh
+constexpr int kValueDigits = 6;
+}  // namespace
+
 // initialize static variables
 QPointer<Console> Console::myInstance;
 
@@ -15,7 +20,7 @@ Console::Console(QObject* parent) : QObject(parent) {
   // "compress" addLine signals
   QTimer* timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(flushToConsoleView()));
-  timer->start(250);
+  timer->start(kFlushIntervalMs);
 }
 
 Console::~Console() { outFile.close(); }
@@ -89,7 +94,7 @@ void Console::addLine(const QString& msg, const MessageTypes& msgType,
  */
 void Console::addLine(const QString& msg, const MessageTypes& msgType,
                       const double& value) {
-  this->add(msg, msgType, QString::number(value, 'f', 6));
+  this->add(msg, msgType, QString::number(value, 'f', kValueDigits));
 }
 
 /*!

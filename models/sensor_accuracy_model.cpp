@@ -5,6 +5,10 @@
 #include "containers.h"
 #include "qt_convert.h"
 
+namespace {
+constexpr int kDirectionDigits = 6;  // decimals of unitless sigma values
+}  // namespace
+
 using namespace oi;
 
 /*!
@@ -23,7 +27,8 @@ int SensorAccuracyModel::rowCount(const QModelIndex& parent) const {
   if (this->sConfig.getIsValid() &&
       this->sConfig.getPluginName().compare("") != 0 &&
       this->sConfig.getSensorName().compare("") != 0) {
-    return (15 + oi::values(this->sConfig.getAccuracy().sigmaUndefined).size());
+    return (SensorAccuracyRows::kRowFirstUndefined +
+            oi::values(this->sConfig.getAccuracy().sigmaUndefined).size());
   }
   return 0;
 }
@@ -56,21 +61,21 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
   if (role == Qt::DisplayRole) {
     // sigma type headers
     switch (rowIndex) {
-      case 0:
+      case SensorAccuracyRows::kRowPolarHeader:
         return "polar";
-      case 4:
+      case SensorAccuracyRows::kRowCartesianHeader:
         return "cartesian";
-      case 8:
+      case SensorAccuracyRows::kRowLevelHeader:
         return "level";
-      case 12:
+      case SensorAccuracyRows::kRowTemperatureHeader:
         return "temperature";
-      case 14:
+      case SensorAccuracyRows::kRowUndefinedHeader:
         return "undefined";
     }
 
     // accuracy values
     switch (rowIndex) {
-      case 1:
+      case SensorAccuracyRows::kRowAzimuth:
         return QString::number(
             convertFromDefault(this->sConfig.getAccuracy().sigmaAzimuth,
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -78,7 +83,7 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
             'f',
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eAngular));
-      case 2:
+      case SensorAccuracyRows::kRowZenith:
         return QString::number(
             convertFromDefault(this->sConfig.getAccuracy().sigmaZenith,
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -86,7 +91,7 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
             'f',
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eAngular));
-      case 3:
+      case SensorAccuracyRows::kRowDistance:
         return QString::number(
             convertFromDefault(this->sConfig.getAccuracy().sigmaDistance,
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -94,7 +99,7 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
             'f',
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric));
-      case 5:
+      case SensorAccuracyRows::kRowX:
         return QString::number(
             convertFromDefault(this->sConfig.getAccuracy().sigmaXyz.getAt(0),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -102,7 +107,7 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
             'f',
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric));
-      case 6:
+      case SensorAccuracyRows::kRowY:
         return QString::number(
             convertFromDefault(this->sConfig.getAccuracy().sigmaXyz.getAt(1),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -110,7 +115,7 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
             'f',
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric));
-      case 7:
+      case SensorAccuracyRows::kRowZ:
         return QString::number(
             convertFromDefault(this->sConfig.getAccuracy().sigmaXyz.getAt(2),
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -118,13 +123,16 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
             'f',
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric));
-      case 9:
-        return QString::number(this->sConfig.getAccuracy().sigmaI, 'f', 6);
-      case 10:
-        return QString::number(this->sConfig.getAccuracy().sigmaJ, 'f', 6);
-      case 11:
-        return QString::number(this->sConfig.getAccuracy().sigmaK, 'f', 6);
-      case 13:
+      case SensorAccuracyRows::kRowI:
+        return QString::number(this->sConfig.getAccuracy().sigmaI, 'f',
+                               kDirectionDigits);
+      case SensorAccuracyRows::kRowJ:
+        return QString::number(this->sConfig.getAccuracy().sigmaJ, 'f',
+                               kDirectionDigits);
+      case SensorAccuracyRows::kRowK:
+        return QString::number(this->sConfig.getAccuracy().sigmaK, 'f',
+                               kDirectionDigits);
+      case SensorAccuracyRows::kRowTemperature:
         return QString::number(
             convertFromDefault(this->sConfig.getAccuracy().sigmaTemp,
                                this->parameterDisplayConfig.getDisplayUnit(
@@ -133,28 +141,34 @@ QVariant SensorAccuracyModel::data(const QModelIndex& index, int role) const {
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eTemperature));
       default:
-        int index = rowIndex - 15;
+        int index = rowIndex - SensorAccuracyRows::kRowFirstUndefined;
         if (index >= 0 &&
             std::cmp_less(index,
                           this->sConfig.getAccuracy().sigmaUndefined.size())) {
           return QString::number(
               oi::values(this->sConfig.getAccuracy().sigmaUndefined).at(index),
-              'f', 6);
+              'f', kDirectionDigits);
         }
     }
 
   } else if (role == Qt::BackgroundRole) {
     // sigma type headers
-    if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
-        rowIndex == 14) {
+    if (rowIndex == SensorAccuracyRows::kRowPolarHeader ||
+        rowIndex == SensorAccuracyRows::kRowCartesianHeader ||
+        rowIndex == SensorAccuracyRows::kRowLevelHeader ||
+        rowIndex == SensorAccuracyRows::kRowTemperatureHeader ||
+        rowIndex == SensorAccuracyRows::kRowUndefinedHeader) {
       return QColor(Qt::lightGray);
     }
 
   } else if (role == Qt::ForegroundRole) {
     // sigma type headers: use a readable text color against the custom
     // background above
-    if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
-        rowIndex == 14) {
+    if (rowIndex == SensorAccuracyRows::kRowPolarHeader ||
+        rowIndex == SensorAccuracyRows::kRowCartesianHeader ||
+        rowIndex == SensorAccuracyRows::kRowLevelHeader ||
+        rowIndex == SensorAccuracyRows::kRowTemperatureHeader ||
+        rowIndex == SensorAccuracyRows::kRowUndefinedHeader) {
       return QColor(Qt::black);
     }
   }
@@ -175,28 +189,28 @@ QVariant SensorAccuracyModel::headerData(int section,
   if ((Qt::DisplayRole == role) && (Qt::Vertical == orientation) &&
       (0 <= section) && (section < rowCount())) {
     switch (section) {
-      case 1:
+      case SensorAccuracyRows::kRowAzimuth:
         return "azimuth";
-      case 2:
+      case SensorAccuracyRows::kRowZenith:
         return "zenith";
-      case 3:
+      case SensorAccuracyRows::kRowDistance:
         return "distance";
-      case 5:
+      case SensorAccuracyRows::kRowX:
         return "x";
-      case 6:
+      case SensorAccuracyRows::kRowY:
         return "y";
-      case 7:
+      case SensorAccuracyRows::kRowZ:
         return "z";
-      case 9:
+      case SensorAccuracyRows::kRowI:
         return "i";
-      case 10:
+      case SensorAccuracyRows::kRowJ:
         return "j";
-      case 11:
+      case SensorAccuracyRows::kRowK:
         return "k";
-      case 13:
+      case SensorAccuracyRows::kRowTemperature:
         return "temperature";
       default:
-        int index = section - 15;
+        int index = section - SensorAccuracyRows::kRowFirstUndefined;
         if (index >= 0 &&
             std::cmp_less(index,
                           this->sConfig.getAccuracy().sigmaUndefined.size())) {
@@ -208,7 +222,7 @@ QVariant SensorAccuracyModel::headerData(int section,
   } else if ((Qt::DisplayRole == role) && (Qt::Horizontal == orientation) &&
              (0 <= section) && (section < columnCount())) {
     switch (section) {
-      case 0:
+      case SensorAccuracyRows::kRowPolarHeader:
         return QString("sigma - %1 %2 %3")
             .arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(
                 DimensionType::eMetric)))
@@ -250,8 +264,11 @@ Qt::ItemFlags SensorAccuracyModel::flags(const QModelIndex& index) const {
   int rowIndex = index.row();
   int columnIndex = index.column();
 
-  if (rowIndex != 0 && rowIndex != 4 && rowIndex != 8 && rowIndex != 12 &&
-      rowIndex != 14) {
+  if (rowIndex != SensorAccuracyRows::kRowPolarHeader &&
+      rowIndex != SensorAccuracyRows::kRowCartesianHeader &&
+      rowIndex != SensorAccuracyRows::kRowLevelHeader &&
+      rowIndex != SensorAccuracyRows::kRowTemperatureHeader &&
+      rowIndex != SensorAccuracyRows::kRowUndefinedHeader) {
     return (myFlags | Qt::ItemIsEditable);
   }
   return myFlags;
@@ -290,55 +307,55 @@ bool SensorAccuracyModel::setData(const QModelIndex& index,
     Accuracy accuracy = this->sConfig.getAccuracy();
 
     switch (rowIndex) {
-      case 1:
+      case SensorAccuracyRows::kRowAzimuth:
         accuracy.sigmaAzimuth = convertToDefault(
             value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
                                   DimensionType::eAngular));
         break;
-      case 2:
+      case SensorAccuracyRows::kRowZenith:
         accuracy.sigmaZenith = convertToDefault(
             value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
                                   DimensionType::eAngular));
         break;
-      case 3:
+      case SensorAccuracyRows::kRowDistance:
         accuracy.sigmaDistance = convertToDefault(
             value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
                                   DimensionType::eMetric));
         break;
-      case 5:
+      case SensorAccuracyRows::kRowX:
         accuracy.sigmaXyz.setAt(
             0, convertToDefault(value.toDouble(),
                                 this->parameterDisplayConfig.getDisplayUnit(
                                     DimensionType::eMetric)));
         break;
-      case 6:
+      case SensorAccuracyRows::kRowY:
         accuracy.sigmaXyz.setAt(
             1, convertToDefault(value.toDouble(),
                                 this->parameterDisplayConfig.getDisplayUnit(
                                     DimensionType::eMetric)));
         break;
-      case 7:
+      case SensorAccuracyRows::kRowZ:
         accuracy.sigmaXyz.setAt(
             2, convertToDefault(value.toDouble(),
                                 this->parameterDisplayConfig.getDisplayUnit(
                                     DimensionType::eMetric)));
         break;
-      case 9:
+      case SensorAccuracyRows::kRowI:
         accuracy.sigmaI = value.toDouble();
         break;
-      case 10:
+      case SensorAccuracyRows::kRowJ:
         accuracy.sigmaJ = value.toDouble();
         break;
-      case 11:
+      case SensorAccuracyRows::kRowK:
         accuracy.sigmaK = value.toDouble();
         break;
-      case 13:
+      case SensorAccuracyRows::kRowTemperature:
         accuracy.sigmaTemp = convertToDefault(
             value.toDouble(), this->parameterDisplayConfig.getDisplayUnit(
                                   DimensionType::eTemperature));
         break;
       default:
-        int index = rowIndex - 15;
+        int index = rowIndex - SensorAccuracyRows::kRowFirstUndefined;
         if (index >= 0 &&
             std::cmp_less(index,
                           this->sConfig.getAccuracy().sigmaUndefined.size())) {

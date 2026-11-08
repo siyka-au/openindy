@@ -1,5 +1,9 @@
 #include "oi_web_socket_server.h"
 
+namespace {
+constexpr quint16 kServerPort = 1235;
+}  // namespace
+
 int OiWebSocketServer::currentId = 0;
 
 /*!
@@ -36,7 +40,7 @@ int OiWebSocketServer::generateUniqueId() {
  * Starts the server so that clients are able to connect to OpenIndy
  */
 void OiWebSocketServer::startServer() {
-  if (!this->listen(QHostAddress::Any, 1235)) {
+  if (!this->listen(QHostAddress::Any, kServerPort)) {
     emit this->sendMessage("Cannot start local server",
                            MessageTypes::eErrorMessage);
   } else {

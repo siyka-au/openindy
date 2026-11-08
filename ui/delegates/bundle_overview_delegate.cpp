@@ -4,6 +4,19 @@
 
 #include "qt_convert.h"
 
+namespace {
+constexpr int kScaleDigits = 6;  // decimals shown for the bundle scale
+// text layout of one overview cell in pixels
+constexpr int kTextLeft = 5;
+constexpr int kRowTitle = 20;
+constexpr int kRowMaxError = 40;
+constexpr int kRowStdDev = 60;
+constexpr int kRowScale = 80;
+constexpr int kRowCommonGeometries = 100;
+constexpr int kSizeHintWidth = 100;
+constexpr int kSizeHintHeight = 120;
+}  // namespace
+
 BundleOverviewDelegate::BundleOverviewDelegate(QObject* parent)
     : QAbstractItemDelegate(parent) {}
 void BundleOverviewDelegate::paint(QPainter* painter,
@@ -37,7 +50,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
     if (isBundleStationTrafo(tp) &&
         tp->getDestinationSystem()->getFeatureName() == stationName &&
         tp->getStartSystem()->getFeatureName() == "Bundle01") {
-      scaleS = toQString(tp->getDisplayScaleX(6));
+      scaleS = toQString(tp->getDisplayScaleX(kScaleDigits));
       scale = tp->getScale().getAt(0);  // X
       isSolved = tp->getIsSolved();
       break;
@@ -131,11 +144,11 @@ void BundleOverviewDelegate::paint(QPainter* painter,
    *  UI
    */
   painter->setPen(Qt::black);
-  painter->drawText(option.rect.topLeft() += QPoint(5, 20),
+  painter->drawText(option.rect.topLeft() += QPoint(kTextLeft, kRowTitle),
                     QString("%1").arg(stationName));
   if (isSolved) {
     painter->drawText(
-        option.rect.topLeft() += QPoint(5, 40),
+        option.rect.topLeft() += QPoint(kTextLeft, kRowMaxError),
         QString("Max. Error:\t\t%1 [mm]\t%2")
             .arg(QString::number(
                 convertFromDefault(maxError, UnitType::eUnitMilliMeter), 'f',
@@ -143,7 +156,7 @@ void BundleOverviewDelegate::paint(QPainter* painter,
             .arg(maxErrorGeometry));
 
     painter->drawText(
-        option.rect.topLeft() += QPoint(5, 60),
+        option.rect.topLeft() += QPoint(kTextLeft, kRowStdDev),
         QString("StdDev:\t\t%1 [mm]")
             .arg(QString::number(
                 convertFromDefault(stdDev, UnitType::eUnitMilliMeter), 'f',
@@ -154,17 +167,17 @@ void BundleOverviewDelegate::paint(QPainter* painter,
     if(hasTransformationBundleToPart && actualTemperature > TEMPERATURE_NOT_SET)
     { temperature = QString(" (%2°C %3)").arg(actualTemperature).arg(material);
     }*/
-    painter->drawText(option.rect.topLeft() += QPoint(5, 80),
+    painter->drawText(option.rect.topLeft() += QPoint(kTextLeft, kRowScale),
                       QString("Scale:\t\t%1%2")
                           .arg(scaleS)
                           .arg("" /* TODO later temperature */));
 
     painter->drawText(
-        option.rect.topLeft() += QPoint(5, 100),
+        option.rect.topLeft() += QPoint(kTextLeft, kRowCommonGeometries),
         QString("Common Geometries:\t%1").arg(numberOfCommonGeometries));
   }
   painter->setPen(isOk ? Qt::green : Qt::red);
-  painter->drawText(option.rect.topLeft() += QPoint(5, 20),
+  painter->drawText(option.rect.topLeft() += QPoint(kTextLeft, kRowTitle),
                     QString("\t\t%1").arg("⬤"));
 }
 // BundleParameterTableProxyModel::isBundleStationTrafo
@@ -177,7 +190,7 @@ bool BundleOverviewDelegate::isBundleStationTrafo(
 }
 QSize BundleOverviewDelegate::sizeHint(const QStyleOptionViewItem& option,
                                        const QModelIndex& index) const {
-  return QSize(100, 120);
+  return QSize(kSizeHintWidth, kSizeHintHeight);
 }
 
 QWidget* BundleOverviewDelegate::createEditor(

@@ -3,6 +3,10 @@
 #include <QFont>
 #include <vector>
 
+namespace {
+constexpr int kIconHeight = 20;  // pixels
+}  // namespace
+
 PluginTreeViewModel::PluginTreeViewModel(QObject* parent) {
   this->rootItem = new PluginTreeItem("available plugins");
 }
@@ -105,7 +109,7 @@ QVariant PluginTreeViewModel::data(const QModelIndex& index, int role) const {
     } else if (role == Qt::DecorationRole) {  // return icon for tree view item
       if (item->getIsPlugin()) {
         QPixmap pix(":/Images/icons/loadPlugin.png");
-        return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        return pix.scaledToHeight(kIconHeight, Qt::SmoothTransformation);
       }
     } else if (role == Qt::FontRole) {
       if (item->hasParent() && item->getParent()->getIsPlugin()) {

@@ -6,6 +6,10 @@
 #include "qt_convert.h"
 #include "ui_settings_dialog.h"
 
+namespace {
+constexpr int kMaxAutoSaveMinutes = 1000;
+}  // namespace
+
 /*!
  * \brief SettingsDialog::SettingsDialog
  * \param parent
@@ -22,7 +26,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
       new QRegularExpressionValidator(QRegularExpression("[1-3]"), this));
   // 0 = disable autosave, > 0 = interval in minutes
   this->ui->lineEdit_autoSaveInterval->setValidator(
-      new QIntValidator(0, 1000, this));
+      new QIntValidator(0, kMaxAutoSaveMinutes, this));
 
   // init GUI elements and assign models
   this->initModels();

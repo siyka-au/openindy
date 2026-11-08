@@ -5,6 +5,10 @@
 #include "qt_convert.h"
 #include "ui_sensor_configuration_dialog.h"
 
+namespace {
+constexpr int kTableRowHeight = 22;  // pixels
+}  // namespace
+
 /*!
  * \brief SensorConfigurationDialog::SensorConfigurationDialog
  * \param parent
@@ -665,7 +669,7 @@ void SensorConfigurationDialog::initGUI() {
   this->ui->tableView_sensorPlugins->horizontalHeader()->setSectionResizeMode(
       QHeaderView::ResizeToContents);
   this->ui->tableView_sensorPlugins->verticalHeader()->setDefaultSectionSize(
-      22);
+      kTableRowHeight);
 
   // connect GUI interactions
   QObject::connect(this->ui->tableView_sensorPlugins,

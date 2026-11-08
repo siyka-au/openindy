@@ -37,8 +37,11 @@ QWidget* SensorAccuracyDelegate::createEditor(
   int columnIndex = index.column();
 
   // sigma type headers
-  if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
-      rowIndex == 14) {
+  if (rowIndex == SensorAccuracyRows::kRowPolarHeader ||
+      rowIndex == SensorAccuracyRows::kRowCartesianHeader ||
+      rowIndex == SensorAccuracyRows::kRowLevelHeader ||
+      rowIndex == SensorAccuracyRows::kRowTemperatureHeader ||
+      rowIndex == SensorAccuracyRows::kRowUndefinedHeader) {
     return editor;
   }
 
@@ -73,8 +76,11 @@ void SensorAccuracyDelegate::setEditorData(QWidget* editor,
   int columnIndex = index.column();
 
   // sigma type headers
-  if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
-      rowIndex == 14) {
+  if (rowIndex == SensorAccuracyRows::kRowPolarHeader ||
+      rowIndex == SensorAccuracyRows::kRowCartesianHeader ||
+      rowIndex == SensorAccuracyRows::kRowLevelHeader ||
+      rowIndex == SensorAccuracyRows::kRowTemperatureHeader ||
+      rowIndex == SensorAccuracyRows::kRowUndefinedHeader) {
     return;
   }
 
@@ -106,8 +112,11 @@ void SensorAccuracyDelegate::setModelData(QWidget* editor,
   int columnIndex = index.column();
 
   // sigma type headers
-  if (rowIndex == 0 || rowIndex == 4 || rowIndex == 8 || rowIndex == 12 ||
-      rowIndex == 14) {
+  if (rowIndex == SensorAccuracyRows::kRowPolarHeader ||
+      rowIndex == SensorAccuracyRows::kRowCartesianHeader ||
+      rowIndex == SensorAccuracyRows::kRowLevelHeader ||
+      rowIndex == SensorAccuracyRows::kRowTemperatureHeader ||
+      rowIndex == SensorAccuracyRows::kRowUndefinedHeader) {
     return;
   }
 

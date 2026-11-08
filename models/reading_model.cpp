@@ -5,6 +5,10 @@
 #include "qt_convert.h"
 #include "qt_job_adapter.h"
 
+namespace {
+constexpr int kDisplayDigits = 6;
+}  // namespace
+
 /*!
  * \brief ReadingModel::ReadingModel
  * \param parent
@@ -148,11 +152,11 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric)));
       case eReadingDisplayI:
-        return toQString(reading->getDisplayI(6));
+        return toQString(reading->getDisplayI(kDisplayDigits));
       case eReadingDisplayJ:
-        return toQString(reading->getDisplayJ(6));
+        return toQString(reading->getDisplayJ(kDisplayDigits));
       case eReadingDisplayK:
-        return toQString(reading->getDisplayK(6));
+        return toQString(reading->getDisplayK(kDisplayDigits));
       case eReadingDisplayTemperature:
         return toQString(reading->getDisplayTemperature(
             this->parameterDisplayConfig.getDisplayUnit(
@@ -194,11 +198,11 @@ QVariant ReadingModel::data(const QModelIndex& index, int role) const {
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric)));
       case eReadingDisplaySigmaI:
-        return toQString(reading->getDisplaySigmaI(6));
+        return toQString(reading->getDisplaySigmaI(kDisplayDigits));
       case eReadingDisplaySigmaJ:
-        return toQString(reading->getDisplaySigmaJ(6));
+        return toQString(reading->getDisplaySigmaJ(kDisplayDigits));
       case eReadingDisplaySigmaK:
-        return toQString(reading->getDisplaySigmaK(6));
+        return toQString(reading->getDisplaySigmaK(kDisplayDigits));
       case eReadingDisplaySigmaTemperature:
         return toQString(reading->getDisplaySigmaTemperature(
             this->parameterDisplayConfig.getDisplayUnit(

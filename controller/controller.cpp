@@ -9,6 +9,10 @@
 #include "qt_convert.h"
 #include "qt_job_adapter.h"
 #include "qt_station_adapter.h"
+
+namespace {
+constexpr int kModelUpdateIntervalMs = 250;  // feature table refresh
+}  // namespace
 /*!
  * \brief Controller::Controller
  * \param parent
@@ -43,7 +47,7 @@ void Controller::init() {
     connect(timer, SIGNAL(timeout()),
             &ModelManager::myInstance->getFeatureTableModel(),
             SLOT(updateModelIfRequested()));
-    timer->start(250);
+    timer->start(kModelUpdateIntervalMs);
   }
 
   QObject::connect(PluginManager::getInstance().data(),

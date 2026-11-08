@@ -9,6 +9,11 @@
 #include "containers.h"
 #include "qt_convert.h"
 
+namespace {
+constexpr int kAccuracyCompareDecimals =
+    8;  // decimals used when comparing sigma values
+}  // namespace
+
 /*!
  * \brief SensorConfigurationManager::SensorConfigurationManager
  */
@@ -601,25 +606,32 @@ bool SensorConfigurationManager::equals(const SensorConfiguration& sConfigA,
 
   // compare accuracy values
   if (!almostEqual(sConfigA.getAccuracy().sigmaAzimuth,
-                   sConfigB.getAccuracy().sigmaAzimuth, 8) ||
+                   sConfigB.getAccuracy().sigmaAzimuth,
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaZenith,
-                   sConfigB.getAccuracy().sigmaZenith, 8) ||
+                   sConfigB.getAccuracy().sigmaZenith,
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaDistance,
-                   sConfigB.getAccuracy().sigmaDistance, 8) ||
+                   sConfigB.getAccuracy().sigmaDistance,
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaXyz.getAt(0),
-                   sConfigB.getAccuracy().sigmaXyz.getAt(0), 8) ||
+                   sConfigB.getAccuracy().sigmaXyz.getAt(0),
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaXyz.getAt(1),
-                   sConfigB.getAccuracy().sigmaXyz.getAt(1), 8) ||
+                   sConfigB.getAccuracy().sigmaXyz.getAt(1),
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaXyz.getAt(2),
-                   sConfigB.getAccuracy().sigmaXyz.getAt(2), 8) ||
+                   sConfigB.getAccuracy().sigmaXyz.getAt(2),
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaTemp,
-                   sConfigB.getAccuracy().sigmaTemp, 8) ||
+                   sConfigB.getAccuracy().sigmaTemp,
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaI, sConfigB.getAccuracy().sigmaI,
-                   8) ||
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaJ, sConfigB.getAccuracy().sigmaJ,
-                   8) ||
+                   kAccuracyCompareDecimals) ||
       !almostEqual(sConfigA.getAccuracy().sigmaK, sConfigB.getAccuracy().sigmaK,
-                   8) ||
+                   kAccuracyCompareDecimals) ||
       oi::keys(sConfigA.getAccuracy().sigmaUndefined) !=
           oi::keys(sConfigB.getAccuracy().sigmaUndefined)) {
     return false;
@@ -631,7 +643,7 @@ bool SensorConfigurationManager::equals(const SensorConfiguration& sConfigA,
   foreach (const std::string& key, keys) {
     if (!almostEqual(oi::value(sConfigA.getAccuracy().sigmaUndefined, key),
                      oi::value(sConfigB.getAccuracy().sigmaUndefined, key),
-                     8)) {
+                     kAccuracyCompareDecimals)) {
       return false;
     }
   }
@@ -649,7 +661,8 @@ bool SensorConfigurationManager::equals(const SensorConfiguration& sConfigA,
     std::vector<std::string> keys = oi::keys(sConfigA.getDoubleParameter());
     foreach (const std::string& key, keys) {
       if (!almostEqual(oi::value(sConfigA.getDoubleParameter(), key),
-                       oi::value(sConfigB.getDoubleParameter(), key), 8)) {
+                       oi::value(sConfigB.getDoubleParameter(), key),
+                       kAccuracyCompareDecimals)) {
         return false;
       }
     }

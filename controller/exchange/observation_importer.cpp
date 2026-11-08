@@ -6,6 +6,11 @@
 #include <array>
 #include <vector>
 
+namespace {
+constexpr double kMaxImportProgress =
+    0.99;  // never 100% before the import has finished
+}  // namespace
+
 /*!
  * \brief ObservationImporter::ObservationImporter
  * \param parent
@@ -173,10 +178,10 @@ bool ObservationImporter::importObservations() {
       // update import progress
       numObservations++;
       // never 100% before the import has finished
-      ctx.report(fileSize > 0
-                     ? std::min(0.99, static_cast<double>(readSize) /
-                                          static_cast<double>(fileSize))
-                     : 0.0,
+      ctx.report(fileSize > 0 ? std::min(kMaxImportProgress,
+                                         static_cast<double>(readSize) /
+                                             static_cast<double>(fileSize))
+                              : 0.0,
                  QString("%1 observation(s) loaded")
                      .arg(numObservations)
                      .toStdString());

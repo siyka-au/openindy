@@ -9,6 +9,10 @@
 #include "qt_function_adapter.h"
 #include "qt_job_adapter.h"
 
+namespace {
+constexpr int kIconHeight = 20;  // pixels
+}  // namespace
+
 /*!
  * \brief UsedElementsModel::UsedElementsModel
  * \param parent
@@ -247,7 +251,7 @@ QVariant UsedElementsModel::data(const QModelIndex& index, int role) const {
     }
 
     QPixmap pix(iconPath);
-    return pix.scaledToHeight(20, Qt::SmoothTransformation);
+    return pix.scaledToHeight(kIconHeight, Qt::SmoothTransformation);
   }
 
   return QVariant();

@@ -7,6 +7,15 @@
 #include "controller/qt_convert.h"
 #include "qt_convert.h"
 
+namespace {
+constexpr double kCmykC = 0.59;
+constexpr double kCmykM = 0.40;
+constexpr double kCmykYK = 0.10;
+// background for the active feature / selected sensor
+const QColor kActiveBackground =
+    QColor::fromCmykF(kCmykC, kCmykM, kCmykYK, kCmykYK).lighter();
+}  // namespace
+
 /*!
  * \brief SensorTableModel::SensorTableModel
  * \param parent
@@ -89,7 +98,7 @@ QVariant SensorTableModel::data(const QModelIndex& index, int role) const {
     // active sensor
     if (this->selectedSensor.first.compare(currentPlugin.name()) == 0 &&
         this->selectedSensor.second.compare(currentSensor.name()) == 0) {
-      return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
+      return QColor(kActiveBackground);
     }
 
   } else if (role == Qt::ForegroundRole) {

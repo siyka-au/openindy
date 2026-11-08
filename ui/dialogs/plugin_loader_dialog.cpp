@@ -3,6 +3,10 @@
 #include "qt_convert.h"
 #include "ui_plugin_loader_dialog.h"
 
+namespace {
+constexpr int kProgressMax = 100;  // percent
+}  // namespace
+
 /*!
  * \brief PluginLoaderDialog::PluginLoaderDialog
  * \param parent
@@ -61,7 +65,7 @@ void PluginLoaderDialog::on_toolButton_Path_clicked() {
       toQString("<b>compiler</b>: " + metaData.compiler + "<hr /><p />"));
 
   this->ui->progressBar->setMinimum(0);
-  this->ui->progressBar->setMaximum(100);
+  this->ui->progressBar->setMaximum(kProgressMax);
   this->ui->progressBar->setValue(0);
 
   if (metaData.dependencies) {

@@ -12,6 +12,24 @@
 #include "qt_convert.h"
 #include "ui_main_window.h"
 
+namespace {
+// opacity animation of the sensor status label
+constexpr double kBlinkStart = -1.0;
+constexpr double kBlinkEnd = 2.0;
+constexpr int kBlinkDurationMs = 500;
+constexpr int kUnitLabelWidth = 50;  // pixels
+// bundle overview defaults (metres)
+constexpr double kDefaultMaxError = 0.1;
+constexpr double kDefaultMaxStdDev = 0.06;
+constexpr double kDefaultMaxScaleDev = 0.000020;
+constexpr int kDefaultMinCommonPoints = 5;
+constexpr double kScaleDevLimit = 0.1;
+constexpr int kScaleDevDigits = 6;
+constexpr int kMillisPerMinute = 60000;
+constexpr double kDefaultTolerance = 0.2;   // feature difference tolerance
+constexpr int kDifferencesDockWidth = 600;  // pixels
+}  // namespace
+
 /*!
  * \brief MainWindow::MainWindow
  * \param parent
@@ -66,10 +84,11 @@ MainWindow::MainWindow(QWidget* parent)
                    &MainWindow::activeFeatureChanged, Qt::AutoConnection);
 
   // set default tolerance to 0.2 and commit to the model
-  this->ui->lineEdit_tolerance->setText("0.2");
-  ModelManager::getFeatureDifferenceTableModel().setTolerance(0.2);
+  this->ui->lineEdit_tolerance->setText(QString::number(kDefaultTolerance));
+  ModelManager::getFeatureDifferenceTableModel().setTolerance(
+      kDefaultTolerance);
 
-  this->ui->dockWidget_differences->setMaximumWidth(600);
+  this->ui->dockWidget_differences->setMaximumWidth(kDifferencesDockWidth);
 
   this->resizeTableView();
 
@@ -2665,10 +2684,10 @@ void MainWindow::initStatusBar() {
   this->label_statusSensor->setGraphicsEffect(opacityEffect);
   this->animation_label_statusSensor =
       new QPropertyAnimation(opacityEffect, "opacity", this);
-  this->animation_label_statusSensor->setStartValue(-1.0);
-  this->animation_label_statusSensor->setEndValue(2.0);
+  this->animation_label_statusSensor->setStartValue(kBlinkStart);
+  this->animation_label_statusSensor->setEndValue(kBlinkEnd);
   this->animation_label_statusSensor->setLoopCount(-1);
-  this->animation_label_statusSensor->setDuration(500);
+  this->animation_label_statusSensor->setDuration(kBlinkDurationMs);
   this->animation_label_statusSensor->setEasingCurve(QEasingCurve::OutQuad);
 
   this->label_statusUnitMetric = new QLabel();
@@ -2676,11 +2695,11 @@ void MainWindow::initStatusBar() {
   this->label_statusUnitTemperature = new QLabel();
 
   // format GUI elements
-  this->label_statusUnitMetric->setMinimumWidth(50);
+  this->label_statusUnitMetric->setMinimumWidth(kUnitLabelWidth);
   this->label_statusUnitMetric->setAlignment(Qt::AlignHCenter);
-  this->label_statusUnitAngular->setMinimumWidth(50);
+  this->label_statusUnitAngular->setMinimumWidth(kUnitLabelWidth);
   this->label_statusUnitAngular->setAlignment(Qt::AlignHCenter);
-  this->label_statusUnitTemperature->setMinimumWidth(50);
+  this->label_statusUnitTemperature->setMinimumWidth(kUnitLabelWidth);
   this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
 
   // add GUI elements to status bar
@@ -2720,10 +2739,10 @@ void MainWindow::initBundleView() {
   extraParameterLayout->addWidget(this->bundleParameterWidget);
 
   // init overview
-  bundleOverviewDelegate->maxError = 0.1;
-  bundleOverviewDelegate->maxStdDev = 0.06;
-  bundleOverviewDelegate->maxScaleDev = 0.000020;
-  bundleOverviewDelegate->minCommonPoints = 5;
+  bundleOverviewDelegate->maxError = kDefaultMaxError;
+  bundleOverviewDelegate->maxStdDev = kDefaultMaxStdDev;
+  bundleOverviewDelegate->maxScaleDev = kDefaultMaxScaleDev;
+  bundleOverviewDelegate->minCommonPoints = kDefaultMinCommonPoints;
 
   QIntValidator* cpValid = new QIntValidator(3, 10000, this);
   this->ui->lineEdit_atLeastCommonPoints->setText(
@@ -2740,9 +2759,10 @@ void MainWindow::initBundleView() {
       QString::number(bundleOverviewDelegate->maxStdDev, 'f', 3));
   this->ui->lineEdit_stdDev->setValidator(stdDevValid);
 
-  QDoubleValidator* scaleDevValid = new QDoubleValidator(0, 0.1, 6, this);
-  this->ui->lineEdit_scaleDev->setText(
-      QString::number(bundleOverviewDelegate->maxScaleDev, 'f', 6));
+  QDoubleValidator* scaleDevValid =
+      new QDoubleValidator(0, kScaleDevLimit, kScaleDevDigits, this);
+  this->ui->lineEdit_scaleDev->setText(QString::number(
+      bundleOverviewDelegate->maxScaleDev, 'f', kScaleDevDigits));
   this->ui->lineEdit_scaleDev->setValidator(scaleDevValid);
 }
 
@@ -3134,7 +3154,7 @@ void MainWindow::startAutoSave() {
   if (i > 0) {
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(autoSaveProject()));
-    timer->start(60000 * i);
+    timer->start(kMillisPerMinute * i);
   }
 }
 

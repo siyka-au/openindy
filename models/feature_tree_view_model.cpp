@@ -3,6 +3,10 @@
 #include "qt_convert.h"
 #include "qt_job_adapter.h"
 
+namespace {
+constexpr int kIconHeight = 20;  // pixels
+}  // namespace
+
 /*!
  * \brief FeatureTreeViewModel::FeatureTreeViewModel
  * \param job
@@ -78,7 +82,7 @@ QVariant FeatureTreeViewModel::data(const QModelIndex& index, int role) const {
         }
 
         QPixmap pix(iconPath);
-        return pix.scaledToHeight(20, Qt::SmoothTransformation);
+        return pix.scaledToHeight(kIconHeight, Qt::SmoothTransformation);
       }
     }
   }

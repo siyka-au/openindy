@@ -2,6 +2,10 @@
 
 #include "ui_loading_dialog.h"
 
+namespace {
+constexpr int kProgressMax = 100;  // percent
+}  // namespace
+
 /*!
  * \brief LoadingDialog::LoadingDialog
  * \param parent
@@ -30,7 +34,7 @@ void LoadingDialog::setProgress(int percent, const QString& msg) const {
   if (percent < 0) {
     this->ui->progressBar->setRange(0, 0);  // busy indicator
   } else {
-    this->ui->progressBar->setRange(0, 100);
+    this->ui->progressBar->setRange(0, kProgressMax);
     this->ui->progressBar->setValue(percent);
   }
 }

@@ -7,6 +7,10 @@
 #include "containers.h"
 #include "qt_convert.h"
 
+namespace {
+constexpr int kParameterDigits = 8;
+}  // namespace
+
 /*!
  * \brief SensorParametersModel::SensorParametersModel
  * \param parent
@@ -63,13 +67,15 @@ QVariant SensorParametersModel::data(const QModelIndex& index, int role) const {
       rowIndex =
           rowIndex - std::ssize(oi::keys(this->sConfig.getStringParameter()));
       return QString::number(
-          oi::values(this->sConfig.getDoubleParameter()).at(rowIndex), 'f', 8);
+          oi::values(this->sConfig.getDoubleParameter()).at(rowIndex), 'f',
+          kParameterDigits);
     } else {
       rowIndex = rowIndex -
                  std::ssize(oi::keys(this->sConfig.getStringParameter())) -
                  this->sConfig.getDoubleParameter().size();
       return QString::number(
-          oi::values(this->sConfig.getIntegerParameter()).at(rowIndex), 'g', 8);
+          oi::values(this->sConfig.getIntegerParameter()).at(rowIndex), 'g',
+          kParameterDigits);
     }
   }
 

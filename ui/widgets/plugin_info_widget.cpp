@@ -2,6 +2,15 @@
 
 #include "qt_convert.h"
 
+namespace {
+constexpr int kDescriptionHeight =
+    70;  // fixed height of the description box in pixels
+constexpr int kSpacerSize = 20;
+constexpr int kLastStretchIndex =
+    7;  // the final layout item takes the remaining space
+constexpr int kIconSize = 30;  // feature / element icon edge length in pixels
+}  // namespace
+
 PluginInfoWidget::PluginInfoWidget(QWidget* parent) : QWidget(parent) {
   this->initGUI();
 }
@@ -158,15 +167,18 @@ void PluginInfoWidget::initGUI() {
   this->label_applicableFor->setFont(bold);
   this->label_neededElements->setFont(bold);
 
-  this->txt_description->setMinimumHeight(70);
-  this->txt_description->setMaximumHeight(70);
+  this->txt_description->setMinimumHeight(kDescriptionHeight);
+  this->txt_description->setMaximumHeight(kDescriptionHeight);
 
-  QSpacerItem* bottomSpacer = new QSpacerItem(20, 20, QSizePolicy::Expanding);
-  QSpacerItem* featureSpacer = new QSpacerItem(20, 20, QSizePolicy::Expanding);
-  QSpacerItem* elementSpacer = new QSpacerItem(20, 20, QSizePolicy::Expanding);
+  QSpacerItem* bottomSpacer =
+      new QSpacerItem(kSpacerSize, kSpacerSize, QSizePolicy::Expanding);
+  QSpacerItem* featureSpacer =
+      new QSpacerItem(kSpacerSize, kSpacerSize, QSizePolicy::Expanding);
+  QSpacerItem* elementSpacer =
+      new QSpacerItem(kSpacerSize, kSpacerSize, QSizePolicy::Expanding);
 
   // add items to layout
-  this->myLayout->addSpacing(20);
+  this->myLayout->addSpacing(kSpacerSize);
   this->myLayout->addWidget(this->label_description);
   this->myLayout->addWidget(this->txt_description);
   this->myLayout->addWidget(this->label_applicableFor);
@@ -176,21 +188,17 @@ void PluginInfoWidget::initGUI() {
   this->myLayout->addSpacerItem(bottomSpacer);
 
   // stretch GUI elements so the left space is at the bottom
-  this->myLayout->setStretch(0, 0);
-  this->myLayout->setStretch(1, 0);
-  this->myLayout->setStretch(2, 0);
-  this->myLayout->setStretch(3, 0);
-  this->myLayout->setStretch(4, 0);
-  this->myLayout->setStretch(5, 0);
-  this->myLayout->setStretch(6, 0);
-  this->myLayout->setStretch(7, 1);
+  for (int i = 0; i < kLastStretchIndex; ++i) {
+    this->myLayout->setStretch(i, 0);
+  }
+  this->myLayout->setStretch(kLastStretchIndex, 1);
 
   // add labels with icons of all elements / features
   foreach (const FeatureTypes& featureType, getAvailableFeatureTypes()) {
     QLabel* feature = new QLabel();
     feature->setPixmap(QPixmap(toQString(getFeatureTypeIconPath(featureType))));
-    feature->setFixedHeight(30);
-    feature->setFixedWidth(30);
+    feature->setFixedHeight(kIconSize);
+    feature->setFixedWidth(kIconSize);
     feature->setScaledContents(true);
     feature->setVisible(false);
     this->layout_applicableFor->addWidget(feature);
@@ -199,8 +207,8 @@ void PluginInfoWidget::initGUI() {
   foreach (const ElementTypes& elementType, getAvailableElementTypes()) {
     QLabel* element = new QLabel();
     element->setPixmap(QPixmap(toQString(getElementTypeIconPath(elementType))));
-    element->setFixedHeight(30);
-    element->setFixedWidth(30);
+    element->setFixedHeight(kIconSize);
+    element->setFixedWidth(kIconSize);
     element->setScaledContents(true);
     element->setVisible(false);
     this->layout_neededElements->addWidget(element);

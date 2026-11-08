@@ -2,6 +2,10 @@
 
 #include "ui_feature_functions_dialog.h"
 
+namespace {
+constexpr int kTableRowHeight = 22;  // pixels
+}  // namespace
+
 /*!
  * \brief FeatureFunctionsDialog::FeatureFunctionsDialog
  * \param parent
@@ -447,7 +451,7 @@ void FeatureFunctionsDialog::initGUI() {
   this->ui->tableView_functionPlugins->horizontalHeader()->setSectionResizeMode(
       QHeaderView::ResizeToContents);
   this->ui->tableView_functionPlugins->verticalHeader()->setDefaultSectionSize(
-      22);
+      kTableRowHeight);
 
   // set up scalar parameter widget
   QGridLayout* extraParameterLayout = new QGridLayout();

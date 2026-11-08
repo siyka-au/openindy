@@ -8,6 +8,10 @@
 #include "qt_convert.h"
 #include "qt_job_adapter.h"
 
+namespace {
+constexpr int kDisplayDigits = 6;
+}  // namespace
+
 /*!
  * \brief ObservationModel::ObservationModel
  * \param parent
@@ -129,11 +133,11 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric)));
       case eObservationDisplayI:
-        return toQString(observation->getDisplayI(6));
+        return toQString(observation->getDisplayI(kDisplayDigits));
       case eObservationDisplayJ:
-        return toQString(observation->getDisplayJ(6));
+        return toQString(observation->getDisplayJ(kDisplayDigits));
       case eObservationDisplayK:
-        return toQString(observation->getDisplayK(6));
+        return toQString(observation->getDisplayK(kDisplayDigits));
       case eObservationDisplaySigmaX:
         return toQString(observation->getDisplaySigmaX(
             this->parameterDisplayConfig.getDisplayUnit(DimensionType::eMetric),
@@ -150,11 +154,11 @@ QVariant ObservationModel::data(const QModelIndex& index, int role) const {
             this->parameterDisplayConfig.getDisplayDigits(
                 DimensionType::eMetric)));
       case eObservationDisplaySigmaI:
-        return toQString(observation->getDisplaySigmaI(6));
+        return toQString(observation->getDisplaySigmaI(kDisplayDigits));
       case eObservationDisplaySigmaJ:
-        return toQString(observation->getDisplaySigmaJ(6));
+        return toQString(observation->getDisplaySigmaJ(kDisplayDigits));
       case eObservationDisplaySigmaK:
-        return toQString(observation->getDisplaySigmaK(6));
+        return toQString(observation->getDisplaySigmaK(kDisplayDigits));
       case eObservationDisplayIsValid:
         // return observation->getDisplayIsValid();
         return QVariant();

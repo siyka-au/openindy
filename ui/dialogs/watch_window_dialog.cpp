@@ -6,6 +6,10 @@
 #include "qt_station_adapter.h"
 #include "ui_watch_window_dialog.h"
 
+namespace {
+constexpr int kClearIntervalMs = 500;  // watch window refresh
+}  // namespace
+
 /*!
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
@@ -41,7 +45,7 @@ WatchWindowDialog::WatchWindowDialog(
 
   static QTimer* timer = new QTimer(parent);
   connect(timer, SIGNAL(timeout()), this, SLOT(clearWatchWindow()));
-  timer->start(500);
+  timer->start(kClearIntervalMs);
 }
 
 /*!

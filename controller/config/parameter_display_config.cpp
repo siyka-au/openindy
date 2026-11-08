@@ -2,6 +2,11 @@
 
 #include <map>
 
+namespace {
+constexpr int kDefaultDigits =
+    6;  // default decimals for angular and dimensionless values
+}  // namespace
+
 /*!
  * \brief ParameterDisplayConfig::ParameterDisplayConfig
  */
@@ -175,9 +180,9 @@ void ParameterDisplayConfig::init() {
 
   // default digits
   this->metricDisplayDigits = 2;
-  this->angularDisplayDigits = 6;
+  this->angularDisplayDigits = kDefaultDigits;
   this->temperatureDisplayDigits = 2;
-  this->dimensionlessDisplayDigits = 6;
+  this->dimensionlessDisplayDigits = kDefaultDigits;
 
   this->useSounds = true;
 }

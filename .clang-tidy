@@ -12,12 +12,12 @@ Checks: >
   modernize-make-unique,
   modernize-make-shared,
   misc-throw-by-value-catch-by-reference,
-  -cppcoreguidelines-owning-memory,
-  -cppcoreguidelines-avoid-magic-numbers
-# owning-memory: disabled here, 209 findings in the app's own files, nearly all Qt parent/child
-#   ownership (`new QWidget(parent)`, `new QStandardItem`, items handed to a model/layout),
-#   which is the idiomatic Qt pattern and not expressible with unique_ptr.
-# avoid-magic-numbers: disabled until the layout/column constants are named (see below).
+  -cppcoreguidelines-owning-memory
+# owning-memory: disabled here, 201 findings in the app's own files (controller, models, ui):
+#   81 are `new Q*` handed to Qt's parent/child ownership; the rest are raw owning pointers
+#   (tree items, delegates, `delete menu`, deleting Guarded<> data) that are released through
+#   Qt object trees or by the models and cannot be turned into unique_ptr without
+#   restructuring those models. Revisit with core's unique_ptr migration.
 WarningsAsErrors: ''
 # FormatStyle: file makes clang-tidy format the code its --fix fix-its produce with the .clang-format
 #   found by walking up from the source file; it does not change what is reported.

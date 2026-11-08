@@ -4,6 +4,10 @@
 #include "plugin_manager.h"
 #include "qt_convert.h"
 
+namespace {
+constexpr int kPercent = 100;
+}  // namespace
+
 /*!
  * \brief PluginCopier::PluginCopier
  * \param parent
@@ -88,7 +92,7 @@ void PluginCopier::importPlugin(const QString& path) {
       }
 
       emit this->updateProgress(
-          static_cast<int>((i * 100) / metaData.dependenciesPath.size()));
+          static_cast<int>((i * kPercent) / metaData.dependenciesPath.size()));
     }
   }
 

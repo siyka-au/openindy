@@ -3,8 +3,14 @@
 #include "qt_convert.h"
 #include "qt_job_adapter.h"
 
+namespace {
+constexpr double kBase = 10.0;
+constexpr double kHalf = 0.5;  // rounds half up
+constexpr double kDefaultTolerance = 0.2;
+}  // namespace
+
 inline double rnd(double value, int digits) {
-  return ((floor(((value)*pow(10, digits)) + .5)) / pow(10, digits));
+  return ((floor(((value)*pow(kBase, digits)) + kHalf)) / pow(kBase, digits));
 }
 
 /*!
@@ -14,7 +20,7 @@ inline double rnd(double value, int digits) {
  */
 FeatureDifferenceTableModel::FeatureDifferenceTableModel(
     const oi::Guarded<OiJob>& job, QObject* parent)
-    : tolerance(0.2) {
+    : tolerance(kDefaultTolerance) {
   this->setCurrentJob(job);
 }
 
@@ -23,7 +29,7 @@ FeatureDifferenceTableModel::FeatureDifferenceTableModel(
  * \param parent
  */
 FeatureDifferenceTableModel::FeatureDifferenceTableModel(QObject* parent)
-    : tolerance(0.2) {}
+    : tolerance(kDefaultTolerance) {}
 
 /*!
  * \brief FeatureDifferenceTableModel::rowCount

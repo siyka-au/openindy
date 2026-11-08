@@ -5,6 +5,10 @@
 #include "containers.h"
 #include "controller/qt_convert.h"
 
+namespace {
+constexpr int kLabelMinWidth = 300;  // pixels
+}  // namespace
+
 ScalarParameterWidget::ScalarParameterWidget(QWidget* parent)
     : QWidget(parent),
       doubleValidator(new QRegularExpressionValidator(this->validDouble)),
@@ -125,7 +129,7 @@ void ScalarParameterWidget::setUpGui() {
     QString stringKey = static_cast<QString>(stringIterator.key());
     QStringList stringValue = static_cast<QStringList>(stringIterator.value());
     QLabel* stringLabel = new QLabel(stringKey);
-    stringLabel->setMinimumWidth(300);
+    stringLabel->setMinimumWidth(kLabelMinWidth);
     stringLabel->setWordWrap(true);
     stringLabel->setFont(boldFont);
     QComboBox* stringComboBox = new QComboBox();
@@ -142,7 +146,7 @@ void ScalarParameterWidget::setUpGui() {
   }
   for (const auto& [intKey, intValue] : this->intParameter) {
     QLabel* intLabel = new QLabel(intKey);
-    intLabel->setMinimumWidth(300);
+    intLabel->setMinimumWidth(kLabelMinWidth);
     intLabel->setWordWrap(true);
     intLabel->setFont(boldFont);
     QLineEdit* intLineEdit = new QLineEdit(QString::number(intValue));
@@ -157,7 +161,7 @@ void ScalarParameterWidget::setUpGui() {
   }
   for (const auto& [doubleKey, doubleValue] : this->doubleParameter) {
     QLabel* doubleLabel = new QLabel(doubleKey);
-    doubleLabel->setMinimumWidth(300);
+    doubleLabel->setMinimumWidth(kLabelMinWidth);
     doubleLabel->setWordWrap(true);
     doubleLabel->setFont(boldFont);
     QLineEdit* doubleLineEdit = new QLineEdit(QString::number(doubleValue));

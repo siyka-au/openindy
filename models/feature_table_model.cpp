@@ -9,6 +9,22 @@
 #include "qt_convert.h"
 #include "qt_job_adapter.h"
 
+namespace {
+constexpr double kCmykC = 0.59;
+constexpr double kCmykM = 0.40;
+constexpr double kCmykYK = 0.10;
+// background for the active feature / selected sensor
+const QColor kActiveBackground =
+    QColor::fromCmykF(kCmykC, kCmykM, kCmykYK, kCmykYK).lighter();
+const QColor kNominalBackground =
+    QColor::fromRgb(230, 230, 180);  // pale yellow
+// Rec. 601 luma weights
+constexpr qreal kLumaRed = 0.299;
+constexpr qreal kLumaGreen = 0.587;
+constexpr qreal kLumaBlue = 0.114;
+constexpr qreal kLightThreshold = 0.5;
+}  // namespace
+
 /*!
  * \brief FeatureTableModel::FeatureTableModel
  * \param job
@@ -1403,7 +1419,7 @@ QVariant FeatureTableModel::getBackgroundValue(
 
   // active feature
   if (feature->getFeature()->getIsActiveFeature()) {
-    return QColor(QColor::fromCmykF(0.59, 0.40, 0.10, 0.10).lighter());
+    return QColor(kActiveBackground);
   }
 
   // active station
@@ -1503,7 +1519,7 @@ QVariant FeatureTableModel::getBackgroundValue(
   // nominals
   if (!feature->getGeometry().isNull() &&
       !feature->getGeometry()->getOwnerDescription().has_value()) {
-    return QColor(QColor::fromRgb(230, 230, 180));
+    return QColor(kNominalBackground);
   }
 
   return QVariant();
@@ -1526,10 +1542,10 @@ QVariant FeatureTableModel::getForegroundValue(
   }
 
   QColor backgroundColor = background.value<QColor>();
-  qreal luminance = 0.299 * backgroundColor.redF() +
-                    0.587 * backgroundColor.greenF() +
-                    0.114 * backgroundColor.blueF();
-  return luminance > 0.5 ? QColor(Qt::black) : QColor(Qt::white);
+  qreal luminance = kLumaRed * backgroundColor.redF() +
+                    kLumaGreen * backgroundColor.greenF() +
+                    kLumaBlue * backgroundColor.blueF();
+  return luminance > kLightThreshold ? QColor(Qt::black) : QColor(Qt::white);
 }
 
 /*!

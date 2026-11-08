@@ -10,6 +10,29 @@
 #include "types.h"
 #include "util.h"
 
+namespace SensorAccuracyRows {
+// Row layout of the sensor accuracy table: a header row per sigma group
+// followed by its values.
+enum : int {
+  kRowPolarHeader = 0,
+  kRowAzimuth = 1,
+  kRowZenith = 2,
+  kRowDistance = 3,
+  kRowCartesianHeader = 4,
+  kRowX = 5,
+  kRowY = 6,
+  kRowZ = 7,
+  kRowLevelHeader = 8,
+  kRowI = 9,
+  kRowJ = 10,
+  kRowK = 11,
+  kRowTemperatureHeader = 12,
+  kRowTemperature = 13,
+  kRowUndefinedHeader = 14,
+  kRowFirstUndefined = 15,
+};
+}  // namespace SensorAccuracyRows
+
 /*!
  * \brief The SensorAccuracyModel class
  * Model with accuracy information of a sensor configuration

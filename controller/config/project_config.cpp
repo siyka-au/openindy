@@ -8,6 +8,10 @@
 #include <optional>
 #include <vector>
 
+namespace {
+constexpr int kDefaultAutoSaveMinutes = 10;
+}  // namespace
+
 QString ProjectConfig::configFolder;
 QString ProjectConfig::importNominalPath;
 QString ProjectConfig::projectPath;
@@ -314,7 +318,8 @@ bool ProjectConfig::loadProjectSettingsConfigFile() {
   useSounds = root->value("projectSoundSettings").toInt() != 0;
 
   // default minutes when absent
-  autoSaveInterval = root->value("projectAutoSaveInterval").toInt(10);
+  autoSaveInterval =
+      root->value("projectAutoSaveInterval").toInt(kDefaultAutoSaveMinutes);
 
   displayColumns.clear();
   const QJsonArray columns = root->value("projectFeatureViewSettings")
